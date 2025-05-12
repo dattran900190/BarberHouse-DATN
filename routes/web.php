@@ -25,7 +25,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
         return view('admin.dashboard');
     })->name('dashboard');
     // Hiển thị giao diện danh sách Dịch vụ
-    Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
+    // Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::get('/barbers', [BarberController::class, 'index'])->name('admin.barbers.index');
 });
@@ -39,3 +39,14 @@ Route::get('/admin/branches/{branch}/edit', [BranchController::class, 'edit'])->
 Route::put('/admin/branches/{branch}', [BranchController::class, 'update'])->name('admin.branches.update');
 Route::delete('/admin/branches/{branch}', [BranchController::class, 'destroy'])->name('admin.branches.destroy');
 Route::get('/admin/branches/search', [BranchController::class, 'search'])->name('admin.branches.search');
+
+
+// Hiển thị giao diện danh sách Dịch vụ
+Route::get('/admin/services', [ServiceController::class, 'index'])->name('admin.services.index');
+Route::get('/admin/services/create', [ServiceController::class, 'create'])->name('admin.services.create');
+Route::post('/admin/services', [ServiceController::class, 'store'])->name('admin.services.store');
+Route::get('/admin/services/{service_id}', [ServiceController::class, 'show'])->name('admin.services.show');
+Route::get('/admin/services/{service_id}/edit', [ServiceController::class, 'edit'])->name('admin.services.edit');
+Route::put('/admin/services/{service_id}', [ServiceController::class, 'update'])->name('admin.services.update');
+Route::delete('/admin/services/{service_id}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
+Route::get('/admin/services/search', [ServiceController::class, 'search'])->name('admin.services.search');
