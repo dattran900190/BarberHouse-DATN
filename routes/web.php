@@ -27,8 +27,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     })->name('dashboard');
     // Hiển thị giao diện danh sách Dịch vụ
     // Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
+
+    
     // Hiển thị giao diện danh sách Thợ cắt tóc
-    Route::get('/barbers', [BarberController::class, 'index'])->name('admin.barbers.index');
+    Route::resource('barbers', BarberController::class);
 });
 
 // Hiển thị giao diện danh sách Chi nhánh
