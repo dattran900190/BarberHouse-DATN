@@ -1,76 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Nhập - Barber Booking</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: #f8f9fa;
-        }
-        .login-container {
-            margin-top: 100px;
-        }
-        .card {
-            border-radius: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+    <title>Đăng nhập - Barber Booking</title>
+    <link rel="stylesheet" href="css.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 </head>
-<body>
-    <div class="container login-container">
-        <div class="row justify-content-center">
-            <div class="col-md-5">
-                <div class="card p-4">
-                    <div class="card-body">
-                        <h3 class="text-center mb-4">Đăng nhập</h3>
-                        @if (session('messageError'))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                {{ session('messageError') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        @endif
 
-                        <form action="{{ route('postLogin') }}" method="POST">
-                            @csrf
-                            <div class="mb-3">
-                                <input type="email" class="form-control" name="email" id="email" placeholder="Email" value="{{ old('email') }}" required>
-                                @error('email')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="mb-3">
-                                <input type="password" class="form-control" name="password" id="password" placeholder="Mật khẩu" required>
-                                @error('password')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
-                            <div class="text-center mt-3">
-                                <a href="{{ route('register') }}" style="text-decoration: none; color: rgb(0, 132, 240)">Chưa có tài khoản?</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+<body>
+    <div class="form">
+        <div class="form_title">Đăng nhập</div>
+        <form action="{{ route('postLogin') }}" method="POST">
+            @csrf
+            <div class="form_row">
+                <input type="email" id="email" name="email" placeholder=" " value="{{ old('email') }}"
+                    class="input-field">
+                <label for="email">Email</label>
             </div>
-        </div>
+            @error('email')
+                <small class="form_message" id="error-email" style="display: block">{{ $message }}</small>
+            @enderror
+
+            <div class="form_row">
+                <input type="password" id="password" name="password" placeholder=" " class="input-field">
+                <label for="password">Mật khẩu</label>
+                <span class="toggle-password" onclick="togglePassword()">
+                    <i class="fa-solid fa-eye" id="eye-icon"></i>
+                </span>
+            </div>
+            @error('password')
+                <small class="form_message" id="error-password" style="display: block">{{ $message }}</small>
+            @enderror
+
+            @if (session('messageError'))
+                <small class="form_message">{{ session('messageError') }}</small>
+            @endif
+
+            <button type="submit" class="form-submit">Đăng nhập</button>
+            <div class="form_link">
+                <a href="{{ route('register') }}">Chưa có tài khoản?</a>
+            </div>
+        </form>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công!',
-                text: '{{ session('success') }}',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#0d6efd'
+        function togglePassword() {
+            const passwordInput = document.getElementById("password");
+            const eyeIcon = document.getElementById("eye-icon");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        }
+
+        // Ẩn lỗi khi người dùng bắt đầu gõ lại
+        document.querySelectorAll('.input-field').forEach(function(input) {
+            input.addEventListener('input', function() {
+                const errorId = 'error-' + input.id;
+                const error = document.getElementById(errorId);
+                if (error) {
+                    error.style.display = 'none';
+                }
             });
-        @endif
+        });
     </script>
 </body>
+
 </html>

@@ -336,6 +336,12 @@ return [
             'icon' => 'fas fa-building',
         ],
 
+        [
+            'text' => 'Quản lý người dùng',
+            'url'  => 'admin/users',
+            'icon' => 'fas fa-users',
+        ],
+
     ],
 
 
