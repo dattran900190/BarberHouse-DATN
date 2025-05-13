@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -50,3 +51,14 @@ Route::get('/admin/services/{service_id}/edit', [ServiceController::class, 'edit
 Route::put('/admin/services/{service_id}', [ServiceController::class, 'update'])->name('admin.services.update');
 Route::delete('/admin/services/{service_id}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
 Route::get('/admin/services/search', [ServiceController::class, 'search'])->name('admin.services.search');
+
+
+// Hiển thị giao diện danh sách người dùng
+Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
+Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');    
+Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
+Route::get('/admin/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
+Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+Route::get('/admin/users/search', [UserController::class, 'search'])->name('admin.users.search');
