@@ -341,6 +341,11 @@ return [
             'url'  => 'admin/users',
             'icon' => 'fas fa-users',
         ],
+         [
+        'text' => 'Quản lý sản phẩm',
+        'url'  => 'admin/products',
+        'icon' => 'fas fa-box',
+    ],
 
     ],
 
