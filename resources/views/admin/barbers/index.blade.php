@@ -41,7 +41,7 @@
                             <td>{{ $index + 1 }}</td>
                             <td class="text-center">
                                 @if ($barber->avatar)
-                                    <img src="{{ asset($barber->avatar) }}" alt="Avatar" class="img-fluid rounded-circle"
+                                    <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" class="img-fluid rounded-circle"
                                         style="max-width: 100px; max-height: 70px;">
                                 @else
                                     <img src="{{ asset('uploads/avatars/default-avatar.png') }}" alt="Avatar"

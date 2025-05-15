@@ -27,7 +27,7 @@
                         @if ($barber->avatar)
                             <div class="form-group">
                                 <label>Ảnh đại diện hiện tại:</label><br>
-                                <img src="{{ asset($barber->avatar) }}" alt="Avatar" style="max-height: 150px;">
+                                <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" style="max-height: 150px;">
                             </div>
                         @endif
                     </div>
