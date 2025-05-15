@@ -28,7 +28,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // Hiển thị giao diện danh sách Dịch vụ
     // Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
 
-    
+
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
 });
@@ -57,7 +57,7 @@ Route::get('/admin/services/search', [ServiceController::class, 'search'])->name
 
 // Hiển thị giao diện danh sách người dùng
 Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
-Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');    
+Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
 Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
 Route::get('/admin/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
 Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
