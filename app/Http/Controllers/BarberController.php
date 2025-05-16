@@ -4,16 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Barber;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BarberController extends Controller
 {
     public function index()
     {
-        // Sắp xếp các thợ cắt tóc theo ngày tạo (mới nhất lên đầu)
         $barbers = Barber::orderBy('created_at', 'desc')->get();
         return view('admin.barbers.index', compact('barbers'));
     }
-
 
     public function create()
     {
@@ -32,17 +31,13 @@ class BarberController extends Controller
         $data = $request->all();
 
         if ($request->hasFile('avatar')) {
-            $file = $request->file('avatar');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/avatars'), $filename);
-            $data['avatar'] = 'uploads/avatars/' . $filename;
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
 
         Barber::create($data);
 
         return redirect()->route('barbers.index')->with('success', 'Thêm thợ thành công');
     }
-
 
     public function show(Barber $barber)
     {
@@ -67,33 +62,27 @@ class BarberController extends Controller
 
         if ($request->hasFile('avatar')) {
             // Xóa ảnh cũ nếu có
-            if ($barber->avatar && file_exists(public_path($barber->avatar))) {
-                unlink(public_path($barber->avatar));
+            if ($barber->avatar && Storage::disk('public')->exists($barber->avatar)) {
+                Storage::disk('public')->delete($barber->avatar);
             }
 
-            $file = $request->file('avatar');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/avatars'), $filename);
-            $data['avatar'] = 'uploads/avatars/' . $filename;
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         } else {
-            // Không cập nhật avatar mới => giữ nguyên ảnh cũ
             $data['avatar'] = $barber->avatar;
         }
 
+        
         $barber->update($data);
 
         return redirect()->route('barbers.index')->with('success', 'Cập nhật thành công');
     }
 
-
     public function destroy(Barber $barber)
     {
-        // Kiểm tra và xóa ảnh đại diện nếu có
-        if ($barber->avatar && file_exists(public_path($barber->avatar))) {
-            unlink(public_path($barber->avatar));  // Xóa file ảnh đại diện
+        if ($barber->avatar && Storage::disk('public')->exists($barber->avatar)) {
+            Storage::disk('public')->delete($barber->avatar);
         }
 
-        // Xóa bản ghi thợ cắt tóc trong cơ sở dữ liệu
         $barber->delete();
 
         return redirect()->route('barbers.index')->with('success', 'Xóa thợ thành công');
