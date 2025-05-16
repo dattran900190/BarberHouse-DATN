@@ -1,0 +1,1339 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+body a:hover{
+  color: #444;
+}
+
+/* ban đầu nav trong suốt, sau scroll đổi nền trắng + shadow */
+#mainNav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    align-items: center;
+    padding: 30px 40px;
+    margin-top: -20px;
+    transition:
+      background-color 0.3s ease,
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+    background: transparent;
+    z-index: 1000;
+  }
+  
+  /* Khi add class .scrolled: có nền + đẩy xuống 10px + shadow */
+  #mainNav.scrolled {
+    background-color: #000;
+    transform: translateY(10px);
+    /* box-shadow: 0 4px 12px rgba(0,0,0,0.1); */
+  }
+  
+  .nav-mid img{
+    max-width: 140px;
+    height: 80px;
+  }
+  
+  /* menu items */
+  #mainNav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    margin: 0; padding: 0;
+    position: relative;
+  }
+
+  #mainNav a {
+    font-size: 22px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #fff;          
+    transition: color 0.3s;
+  }
+
+  #mainNav.scrolled a {
+    color: #fff;       
+  }
+
+  #mainNav a:hover,
+  #mainNav a.active {
+    color:  rgb(157, 157, 161);
+  }
+  
+  
+/* Hero‑slider để nav overlay lên slider */
+.hero-slider {
+    width: 100%;
+    height: 600px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero-slider .slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+  
+  .hero-slider .slide.active {
+    opacity: 1;
+    z-index: 1;
+  }
+  
+  .hero-slider img {
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* prev/next buttons (optional) */
+  .hero-slider .prev,
+  .hero-slider .next {
+    position: absolute; 
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+     border: none; 
+     padding: 10px;
+    cursor: pointer; font-size: 1.5rem;
+
+    opacity: 1 !important;      /* ghi đè mọi opacity khác */
+    display: block !important;   /* ghi đè nếu có display: none */
+    z-index: 10;                 /* luôn nằm trên ảnh */
+    pointer-events: auto; 
+  }
+  .hero-slider .prev { left: 10px; }
+  .hero-slider .next { right: 10px; }
+
+
+section {
+      padding: 130px;
+      border-bottom: 1px solid #ccc;
+}
+
+#mainPost {
+  padding: 60px 20px;
+  /* background: #f8f8f8; */
+}
+
+#mainPost h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  color: #333;
+}
+
+.posts-wrapper {
+  position: relative;
+  overflow: hidden;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.posts {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.post {
+  flex: 0 0 calc(100% / 3); /* 3 bài mỗi slide */
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.image-container {
+  width: 100%;
+  height: 200px; /* Giữ chiều cao cố định */
+  overflow: hidden; /* Ẩn phần ảnh vượt ra ngoài khi zoom */
+}
+
+.post img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.post:hover .image-container img {
+  transform: scale(1.08); /* Chỉ zoom ảnh bên trong */
+}
+
+.post h4 {
+  font-size: 1.2rem;
+  margin: 10px 16px 0;
+  color: #333;
+}
+
+.post p {
+  font-size: 0.95rem;
+  padding: 8px 16px 16px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.post a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.prev-posts, .next-posts {
+  position: absolute;
+  top: 35%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 2;
+  margin: 0 10px;
+}
+.prev-posts { left: 0; }
+.next-posts { right: 0; }
+
+/* post nomal */
+
+.posts-nomal {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 cột thay vì 4 */
+  gap: 20px;
+  margin: 0 10%;
+  padding: 0;
+}
+
+.post-nomal {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  /* box-shadow: 0 2px 6px rgba(0,0,0,0.1); */
+  transition: transform 0.3s ease;
+}
+
+.image-nomal {
+  width: 100%;
+  height: 300px; /* Giữ chiều cao cố định */
+  overflow: hidden; /* Ẩn phần ảnh vượt ra ngoài khi zoom */
+}
+
+
+/* ảnh responsive & zoom on hover */
+.post-nomal img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.post-nomal:hover .image-nomal img {
+  transform: scale(1.05);
+}
+
+/* text */
+.post-nomal h4 {
+  font-size: 1.1rem;
+  margin: 10px 12px 6px;
+  color: #333;
+}
+.post-nomal p {
+  font-size: 0.9rem;
+  margin: 0 12px 12px;
+  color: #555;
+  line-height: 1.4;
+}
+.post-nomal a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.btn-xem-them {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 24px;
+  font-size: 16px;
+  background-color: #111;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+
+  transition: background-color 0.3s;
+}
+
+.btn-xem-them:hover {
+  background: #444;
+}
+
+/* -----------main product------------ */
+
+#product h2{
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  color: #333;
+  margin-top: -100px;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 cột */
+  gap: 20px;                             /* khoảng cách giữa các product */
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Mỗi product */
+.product {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  text-align: center;
+}
+
+.image-product {
+  width: 100%;
+  height: 180px; /* Giữ chiều cao cố định */
+  overflow: hidden; /* Ẩn phần ảnh vượt ra ngoài khi zoom */
+}
+
+/* Ảnh trong product */
+.product img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+/* Zoom ảnh khi hover product */
+.product:hover .image-product img {
+  transform: scale(1.05);
+}
+
+/* Tiêu đề và đoạn text */
+.product h4 {
+  font-size: 1.1rem;
+  margin: 10px 12px 6px;
+  color: #333;
+}
+.product p {
+  font-size: 0.9rem;
+  margin: 0 12px 12px;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* Xóa gạch chân link và giữ màu inherit */
+.product a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* price */
+
+#price {
+  width: 100%;
+  height: 100%;
+}
+
+
+#price h2{
+  text-align: center;
+  /* margin-bottom: 20px; */
+  font-size: 2rem;
+  color: #333;
+  margin-top: -100px;
+}
+
+#price img{
+  width: 100%;
+}
+
+/* instagram */
+
+#instagram {
+  padding: 40px 20px;
+}
+
+#instagram h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #333;
+}
+
+.images {
+  display: grid;
+  grid-template-columns: repeat(3, 300px);
+  gap: 10px;
+  justify-content: center;
+}
+
+/* cái khung cố định 300×340, cắt overflow */
+.image-item {
+  width: 300px;
+  height: 340px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ảnh full trong khung, zoom khi hover */
+.image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.image-item:hover img {
+  transform: scale(1.05);
+}
+
+
+/* section.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+h2 {
+    margin-top: 0;
+} */
+
+footer {
+  background-color: #000;
+  color: #fff;
+  padding: 40px 15%;
+  /* padding-left: 120px; */
+  /* padding-top: 40px;
+  padding-bottom: 40px; */
+}
+
+.main-footer {
+  display: flex;
+  justify-content: center; /* Căn giữa các phần nội dung */
+  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1200px; /* Giới hạn chiều rộng tối đa */
+  margin: 0 auto; /* Căn giữa main-footer trong footer */
+}
+
+.description, .information, .faq, .follow-us {
+  flex: 1;
+  min-width: 200px; /* Đảm bảo không bị co quá nhỏ */
+  text-align: left;
+  padding: 20px;
+}
+
+.description .logo img {
+  max-width: 100px; /* Điều chỉnh kích thước logo */
+  height: auto;
+}
+
+.description p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 20px 0;
+}
+
+.social ul {
+  display: flex;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.social ul li a {
+  color: #fff;
+  font-size: 24px;
+  transition: color 0.3s;
+}
+
+.social ul li a:hover {
+  color: #ccc;
+}
+
+.information, .faq, .follow-us {
+  margin-top: 20px;
+}
+
+.information ul, .faq ul, .follow-us ul {
+  list-style: none;
+  padding: 0;
+}
+
+.information ul li, .faq ul li, .follow-us ul li {
+  margin-bottom: 10px;
+}
+
+.information ul li a, .faq ul li a, .follow-us ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.information ul li a:hover, .faq ul li a:hover, .follow-us ul li a:hover {
+  color: #ccc;
+}
+
+.information::before, .faq::before, .follow-us::before {
+  content: attr(data-title);
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+  .main-footer {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .description, .information, .faq, .follow-us {
+    flex: none;
+    width: 100%;
+  }
+
+  .social ul {
+    justify-content: center;
+  }
+}
+
+/* ----------- booking ---------- */
+
+/* Tổng thể form */
+#bookingForm {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Nhãn */
+#bookingForm label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Input, Select */
+#bookingForm input,
+#bookingForm select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+#bookingForm input:focus,
+#bookingForm select:focus {
+  border-color: #444;
+  outline: none;
+}
+
+/* Button */
+#bookingForm button {
+  width: 100%;
+  padding: 12px;
+  background-color: #111;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#bookingForm button:hover {
+  background-color: #444;
+}
+
+/* -----------Chi nhánh-------- */
+
+.main-branchs {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+.main-branchs h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  color: #333;
+}
+
+/* Grid 4 cột */
+.branchs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px 20px;
+}
+
+/* Mỗi card branch */
+.branch {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* wrapper ảnh + overlay */
+.image-branch {
+  position: relative;
+  width: 100%;
+  padding-top: 75%; /* tỉ lệ 4:3, thay đổi nếu cần */
+  overflow: hidden;
+}
+.image-branch img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.branch:hover .image-branch img {
+  transform: scale(1.05);
+}
+
+/* overlay text */
+.image-branch .overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  top: 30%;
+  width: 100%;
+  padding: 12px;
+  /* background: rgba(0,0,0,0.6); */
+  color: #fff;
+  box-sizing: border-box;
+  text-align: center;
+}
+.image-branch .overlay h4 {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+}
+.image-branch .overlay p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Responsive: 2 cột trên tablet, 1 cột trên mobile */
+@media (max-width: 992px) {
+  .branchs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .branchs {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hero-slider .overlay {
+  position: absolute;
+  bottom: 45%;        /* cách đáy slide 20px */
+  left: 50%;           /* canh giữa ngang */
+  transform: translateX(-50%);
+  
+  padding: 20px 30px;   /* padding như button */
+  background: rgba(0,0,0,0.4);  /* nền mờ đen */
+  border: 2px solid #fff;       /* viền trắng */
+  border-radius: 3px;          /* bo góc tròn */
+  color: #fff;
+  box-sizing: border-box;
+  text-align: center;
+  max-width: 90%;      /* tránh quá rộng */
+}
+
+/* Tiêu đề */
+.hero-slider .overlay h4 {
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.hero-slider .overlay a{
+  text-decoration: none;
+  color: #fff;
+}
+
+/* Khi hover slide, làm nổi bật overlay */
+.hero-slider .overlay:hover  {
+  background: rgba(255,255,255,0.2);
+  border-color: #fff;
+  color: #fff;
+}
+
+/* ---------product------------- */
+
+.product-filters {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+.product-filters h3 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.filter-selects {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.filter-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #555;
+}
+
+.filter-group select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+/* Container chung */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: Arial, sans-serif;
+  margin: 40px 0;
+}
+
+/* Nút Prev/Next */
+.page-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.page-btn:disabled {
+  background: #ccc;
+  cursor: default;
+}
+.page-btn:not(:disabled):hover {
+  background: #000;
+}
+
+/* Danh sách số trang */
+.page-list {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 4px;
+}
+
+/* Mỗi số trang */
+.page-number {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.page-number:hover {
+  background: #e0e0e0;
+}
+.page-number.active {
+  background: #000;
+  border-color: #000;
+  color: #fff;
+  cursor: default;
+}
+
+/* Dấu … */
+.ellipsis {
+  display: inline-block;
+  padding: 6px 4px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* ---------posts------------ */
+
+#mainNavPost {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  align-items: center;
+  padding: 30px 40px;
+  margin-top: -20px;
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  background: transparent;
+  background-color: #000;
+  z-index: 1000;
+}
+
+/* Khi add class .scrolled: có nền + đẩy xuống 10px + shadow */
+#mainNavPost.scrolled {
+  background-color: #000;
+  transform: translateY(10px);
+  /* box-shadow: 0 4px 12px rgba(0,0,0,0.1); */
+}
+
+.nav-mid img{
+  max-width: 140px;
+  height: 80px;
+}
+
+/* menu items */
+#mainNavPost ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  margin: 0; padding: 0;
+  position: relative;
+}
+
+#mainNavPost a {
+  font-size: 22px;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #fff;          
+  transition: color 0.3s;
+}
+
+#mainNavPost.scrolled a {
+  color: #fff;       
+}
+
+#mainNavPost a:hover,
+#mainNavPost a.active {
+  color:  rgb(157, 157, 161);
+}
+
+.main-posts {
+  margin-top: 10%;
+  padding: 40px 20px;
+}
+
+.posts-content {
+  display: flex;
+  justify-content: center;
+}
+
+.main-posts h2{
+  text-align: center;
+}
+
+.post-left .post-top{
+  padding: 10px;
+}
+
+.post-left .post-top a{
+  color: #000;
+  text-decoration: none;
+}
+
+.post-left .post-top img{
+  width: 720px;
+}
+
+.post-left .post-mid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.post-left .post-mid img{
+  width: 350px;
+  height: 200px;
+
+}
+
+.post-right .post img{
+  width: 250px;
+  height: 250px;
+}
+
+/* -----chat---------- */
+.chat-wrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+}
+
+.chat-button {
+  width: 50px;
+  height: 50px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.chat-box {
+  display: none;
+  width: 300px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  overflow: hidden;
+}
+
+.chat-header {
+  background-color: #007aff;
+  color: white;
+  padding: 10px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header button {
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.chat-body {
+  padding: 10px;
+  font-size: 14px;
+  color: #333;
+  min-height: 100px;
+}
+
+
+/* -------------login----------- */
+
+.login {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.image-login{
+  width: 100%;
+}
+
+.image-login img{
+  width: 100%;
+  height: 100%;
+}
+
+.form-login {
+  width: 500px;
+  justify-content: center;
+}
+
+.form-login .image {
+  text-align: center;
+}
+
+.form-login img{
+  width: 100%;
+}
+
+.form-login .form p{
+  padding-top: 10px;
+}
+
+.form-login .form a{
+  color: red;
+}
+
+.form-login .form button {
+  top: 20px;
+  left: 20px;
+  font-size: 18px;
+  text-decoration: none;
+  color: #fff;
+  background-color: #000;
+  padding: 6px 12px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.form-login .form button:hover{
+  background-color: #444;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 18px;
+  text-decoration: none;
+  color: #fff;
+  background-color: #000;
+  padding: 6px 12px;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  z-index: 1000;
+}
+
+.back-button:hover {
+  background-color: #444;
+  color: #fff;
+}
+
+/* ------------cart----------- */
+
+/* Container tương tự .container */
+.my-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* full-height = 100% chiều cao viewport */
+.full-height {
+  height: 100vh;
+}
+
+/* custom section nếu cần background hoặc padding */
+.custom-section {
+  background: #f7f7f7;
+}
+
+/* padding: 5vh trên top/bottom */
+.padding-5vh {
+  padding: 5vh 0;
+}
+
+/* flex-center: flex container, căn giữa cả hai chiều */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+}
+
+/* flex-row thay .row g-0 */
+.flex-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* no-gap: xóa khoảng cách giữa các phần tử */
+.no-gap {
+  gap: 0;
+}
+
+/* col-12 full-width */
+.col-12 {
+  width: 100%;
+}
+
+/* col-left-66 ~ col-lg-8 (8/12 = ~66%) */
+.col-left-66 {
+  width: 66.6667%;
+}
+
+/* Padding 5vh */
+.p-5vh {
+  padding: 5vh;
+}
+
+/* Card cơ bản */
+.card-registration {
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+/* Thân card, bỏ padding */
+.card-body.no-padding {
+  padding: 0;
+}
+
+
+.quantity input {
+  width: 60px;
+  text-align: center;
+}
+
+
+/* ------------detail product---------- */
+
+.mainDetailPro{
+  display: flex;
+  margin-top: 5%;
+}
+
+.detailPro-left .image-top img{
+  width: 70%;
+}
+
+.detailPro-right {
+  width: 60%;
+}
+
+.information-product {
+  margin: 5% 0;
+}
+
+.album-wrapper {
+  position: relative;
+  width: 640px; /* 4 ảnh x 150px + 10px khoảng cách */
+  margin: auto;
+}
+
+.image-bottom {
+  overflow: hidden;
+  width: 100%;
+}
+
+.image-track {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+}
+
+.image-track img {
+  width: 150px;
+  height: 150px;
+  margin-right: 10px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.prev-btn, .next-btn {
+  position: absolute; 
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+   border: none; 
+   padding: 10px;
+  cursor: pointer; font-size: 1.5rem;
+}
+
+.prev-btn { left: -35px; }
+.next-btn { right: -25px; }
+
+.orther-product h2 {
+  text-align: center;
+  margin-bottom: 3%;
+}
+
+/* ----------detail-post----------- */
+
+.mainDetailPost {
+  margin: 5%;
+}
+
+.orther-post {
+  justify-content: center;
+  text-align: center;
+}
+
+.detail-post {
+  margin: 10%;
+}
+
+.detail-post img{
+  width: 100%;
+}
+
+.popular-articles {
+  width: 100%;
+  font-family: sans-serif;
+}
+
+.article {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  margin: 0 20%;
+}
+.number {
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.article img {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+  margin-right: 10px;
+}
+.article a {
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+}
+
+/* ----------checkout------------- */
+
+.mainCheckout {
+  display: flex;
+  justify-content: center; /* Căn giữa toàn bộ nội dung */
+  align-items: flex-start;
+  gap: 40px;
+  padding: 40px 20px;
+  /* background-color: #f9f9f9; */
+
+}
+
+.mainCheckout {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px; /* Khoảng cách giữa các khối */
+  padding: 40px 20px;
+  flex-wrap: wrap; /* Cho responsive nếu không đủ chỗ */
+}
+
+.informationUser,
+.deliveryPayment,
+.informationProduct {
+  /* background-color: #f9f9f9; */
+  /* padding: 20px; */
+  border-radius: 10px;
+}
+
+/* Đặt chiều rộng từng phần, tùy theo tổng không gian bạn muốn chia */
+.informationUser {
+  width: 30%;
+}
+
+.deliveryPayment {
+  width: 30%;
+}
+
+.informationProduct {
+  width: 30%;
+}
+
+.informationUser h3,
+.informationProduct h3 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.phi-tam-thoi,
+.tong-cong {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.tam-tinh,
+.phi-van-chuyen,
+.tong-thanh-toan {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dat-hang {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dat-hang a{
+  text-decoration: none;
+  color: #000;
+  text-align: center;
+}
+
+
+/* ----------- detail branch---------- */
+.orther-branch {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 770px;
+  margin: 20px auto;
+}
+
+.orther-branch ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.orther-branch li {
+  margin-bottom: 10px;
+  font-size: 16px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.orther-branch li::before {
+  content: "📍";
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.orther-branch a {
+  text-decoration: none;
+  color: #0073e6;
+  transition: color 0.2s;
+}
+
+.orther-branch a:hover {
+  color: #444;
+  text-decoration: underline;
+}
