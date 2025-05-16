@@ -335,6 +335,11 @@ return [
             'url'  => 'admin/branches',
             'icon' => 'fas fa-building',
         ],
+         [
+            'text' => 'Quản lý tin tức',
+            'url'  => 'admin/posts',
+            'icon' => 'fas fa-newspaper',
+        ],
 
     ],
 
