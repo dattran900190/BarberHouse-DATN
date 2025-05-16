@@ -341,6 +341,17 @@ return [
             'icon' => 'fas fa-newspaper',
         ],
 
+        [
+            'text' => 'Quản lý người dùng',
+            'url'  => 'admin/users',
+            'icon' => 'fas fa-users',
+        ],
+         [
+        'text' => 'Quản lý sản phẩm',
+        'url'  => 'admin/products',
+        'icon' => 'fas fa-box',
+    ],
+
     ],
 
 

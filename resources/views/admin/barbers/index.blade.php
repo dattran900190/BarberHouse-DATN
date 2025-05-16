@@ -1,19 +1,19 @@
 @extends('adminlte::page')
 
-@section('title', 'Quản lý Thợ cắt tóc')
+@section('title', 'Danh sách Thợ cắt tóc')
 
 @section('content')
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách Thợ cắt tóc</h3>
-            <a href="#" class="btn btn-success btn-icon-toggle d-flex align-items-center">
+            <a href="{{ route('barbers.create') }}" class="btn btn-success btn-icon-toggle d-flex align-items-center">
                 <i class="fas fa-plus"></i>
                 <span class="btn-text ms-2"> Thêm thợ</span>
             </a>
         </div>
 
         <div class="card-body">
-            <form action="{{ route('admin.barbers.index') }}" method="GET" class="mb-3">
+            <form action="{{ route('barbers.index') }}" method="GET" class="mb-3">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên thợ cắt tóc..."
                         value="{{ request()->get('search') }}">
@@ -27,6 +27,7 @@
                 <thead class="thead-light text-center align-middle">
                     <tr>
                         <th>Stt</th>
+                        <th>Avatar</th> <!-- Thêm cột Avatar -->
                         <th>Họ tên</th>
                         <th>Trình độ</th>
                         <th>Đánh giá</th>
@@ -38,19 +39,33 @@
                     @foreach ($barbers as $index => $barber)
                         <tr>
                             <td>{{ $index + 1 }}</td>
+                            <td class="text-center">
+                                @if ($barber->avatar)
+                                    <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" class="img-fluid rounded-circle"
+                                        style="max-width: 100px; max-height: 70px;">
+                                @else
+                                    <img src="{{ asset('uploads/avatars/default-avatar.png') }}" alt="Avatar"
+                                        class="img-fluid rounded-circle" style="max-width: 100px; max-height: 70px;">
+                                @endif
+                            </td>
+
                             <td>{{ $barber['name'] }}</td>
                             <td>{{ $barber['skill_level'] }}</td>
                             <td>{{ $barber['rating_avg'] }}</td>
                             <td>{{ $barber['profile'] }}</td>
+
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
-                                    <a href="#" class="btn btn-info btn-sm d-inline-flex align-items-center">
+                                    <a href="{{ route('barbers.show', $barber->id) }}"
+                                        class="btn btn-info btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
-                                    <a href="#" class="btn btn-warning btn-sm d-inline-flex align-items-center">
+                                    <a href="{{ route('barbers.edit', $barber->id) }}"
+                                        class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>
-                                    <form action="#" method="POST" class="d-inline m-0"
+                                    <form action="{{ route('barbers.destroy', $barber->id) }}" method="POST"
+                                        class="d-inline m-0"
                                         onsubmit="return confirm('Bạn có chắc chắn muốn xoá thợ này không?');">
                                         @csrf
                                         @method('DELETE')
@@ -71,6 +86,12 @@
 
 @section('css')
     <style>
+        /* Thêm hiệu ứng hover cho các dòng bảng */
+        .table-hover tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Nút thêm thợ */
         .btn-icon-toggle .btn-text {
             display: none;
             transition: opacity 0.3s ease;
@@ -78,6 +99,25 @@
 
         .btn-icon-toggle:hover .btn-text {
             display: inline;
+        }
+
+        /* Cải thiện thẩm mỹ cho input tìm kiếm */
+        .input-group input {
+            border-right: 0;
+        }
+
+        .input-group .input-group-append {
+            border-left: 0;
+        }
+
+        .input-group button {
+            border-radius: 0;
+        }
+
+        /* Đảm bảo avatar không bị vỡ hình */
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
         }
     </style>
 @endsection
