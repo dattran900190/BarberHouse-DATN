@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Barber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\BarberRequest;
+
 
 class BarberController extends Controller
 {
@@ -19,16 +21,9 @@ class BarberController extends Controller
         return view('admin.barbers.create');
     }
 
-    public function store(Request $request)
+    public function store(BarberRequest $request)
     {
-        $request->validate([
-            'name' => 'required|max:100',
-            'skill_level' => 'required|max:50',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'rating_avg' => 'nullable|numeric|min:0|max:5',
-        ]);
-
-        $data = $request->all();
+        $data = $request->validated();
 
         if ($request->hasFile('avatar')) {
             $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
@@ -38,6 +33,7 @@ class BarberController extends Controller
 
         return redirect()->route('barbers.index')->with('success', 'Thêm thợ thành công');
     }
+
 
     public function show(Barber $barber)
     {
@@ -49,19 +45,11 @@ class BarberController extends Controller
         return view('admin.barbers.edit', compact('barber'));
     }
 
-    public function update(Request $request, Barber $barber)
+    public function update(BarberRequest $request, Barber $barber)
     {
-        $request->validate([
-            'name' => 'required|max:100',
-            'skill_level' => 'required|max:50',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'rating_avg' => 'nullable|numeric|min:0|max:5',
-        ]);
-
-        $data = $request->all();
+        $data = $request->validated();
 
         if ($request->hasFile('avatar')) {
-            // Xóa ảnh cũ nếu có
             if ($barber->avatar && Storage::disk('public')->exists($barber->avatar)) {
                 Storage::disk('public')->delete($barber->avatar);
             }
@@ -71,11 +59,11 @@ class BarberController extends Controller
             $data['avatar'] = $barber->avatar;
         }
 
-        
         $barber->update($data);
 
         return redirect()->route('barbers.index')->with('success', 'Cập nhật thành công');
     }
+
 
     public function destroy(Barber $barber)
     {
