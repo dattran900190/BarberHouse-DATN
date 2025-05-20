@@ -3,9 +3,9 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,22 +31,19 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::get('/barbers', [BarberController::class, 'index'])->name('admin.barbers.index');
-    Route::post('/posts', [PostController::class, 'store'])->name('admin.posts.store');
-    Route::get('/posts', [PostController::class, 'index'])->name('admin.posts.index');
-    Route::get('/posts/create', [PostController::class, 'create'])->name('admin.posts.create');
-    Route::post('/posts', [PostController::class, 'store'])->name('admin.posts.store');
-    Route::get('/admin/posts/{post}', [PostController::class, 'show'])->name('admin.posts.show');
-    Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('admin.posts.edit');
-    Route::put('/posts/{post}', [PostController::class, 'update'])->name('admin.posts.update');
-    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('admin.posts.destroy');
+     Route::post('/posts', [PostController::class, 'store'])->name('admin.posts.store');
+Route::get('/posts', [PostController::class, 'index'])->name('admin.posts.index');
+Route::get('/posts/create', [PostController::class, 'create'])->name('admin.posts.create');
+Route::post('/posts', [PostController::class, 'store'])->name('admin.posts.store');
+Route::get('/admin/posts/{post}', [PostController::class, 'show'])->name('admin.posts.show');
+Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('admin.posts.edit');
+Route::put('/posts/{post}', [PostController::class, 'update'])->name('admin.posts.update');
+Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('admin.posts.destroy');
 
 
-    // Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
-
-    
-    // Hiển thị giao diện danh sách Thợ cắt tóc
-    Route::resource('barbers', BarberController::class);
 });
+
+
 
 // Hiển thị giao diện danh sách Chi nhánh
 Route::get('/admin/branches', [BranchController::class, 'index'])->name('admin.branches.index');
@@ -72,7 +69,7 @@ Route::get('/admin/services/search', [ServiceController::class, 'search'])->name
 
 // Hiển thị giao diện danh sách người dùng
 Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
-Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');    
+Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
 Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
 Route::get('/admin/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
 Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');

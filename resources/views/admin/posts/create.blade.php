@@ -11,16 +11,6 @@
             @csrf
             <div class="card-body">
 
-                {{-- Hiển thị lỗi tổng quát --}}
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
 
                 {{-- Tiêu đề --}}
                 <div class="form-group">
@@ -97,7 +87,7 @@
                 {{-- Ngày xuất bản --}}
                 <div class="form-group">
                     <label>Ngày xuất bản</label>
-                    <input type="datetime-local" name="published_at"
+                    <input type="date" name="published_at"
                         class="form-control @error('published_at') is-invalid @enderror"
                         value="{{ old('published_at') }}">
                     @error('published_at')

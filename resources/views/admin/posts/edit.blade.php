@@ -34,7 +34,7 @@
                     <label for="status" class="form-label">Trạng thái</label>
                     <select class="form-control" id="status" name="status">
                         <option value="1" {{ $post->status ? 'selected' : '' }}>Xuất bản</option>
-                        <option value="0" {{ !$post->status ? 'selected' : '' }}>Nháp</option>
+                        <option value="0" {{ !$post->status ? 'selected' : '' }}>Chưa xuất bản</option>
                     </select>
                     @error('status')
                         <div class="text-danger">{{ $message }}</div>
@@ -43,8 +43,8 @@
 
                 <div class="mb-3">
                     <label for="published_at" class="form-label">Ngày xuất bản</label>
-                    <input type="datetime-local" class="form-control" id="published_at" name="published_at"
-                           value="{{ old('published_at', $post->published_at ? \Carbon\Carbon::parse($post->published_at)->format('Y-m-d\TH:i') : '') }}">
+                    <input type="date" class="form-control" id="published_at" name="published_at"
+                           value="{{ old('published_at', $post->published_at ? \Carbon\Carbon::parse($post->published_at)->format('Y-m-d') : '') }}">
                     @error('published_at')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
