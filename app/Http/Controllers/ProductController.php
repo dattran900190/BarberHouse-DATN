@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Volume;
@@ -31,21 +32,9 @@ class ProductController extends Controller
         return view('admin.products.create', compact('categories', 'volumes'));
     }
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $request->validate([
-            'product_category_id' => 'required|exists:product_categories,id',
-            'name' => 'required|string|max:100',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'additional_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'variants.*.volume_id' => 'required|exists:volumes,id',
-            'variants.*.price' => 'required|numeric|min:0',
-            'variants.*.stock' => 'required|integer|min:0',
-            'variants.*.image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+  
 
         $imagePath = null;
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
@@ -107,22 +96,9 @@ class ProductController extends Controller
         return view('admin.products.edit', compact('product', 'categories', 'volumes'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
-        $request->validate([
-            'product_category_id' => 'required|exists:product_categories,id',
-            'name' => 'required|string|max:100',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'additional_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'delete_images.*' => 'nullable|exists:product_images,id',
-            'variants.*.volume_id' => 'required|exists:volumes,id',
-            'variants.*.price' => 'required|numeric|min:0',
-            'variants.*.stock' => 'required|integer|min:0',
-            'variants.*.image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        
 
         $imagePath = $product->image;
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
