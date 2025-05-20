@@ -15,7 +15,7 @@ class PostController extends Controller
 
     public function index(Request $request)
 {
-     $posts = Post::orderBy('published_at', 'desc')->get(); // Hiển thị bài mới nhất trước
+     $posts = Post::orderBy('created_at', 'desc')->get(); // Hiển thị bài mới nhất trước
 
     $query = Post::query();
 
@@ -25,7 +25,6 @@ class PostController extends Controller
         $query->where('title', 'like', '%' . $search . '%');
     }
 
-    $posts = $query->orderBy('published_at', 'desc')->get(); // hoặc paginate(n) nếu muốn phân trang
 
     return view('admin.posts.index', compact('posts'));
 }
@@ -49,7 +48,8 @@ class PostController extends Controller
         'content' => 'required|string',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         'status' => 'required|boolean',
-        'published_at' => 'nullable|date|before_or_equal:today',
+        'published_at' => 'nullable|date',
+
     ];
 
     $messages = [
@@ -64,12 +64,19 @@ class PostController extends Controller
         'status.required' => 'Trạng thái bài viết là bắt buộc.',
         'status.boolean' => 'Trạng thái không hợp lệ.',
         'published_at.date' => 'Ngày xuất bản phải là ngày hợp lệ.',
-        'published_at.before_or_equal' => 'Ngày xuất bản không được vượt quá hôm nay.',
+
     ];
 
     $data = $request->validate($rules, $messages);
 
-    $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
+   $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
+$originalSlug = $data['slug'];
+$counter = 1;
+
+while (Post::where('slug', $data['slug'])->exists()) {
+    $data['slug'] = $originalSlug . '-' . $counter;
+    $counter++;
+}
 
     if ($request->hasFile('image')) {
         $data['image'] = $request->file('image')->store('posts', 'public');
@@ -93,7 +100,7 @@ public function update(Request $request, Post $post)
         'content' => 'required|string',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         'status' => 'required|boolean',
-        'published_at' => 'nullable|date|before_or_equal:today',
+        'published_at' => 'nullable|date',
     ];
 
     $messages = [
@@ -108,14 +115,20 @@ public function update(Request $request, Post $post)
         'status.required' => 'Trạng thái bài viết là bắt buộc.',
         'status.boolean' => 'Trạng thái không hợp lệ.',
         'published_at.date' => 'Ngày xuất bản phải là ngày hợp lệ.',
-        'published_at.before_or_equal' => 'Ngày xuất bản không được vượt quá hôm nay.',
+
     ];
 
     $data = $request->validate($rules, $messages);
 
 
-        $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
+         $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
+$originalSlug = $data['slug'];
+$counter = 1;
 
+while (Post::where('slug', $data['slug'])->exists()) {
+    $data['slug'] = $originalSlug . '-' . $counter;
+    $counter++;
+}
         // Nếu có upload ảnh mới, xóa ảnh cũ và lưu ảnh mới
         if ($request->hasFile('image')) {
             if ($post->image && Storage::disk('public')->exists($post->image)) {
