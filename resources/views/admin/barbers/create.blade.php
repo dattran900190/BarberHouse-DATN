@@ -14,7 +14,7 @@
 
                 <div class="form-group">
                     <label for="name">Họ tên</label>
-                    <input type="text" id="name" name="name" class="form-control" placeholder="Nhập tên thợ cắt tóc" value="{{ old('name') }}" required>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Nhập tên thợ cắt tóc" value="{{ old('name') }}">
                     @error('name')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -22,7 +22,7 @@
 
                 <div class="form-group">
                     <label for="skill_level">Trình độ</label>
-                    <input type="text" id="skill_level" name="skill_level" class="form-control" placeholder="Nhập trình độ thợ" value="{{ old('skill_level') }}" required>
+                    <input type="text" id="skill_level" name="skill_level" class="form-control" placeholder="Nhập trình độ thợ" value="{{ old('skill_level') }}">
                     @error('skill_level')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
