@@ -10,11 +10,17 @@ use App\Http\Requests\BarberRequest;
 
 class BarberController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $barbers = Barber::orderBy('created_at', 'desc')->get();
-        return view('admin.barbers.index', compact('barbers'));
+        $search = $request->input('search');
+
+        $barbers = Barber::when($search, function ($query, $search) {
+            return $query->where('name', 'like', '%' . $search . '%');
+        })->latest()->paginate(10);
+
+        return view('admin.barbers.index', compact('barbers', 'search'));
     }
+
 
     public function create()
     {

@@ -27,6 +27,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
         return view('admin.dashboard');
     })->name('dashboard');
 
+    // Hiển thị giao diện danh sách Thợ cắt tóc
+    Route::resource('barbers', BarberController::class);
+    
     // ==== Dịch vụ ====
     Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
     Route::get('/services/create', [ServiceController::class, 'create'])->name('admin.services.create');
@@ -36,9 +39,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::put('/services/{service_id}', [ServiceController::class, 'update'])->name('admin.services.update');
     Route::delete('/services/{service_id}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
     Route::get('/services/search', [ServiceController::class, 'search'])->name('admin.services.search');
-
-    // ==== Thợ cắt tóc ====
-    Route::get('/barbers', [BarberController::class, 'index'])->name('admin.barbers.index');
 
     // ==== Bài viết ====
     Route::get('/posts', [PostController::class, 'index'])->name('admin.posts.index');

@@ -3,6 +3,24 @@
 @section('title', 'Danh sách Thợ cắt tóc')
 
 @section('content')
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách Thợ cắt tóc</h3>
@@ -41,8 +59,8 @@
                             <td>{{ $index + 1 }}</td>
                             <td class="text-center">
                                 @if ($barber->avatar)
-                                    <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" class="img-fluid rounded-circle"
-                                        style="max-width: 100px; max-height: 70px;">
+                                    <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar"
+                                        class="img-fluid rounded-circle" style="max-width: 100px; max-height: 70px;">
                                 @else
                                     <img src="{{ asset('uploads/avatars/default-avatar.png') }}" alt="Avatar"
                                         class="img-fluid rounded-circle" style="max-width: 100px; max-height: 70px;">
@@ -78,10 +96,16 @@
                             </td>
                         </tr>
                     @endforeach
+                    @if ($barbers->isEmpty())
+                        <tr>
+                            <td colspan="9" class="text-center">Không có dữ liệu</td>
+                        </tr>
+                    @endif
                 </tbody>
             </table>
         </div>
     </div>
+    {{ $barbers->links() }}
 @endsection
 
 @section('css')
