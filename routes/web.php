@@ -28,10 +28,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
         return view('admin.dashboard');
     })->name('dashboard');
     // Hiển thị giao diện danh sách Dịch vụ
-    Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
+Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
     // Hiển thị giao diện danh sách Thợ cắt tóc
-    Route::get('/barbers', [BarberController::class, 'index'])->name('admin.barbers.index');
-     Route::post('/posts', [PostController::class, 'store'])->name('admin.posts.store');
+Route::get('/barbers', [BarberController::class, 'index'])->name('admin.barbers.index');
+Route::post('/posts', [PostController::class, 'store'])->name('admin.posts.store');
 Route::get('/posts', [PostController::class, 'index'])->name('admin.posts.index');
 Route::get('/posts/create', [PostController::class, 'create'])->name('admin.posts.create');
 Route::post('/posts', [PostController::class, 'store'])->name('admin.posts.store');
