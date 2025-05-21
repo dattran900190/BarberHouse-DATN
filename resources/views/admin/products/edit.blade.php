@@ -1,4 +1,6 @@
-@extends('layouts.app')
+@extends('adminlte::page')
+
+@section('title', 'Quản lý Sản phẩm')
 
 @section('content')
     <div class="container">
