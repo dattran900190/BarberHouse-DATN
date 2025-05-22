@@ -24,7 +24,7 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách Dịch vụ</h3>
-            <a href="{{ route('admin.services.create') }}"
+            <a href="{{ route('services.create') }}"
                 class="btn btn-success btn-icon-toggle d-flex align-items-center ml-auto">
                 <i class="fas fa-plus"></i>
                 <span class="btn-text ms-2">Thêm dịch vụ</span>
@@ -64,15 +64,15 @@
                                 <td>{{ $service->duration }} phút</td>
                                 <td>{{ $service->is_combo ? 'Có' : 'Không' }}</td>
                                 <td class="text-center">
-                                    <a href="{{ route('admin.services.show', $service->id) }}"
+                                    <a href="{{ route('services.show', $service->id) }}"
                                         class="btn btn-info btn-sm action-btn">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
-                                    <a href="{{ route('admin.services.edit', $service->id) }}"
+                                    <a href="{{ route('services.edit', $service->id) }}"
                                         class="btn btn-warning btn-sm action-btn">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>
-                                    <form action="{{ route('admin.services.destroy', $service->id) }}" method="POST"
+                                    <form action="{{ route('services.destroy', $service->id) }}" method="POST"
                                         style="display:inline-block;"
                                         onsubmit="return confirm('Bạn có chắc chắn muốn xoá dịch vụ này không?');">
                                         @csrf

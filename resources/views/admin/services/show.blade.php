@@ -24,8 +24,8 @@
     {{ $service_id->created_at ? $service_id->created_at->format('d/m/Y H:i') : 'Không xác định' }}
 </p>
 
-            <a href="{{ route('admin.services.edit', $service_id->id) }}" class="btn btn-warning">Sửa</a>
-            <a href="{{ route('admin.services.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('services.edit', $service_id->id) }}" class="btn btn-warning">Sửa</a>
+            <a href="{{ route('services.index') }}" class="btn btn-secondary">Quay lại</a>
         </div>
     </div>
 @endsection

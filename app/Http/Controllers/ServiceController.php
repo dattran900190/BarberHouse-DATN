@@ -14,7 +14,7 @@ class ServiceController extends Controller
         $search = $request->input('search');
         $services = Service::when($search, function ($query, $search) {
             return $query->where('name', 'like', '%' . $search . '%');
-        })->orderBy('id', 'DESC')->paginate(10);
+        })->orderBy('id', 'DESC')->paginate(5);
 
         return view('admin.services.index', compact('services'));
     }
@@ -36,20 +36,20 @@ class ServiceController extends Controller
 
         Service::create($data);
 
-        return redirect()->route('admin.services.index')->with('success', 'Thêm chi nhánh thành công');
+        return redirect()->route('services.index')->with('success', 'Thêm chi nhánh thành công');
     }
 
-    public function show(Service $service_id)
+    public function show(Service $service)
     {
-        return view('admin.services.show', compact('service_id'));
+        return view('admin.services.show', compact('service'));
     }
 
-     public function edit(Service $service_id)
+     public function edit(Service $service)
     {
-        return view('admin.services.edit', compact('service_id'));
+        return view('admin.services.edit', compact('service'));
     }
 
-     public function update(ServiceRequest $request, Service $service_id)
+     public function update(ServiceRequest $request, Service $service)
     {
 
         $data = $request->validated();
@@ -57,27 +57,27 @@ class ServiceController extends Controller
         // Nếu có ảnh mới được upload
         if ($request->hasFile('image')) {
             // Xoá ảnh cũ nếu tồn tại
-            if ($service_id->image && Storage::disk('public')->exists($service_id->image)) {
-                Storage::disk('public')->delete($service_id->image);
+            if ($service->image && Storage::disk('public')->exists($service->image)) {
+                Storage::disk('public')->delete($service->image);
             }
 
             // Lưu ảnh mới vào thư mục services
             $data['image'] = $request->file('image')->store('services', 'public');
         }
 
-        $service_id->update($data);
+        $service->update($data);
 
-        return redirect()->route('admin.services.index')->with('success', 'Cập nhật thành công');
+        return redirect()->route('services.index')->with('success', 'Cập nhật thành công');
     }
 
-    public function destroy(Service $service_id)
+    public function destroy(Service $service)
     {
          // Xóa ảnh nếu tồn tại
-        if ($service_id->image && Storage::disk('public')->exists($service_id->image)) {
-            Storage::disk('public')->delete($service_id->image);
+        if ($service->image && Storage::disk('public')->exists($service->image)) {
+            Storage::disk('public')->delete($service->image);
         }
 
-        $service_id->delete();
-        return redirect()->route('admin.services.index')->with('success', 'Xoá chi nhánh thành công');
+        $service->delete();
+        return redirect()->route('services.index')->with('success', 'Xoá chi nhánh thành công');
     }
 }
