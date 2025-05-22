@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('videos', function (Blueprint $table) {
             $table->bigInteger('id', true);
+            $table->bigInteger('uploader_id')->nullable();
             $table->string('title', 100)->nullable();
             $table->text('url')->nullable();
             $table->text('description')->nullable();
