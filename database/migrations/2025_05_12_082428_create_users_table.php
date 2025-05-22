@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->string('avatar')->nullable();
             $table->text('address')->nullable();
-            $table->enum('role', ['user', 'admin', 'staff', 'editor'])->nullable();
+            $table->enum('role', ['user','super admin','admin', 'admin branch'])->nullable();
             $table->enum('status', ['active', 'inactive', 'banned'])->nullable();
             $table->integer('points_balance')->nullable()->default(0);
             $table->timestamp('created_at')->nullable()->useCurrent();
