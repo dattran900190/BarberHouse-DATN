@@ -62,14 +62,15 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/branches/search', [BranchController::class, 'search'])->name('admin.branches.search');
 
     // ==== Người dùng ====
-    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-    Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
-    Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
-    Route::get('/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
-    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-    Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
-    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-    Route::get('/users/search', [UserController::class, 'search'])->name('admin.users.search');
+    Route::resource('users', UserController::class);
+    // Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    // Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
+    // Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
+    // Route::get('/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
+    // Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    // Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    // Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    // Route::get('/users/search', [UserController::class, 'search'])->name('admin.users.search');
 
     // ==== Sản phẩm ====
     Route::get('/products', [ProductController::class, 'index'])->name('admin.products.index');
