@@ -6,17 +6,13 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UserRequest extends FormRequest
 {
-    /**
-     * Xác định xem người dùng có quyền thực hiện yêu cầu này không.
-     */
+    
     public function authorize()
     {
-        return true; // Cho phép tất cả người dùng, bạn có thể điều chỉnh quyền tại đây
+        return true; 
     }
 
-    /**
-     * Quy tắc validation cho các trường trong form.
-     */
+    
     public function rules()
     {
         $userId = $this->user ? $this->user->id : null;
@@ -25,8 +21,8 @@ class UserRequest extends FormRequest
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:255|unique:users,email,' . $userId,
             'password' => $this->isMethod('post') ? 'required|string|min:8|max:255' : 'nullable|string|min:8|max:255',
-            'phone' => 'nullable|string|max:20|unique:users,phone,' . $userId,
-            'gender' => 'nullable|in:male,female,other',
+            'phone' => 'required|string|max:20|unique:users,phone,' . $userId,
+            'gender' => 'required|in:male,female,other',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Ảnh tối đa 2MB
             'address' => 'nullable|string',
             'role' => 'required|in:user,admin,staff,editor',
@@ -50,10 +46,14 @@ class UserRequest extends FormRequest
             'password.max' => 'Mật khẩu không được vượt quá 255 ký tự.',
             'phone.max' => 'Số điện thoại không được vượt quá 20 ký tự.',
             'phone.unique' => 'Số điện thoại đã tồn tại.',
+            'gender.required' => 'Bắt buộc phải chọn giới tính.',
             'gender.in' => 'Giới tính phải là male, female hoặc other.',
             'avatar.image' => 'Avatar phải là một tệp hình ảnh.',
             'avatar.mimes' => 'Avatar chỉ hỗ trợ định dạng jpeg, png, jpg, gif.',
             'avatar.max' => 'Avatar không được vượt quá 2MB.',
+            'address.required' => 'Địa chỉ là bắt buộc.',
+            'address.string' => 'Địa chỉ phải là một chuỗi.',
+            'address.max' => 'Địa chỉ không được vượt quá 255 ký tự.',
             'role.required' => 'Vai trò là bắt buộc.',
             'role.in' => 'Vai trò phải là user, admin, staff hoặc editor.',
             'status.required' => 'Trạng thái là bắt buộc.',
