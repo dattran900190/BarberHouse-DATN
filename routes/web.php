@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberController;
 use App\Http\Controllers\BranchController;
@@ -29,6 +30,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
+
+    Route::resource('orders', OrderController::class);
+
     
     // ==== Dịch vụ ====
     Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
