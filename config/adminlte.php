@@ -335,7 +335,7 @@ return [
             'url'  => 'admin/branches',
             'icon' => 'fas fa-building',
         ],
-         [
+        [
             'text' => 'Quản lý tin tức',
             'url'  => 'admin/posts',
             'icon' => 'fas fa-newspaper',
@@ -346,11 +346,17 @@ return [
             'url'  => 'admin/users',
             'icon' => 'fas fa-users',
         ],
-         [
-        'text' => 'Quản lý sản phẩm',
-        'url'  => 'admin/products',
-        'icon' => 'fas fa-box',
-    ],
+        [
+            'text' => 'Quản lý sản phẩm',
+            'url'  => 'admin/products',
+            'icon' => 'fas fa-box',
+        ],
+        [
+            'text' => 'Quản lý đơn hàng',
+            'url'  => 'admin/orders',
+            'icon' => 'fas fa-receipt',
+        ],
+
 
     ],
 

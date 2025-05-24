@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('barber_branches', function (Blueprint $table) {
-            $table->bigInteger('id');
+            $table->bigInteger('id', true);
             $table->bigInteger ('barber_id');
             $table->bigInteger('branch_id');
             $table->timestamp('assigned_at')->useCurrent();
