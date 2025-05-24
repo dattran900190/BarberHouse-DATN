@@ -35,14 +35,16 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     
     // ==== Dịch vụ ====
-    Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
-    Route::get('/services/create', [ServiceController::class, 'create'])->name('admin.services.create');
-    Route::post('/services', [ServiceController::class, 'store'])->name('admin.services.store');
-    Route::get('/services/{service_id}', [ServiceController::class, 'show'])->name('admin.services.show');
-    Route::get('/services/{service_id}/edit', [ServiceController::class, 'edit'])->name('admin.services.edit');
-    Route::put('/services/{service_id}', [ServiceController::class, 'update'])->name('admin.services.update');
-    Route::delete('/services/{service_id}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
-    Route::get('/services/search', [ServiceController::class, 'search'])->name('admin.services.search');
+    // Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
+    // Route::get('/services/create', [ServiceController::class, 'create'])->name('admin.services.create');
+    // Route::post('/services', [ServiceController::class, 'store'])->name('admin.services.store');
+    // Route::get('/services/{service_id}', [ServiceController::class, 'show'])->name('admin.services.show');
+    // Route::get('/services/{service_id}/edit', [ServiceController::class, 'edit'])->name('admin.services.edit');
+    // Route::put('/services/{service_id}', [ServiceController::class, 'update'])->name('admin.services.update');
+    // Route::delete('/services/{service_id}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
+    // Route::get('/services/search', [ServiceController::class, 'search'])->name('admin.services.search');
+    Route::resource('services', ServiceController::class);
+
 
     // ==== Bài viết ====
     Route::get('/posts', [PostController::class, 'index'])->name('admin.posts.index');
@@ -64,14 +66,15 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/branches/search', [BranchController::class, 'search'])->name('admin.branches.search');
 
     // ==== Người dùng ====
-    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-    Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
-    Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
-    Route::get('/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
-    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-    Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
-    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-    Route::get('/users/search', [UserController::class, 'search'])->name('admin.users.search');
+    Route::resource('users', UserController::class);
+    // Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    // Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
+    // Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
+    // Route::get('/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
+    // Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    // Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    // Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    // Route::get('/users/search', [UserController::class, 'search'])->name('admin.users.search');
 
     // ==== Sản phẩm ====
     Route::get('/products', [ProductController::class, 'index'])->name('admin.products.index');
