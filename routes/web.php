@@ -5,6 +5,7 @@ use App\Http\Controllers\BarberController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -31,15 +32,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('barbers', BarberController::class);
     
     // ==== Dịch vụ ====
-    // Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
-    // Route::get('/services/create', [ServiceController::class, 'create'])->name('admin.services.create');
-    // Route::post('/services', [ServiceController::class, 'store'])->name('admin.services.store');
-    // Route::get('/services/{service_id}', [ServiceController::class, 'show'])->name('admin.services.show');
-    // Route::get('/services/{service_id}/edit', [ServiceController::class, 'edit'])->name('admin.services.edit');
-    // Route::put('/services/{service_id}', [ServiceController::class, 'update'])->name('admin.services.update');
-    // Route::delete('/services/{service_id}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
-    // Route::get('/services/search', [ServiceController::class, 'search'])->name('admin.services.search');
     Route::resource('services', ServiceController::class);
+
+    // ==== Bình luận ====
+    Route::resource('reviews', ReviewController::class);
 
 
     // ==== Bài viết ====

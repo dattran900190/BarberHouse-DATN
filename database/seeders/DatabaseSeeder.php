@@ -13,9 +13,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            BranchSeeder::class,
-        ]);
+        // User::factory(50)->create();
+        // \App\Models\Barber::factory(10)->create();
+
+         // Tạo 50 review giả
+        // \App\Models\Review::factory(50)->create();
     }
 
 }
