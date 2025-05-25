@@ -23,6 +23,7 @@ class ReviewFactory extends Factory
             'barber_id' => Barber::inRandomOrder()->first()?->id ?? 1,
             'rating' => $this->faker->numberBetween(1, 5),
             'comment' => $this->faker->sentence(),
+            'is_visible' => 1, // true = hiển thị, false = ẩn
             // 'appointment_id' => null, // nếu có sau này thì thêm vào
         ];
     }

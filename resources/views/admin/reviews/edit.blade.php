@@ -14,66 +14,21 @@
                 @method('PUT')
 
                 <div class="mb-3">
-                    <label for="name" class="form-label">Tên bình luận</label>
-                    <input type="text" class="form-control" id="name" name="name"
-                           value="{{ old('name', $service->name) }}">
-                    @error('name')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="description" class="form-label">Mô tả</label>
-                    <textarea class="form-control" id="description" name="description">{{ old('description', $service->description) }}</textarea>
-                    @error('description')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="price" class="form-label">Giá</label>
-                    <input type="number" step="0.01" class="form-control" id="price" name="price"
-                           value="{{ old('price', $service->price) }}">
-                    @error('price')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="duration" class="form-label">Thời lượng (phút)</label>
-                    <input type="number" class="form-control" id="duration" name="duration"
-                           value="{{ old('duration', $service->duration) }}">
-                    @error('duration')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Gói combo</label><br>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="is_combo" id="combo_yes" value="1"
-                               {{ old('is_combo', $service->is_combo) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="combo_yes">Có</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="is_combo" id="combo_no" value="0"
-                               {{ old('is_combo', $service->is_combo) == 0 ? 'checked' : '' }}>
-                        <label class="form-check-label" for="combo_no">Không</label>
-                    </div>
-                    @error('is_combo')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="image" class="form-label">Ảnh bình luận</label>
-                    <input type="file" class="form-control" id="image" name="image">
-                    @if ($service->image)
-                        <div class="mt-2">
-                            <img src="{{ asset('storage/' . $service->image) }}" alt="Ảnh bình luận" width="150">
-                        </div>
-                    @endif
-                    @error('image')
+                    <label for="role" class="form-label">Trạng thái</label>
+                    <select class="form-control" id="role" name="role">
+                        <option value="">Chọn vai trò</option>
+                        @if ($role == 'user')
+                            <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User</option>
+                        @else
+                            <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin
+                            </option>
+                            <option value="staff" {{ old('role', $user->role) == 'staff' ? 'selected' : '' }}>Staff
+                            </option>
+                            <option value="editor" {{ old('role', $user->role) == 'editor' ? 'selected' : '' }}>Editor
+                            </option>
+                        @endif
+                    </select>
+                    @error('role')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>

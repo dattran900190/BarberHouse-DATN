@@ -24,11 +24,6 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách bình luận</h3>
-            <a href="{{ route('reviews.create') }}"
-                class="btn btn-success btn-icon-toggle d-flex align-items-center ml-auto">
-                <i class="fas fa-plus"></i>
-                <span class="btn-text ms-2">Thêm bình luận</span>
-            </a>
         </div>
 
         <div class="card-body">
@@ -50,6 +45,7 @@
                         {{-- <th>Giá</th> --}}
                         <th>Đánh giá</th>
                         <th>Bình luận</th>
+                        <th>Trạng thái</th>
                         <th class="text-center">Hành động</th>
                     </tr>
                 </thead>
@@ -62,6 +58,7 @@
                                 <td>{{ $service->barber->name }}</td>
                                 <td>{{ $service->rating }}</td>
                                 <td>{{ $service->comment }}</td>
+                                <td>{{ $service->is_visible == 1 ? "Hiện" : "Ẩn" }}</td>
                                 <td class="text-center">
                                     <a href="{{ route('reviews.show', $service->id) }}"
                                         class="btn btn-info btn-sm action-btn">

@@ -15,6 +15,7 @@ class Review extends Model
         // 'appointment_id', // sau dùng mở lại
         'rating',
         'comment',
+        'is_visible'
     ];
 
     public function user()
