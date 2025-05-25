@@ -15,4 +15,9 @@ class Branch extends Model
         'phone',
         'email',
     ];
+
+    public function barbers()
+    {
+        return $this->hasMany(Barber::class);
+    }
 }
