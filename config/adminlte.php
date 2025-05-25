@@ -352,6 +352,11 @@ return [
             'icon' => 'fas fa-box',
         ],
         [
+            'text' => 'Quản lý bình luận',
+            'url'  => 'admin/reviews',
+            'icon' => 'fas fa-comments',
+        ],
+        [
             'text' => 'Quản lý đơn hàng',
             'url'  => 'admin/orders',
             'icon' => 'fas fa-receipt',
