@@ -1,5 +1,7 @@
-@extends('layouts.app')
 
+@extends('adminlte::page')
+
+@section('title', 'Quản lý Sản phẩm')
 @section('content')
     <div class="container">
         <h1>Chi tiết sản phẩm: {{ $product->name }}</h1>

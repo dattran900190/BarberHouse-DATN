@@ -27,7 +27,8 @@
                         @if ($barber->avatar)
                             <div class="form-group">
                                 <label>Ảnh đại diện hiện tại:</label><br>
-                                <img src="{{ asset($barber->avatar) }}" alt="Avatar" style="max-height: 150px;">
+                                <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar"
+                                    style="max-height: 150px;">
                             </div>
                         @endif
                     </div>
@@ -36,7 +37,8 @@
                     <div class="col-md-8">
                         <div class="form-group">
                             <label for="name">Họ tên</label>
-                            <input type="text" id="name" name="name" class="form-control" value="{{ old('name', $barber->name) }}" required>
+                            <input type="text" id="name" name="name" class="form-control"
+                                value="{{ old('name', $barber->name) }}" required>
                             @error('name')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -44,7 +46,8 @@
 
                         <div class="form-group">
                             <label for="skill_level">Trình độ</label>
-                            <input type="text" id="skill_level" name="skill_level" class="form-control" value="{{ old('skill_level', $barber->skill_level) }}" required>
+                            <input type="text" id="skill_level" name="skill_level" class="form-control"
+                                value="{{ old('skill_level', $barber->skill_level) }}" required>
                             @error('skill_level')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -52,7 +55,9 @@
 
                         <div class="form-group">
                             <label for="rating_avg">Đánh giá trung bình</label>
-                            <input type="number" id="rating_avg" name="rating_avg" class="form-control" value="{{ old('rating_avg', $barber->rating_avg) }}" step="0.1" min="0" max="5">
+                            <input type="number" id="rating_avg" name="rating_avg" class="form-control"
+                                value="{{ old('rating_avg', $barber->rating_avg) }}" step="0.1" min="0"
+                                max="5">
                             @error('rating_avg')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -65,10 +70,28 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
+
+                        <div class="form-group">
+                            <label for="branch_id">Chi nhánh</label>
+                            <select id="branch_id" name="branch_id" class="form-control">
+                                <option value="">-- Chọn chi nhánh --</option>
+                                @foreach ($branches as $branch)
+                                    <option value="{{ $branch->id }}"
+                                        {{ old('branch_id', $barber->branch_id) == $branch->id ? 'selected' : '' }}>
+                                        {{ $branch->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('branch_id')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
                     </div>
                 </div>
 
                 <button type="submit" class="btn btn-warning">Cập nhật</button>
+                <a href="{{ route('barbers.index') }}" class="btn btn-secondary">Quay lại</a>
             </form>
         </div>
     </div>

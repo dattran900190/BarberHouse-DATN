@@ -18,10 +18,11 @@ return new class extends Migration
             $table->bigInteger('appointment_id')->nullable()->index('appointment_id');
             $table->integer('rating')->nullable();
             $table->text('comment')->nullable();
+            $table->boolean('is_visible')->default(true); // true = hiển thị, false = ẩn
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
 
-            $table->unique(['user_id', 'appointment_id'], 'user_id');
+            $table->unique(['user_id', 'appointment_id']);
         });
     }
 

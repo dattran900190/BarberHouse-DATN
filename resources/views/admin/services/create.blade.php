@@ -9,7 +9,7 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ route('admin.services.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('services.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">
@@ -64,7 +64,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-success">Thêm</button>
-                <a href="{{ route('admin.services.index') }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('services.index') }}" class="btn btn-secondary">Quay lại</a>
             </form>
         </div>
     </div>

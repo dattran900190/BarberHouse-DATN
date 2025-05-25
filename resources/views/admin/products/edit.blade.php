@@ -1,4 +1,6 @@
-@extends('layouts.app')
+@extends('adminlte::page')
+
+@section('title', 'Quản lý Sản phẩm')
 
 @section('content')
     <div class="container">
@@ -9,7 +11,7 @@
 
             <div class="mb-3">
                 <label for="product_category_id" class="form-label">Danh mục</label>
-                <select name="product_category_id" id="product_category_id" class="form-control" required>
+                <select name="product_category_id" id="product_category_id" class="form-control" >
                     <option value="">Chọn danh mục</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}" {{ $product->product_category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
@@ -22,7 +24,7 @@
 
             <div class="mb-3">
                 <label for="name" class="form-label">Tên sản phẩm</label>
-                <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $product->name) }}" required>
+                <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $product->name) }}" >
                 @error('name')
                     <div class="text-danger">{{ $message }}</div>
                 @endError
@@ -38,7 +40,7 @@
 
             <div class="mb-3">
                 <label for="price" class="form-label">Giá</label>
-                <input type="number" name="price" id="price" class="form-control" value="{{ old('price', $product->price) }}" step="0.01" required>
+                <input type="number" name="price" id="price" class="form-control" value="{{ old('price', $product->price) }}" step="0.01" >
                 @error('price')
                     <div class="text-danger">{{ $message }}</div>
                 @endError
@@ -46,7 +48,7 @@
 
             <div class="mb-3">
                 <label for="stock" class="form-label">Tồn kho</label>
-                <input type="number" name="stock" id="stock" class="form-control" value="{{ old('stock', $product->stock) }}" required>
+                <input type="number" name="stock" id="stock" class="form-control" value="{{ old('stock', $product->stock) }}" >
                 @error('stock')
                     <div class="text-danger">{{ $message }}</div>
                 @endError
@@ -90,7 +92,7 @@
                     <div class="variant mb-3 border p-3">
                         <div class="mb-3">
                             <label for="variants[{{ $index }}][volume_id]" class="form-label">Dung tích</label>
-                            <select name="variants[{{ $index }}][volume_id]" class="form-control" required>
+                            <select name="variants[{{ $index }}][volume_id]" class="form-control" >
                                 <option value="">Chọn dung tích</option>
                                 @foreach ($volumes as $volume)
                                     <option value="{{ $volume->id }}" {{ $variant->volume_id == $volume->id ? 'selected' : '' }}>{{ $volume->name }}</option>
@@ -102,14 +104,14 @@
                         </div>
                         <div class="mb-3">
                             <label for="variants[{{ $index }}][price]" class="form-label">Giá</label>
-                            <input type="number" name="variants[{{ $index }}][price]" class="form-control" value="{{ $variant->price }}" step="0.01" required>
+                            <input type="number" name="variants[{{ $index }}][price]" class="form-control" value="{{ $variant->price }}" step="0.01" >
                             @error("variants.$index.price")
                                 <div class="text-danger">{{ $message }}</div>
                             @endError
                         </div>
                         <div class="mb-3">
                             <label for="variants[{{ $index }}][stock]" class="form-label">Tồn kho</label>
-                            <input type="number" name="variants[{{ $index }}][stock]" class="form-control" value="{{ $variant->stock }}" required>
+                            <input type="number" name="variants[{{ $index }}][stock]" class="form-control" value="{{ $variant->stock }}" >
                             @error("variants.$index.stock")
                                 <div class="text-danger">{{ $message }}</div>
                             @endError
@@ -141,7 +143,7 @@
             variantDiv.innerHTML = `
                 <div class="mb-3">
                     <label for="variants[${variantIndex}][volume_id]" class="form-label">Dung tích</label>
-                    <select name="variants[${variantIndex}][volume_id]" class="form-control" required>
+                    <select name="variants[${variantIndex}][volume_id]" class="form-control" >
                         <option value="">Chọn dung tích</option>
                         @foreach ($volumes as $volume)
                             <option value="{{ $volume->id }}">{{ $volume->name }}</option>
@@ -150,11 +152,11 @@
                 </div>
                 <div class="mb-3">
                     <label for="variants[${variantIndex}][price]" class="form-label">Giá</label>
-                    <input type="number" name="variants[${variantIndex}][price]" class="form-control" step="0.01" required>
+                    <input type="number" name="variants[${variantIndex}][price]" class="form-control" step="0.01" >
                 </div>
                 <div class="mb-3">
                     <label for="variants[${variantIndex}][stock]" class="form-label">Tồn kho</label>
-                    <input type="number" name="variants[${variantIndex}][stock]" class="form-control" required>
+                    <input type="number" name="variants[${variantIndex}][stock]" class="form-control" >
                 </div>
                 <div class="mb-3">
                     <label for="variants[${variantIndex}][image]" class="form-label">Ảnh biến thể</label>
