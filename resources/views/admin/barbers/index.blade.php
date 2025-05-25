@@ -50,6 +50,7 @@
                         <th>Trình độ</th>
                         <th>Đánh giá</th>
                         <th>Hồ sơ</th>
+                        <th>Chi nhánh</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -71,6 +72,7 @@
                             <td>{{ $barber['skill_level'] }}</td>
                             <td>{{ $barber['rating_avg'] }}</td>
                             <td>{{ $barber['profile'] }}</td>
+                            <td>{{ $barber->branch?->name ?? 'Chưa có chi nhánh' }}</td>
 
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">

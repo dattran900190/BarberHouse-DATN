@@ -24,10 +24,10 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách Đơn hàng</h3>
-            <a href="{{ route('orders.create') }}" class="btn btn-success btn-icon-toggle d-flex align-items-center">
+            {{-- <a href="{{ route('orders.create') }}" class="btn btn-success btn-icon-toggle d-flex align-items-center">
                 <i class="fas fa-plus"></i>
                 <span class="btn-text ms-2"> Thêm đơn hàng</span>
-            </a>
+            </a> --}}
         </div>
 
         <div class="card-body">
@@ -75,9 +75,9 @@
                                     <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
-                                    <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning btn-sm d-inline-flex align-items-center">
+                                    {{-- <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
-                                    </a>
+                                    </a> --}}
                                     <form action="{{ route('orders.destroy', $order->id) }}" method="POST" class="d-inline m-0" onsubmit="return confirm('Bạn có chắc chắn muốn xoá đơn hàng này không?');">
                                         @csrf
                                         @method('DELETE')
