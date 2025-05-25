@@ -1,34 +1,26 @@
 @extends('adminlte::page')
 
-@section('title', 'Chỉnh sửa bình luận')
+@section('title', 'Chỉnh sửa trạng thái bình luận')
 
 @section('content')
     <div class="card">
         <div class="card-header bg-warning text-dark">
-            <h3 class="card-title mb-0">Chỉnh sửa bình luận</h3>
+            <h3 class="card-title mb-0">Chỉnh sửa trạng thái bình luận</h3>
         </div>
 
         <div class="card-body">
-            <form action="{{ route('reviews.update', $service->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('reviews.update', $review->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
                 <div class="mb-3">
-                    <label for="role" class="form-label">Trạng thái</label>
-                    <select class="form-control" id="role" name="role">
-                        <option value="">Chọn vai trò</option>
-                        @if ($role == 'user')
-                            <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User</option>
-                        @else
-                            <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin
-                            </option>
-                            <option value="staff" {{ old('role', $user->role) == 'staff' ? 'selected' : '' }}>Staff
-                            </option>
-                            <option value="editor" {{ old('role', $user->role) == 'editor' ? 'selected' : '' }}>Editor
-                            </option>
-                        @endif
+                    <label for="is_visible" class="form-label">Trạng thái</label>
+                    <select class="form-control" id="is_visible" name="is_visible">
+                        <option value="1" {{ old('is_visible', $review->is_visible) == 1 ? 'selected' : '' }}>Hiện</option>
+                        <option value="0" {{ old('is_visible', $review->is_visible) == 0 ? 'selected' : '' }}>Ẩn</option>
                     </select>
-                    @error('role')
+
+                    @error('is_visible')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>

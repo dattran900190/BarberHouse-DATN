@@ -3,7 +3,7 @@
 @section('title', 'Quản lý bình luận')
 
 @section('content')
-@if (session('success'))
+    @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -20,7 +20,7 @@
             </button>
         </div>
     @endif
-    
+
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách bình luận</h3>
@@ -51,24 +51,30 @@
                 </thead>
                 <tbody>
                     @if ($reviews->count())
-                        @foreach ($reviews as $index => $service)
+                        @foreach ($reviews as $index => $review)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $service->user->name }}</td>
-                                <td>{{ $service->barber->name }}</td>
-                                <td>{{ $service->rating }}</td>
-                                <td>{{ $service->comment }}</td>
-                                <td>{{ $service->is_visible == 1 ? "Hiện" : "Ẩn" }}</td>
+                                <td>{{ $review->user->name }}</td>
+                                <td>{{ $review->barber->name }}</td>
+                                <td>{{ $review->rating }}</td>
+                                <td>{{ $review->comment }}</td>
+                                <td>
+                                    @if ($review->is_visible == 1)
+                                        <span class="badge bg-success">Hiện</span>
+                                    @else
+                                        <span class="badge bg-danger">Ẩn</span>
+                                    @endif
+                                </td>
                                 <td class="text-center">
-                                    <a href="{{ route('reviews.show', $service->id) }}"
+                                    <a href="{{ route('reviews.show', $review->id) }}"
                                         class="btn btn-info btn-sm action-btn">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
-                                    <a href="{{ route('reviews.edit', $service->id) }}"
+                                    <a href="{{ route('reviews.edit', $review->id) }}"
                                         class="btn btn-warning btn-sm action-btn">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>
-                                    <form action="{{ route('reviews.destroy', $service->id) }}" method="POST"
+                                    <form action="{{ route('reviews.destroy', $review->id) }}" method="POST"
                                         style="display:inline-block;"
                                         onsubmit="return confirm('Bạn có chắc chắn muốn xoá bình luận này không?');">
                                         @csrf

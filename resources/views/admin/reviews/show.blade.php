@@ -9,11 +9,17 @@
         </div>
 
         <div class="card-body">
-            <p><strong>Người bình luận:</strong> {{ $review->user->name}}</p>
+            <p><strong>Người bình luận:</strong> {{ $review->user->name }}</p>
             <p><strong>Thợ:</strong> {{ $review->barber->name }}</p>
             <p><strong>Đánh giá:</strong> {{ $review->rating }}</p>
             <p><strong>Bình luận:</strong> {{ $review->comment }}</p>
-            <p><strong>Trạng thái:</strong> {{ $review->is_visible == 1 ? "Hiện" : "Ẩn" }}</p>
+            <p><strong>Trạng thái:</strong>
+                @if ($review->is_visible == 1)
+                    <span class="badge bg-success">Hiện</span>
+                @else
+                    <span class="badge bg-danger">Ẩn</span>
+                @endif
+            </p>
 
 
             <a href="{{ route('reviews.edit', $review->id) }}" class="btn btn-warning">Sửa</a>

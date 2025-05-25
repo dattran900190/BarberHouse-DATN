@@ -55,24 +55,30 @@ class ReviewController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Review $review)
     {
-        //
+        return view('admin.reviews.edit', compact('review'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ReviewRequest $request, Review $review)
     {
-        //
+        $data = $request->validated();
+
+        $review->update($data);
+
+        return redirect()->route('reviews.index')->with('success', 'Cập nhật thành công');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Review $review)
     {
-        //
+        $review->delete();
+
+        return redirect()->route('reviews.index')->with('success', 'Xoá bình luận thành công');
     }
 }
