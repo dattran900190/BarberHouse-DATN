@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('barbers', function (Blueprint $table) {
             $table->bigInteger('id', true);
+            $table->bigInteger('branch_id')->nullable()->index('branch_id');
             $table->string('name', 100)->nullable();
             $table->text('profile')->nullable();
             $table->string('skill_level', 50)->nullable();
@@ -20,6 +21,8 @@ return new class extends Migration
             $table->float('rating_avg')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
+
+            $table->unique(['branch_id']);
         });
     }
 
