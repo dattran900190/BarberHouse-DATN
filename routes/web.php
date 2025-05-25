@@ -28,49 +28,45 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
-
-    // Hiển thị giao diện danh sách Thợ cắt tóc
-    Route::resource('barbers', BarberController::class);
-
-    Route::resource('orders', OrderController::class);
+    // Hiển thị giao diện danh sách Dịch vụ
+    // Route::get('/services', [ServiceController::class, 'index'])->name('admin.services.index');
 
     
-    // ==== Dịch vụ ====
-    Route::resource('services', ServiceController::class);
+    // Hiển thị giao diện danh sách Thợ cắt tóc
+    Route::resource('barbers', BarberController::class);
+});
 
-    // ==== Bình luận ====
-    Route::resource('reviews', ReviewController::class);
+// Hiển thị giao diện danh sách Chi nhánh
+Route::get('/admin/branches', [BranchController::class, 'index'])->name('admin.branches.index');
+Route::get('/admin/branches/create', [BranchController::class, 'create'])->name('admin.branches.create');
+Route::post('/admin/branches', [BranchController::class, 'store'])->name('admin.branches.store');
+Route::get('/admin/branches/{branch}', [BranchController::class, 'show'])->name('admin.branches.show');
+Route::get('/admin/branches/{branch}/edit', [BranchController::class, 'edit'])->name('admin.branches.edit');
+Route::put('/admin/branches/{branch}', [BranchController::class, 'update'])->name('admin.branches.update');
+Route::delete('/admin/branches/{branch}', [BranchController::class, 'destroy'])->name('admin.branches.destroy');
+Route::get('/admin/branches/search', [BranchController::class, 'search'])->name('admin.branches.search');
 
 
-    // ==== Bài viết ====
-    Route::get('/posts', [PostController::class, 'index'])->name('admin.posts.index');
-    Route::get('/posts/create', [PostController::class, 'create'])->name('admin.posts.create');
-    Route::post('/posts', [PostController::class, 'store'])->name('admin.posts.store');
-    Route::get('/posts/{post}', [PostController::class, 'show'])->name('admin.posts.show');
-    Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('admin.posts.edit');
-    Route::put('/posts/{post}', [PostController::class, 'update'])->name('admin.posts.update');
-    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('admin.posts.destroy');
+// Hiển thị giao diện danh sách Dịch vụ
+Route::get('/admin/services', [ServiceController::class, 'index'])->name('admin.services.index');
+Route::get('/admin/services/create', [ServiceController::class, 'create'])->name('admin.services.create');
+Route::post('/admin/services', [ServiceController::class, 'store'])->name('admin.services.store');
+Route::get('/admin/services/{service_id}', [ServiceController::class, 'show'])->name('admin.services.show');
+Route::get('/admin/services/{service_id}/edit', [ServiceController::class, 'edit'])->name('admin.services.edit');
+Route::put('/admin/services/{service_id}', [ServiceController::class, 'update'])->name('admin.services.update');
+Route::delete('/admin/services/{service_id}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
+Route::get('/admin/services/search', [ServiceController::class, 'search'])->name('admin.services.search');
 
-    // ==== Chi nhánh ====
-    Route::get('/branches', [BranchController::class, 'index'])->name('admin.branches.index');
-    Route::get('/branches/create', [BranchController::class, 'create'])->name('admin.branches.create');
-    Route::post('/branches', [BranchController::class, 'store'])->name('admin.branches.store');
-    Route::get('/branches/{branch}', [BranchController::class, 'show'])->name('admin.branches.show');
-    Route::get('/branches/{branch}/edit', [BranchController::class, 'edit'])->name('admin.branches.edit');
-    Route::put('/branches/{branch}', [BranchController::class, 'update'])->name('admin.branches.update');
-    Route::delete('/branches/{branch}', [BranchController::class, 'destroy'])->name('admin.branches.destroy');
-    Route::get('/branches/search', [BranchController::class, 'search'])->name('admin.branches.search');
 
-    // ==== Người dùng ====
-    Route::resource('users', UserController::class);
-    // Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-    // Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
-    // Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
-    // Route::get('/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
-    // Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-    // Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
-    // Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-    // Route::get('/users/search', [UserController::class, 'search'])->name('admin.users.search');
+// Hiển thị giao diện danh sách người dùng
+Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
+Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');    
+Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
+Route::get('/admin/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
+Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+Route::get('/admin/users/search', [UserController::class, 'search'])->name('admin.users.search');
 
     // ==== Sản phẩm ====
     Route::get('/products', [ProductController::class, 'index'])->name('admin.products.index');

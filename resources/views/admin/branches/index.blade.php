@@ -93,6 +93,10 @@
                 </tbody>
             </table>
         </div>
+
+    </div>
+    <div class="d-flex justify-content-center mt-4">
+        {{ $branches->links('pagination::bootstrap-5') }}
     </div>
 @endsection
 
