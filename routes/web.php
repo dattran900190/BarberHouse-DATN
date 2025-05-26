@@ -36,7 +36,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     Route::resource('orders', OrderController::class);
 
-    
+
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
