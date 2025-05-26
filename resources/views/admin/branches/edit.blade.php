@@ -9,7 +9,7 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ route('admin.branches.update', $branch->id) }}" method="POST">
+            <form action="{{ route('branches.update', $branch->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -49,7 +49,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-warning">Cập nhật</button>
-                <a href="{{ route('admin.branches.index') }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('branches.index') }}" class="btn btn-secondary">Quay lại</a>
             </form>
         </div>
     </div>
