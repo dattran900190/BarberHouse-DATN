@@ -13,15 +13,19 @@ return new class extends Migration
     {
         Schema::create('promotions', function (Blueprint $table) {
             $table->bigInteger('id', true);
-            $table->string('code', 50);
-            $table->text('description')->nullable();
-            $table->integer('discount_percent')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-            $table->integer('usage_limit')->nullable();
-            $table->integer('used_count')->nullable();
-            $table->timestamp('created_at')->nullable()->useCurrent();
-            $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
+            $table->string('code', 50)->unique();               // Mã giảm giá, duy nhất
+            $table->text('description');
+            $table->integer('required_points')->nullable();
+            $table->integer('usage_limit')->default(1);
+            $table->enum('discount_type', ['fixed', 'percent']);
+            $table->decimal('discount_value', 10, 2);
+            $table->decimal('max_discount_amount', 10, 2)->nullable();
+            $table->decimal('min_order_value', 10, 2)->nullable();
+            $table->integer('quantity');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->boolean('is_active')->default(true);
+            $table->timestamps(); // created_at và updated_at                             
         });
     }
 

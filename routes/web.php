@@ -36,6 +36,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
+  // ==== Dịch vụ ====
+    Route::resource('services', ServiceController::class);
+
     // ==== Bình luận ====
     Route::resource('reviews', ReviewController::class);
 
