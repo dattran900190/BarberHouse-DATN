@@ -15,8 +15,8 @@
             <p><strong>Email:</strong> {{ $branch->email }}</p>
             <p><strong>Ngày tạo:</strong> {{ $branch->created_at->format('d/m/Y H:i') }}</p>
 
-            <a href="{{ route('admin.branches.edit', $branch->id) }}" class="btn btn-warning">sửa</a>
-            <a href="{{ route('admin.branches.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('branches.edit', $branch->id) }}" class="btn btn-warning">sửa</a>
+            <a href="{{ route('branches.index') }}" class="btn btn-secondary">Quay lại</a>
 
         </div>
     </div>
