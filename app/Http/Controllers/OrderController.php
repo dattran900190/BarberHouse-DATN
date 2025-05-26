@@ -12,32 +12,20 @@ class OrderController extends Controller
     // Hiển thị danh sách đơn hàng với bộ lọc tìm kiếm và phân trang
     public function index(Request $request)
     {
-        $query = Order::query();
+        $search = $request->input('search');
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('order_code', 'LIKE', "%$search%")
-                    ->orWhere('name', 'LIKE', "%$search%");
+        $orders = Order::when($search, function ($query, $search) {
+            return $query->where(function ($q) use ($search) {
+                $q->where('order_code', 'like', '%' . $search . '%')
+                    ->orWhere('name', 'like', '%' . $search . '%');
             });
-        }
+        })
+            ->latest()
+            ->paginate(10);
 
-        if ($request->filled('date')) {
-            $query->whereDate('created_at', $request->date);
-        }
-
-        if ($request->filled('month')) {
-            $query->whereMonth('created_at', $request->month);
-        }
-
-        if ($request->filled('year')) {
-            $query->whereYear('created_at', $request->year);
-        }
-
-        $orders = $query->orderBy('created_at', 'desc')->paginate(10);
-
-        return view('admin.orders.index', compact('orders'))->with('title', 'Quản lý đơn hàng');
+        return view('admin.orders.index', compact('orders', 'search'));
     }
+
 
     // Hiển thị chi tiết đơn hàng, load quan hệ orderItems và productVariant
     public function show(Order $order)

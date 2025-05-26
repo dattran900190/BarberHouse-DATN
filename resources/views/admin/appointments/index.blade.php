@@ -61,7 +61,7 @@
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $appointment->user?->name ?? 'N/A' }}</td>
-                                <td>{{ $appointment->barber?->name ?? 'N/A' }}</td>
+                                <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
                                 <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
                                 <td>{{ $appointment->branch?->name ?? 'N/A' }}</td>
                                 <td>{{ $appointment->appointment_time }}</td>
