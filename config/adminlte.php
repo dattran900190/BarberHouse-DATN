@@ -361,6 +361,16 @@ return [
             'url'  => 'admin/orders',
             'icon' => 'fas fa-receipt',
         ],
+        [
+            'text' => 'Quản lý thanh toán',
+            'url'  => 'admin/payments',
+            'icon' => 'fas fa-file-invoice-dollar',
+        ],
+        [
+            'text' => 'Quản lý đặt lịch',
+            'url'  => 'admin/appointments',
+            'icon' => 'fas fa-calendar-alt',
+        ],
 
 
     ],

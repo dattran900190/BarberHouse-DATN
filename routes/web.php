@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
@@ -41,6 +43,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Bình luận ====
     Route::resource('reviews', ReviewController::class);
 
+    // ==== Thanh toán ====
+    Route::resource('payments', PaymentController::class);
+
+    // ==== Đặt lịch ====
+    Route::resource('appointments', AppointmentController::class);
 
     // ==== Bài viết ====
     Route::get('/posts', [PostController::class, 'index'])->name('admin.posts.index');
