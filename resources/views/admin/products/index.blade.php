@@ -119,6 +119,7 @@
                                 </div>
                             </td>
                         </tr>
+                        
                     @endforeach
                     @if ($products->isEmpty())
                         <tr>
@@ -129,6 +130,9 @@
             </table>
         </div>
     </div>
+    <div class="mt-3">
+    {{ $products->withQueryString()->links() }}
+</div>
 @endsection
 
 @section('css')

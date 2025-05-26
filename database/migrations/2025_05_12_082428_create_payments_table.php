@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->bigInteger('id', true);
             $table->bigInteger('appointment_id')->nullable()->index('appointment_id');
-            $table->enum('method', ['momo', 'vnpay', 'card', 'cash'])->nullable();
+            $table->enum('method', ['momo', 'cash'])->nullable();
             $table->decimal('amount', 10)->nullable();
             $table->enum('status', ['pending', 'paid'])->nullable();
             $table->string('transaction_code', 100)->nullable();

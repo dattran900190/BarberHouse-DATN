@@ -16,7 +16,7 @@
                     <select name="product_category_id" id="product_category_id" class="form-control">
                         <option value="">Chọn danh mục</option>
                         @foreach ($categories as $category)
-                            <option value="{{ $category->id }}" {{ $product->product_category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                            <option value="{{ $category->id }}" {{ old('product_category_id', $product->product_category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                         @endforeach
                     </select>
                     @error('product_category_id') <div class="text-danger">{{ $message }}</div> @enderror
@@ -79,14 +79,27 @@
             <div class="col-md-4">
                 <h5 class="mb-3">Biến thể sản phẩm</h5>
                 <div id="variants">
-                    @foreach ($product->variants as $index => $variant)
+                    @php
+                        $oldVariants = old('variants', []);
+                        $variantsToShow = count($oldVariants) ? $oldVariants : $product->variants->toArray();
+                        $volumeOptions = $volumes;
+                    @endphp
+
+                    @foreach ($variantsToShow as $index => $variant)
                         <div class="variant border p-3 mb-3">
+                            @if (isset($variant['id']) || (!is_array($variant) && isset($variant->id)))
+                                <input type="hidden" name="variants[{{ $index }}][id]" value="{{ is_array($variant) ? ($variant['id'] ?? '') : $variant->id }}">
+                                <div class="mb-2">
+                                    <label><input type="checkbox" name="delete_variants[]" value="{{ is_array($variant) ? ($variant['id'] ?? '') : $variant->id }}"> Xóa biến thể</label>
+                                </div>
+                            @endif
+
                             <div class="mb-2">
                                 <label class="form-label">Dung tích</label>
                                 <select name="variants[{{ $index }}][volume_id]" class="form-control">
                                     <option value="">Chọn dung tích</option>
-                                    @foreach ($volumes as $volume)
-                                        <option value="{{ $volume->id }}" {{ $variant->volume_id == $volume->id ? 'selected' : '' }}>{{ $volume->name }}</option>
+                                    @foreach ($volumeOptions as $volume)
+                                        <option value="{{ $volume->id }}" {{ (is_array($variant) ? ($variant['volume_id'] ?? '') : ($variant['volume_id'] ?? '')) == $volume->id ? 'selected' : '' }}>{{ $volume->name }}</option>
                                     @endforeach
                                 </select>
                                 @error("variants.$index.volume_id") <div class="text-danger">{{ $message }}</div> @enderror
@@ -94,26 +107,26 @@
 
                             <div class="mb-2">
                                 <label class="form-label">Giá</label>
-                                <input type="number" name="variants[{{ $index }}][price]" class="form-control" value="{{ $variant->price }}" step="0.01">
+                                <input type="number" name="variants[{{ $index }}][price]" class="form-control" value="{{ is_array($variant) ? ($variant['price'] ?? '') : $variant['price'] }}" step="0.01">
                                 @error("variants.$index.price") <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="mb-2">
                                 <label class="form-label">Tồn kho</label>
-                                <input type="number" name="variants[{{ $index }}][stock]" class="form-control" value="{{ $variant->stock }}">
+                                <input type="number" name="variants[{{ $index }}][stock]" class="form-control" value="{{ is_array($variant) ? ($variant['stock'] ?? '') : $variant['stock'] }}">
                                 @error("variants.$index.stock") <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="mb-2">
                                 <label class="form-label">Ảnh biến thể</label>
                                 <input type="file" name="variants[{{ $index }}][image]" class="form-control" accept="image/*">
-                                @if ($variant->image)
+                                @if (!is_array($variant) && $variant->image)
                                     <img src="{{ asset('storage/' . $variant->image) }}" width="100" class="mt-2">
                                 @endif
                                 @error("variants.$index.image") <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
-                            <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa biến thể</button>
+                            <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa khỏi giao diện</button>
                         </div>
                     @endforeach
                 </div>
@@ -128,10 +141,12 @@
 </div>
 
 <script>
-    let variantIndex = {{ $product->variants->count() }};
+    let variantIndex = {{ count(old('variants', $product->variants)) }};
+
     document.getElementById('add-variant').addEventListener('click', function () {
         const variantDiv = document.createElement('div');
         variantDiv.classList.add('variant', 'border', 'p-3', 'mb-3');
+
         variantDiv.innerHTML = `
             <div class="mb-2">
                 <label class="form-label">Dung tích</label>
@@ -154,7 +169,7 @@
                 <label class="form-label">Ảnh biến thể</label>
                 <input type="file" name="variants[${variantIndex}][image]" class="form-control" accept="image/*">
             </div>
-            <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa biến thể</button>
+            <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa khỏi giao diện</button>
         `;
         document.getElementById('variants').appendChild(variantDiv);
         variantIndex++;
