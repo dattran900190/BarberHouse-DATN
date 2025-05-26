@@ -76,6 +76,11 @@ class BarberController extends Controller
 
     public function destroy(Barber $barber)
     {
+        if ($barber->reviews()->exists()) {
+            return redirect()->route('barbers.index')
+                ->with('error', 'Không thể xóa thợ vì đang có đánh giá liên quan.');
+        }
+
         if ($barber->avatar && Storage::disk('public')->exists($barber->avatar)) {
             Storage::disk('public')->delete($barber->avatar);
         }
