@@ -29,7 +29,6 @@ class AppointmentFactory extends Factory
             'status' => $this->faker->randomElement(['pending', 'confirmed', 'cancelled', 'completed']),
             'payment_status' => $this->faker->randomElement(['unpaid', 'paid']),
             'note' => $this->faker->optional()->sentence(),
-            'is_free' => $this->faker->boolean(10), // 10% là miễn phí
             'promotion_id' => null, // vì chưa có bảng promotions
             'discount_amount' => 0,
         ];
