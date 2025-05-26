@@ -16,8 +16,15 @@ class DatabaseSeeder extends Seeder
         User::factory(30)->create();
         \App\Models\Barber::factory(10)->create();
 
-        //  Tạo 50 review giả
+        //  Tạo review
         \App\Models\Review::factory(30)->create();
+
+        \App\Models\Payment::factory(10)->create();
+
+        \App\Models\Appointment::factory(10)->create();
+
+        \App\Models\Service::factory(10)->create();
+
         \App\Models\Branch::factory(10)->create();
     }
 }
