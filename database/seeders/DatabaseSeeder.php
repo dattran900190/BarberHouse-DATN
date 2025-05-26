@@ -27,5 +27,4 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\Branch::factory(10)->create();
     }
-
 }
