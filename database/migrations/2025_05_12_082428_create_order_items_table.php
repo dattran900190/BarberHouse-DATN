@@ -12,13 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('order_items', function (Blueprint $table) {
-            $table->bigInteger('id', true);
-            $table->bigInteger('order_id')->nullable()->index('order_id');
-            $table->bigInteger('product_variant_id')->nullable()->index('product_variant_id');
-            $table->integer('quantity')->nullable();
-            $table->decimal('price', 10)->nullable();
-            $table->timestamp('created_at')->nullable()->useCurrent();
-            $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
+            $table->bigInteger('id',true); // ID tự tăng
+            $table->bigInteger('order_id')->nullable()->index('order_id'); // Liên kết đơn hàng
+            $table->bigInteger('product_variant_id')->nullable()->index('product_variant_id'); // Sản phẩm (biến thể)
+            $table->integer('quantity')->nullable(); // Số lượng
+            $table->decimal('price_at_time', 10, 2)->nullable(); // Giá tại thời điểm mua
+            $table->decimal('total_price', 12, 2)->nullable(); // Tổng giá = quantity * price_at_time
+            $table->timestamp('created_at')->nullable()->useCurrent(); // Ngày tạo
+            $table->timestamp('updated_at')->nullable()->useCurrent()->useCurrentOnUpdate(); // Ngày cập nhật
         });
     }
 

@@ -24,15 +24,14 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách Chi nhánh</h3>
-            <a href="{{ route('admin.branches.create') }}"
-                class="btn btn-success btn-icon-toggle d-flex align-items-center">
+            <a href="{{ route('branches.create') }}" class="btn btn-success btn-icon-toggle d-flex align-items-center">
                 <i class="fas fa-plus"></i>
                 <span class="btn-text ms-2"> Thêm chi nhánh</span>
             </a>
         </div>
 
         <div class="card-body">
-            <form action="{{ route('admin.branches.index') }}" method="GET" class="mb-3">
+            <form action="{{ route('branches.index') }}" method="GET" class="mb-3">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên chi nhánh..."
                         value="{{ request()->get('search') }}">
@@ -63,15 +62,15 @@
                             <td>{{ $branch->email }}</td>
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('admin.branches.show', $branch->id) }}"
+                                    <a href="{{ route('branches.show', $branch->id) }}"
                                         class="btn btn-info btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
-                                    <a href="{{ route('admin.branches.edit', $branch->id) }}"
+                                    <a href="{{ route('branches.edit', $branch->id) }}"
                                         class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>
-                                    <form action="{{ route('admin.branches.destroy', $branch->id) }}" method="POST"
+                                    <form action="{{ route('branches.destroy', $branch->id) }}" method="POST"
                                         class="d-inline m-0"
                                         onsubmit="return confirm('Bạn có chắc chắn muốn xoá chi nhánh này không?');">
                                         @csrf
@@ -93,6 +92,10 @@
                 </tbody>
             </table>
         </div>
+
+    </div>
+    <div class="d-flex justify-content-center mt-4">
+        {{ $branches->links('pagination::bootstrap-5') }}
     </div>
 @endsection
 

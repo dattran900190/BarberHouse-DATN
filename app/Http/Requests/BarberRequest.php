@@ -28,6 +28,11 @@ class BarberRequest extends FormRequest
                 'mimes:jpeg,png,jpg,gif,svg',
                 'max:2048',
             ],
+            'branch_id' => [
+                'required',
+                'integer',
+                'exists:branches,id',
+            ],
         ];
     }
 
@@ -51,6 +56,10 @@ class BarberRequest extends FormRequest
             'avatar.image' => 'Ảnh đại diện phải là một file ảnh',
             'avatar.mimes' => 'Ảnh đại diện phải có định dạng jpeg, png, jpg, gif hoặc svg',
             'avatar.max' => 'Ảnh đại diện không được vượt quá 2MB',
+
+            'branch_id.required' => 'Chi nhánh không được để trống',
+            'branch_id.integer' => 'Chi nhánh phải là số nguyên',
+            'branch_id.exists' => 'Chi nhánh không tồn tại',
         ];
     }
 }

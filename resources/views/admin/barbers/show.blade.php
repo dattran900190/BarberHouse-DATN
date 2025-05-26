@@ -13,7 +13,8 @@
                 <!-- Cột ảnh -->
                 <div class="col-md-4 text-center">
                     @if ($barber->avatar)
-                        <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" class="img-fluid rounded" style="max-height: 300px;">
+                        <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" class="img-fluid rounded"
+                            style="max-height: 300px;">
                     @else
                         <p>Không có ảnh</p>
                     @endif
@@ -41,6 +42,19 @@
                         <p>{{ $barber->profile }}</p>
                     </div>
 
+                    <div class="form-group">
+                        <label>Chi nhánh</label>
+                        <p>
+                            @if ($barber->branch)
+                                <a href="{{ route('branches.show', $barber->branch->id) }}">
+                                    {{ $barber->branch->name }}
+                                </a>
+                            @else
+                                Chưa có chi nhánh
+                            @endif
+                        </p>
+                    </div>
+                    <a href="{{ route('barbers.edit', $barber->id) }}" class="btn btn-warning">Sửa</a>
                     <a href="{{ route('barbers.index') }}" class="btn btn-secondary">Quay lại</a>
                 </div>
             </div>

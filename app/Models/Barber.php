@@ -12,10 +12,25 @@ class Barber extends Model
     protected $table = 'barbers';
 
     protected $fillable = [
+        'branch_id',
         'name',
         'profile',
         'skill_level',
         'avatar',
         'rating_avg',
     ];
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
 }

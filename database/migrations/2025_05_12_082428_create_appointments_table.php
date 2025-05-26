@@ -21,7 +21,6 @@ return new class extends Migration
             $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed'])->nullable();
             $table->enum('payment_status', ['unpaid', 'paid'])->nullable();
             $table->text('note')->nullable();
-            $table->boolean('is_free')->nullable()->default(false);
             $table->bigInteger('promotion_id')->nullable()->index('promotion_id');
             $table->decimal('discount_amount', 10)->nullable()->default(0);
             $table->timestamp('created_at')->nullable()->useCurrent();
