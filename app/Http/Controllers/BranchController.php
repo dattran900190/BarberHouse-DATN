@@ -35,10 +35,21 @@ class BranchController extends Controller
     }
 
     // Hiển thị chi tiết chi nhánh
-    public function show(Branch $branch)
+    public function show(Request $request, Branch $branch)
     {
-        return view('admin.branches.show', compact('branch'));
+        $search = $request->input('search');
+
+        // Lấy thợ thuộc chi nhánh này, có tìm kiếm tên thợ và phân trang
+        $barbers = $branch->barbers()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->paginate(10);
+
+        return view('admin.branches.show', compact('branch', 'barbers', 'search'));
     }
+
+
 
     // Hiển thị form sửa
     public function edit(Branch $branch)
