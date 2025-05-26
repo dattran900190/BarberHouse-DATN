@@ -9,7 +9,7 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ route('admin.branches.store') }}" method="POST">
+            <form action="{{ route('branches.store') }}" method="POST">
                 @csrf
 
                 <div class="mb-3">
@@ -46,7 +46,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-success">Thêm</button>
-                <a href="{{ route('admin.branches.index') }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('branches.index') }}" class="btn btn-secondary">Quay lại</a>
             </form>
         </div>
     </div>

@@ -18,6 +18,6 @@ class DatabaseSeeder extends Seeder
 
         //  Tạo 50 review giả
         \App\Models\Review::factory(30)->create();
+        \App\Models\Branch::factory(10)->create();
     }
-
 }
