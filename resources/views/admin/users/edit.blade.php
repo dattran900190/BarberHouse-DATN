@@ -283,7 +283,7 @@
                         preview.src = e.target.result;
                     }
                 };
-                reader.readAsDataURL(file);
+                reader.readAsDataURL(file);;
             }
         });
     </script>

@@ -1,3 +1,29 @@
+<?php
+
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarberController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
+
+// ==== Auth ====
+Route::get('login', [AuthController::class, 'login'])->name('login');
+Route::post('login', [AuthController::class, 'postLogin'])->name('postLogin');
+Route::get('register', [AuthController::class, 'register'])->name('register');
+Route::post('register', [AuthController::class, 'postRegister'])->name('postRegister');
+Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+// ==== Trang chủ ====
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+// ==== Admin Group (Yêu cầu đăng nhập và có role) ====
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
@@ -8,7 +34,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     Route::resource('orders', OrderController::class);
 
-    
+
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
@@ -48,7 +74,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // Route::get('/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
     // Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     // Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
-// Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    // Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     // Route::get('/users/search', [UserController::class, 'search'])->name('admin.users.search');
 
     // ==== Sản phẩm ====

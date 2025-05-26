@@ -92,8 +92,8 @@
                                     <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
                                 @else
                                     <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                    <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
-                                    <option value="editor" {{ old('role') == 'editor' ? 'selected' : '' }}>Editor</option>
+                                    <option value="staff" {{ old('role') == 'super admin' ? 'selected' : '' }}>Super admin</option>
+                                    <option value="editor" {{ old('role') == 'admin branch' ? 'selected' : '' }}>Admin branch</option>
                                 @endif
                             </select>
                             @error('role')
@@ -107,7 +107,6 @@
                                 <option value="">Chọn trạng thái</option>
                                 <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
                                 <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                <option value="banned" {{ old('status') == 'banned' ? 'selected' : '' }}>Banned</option>
                             </select>
                             @error('status')
                                 <div class="text-danger">{{ $message }}</div>
