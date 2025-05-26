@@ -25,6 +25,9 @@ class AppointmentController extends Controller
             ->orderBy('id', 'DESC')
             ->paginate(5);
 
+            // $appointmentsDebug = Appointment::with(['service','branch'])->take(1)->get();
+            // dd($appointments->toArray());
+
         return view('admin.appointments.index', compact('appointments'));
     }
 

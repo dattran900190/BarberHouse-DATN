@@ -49,6 +49,7 @@
             <th>Phương thức</th>
             <th>Số tiền</th>
             <th>Ngày thanh toán</th>
+            <th>Mã giao dịch</th>
             <th>Trạng thái</th>
             <th class="text-center">Hành động</th>
         </tr>
@@ -62,6 +63,7 @@
                     <td>{{ ucfirst($payment->method) }}</td>
                     <td>{{ number_format($payment->amount, 0, ',', '.') }}đ</td>
                     <td>{{ $payment->paid_at ? \Carbon\Carbon::parse($payment->paid_at)->format('d/m/Y H:i') : 'Chưa thanh toán' }}</td>
+                    <td>{{ $payment->transaction_code ?? 'Không có' }}</td>
                     <td>
                         @if ($payment->status === 'paid')
                             <span class="badge bg-success">Đã thanh toán</span>
