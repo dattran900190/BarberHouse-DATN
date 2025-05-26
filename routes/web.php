@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
@@ -57,25 +59,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('admin.posts.destroy');
 
     // ==== Chi nhánh ====
-    Route::get('/branches', [BranchController::class, 'index'])->name('admin.branches.index');
-    Route::get('/branches/create', [BranchController::class, 'create'])->name('admin.branches.create');
-    Route::post('/branches', [BranchController::class, 'store'])->name('admin.branches.store');
-    Route::get('/branches/{branch}', [BranchController::class, 'show'])->name('admin.branches.show');
-    Route::get('/branches/{branch}/edit', [BranchController::class, 'edit'])->name('admin.branches.edit');
-    Route::put('/branches/{branch}', [BranchController::class, 'update'])->name('admin.branches.update');
-    Route::delete('/branches/{branch}', [BranchController::class, 'destroy'])->name('admin.branches.destroy');
-    Route::get('/branches/search', [BranchController::class, 'search'])->name('admin.branches.search');
+    Route::resource('branches', BranchController::class);
 
     // ==== Người dùng ====
     Route::resource('users', UserController::class);
-    // Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-    // Route::get('/users/create', [UserController::class, 'create'])->name('admin.users.create');
-    // Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
-    // Route::get('/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
-    // Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-    // Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
-    // Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-    // Route::get('/users/search', [UserController::class, 'search'])->name('admin.users.search');
 
     // ==== Sản phẩm ====
     Route::get('/products', [ProductController::class, 'index'])->name('admin.products.index');

@@ -31,14 +31,25 @@ class BranchController extends Controller
         $data = $request->validated();
         Branch::create($data);
 
-        return redirect()->route('admin.branches.index')->with('success', 'Thêm chi nhánh thành công');
+        return redirect()->route('branches.index')->with('success', 'Thêm chi nhánh thành công');
     }
 
     // Hiển thị chi tiết chi nhánh
-    public function show(Branch $branch)
+    public function show(Request $request, Branch $branch)
     {
-        return view('admin.branches.show', compact('branch'));
+        $search = $request->input('search');
+
+        // Lấy thợ thuộc chi nhánh này, có tìm kiếm tên thợ và phân trang
+        $barbers = $branch->barbers()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->paginate(10);
+
+        return view('admin.branches.show', compact('branch', 'barbers', 'search'));
     }
+
+
 
     // Hiển thị form sửa
     public function edit(Branch $branch)
@@ -51,13 +62,13 @@ class BranchController extends Controller
     {
         $branch->update($request->validated());
 
-        return redirect()->route('admin.branches.index')->with('success', 'Cập nhật thành công');
+        return redirect()->route('branches.index')->with('success', 'Cập nhật thành công');
     }
 
     // Xoá chi nhánh
     public function destroy(Branch $branch)
     {
         $branch->delete();
-        return redirect()->route('admin.branches.index')->with('success', 'Xoá chi nhánh thành công');
+        return redirect()->route('branches.index')->with('success', 'Xoá chi nhánh thành công');
     }
 }
