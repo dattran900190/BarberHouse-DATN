@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -13,12 +15,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Gọi seeder thủ công (nếu có)
-        $this->call([
-            // BranchSeeder::class,
-            ProductVariant::class,
-        ]);
+        
+        // Tạo 4 danh mục sản phẩm
+        $categories = ProductCategory::factory(4)->create();
 
+        // Với mỗi danh mục, tạo 3–5 sản phẩm
+        foreach ($categories as $category) {
+            $products = Product::factory(rand(3, 5))->create([
+                'product_category_id' => $category->id,
+            ]);
+
+            // Với mỗi sản phẩm, tạo 2–4 biến thể
+            foreach ($products as $product) {
+                ProductVariant::factory(rand(2, 4))->create([
+                    'product_id' => $product->id,
+                ]);
+            }
+        }
+        
         // Tạo dữ liệu mẫu bằng factory
         User::factory(30)->create();
         \App\Models\Barber::factory(10)->create();
