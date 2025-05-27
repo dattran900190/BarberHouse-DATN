@@ -25,8 +25,6 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
-
-// ==== Admin Group (Yêu cầu đăng nhập và có role) ====
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
@@ -37,8 +35,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     Route::resource('orders', OrderController::class);
 
-
+    
     // ==== Dịch vụ ====
+    Route::resource('services', ServiceController::class);
+
+  // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
     // ==== Bình luận ====
