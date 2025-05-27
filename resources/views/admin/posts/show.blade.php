@@ -36,7 +36,7 @@
                 {{ $post->published_at ? \Carbon\Carbon::parse($post->published_at)->format('d/m/Y') : 'Chưa có' }}
             </p>
 
-            <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('posts.index') }}" class="btn btn-secondary">Quay lại</a>
         </div>
     </div>
 @endsection

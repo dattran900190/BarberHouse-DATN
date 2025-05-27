@@ -6,14 +6,14 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách bài viết</h3>
-            <a href="{{ route('admin.posts.create') }}" class="btn btn-success btn-icon-toggle d-flex align-items-center">
+            <a href="{{ route('posts.create') }}" class="btn btn-success btn-icon-toggle d-flex align-items-center">
                 <i class="fas fa-plus"></i>
                 <span class="btn-text ms-2"> Thêm bài viết</span>
             </a>
         </div>
 
         <div class="card-body">
-            <form action="{{ route('admin.posts.index') }}" method="GET" class="mb-3">
+            <form action="{{ route('posts.index') }}" method="GET" class="mb-3">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tiêu đề..."
                         value="{{ request()->get('search') }}">
@@ -58,15 +58,15 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('admin.posts.show', $post->id) }}"
+                                    <a href="{{ route('posts.show', $post->id) }}"
                                        class="btn btn-info btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
-                                    <a href="{{ route('admin.posts.edit', $post->id) }}"
+                                    <a href="{{ route('posts.edit', $post->id) }}"
                                        class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>
-                                    <form action="{{ route('admin.posts.destroy', $post->id) }}"
+                                    <form action="{{ route('posts.destroy', $post->id) }}"
                                           method="POST" class="d-inline m-0"
                                           onsubmit="return confirm('Xác nhận xoá bài viết?');">
                                         @csrf
