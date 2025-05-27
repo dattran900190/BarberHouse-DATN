@@ -14,6 +14,23 @@
 
         <div class="card-body">
             <form action="{{ route('product_categories.index') }}" method="GET" class="mb-3">
+                <div class="card-body">
+
+    {{-- HIỂN THỊ THÔNG BÁO --}}
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Thành công!</strong> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Lỗi!</strong> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    @endif
+
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên hoặc slug..."
                         value="{{ request()->get('search') }}">

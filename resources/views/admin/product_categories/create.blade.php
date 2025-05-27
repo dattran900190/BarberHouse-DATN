@@ -21,7 +21,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="slug" class="form-label">Slug <span class="text-danger">*</span></label>
+                    <label for="slug" class="form-label">Slug(nếu để trống sẽ tạo tự động)</label>
                     <input type="text" name="slug" class="form-control" value="{{ old('slug') }}">
                     @error('slug')
                         <div class="text-danger small">{{ $message }}</div>
