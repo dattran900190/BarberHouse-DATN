@@ -76,11 +76,16 @@ class BarberController extends Controller
 
     public function destroy(Barber $barber)
     {
-        // Kiểm tra nếu còn lịch hẹn liên quan
-        if ($barber->appointments()->exists()) {
+        // Kiểm tra lịch hẹn có trạng thái không phải 'cancelled' hoặc 'completed'
+        $hasActiveAppointments = $barber->appointments()
+            ->whereNotIn('status', ['cancelled', 'completed'])
+            ->exists();
+
+        if ($hasActiveAppointments) {
             return redirect()->route('barbers.index')
-                ->with('error', 'Không thể xóa thợ vì còn lịch hẹn liên quan.');
+                ->with('error', 'Không thể xóa thợ vì còn lịch hẹn chưa hoàn tất.');
         }
+
 
         // Kiểm tra nếu còn đánh giá liên quan
         if ($barber->reviews()->exists()) {

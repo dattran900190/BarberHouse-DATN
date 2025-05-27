@@ -85,6 +85,10 @@
                     @endforelse
                 </tbody>
             </table>
+            <div class="d-flex justify-content-center mt-3">
+    {{ $posts->links() }}
+</div>
+
         </div>
     </div>
 @endsection
