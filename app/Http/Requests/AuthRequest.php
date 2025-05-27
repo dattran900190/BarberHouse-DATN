@@ -17,7 +17,7 @@ class AuthRequest extends FormRequest
         if ($this->is('login') || $this->routeIs('postLogin')) {
             return [
                 'email' => 'required|email|exists:users,email',
-                'password' => 'required|string|min:6',
+                'password' => 'required|string|min:8',
             ];
         }
 
@@ -28,7 +28,7 @@ class AuthRequest extends FormRequest
             'phone' => 'required|string|max:15|unique:users',
             'gender' => 'required|in:male,female,other',
             'address' => 'required|string|max:255',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:8|confirmed',
         ];
     }
 
@@ -42,7 +42,7 @@ class AuthRequest extends FormRequest
 
             'password.required' => 'Mật khẩu không được để trống',
             'password.string' => 'Mật khẩu không hợp lệ',
-            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
+            'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự',
             'password.confirmed' => 'Mật khẩu nhập lại không khớp',
 
             // Register messages
