@@ -7,6 +7,7 @@ use App\Http\Controllers\BarberController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServiceController;
@@ -57,6 +58,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('admin.posts.edit');
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('admin.posts.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('admin.posts.destroy');
+ // ==== Danh muc ====
+    Route::resource('product_categories', ProductCategoryController::class);
+
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
