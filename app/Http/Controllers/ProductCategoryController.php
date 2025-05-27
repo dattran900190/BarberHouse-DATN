@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\ProductCategory;
 use App\Http\Requests\ProductCategoryRequest;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Str;
 
 class ProductCategoryController extends Controller
 {
+
     public function index(Request $request)
     {
         $search = $request->input('search');
@@ -79,8 +81,18 @@ public function store(ProductCategoryRequest $request)
 
 
     public function destroy(ProductCategory $product_category)
-    {
-        $product_category->delete();
-        return redirect()->route('product_categories.index')->with('success', 'Xóa danh mục thành công');
+{
+    // Kiểm tra nếu có sản phẩm liên quan
+    if ($product_category->products()->exists()) {
+        return redirect()->route('product_categories.index')
+            ->with('error', 'Không thể xóa danh mục vì còn sản phẩm liên quan!!');
     }
+
+    // Nếu không có thì mới được xóa
+    $product_category->delete();
+
+    return redirect()->route('product_categories.index')
+        ->with('success', 'Xóa danh mục thành công');
+}
+
 }

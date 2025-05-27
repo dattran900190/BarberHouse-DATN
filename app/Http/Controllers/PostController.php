@@ -63,7 +63,7 @@ public function store(PostRequest $request)
 
     Post::create($data);
 
-    return redirect()->route('admin.posts.index')->with('success', 'Bài viết đã được thêm thành công!');
+    return redirect()->route('posts.index')->with('success', 'Bài viết đã được thêm thành công!');
 }
 
 
@@ -94,7 +94,7 @@ public function update(PostRequest $request, Post $post)
 
     $post->update($data);
 
-    return redirect()->route('admin.posts.index')->with('success', 'Bài viết đã được cập nhật thành công!');
+    return redirect()->route('posts.index')->with('success', 'Bài viết đã được cập nhật thành công!');
 }
 
 public function destroy(Post $post)
@@ -107,7 +107,7 @@ public function destroy(Post $post)
     // Xóa bài viết
     $post->delete();
 
-    return redirect()->route('admin.posts.index')->with('success', 'Xóa bài viết thành công!');
+    return redirect()->route('posts.index')->with('success', 'Xóa bài viết thành công!');
 }
 
 }
