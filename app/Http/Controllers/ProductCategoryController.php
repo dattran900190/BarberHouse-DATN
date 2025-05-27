@@ -6,6 +6,8 @@ use App\Models\ProductCategory;
 use App\Http\Requests\ProductCategoryRequest;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Str;
+
 class ProductCategoryController extends Controller
 {
     public function index(Request $request)
@@ -14,32 +16,67 @@ class ProductCategoryController extends Controller
         $categories = ProductCategory::when($search, function ($query, $search) {
             $query->where('name', 'like', "%{$search}%")
                   ->orWhere('slug', 'like', "%{$search}%");
-        })->latest()->paginate(10);
+        })->latest()->paginate(5);
 
         return view('admin.product_categories.index', compact('categories', 'search'));
     }
+    public function show(ProductCategory $product_category)
+{
+    return view('admin.product_categories.show', compact('product_category'));
+}
+
 
     public function create()
     {
         return view('admin.product_categories.create');
     }
 
-    public function store(ProductCategoryRequest $request)
-    {
-        ProductCategory::create($request->validated());
-        return redirect()->route('product_categories.index')->with('success', 'Thêm danh mục thành công');
+
+public function store(ProductCategoryRequest $request)
+{
+    $data = $request->validated();
+
+    // Nếu chưa có slug, tạo slug từ name
+    $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
+    $originalSlug = $data['slug'];
+    $counter = 1;
+
+    // Kiểm tra slug đã tồn tại chưa, nếu có thì thêm -1, -2...
+    while (ProductCategory::where('slug', $data['slug'])->exists()) {
+        $data['slug'] = $originalSlug . '-' . $counter;
+        $counter++;
     }
+
+    ProductCategory::create($data);
+
+    return redirect()->route('product_categories.index')->with('success', 'Thêm danh mục thành công');
+}
+
 
     public function edit(ProductCategory $product_category)
     {
         return view('admin.product_categories.edit', compact('product_category'));
     }
 
-    public function update(ProductCategoryRequest $request, ProductCategory $product_category)
-    {
-        $product_category->update($request->validated());
-        return redirect()->route('product_categories.index')->with('success', 'Cập nhật danh mục thành công');
+   public function update(ProductCategoryRequest $request, ProductCategory $product_category)
+{
+    $data = $request->validated();
+
+    $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
+    $originalSlug = $data['slug'];
+    $counter = 1;
+
+    // Kiểm tra slug đã tồn tại ở các bản ghi khác chưa, nếu có thì thêm -1, -2...
+    while (ProductCategory::where('slug', $data['slug'])->where('id', '!=', $product_category->id)->exists()) {
+        $data['slug'] = $originalSlug . '-' . $counter;
+        $counter++;
     }
+
+    $product_category->update($data);
+
+    return redirect()->route('product_categories.index')->with('success', 'Cập nhật danh mục thành công');
+}
+
 
     public function destroy(ProductCategory $product_category)
     {

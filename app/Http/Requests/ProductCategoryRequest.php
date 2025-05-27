@@ -18,7 +18,7 @@ class ProductCategoryRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:255',
-            'slug' => ['required', 'string', 'max:255', Rule::unique('product_categories')->ignore($id)],
+            'slug' => ['nullable', 'string', 'max:255', Rule::unique('product_categories')->ignore($id)],
             'description' => 'nullable|string',
         ];
     }
@@ -29,7 +29,7 @@ class ProductCategoryRequest extends FormRequest
             'name.required' => 'Tên danh mục không được để trống',
             'name.max' => 'Tên danh mục không được vượt quá 255 ký tự',
 
-            'slug.required' => 'Slug không được để trống',
+
             'slug.unique' => 'Slug đã tồn tại',
             'slug.max' => 'Slug không được vượt quá 255 ký tự',
 

@@ -6,14 +6,14 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách danh mục</h3>
-            {{-- <a href="{{ route('admin.product-categories.create') }}" class="btn btn-success btn-icon-toggle d-flex align-items-center">
+             <a href="{{ route('product_categories.create') }}" class="btn btn-success btn-icon-toggle d-flex align-items-center">
                 <i class="fas fa-plus"></i>
                 <span class="btn-text ms-2"> Thêm danh mục</span>
-            </a> --}}
+            </a>
         </div>
 
         <div class="card-body">
-            <form action="{{ route('admin.product-categories.index') }}" method="GET" class="mb-3">
+            <form action="{{ route('product_categories.index') }}" method="GET" class="mb-3">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên hoặc slug..."
                         value="{{ request()->get('search') }}">
@@ -44,18 +44,23 @@
                             <td class="text-center">{{ $category->created_at->format('d/m/Y') }}</td>
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
-                                    {{-- <a href="{{ route('admin.product-categories.edit', $category->id) }}"
+                                    <a href="{{ route('product_categories.show', $category->id) }}"
+                                class="btn btn-info btn-sm d-inline-flex align-items-center">
+                                    <i class="fas fa-eye"></i> <span>Xem</span>
+                                </a>
+
+                                    <a href="{{ route('product_categories.edit', $category->id) }}"
                                        class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
-                                    </a> --}}
-                                    {{-- <form action="{{ route('admin.product-categories.destroy', $category->id) }}"
+                                    </a>
+                                    <form action="{{ route('product_categories.destroy', $category->id) }}"
                                           method="POST" class="d-inline m-0"
                                           onsubmit="return confirm('Xác nhận xoá danh mục?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm d-inline-flex align-items-center">
                                             <i class="fas fa-trash"></i> <span>Xoá</span>
-                                        </button> --}}
+                                        </button>
                                     </form>
                                 </div>
                             </td>
