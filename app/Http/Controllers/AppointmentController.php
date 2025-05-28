@@ -20,6 +20,10 @@ class AppointmentController extends Controller
                     $q->where('name', 'like', '%' . $search . '%');
                 })->orWhereHas('barber', function ($q) use ($search) {
                     $q->where('name', 'like', '%' . $search . '%');
+                })->orWhereHas('service', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                })->orWhereHas('barber', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
                 });
             })
             ->orderBy('id', 'DESC')
