@@ -9,78 +9,65 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ route('services.update', $service->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('appointments.update', $appointment->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
+                {{-- Thời gian hẹn --}}
                 <div class="mb-3">
-                    <label for="name" class="form-label">Tên dịch vụ</label>
-                    <input type="text" class="form-control" id="name" name="name"
-                           value="{{ old('name', $service->name) }}">
-                    @error('name')
+                    <label for="appointment_time" class="form-label">Thời gian hẹn</label>
+                    <input type="datetime-local" id="appointment_time" name="appointment_time" class="form-control"
+                        value="{{ old('appointment_time', \Carbon\Carbon::parse($appointment->appointment_time)->format('Y-m-d\TH:i')) }}">
+                    @error('appointment_time')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
+                {{-- Trạng thái lịch hẹn --}}
                 <div class="mb-3">
-                    <label for="description" class="form-label">Mô tả</label>
-                    <textarea class="form-control" id="description" name="description">{{ old('description', $service->description) }}</textarea>
-                    @error('description')
+                    <label for="status" class="form-label">Trạng thái lịch hẹn</label>
+                    <select class="form-control" id="status" name="status">
+                        @foreach (['pending', 'confirmed', 'completed', 'cancelled'] as $status)
+                            <option value="{{ $status }}"
+                                {{ old('status', $appointment->status) === $status ? 'selected' : '' }}>
+                                {{ ucfirst($status) }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('status')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
+                {{-- Trạng thái thanh toán --}}
                 <div class="mb-3">
-                    <label for="price" class="form-label">Giá</label>
-                    <input type="number" step="0.01" class="form-control" id="price" name="price"
-                           value="{{ old('price', $service->price) }}">
-                    @error('price')
+                    <label for="payment_status" class="form-label">Trạng thái thanh toán</label>
+                    <select class="form-control" id="payment_status" name="payment_status">
+                        @foreach (['unpaid', 'paid', 'refunded', 'failed'] as $status)
+                            <option value="{{ $status }}"
+                                {{ old('payment_status', $appointment->payment_status) === $status ? 'selected' : '' }}>
+                                {{ ucfirst($status) }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('payment_status')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
+                {{-- Ghi chú --}}
                 <div class="mb-3">
-                    <label for="duration" class="form-label">Thời lượng (phút)</label>
-                    <input type="number" class="form-control" id="duration" name="duration"
-                           value="{{ old('duration', $service->duration) }}">
-                    @error('duration')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Gói combo</label><br>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="is_combo" id="combo_yes" value="1"
-                               {{ old('is_combo', $service->is_combo) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="combo_yes">Có</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="is_combo" id="combo_no" value="0"
-                               {{ old('is_combo', $service->is_combo) == 0 ? 'checked' : '' }}>
-                        <label class="form-check-label" for="combo_no">Không</label>
-                    </div>
-                    @error('is_combo')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="image" class="form-label">Ảnh dịch vụ</label>
-                    <input type="file" class="form-control" id="image" name="image">
-                    @if ($service->image)
-                        <div class="mt-2">
-                            <img src="{{ asset('storage/' . $service->image) }}" alt="Ảnh dịch vụ" width="150">
-                        </div>
-                    @endif
-                    @error('image')
+                    <label for="note" class="form-label">Ghi chú</label>
+                    <textarea class="form-control" id="note" name="note" rows="3">{{ old('note', $appointment->note) }}</textarea>
+                    @error('note')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <button type="submit" class="btn btn-warning">Cập nhật</button>
-                <a href="{{ route('services.index') }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('appointments.index') }}" class="btn btn-secondary">Quay lại</a>
             </form>
+
         </div>
     </div>
 @endsection
