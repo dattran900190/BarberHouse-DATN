@@ -20,7 +20,7 @@ return new class extends Migration
             $table->bigInteger('branch_id')->nullable()->index('branch_id');
             $table->dateTime('appointment_time')->nullable();
             $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed'])->nullable();
-            $table->enum('payment_status', ['unpaid', 'paid'])->nullable();
+            $table->enum('payment_status', ['unpaid', 'paid' , 'failed', 'refunded'])->nullable();
             $table->text('note')->nullable();
             $table->bigInteger('promotion_id')->nullable()->index('promotion_id');
             $table->decimal('discount_amount', 10)->nullable()->default(0);
