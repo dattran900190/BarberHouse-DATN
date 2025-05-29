@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('appointment_id')->nullable()->index('appointment_id');
             $table->enum('method', ['momo', 'cash'])->nullable();
             $table->decimal('amount', 10)->nullable();
-            $table->enum('status', ['pending', 'paid'])->nullable();
+            $table->enum('status', ['pending', 'paid' , 'failed', 'refunded'])->nullable();
             $table->string('transaction_code', 100)->nullable();
             $table->dateTime('paid_at')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
