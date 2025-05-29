@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Barber;
 use App\Models\Branch;
 use App\Models\Service;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,6 +22,7 @@ class AppointmentFactory extends Factory
     public function definition(): array
     {
         return [
+            'appointment_code' => 'APT' . now()->format('Ymd') . strtoupper(Str::random(4)),
             'user_id' => User::inRandomOrder()->first()?->id ?? null,
             'barber_id' => Barber::inRandomOrder()->first()?->id ?? null,
             'service_id' => Service::inRandomOrder()->first()?->id ?? null,

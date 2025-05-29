@@ -11,6 +11,7 @@ class Appointment extends Model
     use HasFactory;
 
       protected $fillable = [
+        'appointment_code',
         'user_id',
         'barber_id',
         'service_id',
@@ -44,18 +45,6 @@ class Appointment extends Model
         return $this->belongsTo(Branch::class);
     }
 
-    // public function promotion()
-    // {
-    //     return $this->belongsTo(Promotion::class);
-    // }
+     
 
-    public function payment()
-    {
-        return $this->hasOne(Payment::class);
-    }
-
-    public function review()
-    {
-        return $this->hasOne(Review::class);
-    }
 }

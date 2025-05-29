@@ -29,8 +29,8 @@ class AppointmentController extends Controller
             ->orderBy('id', 'DESC')
             ->paginate(5);
 
-            // $appointmentsDebug = Appointment::with(['service','branch'])->take(1)->get();
-            // dd($appointments->toArray());
+        // $appointmentsDebug = Appointment::with(['service','branch'])->take(1)->get();
+        // dd($appointments->toArray());
 
         return view('admin.appointments.index', compact('appointments'));
     }
@@ -54,32 +54,42 @@ class AppointmentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Appointment $appointment)
     {
-        //
+        $appointment->load(['user', 'barber', 'service', 'branch', 'promotion']);
+        return view('admin.appointments.show', compact('appointment'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Appointment $appointment)
     {
-        //
+        $appointments = Appointment::all(); 
+        return view('admin.appointments.edit', compact('appointment', 'appointment'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+    public function update(Request $request, Appointment $appointment)
+{
+    $appointment->update($request->only(['appointment_time', 'status', 'payment_status', 'note']));
+
+    return redirect()->route('appointments.index')->with('success', 'Cập nhật lịch hẹn thành công.');
+}
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        //
+   public function destroy(Appointment $appointment)
+{
+    $appointment->update(['status' => 'cancelled']);
+
+    if ($appointment->status == 'cancelled') {
+        return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được huỷ trước đó.');
     }
+
+    return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được huỷ.');
+}
 }

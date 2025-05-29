@@ -10,14 +10,15 @@ class PaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
-     public function index(Request $request)
+    public function index(Request $request)
     {
         $search = $request->input('search');
-        $payments = Payment::when($search, function ($query, $search) {
-            return $query->where('name', 'like', '%' . $search . '%');
-        })
-        ->orderBy('id', 'DESC')
-        ->paginate(5);
+        $payments = Payment::with('appointment') // thêm dòng này
+            ->when($search, function ($query, $search) {
+                return $query->where('method', 'like', '%' . $search . '%'); // hoặc lọc theo method
+            })
+            ->orderBy('id', 'DESC')
+            ->paginate(5);
 
         return view('admin.payments.index', compact('payments'));
     }
