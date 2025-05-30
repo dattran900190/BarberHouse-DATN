@@ -594,6 +594,15 @@ footer {
   gap: 20px 20px;
 }
 
+.branchs a{
+  color: #000;
+  text-decoration: none;
+}
+
+.branchs a:hover {
+  color: #000;
+}
+
 /* Mỗi card branch */
 .branch {
   overflow: hidden;

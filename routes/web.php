@@ -22,9 +22,57 @@ Route::post('register', [AuthController::class, 'postRegister'])->name('postRegi
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // ==== Trang chủ ====
+// Route::get('/', function () {
+//     return view('welcome');
+// })->name('home');
+
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+    return view('client.home');
+});
+Route::get('/dat-lich', function () {
+    return view('client.booking');
+});
+
+Route::get('/gio-hang', function () {
+    return view('client.cart');
+});
+
+Route::get('/thanh-toan', function () {
+    return view('client.checkout');
+});
+
+Route::get('/chi-nhanh', function () {
+    return view('client.branch');
+});
+
+Route::get('/chi-tiet-chi-nhanh', function () {
+    return view('client.detailBranch');
+});
+
+Route::get('/bai-viet', function () {
+    return view('client.post');
+});
+
+Route::get('/chi-tiet-bai-viet', function () {
+    return view('client.detailPost');
+});
+
+Route::get('/san-pham', function () {
+    return view('client.product');
+});
+
+Route::get('/chi-tiet-san-pham', function () {
+    return view('client.detailProduct');
+});
+
+Route::get('/dang-ky', function () {
+    return view('client.register');
+});
+
+Route::get('/dang-nhap', function () {
+    return view('client.login');
+});
+
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
