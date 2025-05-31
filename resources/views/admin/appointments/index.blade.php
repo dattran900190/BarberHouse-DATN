@@ -24,11 +24,6 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách thanh toán</h3>
-            <a href="{{ route('appointments.create') }}"
-                class="btn btn-success btn-icon-toggle d-flex align-items-center ml-auto">
-                <i class="fas fa-plus"></i>
-                <span class="btn-text ms-2">Thêm thanh toán</span>
-            </a>
         </div>
 
         <div class="card-body">
@@ -45,6 +40,7 @@
                 <thead class="thead-light">
                     <tr>
                         <th>Stt</th>
+                        <th>Mã lịch hẹn</th>
                         <th>Khách hàng</th>
                         <th>Thợ</th>
                         <th>Dịch vụ</th>
@@ -60,20 +56,36 @@
                         @foreach ($appointments as $index => $appointment)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
+                                <td>{{ $appointment->appointment_code}}</td>
                                 <td>{{ $appointment->user?->name ?? 'N/A' }}</td>
                                 <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
                                 <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
                                 <td>{{ $appointment->branch?->name ?? 'N/A' }}</td>
                                 <td>{{ $appointment->appointment_time }}</td>
                                 <td>
-                                    <span
-                                        class="badge bg-{{ $appointment->status === 'completed' ? 'success' : ($appointment->status === 'cancelled' ? 'danger' : 'secondary') }}">
+                                    @php
+                                        $statusColors = [
+                                            'pending' => 'warning',
+                                            'confirmed' => 'primary',
+                                            'completed' => 'success',
+                                            'cancelled' => 'danger',
+                                        ];
+                                    @endphp
+                                    <span class="badge bg-{{ $statusColors[$appointment->status] ?? 'secondary' }}">
                                         {{ ucfirst($appointment->status) }}
                                     </span>
                                 </td>
                                 <td>
+                                    @php
+                                        $paymentColors = [
+                                            'unpaid' => 'warning',
+                                            'paid' => 'success',
+                                            'refunded' => 'info',
+                                            'failed' => 'danger',
+                                        ];
+                                    @endphp
                                     <span
-                                        class="badge bg-{{ $appointment->payment_status === 'paid' ? 'success' : 'warning' }}">
+                                        class="badge bg-{{ $paymentColors[$appointment->payment_status] ?? 'secondary' }}">
                                         {{ ucfirst($appointment->payment_status) }}
                                     </span>
                                 </td>
@@ -88,11 +100,11 @@
                                     </a>
                                     <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST"
                                         style="display:inline-block;"
-                                        onsubmit="return confirm('Bạn có chắc chắn muốn xoá lịch hẹn này không?');">
+                                        onsubmit="return confirm('Bạn có chắc chắn muốn huỷ lịch hẹn này không?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Xoá
+                                            <i class="fas fa-trash"></i> Huỷ
                                         </button>
                                     </form>
                                 </td>

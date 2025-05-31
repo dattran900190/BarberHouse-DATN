@@ -19,8 +19,8 @@ class Payment extends Model
         'paid_at'
     ];
 
-    // public function appointment()
-    // {
-    //     return $this->belongsTo(Appointment::class);
-    // }
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
+    }
 }

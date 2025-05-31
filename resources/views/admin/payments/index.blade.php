@@ -24,11 +24,6 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách thanh toán</h3>
-            <a href="{{ route('payments.create') }}"
-                class="btn btn-success btn-icon-toggle d-flex align-items-center ml-auto">
-                <i class="fas fa-plus"></i>
-                <span class="btn-text ms-2">Thêm thanh toán</span>
-            </a>
         </div>
 
         <div class="card-body">
@@ -49,6 +44,7 @@
             <th>Phương thức</th>
             <th>Số tiền</th>
             <th>Ngày thanh toán</th>
+            <th>Mã giao dịch</th>
             <th>Trạng thái</th>
             <th class="text-center">Hành động</th>
         </tr>
@@ -58,10 +54,11 @@
             @foreach ($payments as $index => $payment)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $payment->appointment_id ?? 'Không có' }}</td>
+                    <td>{{ $payment->appointment->appointment_code ?? 'Không có' }}</td>
                     <td>{{ ucfirst($payment->method) }}</td>
                     <td>{{ number_format($payment->amount, 0, ',', '.') }}đ</td>
                     <td>{{ $payment->paid_at ? \Carbon\Carbon::parse($payment->paid_at)->format('d/m/Y H:i') : 'Chưa thanh toán' }}</td>
+                    <td>{{ $payment->transaction_code ?? 'Không có' }}</td>
                     <td>
                         @if ($payment->status === 'paid')
                             <span class="badge bg-success">Đã thanh toán</span>
