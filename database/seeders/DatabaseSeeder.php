@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductVariant;
@@ -15,7 +17,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        
+
         // Tạo 4 danh mục sản phẩm
         $categories = ProductCategory::factory(4)->create();
 
@@ -32,15 +34,30 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
-        
+
         // Tạo dữ liệu mẫu bằng factory
         User::factory(30)->create();
         \App\Models\Barber::factory(10)->create();
         \App\Models\Review::factory(30)->create();
         \App\Models\Payment::factory(10)->create();
-        \App\Models\Appointment::factory(10)->create();
+        // \App\Models\Appointment::factory(10)->create();
         \App\Models\Service::factory(10)->create();
         \App\Models\Branch::factory(10)->create();
 
+        Order::factory()
+            ->count(10)
+            ->create()
+            ->each(function ($order) {
+                $items = OrderItem::factory()->count(rand(2, 5))->make();
+                $total = 0;
+
+                foreach ($items as $item) {
+                    $item->order_id = $order->id;
+                    $item->save();
+                    $total += $item->total_price;
+                }
+
+                $order->update(['total_money' => $total]);
+            });
     }
 }
