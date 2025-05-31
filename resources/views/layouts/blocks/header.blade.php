@@ -38,7 +38,7 @@
             <a href="{{ asset('gio-hang') }}"><i class="fa-solid fa-cart-shopping"></i></a>
           </li>
           <li>
-            <a href="{{ asset('dang-nhap') }}"><i class="fa-solid fa-user"></i></a>
+            <a href="{{ asset('login') }}"><i class="fa-solid fa-user"></i></a>
           </li>
           <li>
             <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>

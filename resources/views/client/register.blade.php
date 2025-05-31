@@ -17,9 +17,7 @@
     />
   </head>
   <body>
-
-
-    <main class="">
+    <main>
       <div class="login">
         <div class="image-login">
           <img src="https://file.hstatic.net/200000503583/file/barber-la-nghe-gi__4__54d8d1f24560403b9b5929af8c54f9c1.jpg" alt="">
@@ -30,43 +28,143 @@
             <img src="{{ asset('images/black_logo.png') }}" alt="">
           </div>
 
-         <div class="form">
-          <h3>Đăng ký</h3>
-          <form>
-            <div class="mb-3">
-              <label for="" class="form-label">Họ và tên</label>
-              <input type="text" class="form-control" id="">
-            </div>
-            <div class="mb-3">
-              <label for="" class="form-label">Email</label>
-              <input type="email" class="form-control" id="">
-            </div>
-            <div class="mb-3">
-              <label for="" class="form-label">Mật khẩu</label>
-              <input type="password" class="form-control" id="">
-            </div>
-            <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="exampleCheck1">
-              <label class="form-check-label" for="exampleCheck1">Ghi nhớ</label>
-            </div>
-            <button type="submit" class="btn btn-dark">Đăng ký</button>
+          <div class="form">
+            <h3>Đăng ký</h3>
 
-            <p>Bạn đã chưa có tài khoản? <a href="{{ asset('dang-nhap') }}">Đăng nhập</a></p>
-          </form>
-         </div>
-         <a href="{{ asset('/') }}" class="back-button">
-          &#8592;
-        </a>
+            {{-- Thông báo thành công/lỗi --}}
+            @if (session('success'))
+              <small class="form_message" style="color: green">{{ session('success') }}</small>
+            @endif
+            @if (session('messageError'))
+              <small class="form_message text-danger">{{ session('messageError') }}</small>
+            @endif
+
+            <form action="{{ route('postRegister') }}" method="POST">
+              @csrf
+              <div class="mb-3">
+                <label for="name" class="form-label">Họ và tên</label>
+                <input type="text" class="form-control input-field" id="name" name="name" placeholder="Nhập họ tên" value="{{ old('name') }}">
+                @error('name')
+                  <small class="form_message text-danger" id="error-name" style="display: block">{{ $message }}</small>
+                @enderror
+              </div>
+
+              <div class="mb-3">
+                <label for="gender" class="form-label">Giới tính</label>
+                <select class="form-select" id="gender" name="gender">
+                  <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Chọn giới tính</option>
+                  <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Nam</option>
+                  <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Nữ</option>
+                  <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Khác</option>
+                </select>
+                @error('gender')
+                  <small class="form_message text-danger" id="error-gender" style="display: block">{{ $message }}</small>
+                @enderror
+              </div>
+
+              {{-- <div class="mb-3">
+                <label for="phone" class="form-label">Số điện thoại</label>
+                <input type="text" class="form-control input-field" id="phone" name="phone" placeholder="Nhập số điện thoại" value="{{ old('phone') }}">
+                @error('phone')
+                  <small class="form_message text-danger" id="error-phone" style="display: block">{{ $message }}</small>
+                @enderror
+              </div> --}}
+
+              {{-- <div class="mb-3">
+                <label for="address" class="form-label">Địa chỉ</label>
+                <input type="text" class="form-control input-field" id="address" name="address" placeholder="Nhập địa chỉ" value="{{ old('address') }}">
+                @error('address')
+                  <small class="form_message text-danger" id="error-address" style="display: block">{{ $message }}</small>
+                @enderror
+              </div> --}}
+
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control input-field" id="email" name="email" placeholder="Nhập email" value="{{ old('email') }}">
+                @error('email')
+                  <small class="form_message text-danger" id="error-email" style="display: block">{{ $message }}</small>
+                @enderror
+              </div>
+
+              <div class="mb-3 position-relative">
+                <label for="password" class="form-label">Mật khẩu</label>
+                <div style="position: relative;">
+                  <input type="password" class="form-control input-field" id="password" name="password" placeholder="Nhập mật khẩu">
+                  <span class="toggle-password" onclick="togglePassword('password', 'eye-icon1')" style="position:absolute; right:10px; top: 50%; transform: translateY(-50%); cursor:pointer;">
+                    <i class="fa-solid fa-eye" id="eye-icon1"></i>
+                  </span>
+                </div>
+                @error('password')
+                  <small class="form_message text-danger" id="error-password" style="display: block">{{ $message }}</small>
+                @enderror
+              </div>
+
+              <div class="mb-3 position-relative">
+                <label for="password_confirmation" class="form-label">Nhập lại mật khẩu</label>
+                <div style="position: relative;">
+                  <input type="password" class="form-control input-field" id="password_confirmation" name="password_confirmation" placeholder="Nhập lại mật khẩu">
+                  <span class="toggle-password" onclick="togglePassword('password_confirmation', 'eye-icon2')" style="position:absolute; right:10px; top: 50%; transform: translateY(-50%); cursor:pointer;">
+                    <i class="fa-solid fa-eye" id="eye-icon2"></i>
+                  </span>
+                </div>
+                @error('password_confirmation')
+                  <small class="form_message text-danger" id="error-password_confirmation" style="display: block">{{ $message }}</small>
+                @enderror
+              </div>
+
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Ghi nhớ</label>
+              </div>
+
+              <button type="submit" class="btn btn-dark w-100">Đăng ký</button>
+
+              <p class="mt-3">Bạn đã có tài khoản? <a href="{{ asset('login') }}">Đăng nhập</a></p>
+            </form>
+          </div>
+          <a href="{{ asset('/') }}" class="back-button">&#8592;</a>
         </div>
       </div>
     </main>
 
-    
-  </body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"></script>
+    <script>
+      // Show/hide password
+      function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"
-  ></script>
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        } else {
+          input.type = 'password';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        }
+      }
+
+      // Ẩn lỗi khi người dùng nhập lại
+      document.querySelectorAll('.input-field').forEach(function(input) {
+        input.addEventListener('input', function() {
+          const errorId = 'error-' + input.id;
+          const error = document.getElementById(errorId);
+          if (error) {
+            error.style.display = 'none';
+          }
+        });
+      });
+
+      // Ẩn lỗi khi người dùng chọn lại giới tính
+      document.getElementById('gender').addEventListener('change', function() {
+        const error = document.getElementById('error-gender');
+        if (error) {
+          error.style.display = 'none';
+        }
+      });
+    </script>
+  </body>
 </html>
