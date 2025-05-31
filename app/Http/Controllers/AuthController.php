@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function login()
     {
-        return view('login');
+        return view('client.login');
     }
 
     public function postLogin(AuthRequest $req)
@@ -32,7 +32,7 @@ class AuthController extends Controller
 
     public function register()
     {
-        return view('register');
+        return view('client.register');
     }
 
     public function postRegister(AuthRequest $req)

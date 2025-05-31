@@ -18,8 +18,7 @@
   </head>
   <body>
 
-
-    <main class="">
+    <main>
       <div class="login">
         <div class="image-login">
           <img src="https://file.hstatic.net/200000503583/file/barber-la-nghe-gi__4__54d8d1f24560403b9b5929af8c54f9c1.jpg" alt="">
@@ -30,26 +29,63 @@
             <img src="{{ asset('images/black_logo.png') }}" alt="">
           </div>
 
-         <div class="form">
-          <h3>Đăng nhập</h3>
-          <form>
-            <div class="mb-3">
-              <label for="" class="form-label">Email</label>
-              <input type="email" class="form-control" id="">
-            </div>
-            <div class="mb-3">
-              <label for="" class="form-label">Mật khẩu</label>
-              <input type="password" class="form-control" id="">
-            </div>
-            <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="exampleCheck1">
-              <label class="form-check-label" for="exampleCheck1">Ghi nhớ</label>
-            </div>
-            <button type="submit">Đăng nhập</button>
+          <div class="form">
+            <h3>Đăng nhập</h3>
+            <form action="{{ route('postLogin') }}" method="POST">
+              @csrf
 
-            <p>Bạn chưa có tài khoản? <a href="{{ asset('dang-ky') }}">Đăng ký</a></p>
-          </form>
-         </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input 
+                  type="email" 
+                  class="form-control input-field" 
+                  id="email" 
+                  name="email" 
+                  placeholder="Nhập email"
+                  value="{{ old('email') }}"
+                >
+                @error('email')
+                  <small class="form_message text-danger" id="error-email" style="display: block">{{ $message }}</small>
+                @enderror
+              </div>
+
+              <div class="mb-3 position-relative">
+                <label for="password" class="form-label">Mật khẩu</label>
+                <div style="position: relative;">
+                  <input 
+                    type="password" 
+                    class="form-control input-field" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Nhập mật khẩu"
+                  >
+                  <span 
+                    class="toggle-password" 
+                    onclick="togglePassword()" 
+                    style="position:absolute; right:10px; top: 50%; transform: translateY(-50%); cursor:pointer;"
+                  >
+                    <i class="fa-solid fa-eye" id="eye-icon"></i>
+                  </span>
+                </div>
+                @error('password')
+                  <small class="form_message text-danger" id="error-password" style="display: block">{{ $message }}</small>
+                @enderror
+              </div>
+
+              @if (session('messageError'))
+                <small class="form_message text-danger">{{ session('messageError') }}</small>
+              @endif
+
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Ghi nhớ</label>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+
+              <p class="mt-3">Bạn chưa có tài khoản? <a href="{{ asset('register') }}">Đăng ký</a></p>
+            </form>
+          </div>
         </div>
 
         <a href="{{ asset('/') }}" class="back-button">
@@ -58,12 +94,38 @@
       </div>
     </main>
 
-    
-  </body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      // Show/hide password
+      function togglePassword() {
+          const passwordInput = document.getElementById("password");
+          const eyeIcon = document.getElementById("eye-icon");
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"
-  ></script>
+          if (passwordInput.type === "password") {
+              passwordInput.type = "text";
+              eyeIcon.classList.remove("fa-eye");
+              eyeIcon.classList.add("fa-eye-slash");
+          } else {
+              passwordInput.type = "password";
+              eyeIcon.classList.remove("fa-eye-slash");
+              eyeIcon.classList.add("fa-eye");
+          }
+      }
+
+      // Ẩn lỗi khi người dùng bắt đầu gõ lại
+      document.querySelectorAll('.input-field').forEach(function(input) {
+          input.addEventListener('input', function() {
+              const errorId = 'error-' + input.id;
+              const error = document.getElementById(errorId);
+              if (error) {
+                  error.style.display = 'none';
+              }
+          });
+      });
+    </script>
+  </body>
 </html>
