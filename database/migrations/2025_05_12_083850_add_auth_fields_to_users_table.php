@@ -10,18 +10,17 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::table('users', function (Blueprint $table) {
-        $table->timestamp('email_verified_at')->nullable()->after('email');
-        $table->rememberToken()->after('password');
-    });
-}
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->timestamp('email_verified_at')->nullable()->after('email');
+            $table->rememberToken()->after('password');
+        });
+    }
 
-public function down(): void
-{
-    Schema::table('users', function (Blueprint $table) {
-        $table->dropColumn(['email_verified_at', 'remember_token']);
-    });
-}
-
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['email_verified_at', 'remember_token']);
+        });
+    }
 };
