@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberController;
@@ -23,6 +24,11 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // ==== Trang chủ ====
 
+// Giỏ hàng
+Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::put('/cart/update/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
+Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
 
 Route::get('/', function () {
     return view('client.home');
@@ -31,9 +37,9 @@ Route::get('/dat-lich', function () {
     return view('client.booking');
 });
 
-Route::get('/gio-hang', function () {
-    return view('client.cart');
-});
+// Route::get('/gio-hang', function () {
+//     return view('client.cart');
+// });
 
 Route::get('/thanh-toan', function () {
     return view('client.checkout');
@@ -78,7 +84,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
-  // ==== Dịch vụ ====
+    // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
     // ==== Bình luận ====
@@ -93,7 +99,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Bài viết ====
 
     Route::resource('posts', PostController::class);
- // ==== Danh muc ====
+    // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
 
 
