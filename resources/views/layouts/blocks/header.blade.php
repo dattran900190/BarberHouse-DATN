@@ -35,7 +35,7 @@
             <a href="#"><i class="fa-brands fa-square-youtube"></i></a>
           </li> -->
           <li>
-            <a href="{{ asset('gio-hang') }}"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="{{ asset('cart') }}"><i class="fa-solid fa-cart-shopping"></i></a>
           </li>
           <li>
             <a href="{{ asset('login') }}"><i class="fa-solid fa-user"></i></a>

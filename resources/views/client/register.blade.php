@@ -31,7 +31,6 @@
           <div class="form">
             <h3>Đăng ký</h3>
 
-            {{-- Thông báo thành công/lỗi --}}
             @if (session('success'))
               <small class="form_message" style="color: green">{{ session('success') }}</small>
             @endif
@@ -48,36 +47,7 @@
                   <small class="form_message text-danger" id="error-name" style="display: block">{{ $message }}</small>
                 @enderror
               </div>
-
-              <div class="mb-3">
-                <label for="gender" class="form-label">Giới tính</label>
-                <select class="form-select" id="gender" name="gender">
-                  <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Chọn giới tính</option>
-                  <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Nam</option>
-                  <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Nữ</option>
-                  <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Khác</option>
-                </select>
-                @error('gender')
-                  <small class="form_message text-danger" id="error-gender" style="display: block">{{ $message }}</small>
-                @enderror
-              </div>
-
-              {{-- <div class="mb-3">
-                <label for="phone" class="form-label">Số điện thoại</label>
-                <input type="text" class="form-control input-field" id="phone" name="phone" placeholder="Nhập số điện thoại" value="{{ old('phone') }}">
-                @error('phone')
-                  <small class="form_message text-danger" id="error-phone" style="display: block">{{ $message }}</small>
-                @enderror
-              </div> --}}
-
-              {{-- <div class="mb-3">
-                <label for="address" class="form-label">Địa chỉ</label>
-                <input type="text" class="form-control input-field" id="address" name="address" placeholder="Nhập địa chỉ" value="{{ old('address') }}">
-                @error('address')
-                  <small class="form_message text-danger" id="error-address" style="display: block">{{ $message }}</small>
-                @enderror
-              </div> --}}
-
+              
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control input-field" id="email" name="email" placeholder="Nhập email" value="{{ old('email') }}">
@@ -110,11 +80,6 @@
                 @error('password_confirmation')
                   <small class="form_message text-danger" id="error-password_confirmation" style="display: block">{{ $message }}</small>
                 @enderror
-              </div>
-
-              <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                <label class="form-check-label" for="exampleCheck1">Ghi nhớ</label>
               </div>
 
               <button type="submit" class="btn btn-dark w-100">Đăng ký</button>
