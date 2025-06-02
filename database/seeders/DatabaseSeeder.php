@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\Barber::factory(10)->create();
         \App\Models\Review::factory(30)->create();
         \App\Models\Payment::factory(10)->create();
-        // \App\Models\Appointment::factory(10)->create();
+        \App\Models\Appointment::factory(10)->create();
         \App\Models\Service::factory(10)->create();
         \App\Models\Branch::factory(10)->create();
 

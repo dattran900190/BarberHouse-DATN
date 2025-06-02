@@ -18,6 +18,7 @@ class Barber extends Model
         'skill_level',
         'avatar',
         'rating_avg',
+        'status'
     ];
 
     public function branch()
