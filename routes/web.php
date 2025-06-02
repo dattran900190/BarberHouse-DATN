@@ -13,6 +13,10 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BarberScheduleController;
+
+
+
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -78,7 +82,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
-  // ==== Dịch vụ ====
+    // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
     // ==== Bình luận ====
@@ -93,13 +97,14 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Bài viết ====
 
     Route::resource('posts', PostController::class);
- // ==== Danh muc ====
+    // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
 
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
-
+    // ==== Lịch trình ====
+    Route::resource('barber_schedules', BarberScheduleController::class);
     // ==== Người dùng ====
     Route::resource('users', UserController::class);
 

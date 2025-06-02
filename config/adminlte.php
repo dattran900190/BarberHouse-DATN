@@ -371,10 +371,15 @@ return [
             'url'  => 'admin/appointments',
             'icon' => 'fas fa-calendar-alt',
         ],
-         [
+        [
             'text' => 'Quản lý danh mục',
             'url'  => 'admin/product_categories',
             'icon' => 'fas fa-magic',
+        ],
+        [
+            'text' => 'Quản lý lich trình thợ',
+            'url'  => 'admin/barber_schedules',
+            'icon' => 'fas fa-calendar-check',
         ],
 
 
