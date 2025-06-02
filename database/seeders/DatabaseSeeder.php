@@ -59,5 +59,8 @@ class DatabaseSeeder extends Seeder
 
                 $order->update(['total_money' => $total]);
             });
+
+            \App\Models\CartItem::factory(10)->create();
+        
     }
 }
