@@ -88,12 +88,10 @@ class OrderController extends Controller
 
     public function destroy(Order $order)
     {
-        // Xóa các bản ghi liên kết trong order_items trước
-        $order->orderItems()->delete();
+        // Cập nhật trạng thái thành cancelled
+        $order->status = 'cancelled';
+        $order->save();
 
-        // Sau đó xóa đơn hàng
-        $order->delete();
-
-        return redirect()->route('orders.index')->with('success', 'Đơn hàng đã bị xóa.');
+        return redirect()->route('orders.index')->with('success', 'Đơn hàng đã được hủy.');
     }
 }

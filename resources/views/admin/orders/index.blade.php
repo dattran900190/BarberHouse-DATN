@@ -33,7 +33,8 @@
         <div class="card-body">
             <form action="{{ route('orders.index') }}" method="GET" class="mb-3">
                 <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo mã đơn hàng hoặc tên người nhận..."
+                    <input type="text" name="search" class="form-control"
+                        placeholder="Tìm kiếm theo mã đơn hàng hoặc tên người nhận..."
                         value="{{ request()->get('search') }}">
                     <div class="input-group-append">
                         <button class="btn btn-primary" type="submit">Tìm kiếm</button>
@@ -66,27 +67,50 @@
                             <td>{{ $order->phone }}</td>
                             <td>{{ Str::limit($order->address, 30) }}</td>
                             <td class="text-end">{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                            <td class="text-center text-capitalize">{{ $order->status ?? '-' }}</td>
+                            <td class="text-center text-capitalize">
+                                @if ($order->status)
+                                    <span
+                                        class="badge bg-{{ $order->status == 'pending'
+                                            ? 'warning'
+                                            : ($order->status == 'processing'
+                                                ? 'primary'
+                                                : ($order->status == 'shipping'
+                                                    ? 'info'
+                                                    : ($order->status == 'completed'
+                                                        ? 'success'
+                                                        : 'danger'))) }}">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                @else
+                                    -
+                                @endif
+                            </td>
+
                             <td class="text-center text-uppercase">{{ $order->payment_method ?? '-' }}</td>
                             <td>{{ Str::limit($order->note ?? '-', 30) }}</td>
                             <td>{{ $order->created_at ? $order->created_at->format('d/m/Y H:i') : '-' }}</td>
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info btn-sm d-inline-flex align-items-center">
+                                    <a href="{{ route('orders.show', $order->id) }}"
+                                        class="btn btn-info btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
-                                    {{-- <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning btn-sm d-inline-flex align-items-center">
-                                        <i class="fas fa-edit"></i> <span>Sửa</span>
-                                    </a> --}}
-                                    <form action="{{ route('orders.destroy', $order->id) }}" method="POST" class="d-inline m-0" onsubmit="return confirm('Bạn có chắc chắn muốn xoá đơn hàng này không?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm d-inline-flex align-items-center">
-                                            <i class="fas fa-trash"></i> <span>Xoá</span>
-                                        </button>
-                                    </form>
+
+                                    @if ($order->status === 'pending')
+                                        <form action="{{ route('orders.destroy', $order->id) }}" method="POST"
+                                            class="d-inline m-0"
+                                            onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="btn btn-warning btn-sm d-inline-flex align-items-center">
+                                                <i class="fas fa-ban"></i> <span>Hủy đơn</span>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
+
                         </tr>
                     @empty
                         <tr>

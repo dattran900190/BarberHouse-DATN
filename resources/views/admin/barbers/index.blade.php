@@ -51,6 +51,7 @@
                         <th>Đánh giá</th>
                         <th>Hồ sơ</th>
                         <th>Chi nhánh</th>
+                        <th>Trạng thái</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -73,6 +74,16 @@
                             <td>{{ $barber['rating_avg'] }}</td>
                             <td>{{ $barber['profile'] }}</td>
                             <td>{{ $barber->branch?->name ?? 'Chưa có chi nhánh' }}</td>
+                            <td>
+                                @if ($barber->status === 'active')
+                                    <span class="badge bg-success">Đang làm</span>
+                                @elseif ($barber->status === 'inactive')
+                                    <span class="badge bg-warning">Tạm nghỉ</span>
+                                @else
+                                    <span class="badge bg-secondary">Nghỉ việc</span>
+                                @endif
+                            </td>
+
 
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
@@ -84,16 +95,21 @@
                                         class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>
-                                    <form action="{{ route('barbers.destroy', $barber->id) }}" method="POST"
-                                        class="d-inline m-0"
-                                        onsubmit="return confirm('Bạn có chắc chắn muốn xoá thợ này không?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="btn btn-danger btn-sm d-inline-flex align-items-center">
-                                            <i class="fas fa-trash"></i> <span>Xoá</span>
-                                        </button>
-                                    </form>
+                                    @if ($barber->status !== 'retired')
+                                        <form action="{{ route('barbers.destroy', $barber->id) }}" method="POST"
+                                            class="d-inline m-0"
+                                            onsubmit="return confirm('Bạn có chắc chắn muốn cho thợ này nghỉ việc không?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="btn btn-danger btn-sm d-inline-flex align-items-center">
+                                                <i class="fas fa-user-slash"></i> <span>Nghỉ việc</span>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="badge bg-secondary">Đã nghỉ</span>
+                                    @endif
+
                                 </div>
                             </td>
                         </tr>

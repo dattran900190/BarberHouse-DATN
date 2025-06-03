@@ -60,6 +60,17 @@ class BarberController extends Controller
     {
         $data = $request->validated();
 
+        // Lấy trạng thái hiện tại và trạng thái mới
+        $currentStatus = $barber->status;
+        $newStatus = $data['status'] ?? $currentStatus; // phòng trường hợp không có status trong request
+
+        // Kiểm tra quy tắc chuyển trạng thái
+        if ($currentStatus === 'retired' && $newStatus === 'inactive') {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['status' => 'Không thể chuyển trạng thái từ Nghỉ việc sang Tạm nghỉ/đang làm việc.']);
+        }
+
         if ($request->hasFile('avatar')) {
             if ($barber->avatar && Storage::disk('public')->exists($barber->avatar)) {
                 Storage::disk('public')->delete($barber->avatar);
@@ -76,31 +87,18 @@ class BarberController extends Controller
 
     public function destroy(Barber $barber)
     {
-        // Kiểm tra lịch hẹn có trạng thái không phải 'cancelled' hoặc 'completed'
+        // Kiểm tra lịch hẹn còn hoạt động
         $hasActiveAppointments = $barber->appointments()
             ->whereNotIn('status', ['cancelled', 'completed'])
             ->exists();
 
         if ($hasActiveAppointments) {
             return redirect()->route('barbers.index')
-                ->with('error', 'Không thể xóa thợ vì còn lịch hẹn chưa hoàn tất.');
+                ->with('error', 'Không thể vô hiệu hóa thợ vì còn lịch hẹn chưa hoàn tất.');
         }
+        $barber->status = 'retired';
+        $barber->save();
 
-
-        // Kiểm tra nếu còn đánh giá liên quan
-        if ($barber->reviews()->exists()) {
-            return redirect()->route('barbers.index')
-                ->with('error', 'Không thể xóa thợ vì còn đánh giá liên quan.');
-        }
-
-        // Xóa avatar nếu có
-        if ($barber->avatar && Storage::disk('public')->exists($barber->avatar)) {
-            Storage::disk('public')->delete($barber->avatar);
-        }
-
-        // Xóa thợ
-        $barber->delete();
-
-        return redirect()->route('barbers.index')->with('success', 'Xóa thợ thành công');
+        return redirect()->route('barbers.index')->with('success', 'Thợ đã nghỉ việc.');
     }
 }

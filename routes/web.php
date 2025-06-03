@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberController;
@@ -13,6 +14,10 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BarberScheduleController;
+
+
+
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -22,9 +27,53 @@ Route::post('register', [AuthController::class, 'postRegister'])->name('postRegi
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // ==== Trang chủ ====
+
+// Giỏ hàng
+Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::put('/cart/update/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
+Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
+
 Route::get('/', function () {
-    return view('welcome');
+    return view('client.home');
 })->name('home');
+Route::get('/dat-lich', function () {
+    return view('client.booking');
+});
+
+// Route::get('/gio-hang', function () {
+//     return view('client.cart');
+// });
+
+Route::get('/thanh-toan', function () {
+    return view('client.checkout');
+});
+
+Route::get('/chi-nhanh', function () {
+    return view('client.branch');
+});
+
+Route::get('/chi-tiet-chi-nhanh', function () {
+    return view('client.detailBranch');
+});
+
+Route::get('/bai-viet', function () {
+    return view('client.post');
+});
+
+Route::get('/chi-tiet-bai-viet', function () {
+    return view('client.detailPost');
+});
+
+Route::get('/san-pham', function () {
+    return view('client.product');
+});
+
+Route::get('/chi-tiet-san-pham', function () {
+    return view('client.detailProduct');
+});
+
+
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
@@ -39,7 +88,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
-  // ==== Dịch vụ ====
+    // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
     // ==== Bình luận ====
@@ -54,13 +103,14 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Bài viết ====
 
     Route::resource('posts', PostController::class);
- // ==== Danh muc ====
+    // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
 
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
-
+    // ==== Lịch trình ====
+    Route::resource('barber_schedules', BarberScheduleController::class);
     // ==== Người dùng ====
     Route::resource('users', UserController::class);
 

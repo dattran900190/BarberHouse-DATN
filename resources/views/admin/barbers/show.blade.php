@@ -54,6 +54,21 @@
                             @endif
                         </p>
                     </div>
+
+                    <div class="form-group">
+                        <label>Trạng thái</label>
+                        <p>
+                            @if ($barber->status === 'active')
+                                <span class="text-success font-weight-bold">Đang hoạt động</span>
+                            @elseif ($barber->status === 'inactive')
+                                <span class="text-danger font-weight-bold">Tạm nghỉ/Đang làm việc</span>
+                            @elseif ($barber->status === 'retired')
+                                <span class="text-warning font-weight-bold">Đã nghỉ việc</span>
+                            @else
+                                <span>Không rõ trạng thái</span>
+                            @endif
+                        </p>
+                    </div>
                     <a href="{{ route('barbers.edit', $barber->id) }}" class="btn btn-warning">Sửa</a>
                     <a href="{{ route('barbers.index') }}" class="btn btn-secondary">Quay lại</a>
                 </div>

@@ -21,6 +21,8 @@ return new class extends Migration
             $table->float('rating_avg')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
+            $table->enum('status', ['active', 'inactive', 'retired'])->default('active');
+
 
             $table->unique(['branch_id']);
         });

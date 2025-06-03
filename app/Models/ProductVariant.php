@@ -15,7 +15,8 @@ class ProductVariant extends Model
     // Quan hệ với sản phẩm
     public function product()
     {
-        return $this->belongsTo(Product::class); // Mỗi biến thể thuộc về một sản phẩm
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+        // return $this->belongsTo(Product::class); // Mỗi biến thể thuộc về một sản phẩm
     }
 
     // Quan hệ với dung tích
