@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\ProductVariant;
+
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         // Gọi seeder thủ công (nếu có)
         $this->call([
             // BranchSeeder::class,
-            ProductVariant::class,
+            // ProductVariantSeeder::class,
         ]);
 
         // Tạo dữ liệu mẫu bằng factory
