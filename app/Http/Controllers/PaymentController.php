@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use App\Http\Requests\PaymentRequest;
 
 class PaymentController extends Controller
 {
@@ -42,32 +43,69 @@ class PaymentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Payment $payment)
     {
-        //
+        // Nạp quan hệ liên quan qua appointment
+        $payment->load(['appointment.user', 'appointment.promotion']);
+
+        return view('admin.payments.show', compact('payment'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Payment $payment)
     {
-        //
+        $payments = Payment::all();
+        $paymentLocked = in_array($payment->status, ['paid', 'refunded', 'failed']);
+        return view('admin.payments.edit', compact('payment', 'paymentLocked'));
+
+        // return view('admin.payments.edit', compact('payment'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(PaymentRequest $request, Payment $payment)
     {
-        //
+        $dataToUpdate = [
+            'status' => $request->status,
+            'method' => $request->method,
+        ];
+
+        // Nếu trạng thái mới là 'paid' mà chưa có paid_at thì set thời gian hiện tại
+        if ($request->status === 'paid' && !$payment->paid_at) {
+            $dataToUpdate['paid_at'] = now();
+        }
+
+        // Nếu trạng thái không phải 'paid', bạn có thể muốn reset paid_at thành null
+        if ($request->status !== 'paid') {
+            $dataToUpdate['paid_at'] = null;
+        }
+
+        $payment->update($dataToUpdate);
+
+        return redirect()->route('payments.index')->with('success', 'Cập nhật thông tin thanh toán thành công.');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Payment $payment)
     {
-        //
+        // Nếu đã bị đánh dấu là thất bại từ trước
+        if ($payment->status === 'failed') {
+            return redirect()->route('payments.index')->with('success', 'Thanh toán đã được huỷ trước đó.');
+        }
+
+        // Thực hiện huỷ thanh toán
+        $payment->update([
+            'status' => 'failed',
+            'paid_at' => null, // Huỷ thì không còn thời điểm thanh toán
+        ]);
+
+        return redirect()->route('payments.index')->with('success', 'Thanh toán đã được huỷ.');
     }
 }
