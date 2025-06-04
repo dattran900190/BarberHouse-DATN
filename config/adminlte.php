@@ -381,6 +381,11 @@ return [
             'url'  => 'admin/barber_schedules',
             'icon' => 'fas fa-calendar-check',
         ],
+        [
+            'text' => 'Quản lý banner',
+            'url'  => 'admin/banners',
+            'icon' => 'fas fa-film',
+        ],
 
 
     ],

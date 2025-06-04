@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
         // Tạo 4 danh mục sản phẩm
         $categories = ProductCategory::factory(4)->create();
 
@@ -60,7 +59,6 @@ class DatabaseSeeder extends Seeder
                 $order->update(['total_money' => $total]);
             });
 
-            \App\Models\CartItem::factory(10)->create();
-        
+        \App\Models\CartItem::factory(10)->create();
     }
 }
