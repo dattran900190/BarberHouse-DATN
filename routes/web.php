@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
@@ -105,6 +106,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('posts', PostController::class);
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
+    // ==== Banner ====
+    Route::resource('banners', BannerController::class);
 
 
     // ==== Chi nhánh ====
