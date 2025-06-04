@@ -45,6 +45,9 @@ class Appointment extends Model
         return $this->belongsTo(Branch::class);
     }
 
-     
+     public function promotion()
+    {
+        return $this->belongsTo(Promotion::class);
+    }
 
 }

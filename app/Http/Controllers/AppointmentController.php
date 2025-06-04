@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AppointmentRequest;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 
@@ -65,31 +66,44 @@ class AppointmentController extends Controller
      */
     public function edit(Appointment $appointment)
     {
-        $appointments = Appointment::all(); 
-        return view('admin.appointments.edit', compact('appointment', 'appointment'));
+        $appointments = Appointment::all();
+        return view('admin.appointments.edit', compact('appointment', ));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Appointment $appointment)
-{
-    $appointment->update($request->only(['appointment_time', 'status', 'payment_status', 'note']));
+    public function update(AppointmentRequest $request, Appointment $appointment)
+    {
+        if ($request->status === 'pending' && $appointment->status !== 'pending') {
+            return back()->withErrors(['status' => 'Không thể chuyển về trạng thái chờ xác nhận.']);
+        }
 
-    return redirect()->route('appointments.index')->with('success', 'Cập nhật lịch hẹn thành công.');
-}
+        if ($request->payment_status === 'unpaid' && $appointment->payment_status !== 'unpaid') {
+            return back()->withErrors(['payment_status' => 'Không thể chuyển về trạng thái chưa thanh toán.']);
+        }
+
+        $appointment->update($request->only(['appointment_time', 'status', 'payment_status', 'note']));
+
+        return redirect()->route('appointments.index')->with('success', 'Cập nhật lịch hẹn thành công.');
+    }
 
     /**
      * Remove the specified resource from storage.
      */
-   public function destroy(Appointment $appointment)
-{
-    $appointment->update(['status' => 'cancelled']);
+    public function destroy(Appointment $appointment)
+    {
+        // Nếu đã bị huỷ từ trước
+        if ($appointment->status === 'cancelled') {
+            return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được huỷ trước đó.');
+        }
 
-    if ($appointment->status == 'cancelled') {
-        return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được huỷ trước đó.');
+        // Thực hiện huỷ lịch hẹn
+        $appointment->update([
+            'status' => 'cancelled',
+            'payment_status' => 'failed'
+        ]);
+
+        return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được huỷ.');
     }
-
-    return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được huỷ.');
-}
 }

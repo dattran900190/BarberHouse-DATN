@@ -23,37 +23,76 @@
                     @enderror
                 </div>
 
+                @php
+                    $appointmentLocked = in_array($appointment->status, ['completed', 'cancelled']);
+                    $paymentLocked = in_array($appointment->payment_status, ['paid', 'refunded', 'failed']);
+                @endphp
+
+
                 {{-- Trạng thái lịch hẹn --}}
                 <div class="mb-3">
                     <label for="status" class="form-label">Trạng thái lịch hẹn</label>
-                    <select class="form-control" id="status" name="status">
-                        @foreach (['pending', 'confirmed', 'completed', 'cancelled'] as $status)
+                    <select class="form-control" id="status" name="status"
+                        {{ $appointmentLocked || $paymentLocked ? 'disabled' : '' }}>
+
+                        @php
+                            $statusOptions = [
+                                'pending' => 'Chờ xác nhận',
+                                'confirmed' => 'Đã xác nhận',
+                                'completed' => 'Hoàn thành',
+                                'cancelled' => 'Đã hủy',
+                            ];
+                        @endphp
+
+                        @foreach ($statusOptions as $status => $label)
                             <option value="{{ $status }}"
-                                {{ old('status', $appointment->status) === $status ? 'selected' : '' }}>
-                                {{ ucfirst($status) }}
+                                {{ old('status', $appointment->status) === $status ? 'selected' : '' }}
+                                @if ($status === 'pending' && $appointment->status !== 'pending') disabled @endif>
+                                {{ $label }}
                             </option>
                         @endforeach
                     </select>
+                    @if ($appointmentLocked || $paymentLocked)
+                        <input type="hidden" name="status" value="{{ $appointment->status }}">
+                    @endif
+
                     @error('status')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
+
                 {{-- Trạng thái thanh toán --}}
                 <div class="mb-3">
                     <label for="payment_status" class="form-label">Trạng thái thanh toán</label>
-                    <select class="form-control" id="payment_status" name="payment_status">
-                        @foreach (['unpaid', 'paid', 'refunded', 'failed'] as $status)
+                    <select class="form-control" id="payment_status" name="payment_status"
+                        {{ $paymentLocked ? 'disabled' : '' }}>
+
+                        @php
+                            $paymentOptions = [
+                                'unpaid' => 'Chưa thanh toán',
+                                'paid' => 'Thanh toán thành công',
+                                'refunded' => 'Hoàn trả thanh toán',
+                                'failed' => 'Thanh toán thất bại',
+                            ];
+                        @endphp
+
+                        @foreach ($paymentOptions as $status => $label)
                             <option value="{{ $status }}"
                                 {{ old('payment_status', $appointment->payment_status) === $status ? 'selected' : '' }}>
-                                {{ ucfirst($status) }}
+                                {{ $label }}
                             </option>
                         @endforeach
                     </select>
+                    @if ($paymentLocked)
+                        <input type="hidden" name="payment_status" value="{{ $appointment->payment_status }}">
+                    @endif
+
                     @error('payment_status')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
+
 
                 {{-- Ghi chú --}}
                 <div class="mb-3">

@@ -56,7 +56,7 @@
                         @foreach ($appointments as $index => $appointment)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $appointment->appointment_code}}</td>
+                                <td>{{ $appointment->appointment_code }}</td>
                                 <td>{{ $appointment->user?->name ?? 'N/A' }}</td>
                                 <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
                                 <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
@@ -70,11 +70,19 @@
                                             'completed' => 'success',
                                             'cancelled' => 'danger',
                                         ];
+
+                                        $statusTexts = [
+                                            'pending' => 'Chờ xác nhận',
+                                            'confirmed' => 'Đã xác nhận',
+                                            'completed' => 'Hoàn thành',
+                                            'cancelled' => 'Đã hủy',
+                                        ];
                                     @endphp
                                     <span class="badge bg-{{ $statusColors[$appointment->status] ?? 'secondary' }}">
-                                        {{ ucfirst($appointment->status) }}
+                                        {{ $statusTexts[$appointment->status] ?? 'Không xác định' }}
                                     </span>
                                 </td>
+
                                 <td>
                                     @php
                                         $paymentColors = [
@@ -83,10 +91,16 @@
                                             'refunded' => 'info',
                                             'failed' => 'danger',
                                         ];
+                                        $statusTexts = [
+                                            'unpaid' => 'Chưa thanh toán',
+                                            'paid' => 'Thanh toán thành công',
+                                            'refunded' => 'Hoàn trả thanh toán',
+                                            'failed' => 'Thanh toán thất bại',
+                                        ];
                                     @endphp
                                     <span
                                         class="badge bg-{{ $paymentColors[$appointment->payment_status] ?? 'secondary' }}">
-                                        {{ ucfirst($appointment->payment_status) }}
+                                        {{ $statusTexts[$appointment->payment_status] ?? 'Không xác định' }}
                                     </span>
                                 </td>
                                 <td class="text-center">
@@ -104,7 +118,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Huỷ
+                                            <i class="fas fa-ban"></i> Huỷ
                                         </button>
                                     </form>
                                 </td>

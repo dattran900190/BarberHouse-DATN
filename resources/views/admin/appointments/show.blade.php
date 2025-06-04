@@ -1,58 +1,59 @@
 @extends('adminlte::page')
 
-@section('title', 'Chi tiết Lịch hẹn')
+@section('title', 'Chi tiết Thanh toán')
 
 @section('content')
     <div class="card">
         <div class="card-header bg-primary text-white">
-            <h3 class="card-title mb-0">Chi tiết Lịch hẹn</h3>
+            <h3 class="card-title mb-0">Chi tiết Thanh toán</h3>
         </div>
 
         <div class="card-body">
-            <p><strong>Khách hàng:</strong> {{ $appointment->user->name ?? 'Không xác định' }}</p>
-            <p><strong>Thợ cắt tóc:</strong> {{ $appointment->barber->name ?? 'Không xác định' }}</p>
-            <p><strong>Dịch vụ:</strong> {{ $appointment->service->name ?? 'Không xác định' }}</p>
-            <p><strong>Chi nhánh:</strong> {{ $appointment->branch->name ?? 'Không xác định' }}</p>
 
-            <p><strong>Thời gian hẹn:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}</p>
+            <div class="mb-3"><strong>Mã giao dịch:</strong> {{ $payment->transaction_code ?? 'Không có' }}</div>
 
-            @php
-                $statusColors = [
-                    'pending' => 'warning',
-                    'confirmed' => 'primary',
-                    'completed' => 'success',
-                    'cancelled' => 'danger',
-                ];
-                $paymentColors = [
-                    'unpaid' => 'warning',
-                    'paid' => 'success',
-                    'refunded' => 'info',
-                    'failed' => 'danger',
-                ];
-            @endphp
+            <div class="mb-3"><strong>Lịch hẹn:</strong> 
+                {{ $payment->appointment->user->name ?? 'Không xác định' }} 
+                - {{ \Carbon\Carbon::parse($payment->appointment->appointment_time)->format('d/m/Y H:i') }}
+            </div>
 
-            <p><strong>Trạng thái:</strong> 
-                <span class="badge bg-{{ $statusColors[$appointment->status] ?? 'secondary' }}">
-                    {{ ucfirst($appointment->status) }}
+            <div class="mb-3"><strong>Số tiền:</strong> {{ number_format($payment->amount, 0, ',', '.') }} VNĐ</div>
+
+            <div class="mb-3"><strong>Phương thức thanh toán:</strong> 
+                @php
+                    $methodLabels = ['momo' => 'Chuyển khoản Momo', 'cash' => 'Tiền mặt'];
+                @endphp
+                {{ $methodLabels[$payment->method] ?? 'Không xác định' }}
+            </div>
+
+            <div class="mb-3"><strong>Trạng thái:</strong>
+                @php
+                    $statusColors = [
+                        'pending' => 'warning',
+                        'paid' => 'success',
+                        'refunded' => 'info',
+                        'failed' => 'danger',
+                    ];
+                    $statusLabels = [
+                        'pending' => 'Chờ xử lý',
+                        'paid' => 'Thanh toán thành công',
+                        'refunded' => 'Hoàn trả thanh toán',
+                        'failed' => 'Thanh toán thất bại',
+                    ];
+                @endphp
+                <span class="badge bg-{{ $statusColors[$payment->status] ?? 'secondary' }}">
+                    {{ $statusLabels[$payment->status] ?? ucfirst($payment->status) }}
                 </span>
-            </p>
+            </div>
 
-            <p><strong>Thanh toán:</strong> 
-                <span class="badge bg-{{ $paymentColors[$appointment->payment_status] ?? 'secondary' }}">
-                    {{ ucfirst($appointment->payment_status) }}
-                </span>
-            </p>
+            <div class="mb-3"><strong>Thời gian thanh toán:</strong>
+                {{ $payment->paid_at ? \Carbon\Carbon::parse($payment->paid_at)->format('d/m/Y H:i') : 'Chưa thanh toán' }}
+            </div>
 
-            <p><strong>Khuyến mãi:</strong> {{ $appointment->promotion->code ?? 'Không áp dụng' }}</p>
-            <p><strong>Số tiền giảm:</strong> {{ number_format($appointment->discount_amount, 0, ',', '.') }} VNĐ</p>
-            <p><strong>Ghi chú:</strong> {{ $appointment->note ?? 'Không có' }}</p>
-
-            <p><strong>Ngày tạo:</strong> 
-                {{ $appointment->created_at ? $appointment->created_at->format('d/m/Y H:i') : 'Không xác định' }}
-            </p>
-
-            <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-warning">Sửa</a>
-            <a href="{{ route('appointments.index') }}" class="btn btn-secondary">Quay lại</a>
+            <div class="mt-4">
+                <a href="{{ route('payments.edit', $payment->id) }}" class="btn btn-warning me-2">Sửa</a>
+                <a href="{{ route('payments.index') }}" class="btn btn-secondary">Quay lại</a>
+            </div>
         </div>
     </div>
 @endsection
