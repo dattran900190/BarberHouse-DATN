@@ -16,9 +16,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarberScheduleController;
-
-
-
+use App\Http\Controllers\VolumeController;
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -106,6 +104,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('posts', PostController::class);
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
+      // ==== Volums ====
+    Route::resource('volumes', VolumeController::class)->names('admin.volumes');
     // ==== Banner ====
     Route::resource('banners', BannerController::class);
 

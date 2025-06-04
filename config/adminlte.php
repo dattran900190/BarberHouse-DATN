@@ -352,6 +352,11 @@ return [
             'icon' => 'fas fa-box',
         ],
         [
+    'text' => 'Quản lý dung tích',
+    'url'  => 'admin/volumes',
+    'icon' => 'fas fa-glass-whiskey', // Bạn có thể đổi icon nếu muốn
+],
+        [
             'text' => 'Quản lý bình luận',
             'url'  => 'admin/reviews',
             'icon' => 'fas fa-comments',

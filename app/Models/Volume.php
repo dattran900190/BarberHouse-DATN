@@ -9,12 +9,12 @@ class Volume extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name']; // Các cột có thể gán giá trị hàng loạt
-    protected $table = 'volumes'; // Tên bảng trong database
+    protected $fillable = ['name'];
+    protected $table = 'volumes';
 
-    // Quan hệ với biến thể sản phẩm
-    public function variants()
+    // Mối quan hệ: Một volume có nhiều product variant
+    public function productVariants()
     {
-        return $this->hasMany(ProductVariant::class); // Một dung tích có nhiều biến thể
+        return $this->hasMany(ProductVariant::class, 'volume_id');
     }
 }
