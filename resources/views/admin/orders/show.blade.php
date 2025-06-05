@@ -42,6 +42,15 @@
                 <p><strong>Ghi chú:</strong> {{ $order->note ?: '-' }}</p>
                 <p>
                     <strong>Trạng thái:</strong>
+                    @php
+                        $statusMap = [
+                            'pending' => 'Chờ xử lý',
+                            'processing' => 'Đang xử lý',
+                            'shipping' => 'Đang giao hàng',
+                            'completed' => 'Hoàn thành',
+                            'cancelled' => 'Đã hủy',
+                        ];
+                    @endphp
                     <span
                         class="badge bg-{{ $order->status == 'pending'
                             ? 'warning'
@@ -52,9 +61,10 @@
                                     : ($order->status == 'completed'
                                         ? 'success'
                                         : 'danger'))) }}">
-                        {{ ucfirst($order->status) }}
+                        {{ $statusMap[$order->status] ?? ucfirst($order->status) }}
                     </span>
                 </p>
+
                 <p><strong>Tổng tiền:</strong> {{ number_format($order->total_money, 0, ',', '.') }} đ</p>
             </div>
 
