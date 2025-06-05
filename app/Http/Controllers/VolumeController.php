@@ -9,7 +9,7 @@ class VolumeController extends Controller
 {
     public function index()
     {
-        $volumes = Volume::all();
+        $volumes = Volume::paginate(10); 
         return view('admin.volumes.index', compact('volumes'));
     }
 
@@ -34,10 +34,14 @@ class VolumeController extends Controller
     {
         $request->validate(['name' => 'required']);
         $volume->update($request->all());
-        return redirect()->route('admin.volumes.index')->with('success', 'Cập nhật dung tích thành công!');
+
+        // Lấy lại số trang từ query
+        $page = $request->query('page');
+        return redirect()->route('admin.volumes.index', ['page' => $page])
+                         ->with('success', 'Cập nhật dung tích thành công!');
     }
 
-    public function destroy(Volume $volume)
+    public function destroy(Request $request, Volume $volume)
     {
         // Kiểm tra nếu có sản phẩm đang dùng volume này
         if ($volume->productVariants()->count() > 0) {
@@ -45,6 +49,9 @@ class VolumeController extends Controller
         }
 
         $volume->delete();
-        return redirect()->route('admin.volumes.index')->with('success', 'Xóa dung tích thành công!');
+
+        $page = $request->query('page');
+        return redirect()->route('admin.volumes.index', ['page' => $page])
+                         ->with('success', 'Xóa dung tích thành công!');
     }
 }
