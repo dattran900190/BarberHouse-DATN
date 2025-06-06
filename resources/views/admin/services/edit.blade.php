@@ -12,6 +12,7 @@
             <form action="{{ route('services.update', $service->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="page" value="{{ request('page', 1) }}">
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Tên dịch vụ</label>

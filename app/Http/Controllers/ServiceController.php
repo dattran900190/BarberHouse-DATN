@@ -19,7 +19,7 @@ class ServiceController extends Controller
         return view('admin.services.index', compact('services'));
     }
 
-     public function create()
+    public function create()
     {
         return view('admin.services.create');
     }
@@ -27,7 +27,7 @@ class ServiceController extends Controller
     public function store(ServiceRequest $request)
     {
         $data = $request->validated();
-        
+
         // Nếu có ảnh thì lưu vào storage/app/public/services
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('services', 'public');
@@ -44,12 +44,12 @@ class ServiceController extends Controller
         return view('admin.services.show', compact('service'));
     }
 
-     public function edit(Service $service)
+    public function edit(Service $service)
     {
         return view('admin.services.edit', compact('service'));
     }
 
-     public function update(ServiceRequest $request, Service $service)
+    public function update(ServiceRequest $request, Service $service)
     {
 
         $data = $request->validated();
@@ -66,13 +66,19 @@ class ServiceController extends Controller
         }
 
         $service->update($data);
+        
+        // Lấy số trang từ request
+        $currentPage = $request->input('page', 1);
 
-        return redirect()->route('services.index')->with('success', 'Cập nhật thành công');
+        return redirect()->route('services.index', ['page' => $currentPage])
+            ->with('success', 'Cập nhật thành công');
+
+        // return redirect()->route('services.index')->with('success', 'Cập nhật thành công');
     }
 
     public function destroy(Service $service)
     {
-         // Xóa ảnh nếu tồn tại
+        // Xóa ảnh nếu tồn tại
         if ($service->image && Storage::disk('public')->exists($service->image)) {
             Storage::disk('public')->delete($service->image);
         }

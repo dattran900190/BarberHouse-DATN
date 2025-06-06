@@ -1,59 +1,133 @@
 @extends('adminlte::page')
 
-@section('title', 'Chi tiết Thanh toán')
+@section('title', 'Chi tiết Lịch hẹn')
 
 @section('content')
-    <div class="card">
+    @php
+        $statusColors = [
+            'pending' => 'warning',
+            'confirmed' => 'primary',
+            'completed' => 'success',
+            'cancelled' => 'danger',
+        ];
+        $statusTexts = [
+            'pending' => 'Chờ xác nhận',
+            'confirmed' => 'Đã xác nhận',
+            'completed' => 'Hoàn thành',
+            'cancelled' => 'Đã hủy',
+        ];
+
+        $paymentColors = [
+            'unpaid' => 'warning',
+            'paid' => 'success',
+            'refunded' => 'info',
+            'failed' => 'danger',
+        ];
+        $paymentTexts = [
+            'unpaid' => 'Chưa thanh toán',
+            'paid' => 'Thanh toán thành công',
+            'refunded' => 'Hoàn trả thanh toán',
+            'failed' => 'Thanh toán thất bại',
+        ];
+    @endphp
+
+    <div class="card shadow">
         <div class="card-header bg-primary text-white">
-            <h3 class="card-title mb-0">Chi tiết Thanh toán</h3>
+            <h3 class="card-title mb-0">Chi tiết Lịch hẹn</h3>
         </div>
 
         <div class="card-body">
-
-            <div class="mb-3"><strong>Mã giao dịch:</strong> {{ $payment->transaction_code ?? 'Không có' }}</div>
-
-            <div class="mb-3"><strong>Lịch hẹn:</strong> 
-                {{ $payment->appointment->user->name ?? 'Không xác định' }} 
-                - {{ \Carbon\Carbon::parse($payment->appointment->appointment_time)->format('d/m/Y H:i') }}
+            <div class="row mb-3">
+                <div class="col-md-6"><strong>Khách hàng:</strong> {{ $appointment->user->name ?? 'Không xác định' }}</div>
+                <div class="col-md-6"><strong>Thợ cắt tóc:</strong> {{ $appointment->barber->name ?? 'Không xác định' }}
+                </div>
             </div>
 
-            <div class="mb-3"><strong>Số tiền:</strong> {{ number_format($payment->amount, 0, ',', '.') }} VNĐ</div>
-
-            <div class="mb-3"><strong>Phương thức thanh toán:</strong> 
-                @php
-                    $methodLabels = ['momo' => 'Chuyển khoản Momo', 'cash' => 'Tiền mặt'];
-                @endphp
-                {{ $methodLabels[$payment->method] ?? 'Không xác định' }}
+            <div class="row mb-3">
+                <div class="col-md-6"><strong>Dịch vụ:</strong> {{ $appointment->service->name ?? 'Không xác định' }}</div>
+                <div class="col-md-6"><strong>Chi nhánh:</strong> {{ $appointment->branch->name ?? 'Không xác định' }}</div>
             </div>
 
-            <div class="mb-3"><strong>Trạng thái:</strong>
-                @php
-                    $statusColors = [
-                        'pending' => 'warning',
-                        'paid' => 'success',
-                        'refunded' => 'info',
-                        'failed' => 'danger',
-                    ];
-                    $statusLabels = [
-                        'pending' => 'Chờ xử lý',
-                        'paid' => 'Thanh toán thành công',
-                        'refunded' => 'Hoàn trả thanh toán',
-                        'failed' => 'Thanh toán thất bại',
-                    ];
-                @endphp
-                <span class="badge bg-{{ $statusColors[$payment->status] ?? 'secondary' }}">
-                    {{ $statusLabels[$payment->status] ?? ucfirst($payment->status) }}
-                </span>
+            <div class="row mb-3">
+                <div class="col-md-6"><strong>Thời gian hẹn:</strong>
+                    {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}</div>
+                <div class="col-md-6">
+                    <strong>Trạng thái:</strong>
+                    <span class="badge bg-{{ $statusColors[$appointment->status] ?? 'secondary' }}">
+                        {{ $statusTexts[$appointment->status] ?? ucfirst($appointment->status) }}
+                    </span>
+                </div>
             </div>
 
-            <div class="mb-3"><strong>Thời gian thanh toán:</strong>
-                {{ $payment->paid_at ? \Carbon\Carbon::parse($payment->paid_at)->format('d/m/Y H:i') : 'Chưa thanh toán' }}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Thanh toán:</strong>
+                    <span class="badge bg-{{ $paymentColors[$appointment->payment_status] ?? 'secondary' }}">
+                        {{ $paymentTexts[$appointment->payment_status] ?? ucfirst($appointment->payment_status) }}
+                    </span>
+                </div>
+                <div class="col-md-6"><strong>Khuyến mãi:</strong> {{ $appointment->promotion->code ?? 'Không áp dụng' }}
+                </div>
             </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6"><strong>Số tiền giảm:</strong>
+                    {{ number_format($appointment->discount_amount, 0, ',', '.') }} VNĐ</div>
+                <div class="col-md-6"><strong>Ngày tạo:</strong>
+                    {{ $appointment->created_at ? $appointment->created_at->format('d/m/Y H:i') : 'Không xác định' }}</div>
+            </div>
+
+            <div class="mb-3"><strong>Ghi chú:</strong> {{ $appointment->note ?? 'Không có' }}</div>
 
             <div class="mt-4">
-                <a href="{{ route('payments.edit', $payment->id) }}" class="btn btn-warning me-2">Sửa</a>
-                <a href="{{ route('payments.index') }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-warning me-2">Sửa</a>
+                <a href="{{ route('appointments.index') }}" class="btn btn-secondary">Quay lại</a>
             </div>
         </div>
     </div>
+    @if ($otherBarberAppointments->count())
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">Lịch hẹn khác của thợ - {{ $appointment->barber->name }}</div>
+            <ul class="list-group list-group-flush">
+                @foreach ($otherBarberAppointments as $item)
+                    <li class="list-group-item">
+                        <a href="{{ route('appointments.show', $item->id) }}">
+                            {{ $item->user->name ?? 'Không xác định' }} -
+                            {{ \Carbon\Carbon::parse($item->appointment_time)->format('d/m/Y H:i') }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @else
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">Lịch hẹn khác của thợ - {{ $appointment->barber->name }}</div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-muted">Thợ không có lịch hẹn khác</li>
+            </ul>
+        </div>
+    @endif
+
+    @if ($otherUserAppointments->count())
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">Lịch hẹn khác của khách - {{ $appointment->user->name }}</div>
+            <ul class="list-group list-group-flush">
+                @foreach ($otherUserAppointments as $item)
+                    <li class="list-group-item">
+                        <a href="{{ route('appointments.show', $item->id) }}">
+                            {{ $item->barber->name ?? 'Không xác định' }} -
+                            {{ \Carbon\Carbon::parse($item->appointment_time)->format('d/m/Y H:i') }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @else
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">Lịch hẹn khác của khách - {{ $appointment->user->name }}</div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-muted">Khách không có lịch hẹn khác</li>
+            </ul>
+        </div>
+    @endif
 @endsection

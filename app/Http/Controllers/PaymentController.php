@@ -46,7 +46,7 @@ class PaymentController extends Controller
     public function show(Payment $payment)
     {
         // Nạp quan hệ liên quan qua appointment
-        $payment->load(['appointment.user', 'appointment.promotion']);
+        $payment->load(['appointment.user', 'appointment.promotion', 'appointment.service', 'appointment.barber', 'appointment.branch']);
 
         return view('admin.payments.show', compact('payment'));
     }
