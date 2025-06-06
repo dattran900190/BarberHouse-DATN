@@ -81,7 +81,7 @@
 
             <div class="mt-4">
                 <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-warning me-2">Sửa</a>
-                <a href="{{ route('appointments.index') }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay lại</a>
             </div>
         </div>
     </div>

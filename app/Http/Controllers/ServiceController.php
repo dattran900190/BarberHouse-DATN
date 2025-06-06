@@ -72,8 +72,6 @@ class ServiceController extends Controller
 
         return redirect()->route('services.index', ['page' => $currentPage])
             ->with('success', 'Cập nhật thành công');
-
-        // return redirect()->route('services.index')->with('success', 'Cập nhật thành công');
     }
 
     public function destroy(Service $service)

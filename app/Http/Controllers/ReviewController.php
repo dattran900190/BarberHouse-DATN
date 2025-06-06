@@ -74,7 +74,11 @@ class ReviewController extends Controller
 
         $review->update($data);
 
-        return redirect()->route('reviews.index')->with('success', 'Cập nhật thành công');
+        // Lấy số trang từ request
+        $currentPage = $request->input('page', 1);
+
+        return redirect()->route('reviews.index', ['page' => $currentPage])
+            ->with('success', 'Cập nhật thành công');
     }
 
     /**

@@ -12,6 +12,7 @@
             <form action="{{ route('appointments.update', $appointment->id) }}" method="POST">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="page" value="{{ request('page', 1) }}">
 
                 {{-- Thời gian hẹn --}}
                 <div class="mb-3">
@@ -104,7 +105,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-warning">Cập nhật</button>
-                <a href="{{ route('appointments.index') }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay lại</a>
             </form>
 
         </div>

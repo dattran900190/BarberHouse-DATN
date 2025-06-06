@@ -86,7 +86,11 @@ class PaymentController extends Controller
 
         $payment->update($dataToUpdate);
 
-        return redirect()->route('payments.index')->with('success', 'Cập nhật thông tin thanh toán thành công.');
+        // Lấy số trang từ request
+        $currentPage = $request->input('page', 1);
+
+        return redirect()->route('payments.index', ['page' => $currentPage])
+            ->with('success', 'Cập nhật thông tin thanh toán thành công.');
     }
 
 

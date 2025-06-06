@@ -103,7 +103,11 @@ class AppointmentController extends Controller
 
         $appointment->update($request->only(['appointment_time', 'status', 'payment_status', 'note']));
 
-        return redirect()->route('appointments.index')->with('success', 'Cập nhật lịch hẹn thành công.');
+        // Lấy số trang từ request
+        $currentPage = $request->input('page', 1);
+
+        return redirect()->route('appointments.index', ['page' => $currentPage])
+            ->with('success', 'Cập nhật lịch hẹn thành công.');
     }
 
     /**

@@ -70,7 +70,7 @@
 
             <div class="mt-4">
                 <a href="{{ route('payments.edit', $payment->id) }}" class="btn btn-warning me-2">Sửa</a>
-                <a href="{{ route('payments.index') }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('payments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay lại</a>
             </div>
         </div>
     </div>
