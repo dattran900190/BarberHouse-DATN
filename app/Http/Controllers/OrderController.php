@@ -21,7 +21,7 @@ class OrderController extends Controller
             });
         })
             ->latest()
-            ->paginate(10);
+            ->paginate(5);
 
         return view('admin.orders.index', compact('orders', 'search'));
     }
@@ -82,7 +82,11 @@ class OrderController extends Controller
         $order->status = $newStatus;
         $order->save();
 
-        return redirect()->route('orders.show', $order->id)->with('success', 'Cập nhật trạng thái đơn hàng thành công.');
+        // Lấy số trang từ request
+        $currentPage = $request->input('page', 1);
+
+        return redirect()->route('orders.index', ['page' => $currentPage])
+            ->with('success', 'Cập nhật trạng thái đơn hàng thành công.');
     }
 
 

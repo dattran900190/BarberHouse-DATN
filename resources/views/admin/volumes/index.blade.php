@@ -2,49 +2,77 @@
 
 @section('title', 'Danh sách dung tích')
 
-@section('content')
-    <h1>Danh sách dung tích</h1>
-
-    {{-- Hiển thị thông báo --}}
+@section('content')  
     @if (session('success'))
-        <div style="color: green; margin-bottom: 10px;">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
         </div>
     @endif
 
     @if (session('error'))
-        <div style="color: red; margin-bottom: 10px;">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
         </div>
     @endif
 
-    <a href="{{ route('admin.volumes.create') }}" style="margin-bottom: 10px; display: inline-block;">
-        Thêm mới
-    </a>
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách dung tích sản phẩm</h3>
+            <a href="{{ route('admin.volumes.create') }}"
+               class="btn btn-success btn-icon-toggle d-flex align-items-center">
+                <i class="fas fa-plus"></i>
+                <span class="btn-text ms-2">Thêm sản phẩm</span>
+            </a>
+        </div>
 
-    <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-        <thead>
-            <tr style="background-color: #f2f2f2;">
-                <th>ID</th>
-                <th>Tên</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($volumes as $volume)
-                <tr>
-                    <td>{{ $volume->id }}</td>
-                    <td>{{ $volume->name }}</td>
-                    <td>
-                        <a href="{{ route('admin.volumes.edit', $volume) }}">Sửa</a>
-                        <form action="{{ route('admin.volumes.destroy', $volume) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit">Xóa</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($volumes as $volume)
+                            <tr>
+                                <td>{{ $volume->id }}</td>
+                                <td>{{ $volume->name }}</td>
+                                <td>
+                                    <a href="{{ route('admin.volumes.edit', $volume) }}?page={{ request()->get('page') }}" 
+                                       class="btn btn-sm btn-warning mr-1">
+                                        <i class="fas fa-edit"></i> Sửa
+                                    </a>
+                                    <form action="{{ route('admin.volumes.destroy', $volume) }}?page={{ request()->get('page') }}" 
+                                          method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i> Xóa
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3">Không có dữ liệu dung tích.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex mt-3">
+                {{ $volumes->appends(request()->query())->links() }}
+            </div>
+        </div>
+    </div>
 @endsection

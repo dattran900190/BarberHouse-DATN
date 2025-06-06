@@ -12,6 +12,7 @@
             <form action="{{ route('barbers.update', $barber->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="page" value="{{ request('page', 1) }}">
 
                 <div class="row">
                     <!-- Phần bên trái: Ảnh đại diện -->
@@ -106,7 +107,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-warning">Cập nhật</button>
-                <a href="{{ route('barbers.index') }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('barbers.index',['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay lại</a>
             </form>
         </div>
     </div>

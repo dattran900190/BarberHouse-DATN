@@ -93,13 +93,13 @@
                                 @else
                                     -
                                 @endif
-                            </td>php
+                            </td>
                             <td class="text-center text-uppercase">{{ $order->payment_method ?? '-' }}</td>
                             <td>{{ Str::limit($order->note ?? '-', 30) }}</td>
                             <td>{{ $order->created_at ? $order->created_at->format('d/m/Y H:i') : '-' }}</td>
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('orders.show', $order->id) }}"
+                                    <a href="{{ route('orders.show', ['order' => $order->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-info btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
