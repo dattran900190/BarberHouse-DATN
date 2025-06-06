@@ -21,11 +21,26 @@
         </div>
     @endif
 
+    @php
+        $statusMap = [
+            'pending' => 'Chờ xử lý',
+            'processing' => 'Đang xử lý',
+            'shipping' => 'Đang giao hàng',
+            'completed' => 'Hoàn thành',
+            'cancelled' => 'Đã hủy',
+        ];
+
+        // Thứ tự trạng thái (cancelled không tính vào thứ tự vì nó có thể chọn bất cứ lúc nào)
+        $statusOrder = ['pending', 'processing', 'shipping', 'completed'];
+
+        // Vị trí trạng thái hiện tại trong mảng $statusOrder
+        $currentIndex = array_search($order->status, $statusOrder);
+    @endphp
 
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 flex-grow-1 text-center">Chi tiết đơn hàng: {{ $order->order_code }}</h3>
-            <a href="{{ route('orders.index') }}" class="btn btn-secondary btn-icon-toggle d-flex align-items-center">
+            <a href="{{ route('orders.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary btn-icon-toggle d-flex align-items-center">
                 <i class="fas fa-arrow-left"></i>
                 <span class="btn-text ms-2"> Quay lại danh sách</span>
             </a>
@@ -52,9 +67,10 @@
                                     : ($order->status == 'completed'
                                         ? 'success'
                                         : 'danger'))) }}">
-                        {{ ucfirst($order->status) }}
+                        {{ $statusMap[$order->status] ?? ucfirst($order->status) }}
                     </span>
                 </p>
+
                 <p><strong>Tổng tiền:</strong> {{ number_format($order->total_money, 0, ',', '.') }} đ</p>
             </div>
 
@@ -85,21 +101,35 @@
             <form action="{{ route('orders.update', $order->id) }}" method="POST" class="mt-4 w-50">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="page" value="{{ request('page', 1) }}">
 
                 <div class="form-group">
                     <label for="status">Cập nhật trạng thái đơn hàng:</label>
-                    <select name="status" id="status" class="form-control">
-                        <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
-                        <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>Đang xử lý
-                        </option>
-                        <option value="shipping" {{ $order->status == 'shipping' ? 'selected' : '' }}>Đang giao hàng
-                        </option>
-                        <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
-                        <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                    <select name="status" id="status" class="form-control"
+                        {{ in_array($order->status, ['completed', 'cancelled']) ? 'disabled' : '' }}>
+                        @foreach ($statusMap as $key => $label)
+                            @php
+                                $statusIndex = array_search($key, $statusOrder);
+                                // Disable các trạng thái trước trạng thái hiện tại (trong $statusOrder)
+                                $disabled =
+                                    $statusIndex !== false && $currentIndex !== false && $statusIndex < $currentIndex;
+
+                                // Nếu trạng thái hiện tại khác 'pending' thì disable luôn lựa chọn hủy đơn
+                                if ($key === 'cancelled' && $order->status !== 'pending') {
+                                    $disabled = true;
+                                }
+                            @endphp
+                            <option value="{{ $key }}" {{ $order->status == $key ? 'selected' : '' }}
+                                {{ $disabled ? 'disabled' : '' }}>
+                                {{ $label }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary mt-3">Cập nhật trạng thái</button>
+                @if (!in_array($order->status, ['completed', 'cancelled']))
+                    <button type="submit" class="btn btn-primary mt-3">Cập nhật trạng thái</button>
+                @endif
             </form>
         </div>
     </div>

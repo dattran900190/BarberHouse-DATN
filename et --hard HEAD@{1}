@@ -1,0 +1,40 @@
+[33m0ef562d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mDung[m[33m)[m HEAD@{0}: commit (merge): update order
+[33md74e0a2[m[33m ([m[1;31morigin/Dung[m[33m)[m HEAD@{1}: commit: edit status order
+[33m58cacf1[m HEAD@{2}: pull origin main: Fast-forward
+[33me5b8dfb[m HEAD@{3}: commit (merge): xy ly don hang
+[33m23d2f4f[m HEAD@{4}: commit: xu ly don hang
+[33me96cae0[m HEAD@{5}: commit (merge): oder item
+[33md3bb772[m HEAD@{6}: commit: oder item
+[33m0d40d4e[m HEAD@{7}: commit (merge): pay status
+[33mdb1573b[m HEAD@{8}: commit: pay status
+[33mc023d34[m HEAD@{9}: commit (merge): create db banner
+[33m6faab61[m HEAD@{10}: commit: create banners
+[33m56454e0[m HEAD@{11}: commit: fake data
+[33m9c27dc8[m HEAD@{12}: pull origin main: Fast-forward
+[33m0dddf13[m HEAD@{13}: commit (merge): sua xoa barber
+[33mc19555b[m HEAD@{14}: commit: update delete barber
+[33m40b6594[m HEAD@{15}: commit: delete barber fk
+[33m46c4ed9[m HEAD@{16}: commit (merge): delete barber fk
+[33m87ed4d1[m HEAD@{17}: commit: delete barber fk
+[33m597452b[m HEAD@{18}: commit (merge): update database promotion
+[33me33b2e3[m HEAD@{19}: commit: update database promotion
+[33mf842bc0[m HEAD@{20}: commit (merge): edit barber
+[33m11dc329[m HEAD@{21}: commit: Edit Barber
+[33mc2d4b09[m HEAD@{22}: commit (merge): crud order
+[33m170df5e[m HEAD@{23}: commit: CRUD order
+[33m9067d8b[m HEAD@{24}: commit: update role account
+[33m8f9dc74[m HEAD@{25}: pull origin main: Fast-forward
+[33m16f64c7[m HEAD@{26}: commit (merge): update database
+[33m9355685[m HEAD@{27}: commit: Them bang database
+[33m0b22a4b[m HEAD@{28}: commit (merge): fix conflict
+[33mff1e60f[m HEAD@{29}: commit: phan trang barber
+[33m6bc0a6a[m HEAD@{30}: pull origin main: Fast-forward
+[33mfd7252d[m HEAD@{31}: commit: validate barber
+[33mc36f5cb[m HEAD@{32}: pull origin main: Fast-forward
+[33m6b4234a[m HEAD@{33}: commit (merge): update ControllerBarber
+[33m0605996[m HEAD@{34}: commit: update barberController
+[33m509fed4[m HEAD@{35}: commit: CRUD barber
+[33mb574c30[m HEAD@{36}: pull origin main: Fast-forward
+[33m4ebe011[m[33m ([m[1;32mmain[m[33m)[m HEAD@{37}: pull origin main: Fast-forward
+[33m099ef4e[m[33m ([m[1;31morigin/Tuan[m[33m)[m HEAD@{38}: checkout: moving from main to Dung
+[33m4ebe011[m[33m ([m[1;32mmain[m[33m)[m HEAD@{39}: clone: from https://github.com/dattran900190/BarberHouse-DATN.git
