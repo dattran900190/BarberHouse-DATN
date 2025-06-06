@@ -56,10 +56,28 @@ class AppointmentController extends Controller
      * Display the specified resource.
      */
     public function show(Appointment $appointment)
-    {
-        $appointment->load(['user', 'barber', 'service', 'branch', 'promotion']);
-        return view('admin.appointments.show', compact('appointment'));
-    }
+{
+    $appointment->load(['user', 'barber', 'service', 'branch', 'promotion']);
+
+    $otherBarberAppointments = Appointment::where('barber_id', $appointment->barber_id)
+        ->where('id', '!=', $appointment->id)
+        ->latest('appointment_time')
+        ->limit(5)
+        ->get();
+
+    $otherUserAppointments = Appointment::where('user_id', $appointment->user_id)
+        ->where('id', '!=', $appointment->id)
+        ->latest('appointment_time')
+        ->limit(5)
+        ->get();
+
+    return view('admin.appointments.show', compact(
+        'appointment',
+        'otherBarberAppointments',
+        'otherUserAppointments'
+    ));
+}
+
 
     /**
      * Show the form for editing the specified resource.
@@ -85,7 +103,11 @@ class AppointmentController extends Controller
 
         $appointment->update($request->only(['appointment_time', 'status', 'payment_status', 'note']));
 
-        return redirect()->route('appointments.index')->with('success', 'Cập nhật lịch hẹn thành công.');
+        // Lấy số trang từ request
+        $currentPage = $request->input('page', 1);
+
+        return redirect()->route('appointments.index', ['page' => $currentPage])
+            ->with('success', 'Cập nhật lịch hẹn thành công.');
     }
 
     /**

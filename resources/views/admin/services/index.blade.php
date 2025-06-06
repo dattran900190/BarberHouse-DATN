@@ -64,11 +64,11 @@
                                 <td>{{ $service->duration }} phút</td>
                                 <td>{{ $service->is_combo ? 'Có' : 'Không' }}</td>
                                 <td class="text-center">
-                                    <a href="{{ route('services.show', $service->id) }}"
+                                    <a href="{{ route('services.show', ['service' => $service->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-info btn-sm action-btn">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
-                                    <a href="{{ route('services.edit', $service->id) }}"
+                                    <a href="{{ route('services.edit', ['service' => $service->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-warning btn-sm action-btn">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>

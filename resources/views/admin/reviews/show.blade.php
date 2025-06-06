@@ -23,7 +23,7 @@
 
 
             <a href="{{ route('reviews.edit', $review->id) }}" class="btn btn-warning">Sửa</a>
-            <a href="{{ route('reviews.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('reviews.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay lại</a>
         </div>
     </div>
 @endsection

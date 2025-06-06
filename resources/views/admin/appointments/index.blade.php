@@ -104,11 +104,11 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('appointments.show', $appointment->id) }}"
+                                    <a href="{{ route('appointments.show', ['appointment' => $appointment->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"></i> Xem
                                     </a>
-                                    <a href="{{ route('appointments.edit', $appointment->id) }}"
+                                    <a href="{{ route('appointments.edit', ['appointment' => $appointment->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Sửa
                                     </a>

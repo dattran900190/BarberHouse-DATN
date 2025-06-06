@@ -6,7 +6,8 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách danh mục</h3>
-             <a href="{{ route('product_categories.create') }}" class="btn btn-success btn-icon-toggle d-flex align-items-center">
+            <a href="{{ route('product_categories.create') }}"
+                class="btn btn-success btn-icon-toggle d-flex align-items-center">
                 <i class="fas fa-plus"></i>
                 <span class="btn-text ms-2"> Thêm danh mục</span>
             </a>
@@ -14,22 +15,20 @@
 
         <div class="card-body">
             <form action="{{ route('product_categories.index') }}" method="GET" class="mb-3">
-                <div class="card-body">
+                {{-- HIỂN THỊ THÔNG BÁO --}}
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Thành công!</strong> {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+                    </div>
+                @endif
 
-    {{-- HIỂN THỊ THÔNG BÁO --}}
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Thành công!</strong> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Lỗi!</strong> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-        </div>
-    @endif
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Lỗi!</strong> {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+                    </div>
+                @endif
 
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên hoặc slug..."
@@ -62,20 +61,20 @@
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
                                     <a href="{{ route('product_categories.show', $category->id) }}"
-                                class="btn btn-info btn-sm d-inline-flex align-items-center">
-                                    <i class="fas fa-eye"></i> <span>Xem</span>
-                                </a>
+                                        class="btn btn-info btn-sm d-inline-flex align-items-center">
+                                        <i class="fas fa-eye"></i> <span>Xem</span>
+                                    </a>
 
                                     <a href="{{ route('product_categories.edit', $category->id) }}"
-                                       class="btn btn-warning btn-sm d-inline-flex align-items-center">
+                                        class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>
-                                    <form action="{{ route('product_categories.destroy', $category->id) }}"
-                                          method="POST" class="d-inline m-0"
-                                          onsubmit="return confirm('Xác nhận xoá danh mục?');">
+                                    <form action="{{ route('product_categories.destroy', $category->id) }}" method="POST"
+                                        class="d-inline m-0" onsubmit="return confirm('Xác nhận xoá danh mục?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm d-inline-flex align-items-center">
+                                        <button type="submit"
+                                            class="btn btn-danger btn-sm d-inline-flex align-items-center">
                                             <i class="fas fa-trash"></i> <span>Xoá</span>
                                         </button>
                                     </form>

@@ -66,11 +66,11 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('reviews.show', $review->id) }}"
+                                    <a href="{{ route('reviews.show', ['review' => $review->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-info btn-sm action-btn">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
-                                    <a href="{{ route('reviews.edit', $review->id) }}"
+                                    <a href="{{ route('reviews.edit', ['review' => $review->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-warning btn-sm action-btn">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>

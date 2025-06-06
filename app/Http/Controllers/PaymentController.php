@@ -46,7 +46,7 @@ class PaymentController extends Controller
     public function show(Payment $payment)
     {
         // Nạp quan hệ liên quan qua appointment
-        $payment->load(['appointment.user', 'appointment.promotion']);
+        $payment->load(['appointment.user', 'appointment.promotion', 'appointment.service', 'appointment.barber', 'appointment.branch']);
 
         return view('admin.payments.show', compact('payment'));
     }
@@ -86,7 +86,11 @@ class PaymentController extends Controller
 
         $payment->update($dataToUpdate);
 
-        return redirect()->route('payments.index')->with('success', 'Cập nhật thông tin thanh toán thành công.');
+        // Lấy số trang từ request
+        $currentPage = $request->input('page', 1);
+
+        return redirect()->route('payments.index', ['page' => $currentPage])
+            ->with('success', 'Cập nhật thông tin thanh toán thành công.');
     }
 
 

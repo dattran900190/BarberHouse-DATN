@@ -95,10 +95,10 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('payments.show', $payment->id) }}" class="btn btn-info btn-sm">
+                                    <a href="{{ route('payments.show', ['payment' => $payment->id, 'page' => request('page', 1)]) }}" class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"></i> Xem
                                     </a>
-                                    <a href="{{ route('payments.edit', $payment->id) }}" class="btn btn-warning btn-sm">
+                                    <a href="{{ route('payments.edit', ['payment' => $payment->id, 'page' => request('page', 1)]) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Sửa
                                     </a>
                                     <form action="{{ route('payments.destroy', $payment->id) }}" method="POST"
