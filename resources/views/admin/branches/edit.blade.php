@@ -12,6 +12,8 @@
             <form action="{{ route('branches.update', $branch->id) }}" method="POST">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="page" value="{{ request('page', 1) }}">
+
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Tên chi nhánh</label>
@@ -49,7 +51,9 @@
                 </div>
 
                 <button type="submit" class="btn btn-warning">Cập nhật</button>
-                <a href="{{ route('branches.index') }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('branches.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
+                    lại</a>
+
             </form>
         </div>
     </div>
