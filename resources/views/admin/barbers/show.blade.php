@@ -69,8 +69,10 @@
                             @endif
                         </p>
                     </div>
-                    <a href="{{ route('barbers.edit', $barber->id) }}" class="btn btn-warning">Sửa</a>
-                    <a href="{{ route('barbers.index') }}" class="btn btn-secondary">Quay lại</a>
+                    <a href="{{ route('barbers.edit', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
+                        class="btn btn-warning">Sửa</a>
+                    <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
+                        lại</a>
                 </div>
             </div>
         </div>

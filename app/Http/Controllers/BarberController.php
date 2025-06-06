@@ -80,9 +80,14 @@ class BarberController extends Controller
             $data['avatar'] = $barber->avatar;
         }
 
-        $barber->update($data);
+        
 
-        return redirect()->route('barbers.index')->with('success', 'Cập nhật thành công');
+        $barber->update($data);
+        // Lấy số trang từ request
+        $currentPage = $request->input('page', 1);
+
+        return redirect()->route('barbers.index', ['page' => $currentPage])
+            ->with('success', 'Cập nhật thành công');
     }
 
     public function destroy(Barber $barber)

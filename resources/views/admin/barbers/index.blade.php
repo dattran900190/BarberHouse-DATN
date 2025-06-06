@@ -87,11 +87,11 @@
 
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('barbers.show', $barber->id) }}"
+                                    <a href="{{ route('barbers.show', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-info btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
-                                    <a href="{{ route('barbers.edit', $barber->id) }}"
+                                    <a href="{{ route('barbers.edit', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>
@@ -123,7 +123,7 @@
             </table>
         </div>
     </div>
-    {{ $barbers->links() }}
+    {{ $barbers->appends(request()->query())->links() }}
 @endsection
 
 @section('css')

@@ -67,8 +67,17 @@
                             <td>{{ $order->phone }}</td>
                             <td>{{ Str::limit($order->address, 30) }}</td>
                             <td class="text-end">{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                            <td class="text-center text-capitalize">
+                            <td class="text-center">
                                 @if ($order->status)
+                                    @php
+                                        $statusMap = [
+                                            'pending' => 'Chờ xử lý',
+                                            'processing' => 'Đang xử lý',
+                                            'shipping' => 'Đang giao hàng',
+                                            'completed' => 'Hoàn thành',
+                                            'cancelled' => 'Đã hủy',
+                                        ];
+                                    @endphp
                                     <span
                                         class="badge bg-{{ $order->status == 'pending'
                                             ? 'warning'
@@ -79,19 +88,18 @@
                                                     : ($order->status == 'completed'
                                                         ? 'success'
                                                         : 'danger'))) }}">
-                                        {{ ucfirst($order->status) }}
+                                        {{ $statusMap[$order->status] ?? ucfirst($order->status) }}
                                     </span>
                                 @else
                                     -
                                 @endif
                             </td>
-
                             <td class="text-center text-uppercase">{{ $order->payment_method ?? '-' }}</td>
                             <td>{{ Str::limit($order->note ?? '-', 30) }}</td>
                             <td>{{ $order->created_at ? $order->created_at->format('d/m/Y H:i') : '-' }}</td>
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('orders.show', $order->id) }}"
+                                    <a href="{{ route('orders.show', ['order' => $order->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-info btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
