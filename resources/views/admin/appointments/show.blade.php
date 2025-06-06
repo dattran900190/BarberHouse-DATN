@@ -81,7 +81,19 @@
 
             <div class="mt-4">
                 <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-warning me-2">Sửa</a>
-                <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay lại</a>
+                @if (request()->has('from_payment'))
+                    <a href="{{ route('payments.show', [
+                        'payment' => request('from_payment'),
+                        'page' => request('page_payment', 1),
+                    ]) }}"
+                        class="btn btn-secondary">
+                        Quay lại Payment
+                    </a>
+                @else
+                    <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">
+                        Quay lại
+                    </a>
+                @endif
             </div>
         </div>
     </div>

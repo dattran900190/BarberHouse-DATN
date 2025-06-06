@@ -60,8 +60,6 @@ class PaymentController extends Controller
         $payments = Payment::all();
         $paymentLocked = in_array($payment->status, ['paid', 'refunded', 'failed']);
         return view('admin.payments.edit', compact('payment', 'paymentLocked'));
-
-        // return view('admin.payments.edit', compact('payment'));
     }
 
     /**
@@ -69,29 +67,77 @@ class PaymentController extends Controller
      */
     public function update(PaymentRequest $request, Payment $payment)
     {
-        $dataToUpdate = [
-            'status' => $request->status,
-            'method' => $request->method,
-        ];
+        $currentStatus       = $payment->status;
+        $newStatus           = $request->status;
+        $currentMethod       = $payment->method;
+        $newMethod           = $request->method;
 
-        // Nếu trạng thái mới là 'paid' mà chưa có paid_at thì set thời gian hiện tại
-        if ($request->status === 'paid' && !$payment->paid_at) {
-            $dataToUpdate['paid_at'] = now();
+        // 1. Nếu đã 'refunded', không được phép chuyển status hay method
+        if ($currentStatus === 'refunded') {
+            if ($newStatus !== 'refunded') {
+                return back()->withErrors([
+                    'status' => 'Thanh toán đã được hoàn trả, không thể thay đổi trạng thái.'
+                ]);
+            }
+            if ($newMethod !== $currentMethod) {
+                return back()->withErrors([
+                    'method' => 'Thanh toán đã được hoàn trả, không thể thay đổi phương thức.'
+                ]);
+            }
         }
 
-        // Nếu trạng thái không phải 'paid', bạn có thể muốn reset paid_at thành null
-        if ($request->status !== 'paid') {
-            $dataToUpdate['paid_at'] = null;
+        // 2. Nếu đã 'paid', không cho quay về 'pending'
+        if ($currentStatus === 'paid' && $newStatus === 'pending') {
+            return back()->withErrors([
+                'status' => 'Không thể chuyển từ "Thanh toán thành công" về "Chờ xử lý".'
+            ]);
         }
 
-        $payment->update($dataToUpdate);
+        // 3. Nếu đã 'paid', vẫn cho phép 'paid' → 'refunded' hoặc 'paid' → 'failed'
+        //    => không cần kiểm vì mặc định $newStatus có thể là 'refunded' hoặc 'failed' (hợp lệ)
 
-        // Lấy số trang từ request
-        $currentPage = $request->input('page', 1);
+        // 4. Nếu đang 'failed', không cho quay về 'pending'
+        if ($currentStatus === 'failed' && $newStatus === 'pending') {
+            return back()->withErrors([
+                'status' => 'Không thể chuyển từ "Thanh toán thất bại" về "Chờ xử lý".'
+            ]);
+        }
 
-        return redirect()->route('payments.index', ['page' => $currentPage])
-            ->with('success', 'Cập nhật thông tin thanh toán thành công.');
+        // 5. Nếu đang 'pending', không cho 'pending' → 'refunded'
+        if ($currentStatus === 'pending' && $newStatus === 'refunded') {
+            return back()->withErrors([
+                'status' => 'Không thể chuyển từ "Chờ xử lý" trực tiếp sang "Hoàn trả".'
+            ]);
+        }
+
+        // 6. Nếu đang 'paid' hoặc 'failed', không cho đổi method
+        if (in_array($currentStatus, ['paid', 'refunded']) && $newMethod !== $currentMethod) {
+            return back()->withErrors([
+                'method' => 'Không thể thay đổi phương thức sau khi thanh toán đã hoàn thành/hoàn trả.'
+            ]);
+        }
+        //    Lưu ý: nếu bạn muốn cho 'failed' → 'paid' nhưng vẫn đổi method, 
+        //    thì bỏ in_array(..., ['failed']) trong điều kiện trên.
+
+        // 7. Cuối cùng: tất cả hợp lệ, cập nhật
+        $payment->update($request->only(['status', 'method']));
+
+        // Nếu status mới = 'paid' mà chưa có paid_at, set paid_at = now()
+        if ($newStatus === 'paid' && !$payment->paid_at) {
+            $payment->paid_at = now();
+            $payment->save();
+        }
+
+        // Nếu status không phải 'paid', có thể reset paid_at về null (tuỳ business)
+        if ($newStatus !== 'paid') {
+            $payment->paid_at = null;
+            $payment->save();
+        }
+
+        // Quay về index (hoặc bất cứ đâu) kèm flash
+        return redirect()->route('payments.index')->with('success', 'Cập nhật thanh toán thành công.');
     }
+
 
 
     /**

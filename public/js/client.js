@@ -68,7 +68,7 @@
     window.addEventListener("resize", updateSlide);
 
 
-    // thời gian đặt lịch
+    // thời gian lịch hẹn
   const timeSelect = document.getElementById('time');
   const pad = n => n.toString().padStart(2, '0');
 
