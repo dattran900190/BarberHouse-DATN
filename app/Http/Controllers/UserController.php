@@ -15,22 +15,25 @@ class UserController extends Controller
         $search = $request->input('search');
         $role = $request->input('role', 'user');
 
-        // Lấy danh sách người dùng
         $users = User::where('role', 'user')
             ->when($search && $request->input('role_filter') === 'user', function ($query) use ($search) {
-                return $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('email', 'like', '%' . $search . '%');
-            })->orderBy('id', 'DESC')->paginate(10, ['*'], 'users_page');
+                return $query->where(function ($query2) use ($search) {
+                    $query2->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%');
+                });
+            })->orderBy('id', 'DESC')->paginate(10);
 
-        // Lấy danh sách quản trị viên
         $admins = User::whereIn('role', ['admin', 'admin branch', 'super admin'])
             ->when($search && $request->input('role_filter') === 'admin', function ($query) use ($search) {
-                return $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('email', 'like', '%' . $search . '%');
-            })->orderBy('id', 'DESC')->paginate(10, ['*'], 'admins_page');
+                return $query->where(function ($query2) use ($search) {
+                    $query2->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%');
+                });
+            })->orderBy('id', 'DESC')->paginate(10);
 
         return view('admin.users.index', compact('users', 'admins', 'role', 'search'));
     }
+
 
 
     public function create(Request $request)
@@ -92,6 +95,7 @@ class UserController extends Controller
 
     public function update(UserRequest $request, User $user)
     {
+        $currentPage = $request->input('page', 1);
         $role = $request->input('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
             ($role === 'admin' && !in_array($user->role, ['admin', 'admin branch', 'super admin']))
@@ -123,8 +127,10 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('users.index', ['role' => $role])
-            ->with('success', 'Cập nhật ' . ($role === 'user' ? 'người dùng' : 'quản trị viên') . ' thành công');
+        return redirect()->route('users.index', [
+            'role' => $role,
+            'page' => $currentPage
+        ])->with('success', 'Cập nhật ' . ($role === 'user' ? 'người dùng' : 'quản trị viên') . ' thành công');
     }
 
     public function destroy(User $user, Request $request)

@@ -30,16 +30,14 @@
             <!-- Tabs -->
             <ul class="nav nav-tabs custom-tabs" id="userTabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {{ $role == 'user' ? 'active' : '' }}" id="users-tab" data-toggle="tab"
-                        href="#users" role="tab" aria-controls="users"
-                        aria-selected="{{ $role == 'user' ? 'true' : 'false' }}">
+                    <a class="nav-link {{ $role == 'user' ? 'active' : '' }}"
+                        href="{{ route('users.index', array_merge(request()->except('role', 'page'), ['role' => 'user'])) }}">
                         <i class="fas fa-users mr-1"></i> Người dùng
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ $role == 'admin' ? 'active' : '' }}" id="admins-tab" data-toggle="tab"
-                        href="#admins" role="tab" aria-controls="admins"
-                        aria-selected="{{ $role == 'admin' ? 'true' : 'false' }}">
+                    <a class="nav-link {{ $role == 'admin' ? 'active' : '' }}"
+                        href="{{ route('users.index', array_merge(request()->except('role', 'page'), ['role' => 'admin'])) }}">
                         <i class="fas fa-user-shield mr-1"></i> Quản trị viên
                     </a>
                 </li>
@@ -88,65 +86,67 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($users as $index => $user)
-                                    <tr>
-                                        <td>{{ $users->firstItem() + $index }}</td>
-                                        <td class="text-center">
-                                            @if ($user->avatar)
-                                                <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar"
-                                                    class="rounded-circle img-fluid avatar-img">
-                                            @else
-                                                <div
-                                                    class="rounded-circle bg-secondary d-flex align-items-center justify-content-center avatar-placeholder">
-                                                    <span class="text-white">N/A</span>
-                                                </div>
-                                            @endif
-                                        </td>
-                                        <td>{{ $user->name }}</td>
-                                        <td>{{ $user->email }}</td>
-                                        <td>{{ $user->phone ?? 'Không có' }}</td>
-                                        <td>{{ $user->gender ?? 'Không xác định' }}</td>
-                                        <td>{{ $user->address ?? 'Không có' }}</td>
-                                        <td>{{ $user->role }}</td>
-                                        <td>
-                                            <span
-                                                class="badge badge-pill
+                                @if ($users->count())
+                                    @foreach ($users as $index => $user)
+                                        <tr>
+                                            <td>{{ $users->firstItem() + $index }}</td>
+                                            <td class="text-center">
+                                                @if ($user->avatar)
+                                                    <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar"
+                                                        class="rounded-circle img-fluid avatar-img">
+                                                @else
+                                                    <div
+                                                        class="rounded-circle bg-secondary d-flex align-items-center justify-content-center avatar-placeholder">
+                                                        <span class="text-white">N/A</span>
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td>{{ $user->name }}</td>
+                                            <td>{{ $user->email }}</td>
+                                            <td>{{ $user->phone ?? 'Không có' }}</td>
+                                            <td>{{ $user->gender ?? 'Không xác định' }}</td>
+                                            <td>{{ $user->address ?? 'Không có' }}</td>
+                                            <td>{{ $user->role }}</td>
+                                            <td>
+                                                <span
+                                                    class="badge badge-pill
                                                 {{ $user->status == 'active'
                                                     ? 'badge-success'
                                                     : ($user->status == 'inactive'
                                                         ? 'badge-warning'
                                                         : 'badge-danger') }}">
-                                                {{ $user->status }}
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="d-inline-flex gap-1">
-                                                <a href="{{ route('users.show', ['user' => $user->id, 'role' => 'user']) }}"
-                                                    class="btn btn-info btn-sm d-inline-flex align-items-center">
-                                                    <i class="fas fa-eye"></i> <span>Xem</span>
-                                                </a>
-                                                <a href="{{ route('users.edit', ['user' => $user->id, 'role' => 'user']) }}"
-                                                    class="btn btn-warning btn-sm d-inline-flex align-items-center">
-                                                    <i class="fas fa-edit"></i> <span>Sửa</span>
-                                                </a>
-                                                <form
-                                                    action="{{ route('users.destroy', ['user' => $user->id, 'role' => 'user']) }}"
-                                                    method="POST" class="d-inline m-0"
-                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xoá người dùng này không?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="btn btn-danger btn-sm d-inline-flex align-items-center">
-                                                        <i class="fas fa-trash"></i> <span>Xoá</span>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                @if ($users->isEmpty())
+                                                    {{ $user->status }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="d-inline-flex gap-1">
+                                                    <a href="{{ route('users.show', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}"
+                                                        class="btn btn-info btn-sm d-inline-flex align-items-center">
+                                                        <i class="fas fa-eye"></i> <span>Xem</span>
+                                                    </a>
+                                                    <a href="{{ route('users.edit', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}"
+                                                        class="btn btn-warning btn-sm d-inline-flex align-items-center">
+                                                        <i class="fas fa-edit"></i> <span>Sửa</span>
+                                                    </a>
+                                                    <form
+                                                        action="{{ route('users.destroy', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}"
+                                                        method="POST" class="d-inline m-0"
+                                                        onsubmit="return confirm('Bạn có chắc chắn muốn xoá người dùng này không?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="btn btn-danger btn-sm d-inline-flex align-items-center">
+                                                            <i class="fas fa-trash"></i> <span>Xoá</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
                                     <tr>
-                                        <td colspan="10" class="text-center text-muted py-3">Không có dữ liệu</td>
+                                        <td colspan="7" class="text-center text-muted">Không tìm thấy người dùng nào phù
+                                            hợp.</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -234,11 +234,11 @@
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center flex-wrap btn-group-sm">
                                                 <a href="{{ route('users.show', ['user' => $admin->id, 'role' => 'admin']) }}"
-                                                   class="btn btn-info btn-sm d-inline-flex align-items-center">
+                                                    class="btn btn-info btn-sm d-inline-flex align-items-center">
                                                     <i class="fas fa-eye"></i> <span>Xem</span>
                                                 </a>
                                                 <a href="{{ route('users.edit', ['user' => $admin->id, 'role' => 'admin']) }}"
-                                                     class="btn btn-warning btn-sm d-inline-flex align-items-center">
+                                                    class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                                     <i class="fas fa-edit"></i> <span>Sửa</span>
                                                 </a>
                                                 <form
@@ -247,7 +247,7 @@
                                                     onsubmit="return confirm('Bạn có chắc chắn muốn xoá quản trị viên này không?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                   <button type="submit"
+                                                    <button type="submit"
                                                         class="btn btn-danger btn-sm d-inline-flex align-items-center">
                                                         <i class="fas fa-trash"></i> <span>Xoá</span>
                                                     </button>
@@ -275,8 +275,8 @@
 @endsection
 
 @section('css')
-<link rel="stylesheet" href="{{asset('css/admin/user.css')}}">
-</style>
+    <link rel="stylesheet" href="{{ asset('css/admin/user.css') }}">
+    </style>
 @endsection
 
 @section('js')

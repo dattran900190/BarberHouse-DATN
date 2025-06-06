@@ -12,7 +12,7 @@
             <form action="{{ route('users.update', ['user' => $user->id, 'role' => $role]) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-
+                <input type="hidden" name="page" value="{{ request('page', 1) }}">
                 <div class="row equal-height-columns">
                     <div class="col-md-6 col-12 d-flex flex-column">
                         <div class="mb-3">
@@ -124,7 +124,8 @@
 
                 <div class="d-flex gap-2 mt-3">
                     <button type="submit" class="btn btn-warning">Cập nhật</button>
-                    <a href="{{ route('users.index', ['role' => $role]) }}" class="btn btn-secondary">Quay lại</a>
+                    <a href="{{ route('users.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
+                        lại</a>
                 </div>
             </form>
         </div>
