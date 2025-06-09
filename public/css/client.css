@@ -96,6 +96,8 @@ body a:hover{
   .hero-slider img {
     width: 100%;
     height: 100%;
+    object-fit: cover;   /* Giữ tỷ lệ ảnh, che đầy khung */
+  object-position: center; /* Canh giữa ảnh */
   }
   
   /* prev/next buttons (optional) */
@@ -1346,3 +1348,132 @@ footer {
   color: #444;
   text-decoration: underline;
 }
+
+/* ---------- top barber ----------- */
+
+.list-barber {
+  padding-top: 10%;
+  text-align: center;
+}
+
+.main-list-barber {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* chính xác 3 cột */
+  gap: 20px;
+  max-width: calc(250px * 3 + 40px); /* 3 ảnh + 2 khoảng cách 20px */
+  margin: 0 auto; /* canh giữa toàn lưới */
+  /* padding: 20px; */
+}
+
+.top-barber {
+  width: 250px; /* fix đúng kích thước ảnh */
+  box-sizing: border-box;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  transition: 0.3s ease;
+  background-color: #fff;
+}
+
+/* Phần ảnh và nút */
+.img-top-barber {
+  position: relative;
+  width: 250px;
+  height: 350px;
+  margin: 0 auto;
+}
+
+.img-top-barber img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.img-top-barber .btn {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #444;
+  color: white;
+  font-size: 14px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.img-top-barber .btn:hover {
+  background-color: black;
+  color: white;
+}
+
+/* Link thợ */
+.top-barber a {
+  text-decoration: none;
+  color: #000;
+  cursor: pointer;
+}
+
+.top-barber a:hover {
+  color: #444;
+}
+
+/* ----------- form srearch -------- */
+ /* Overlay phủ toàn màn hình */
+    #search-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    /* Nội dung form tìm kiếm */
+    .search-content {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-content input {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .search-content button {
+      padding: 10px 20px;
+      background-color: #444;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Nút đóng */
+
+    .search-content .close-btn {
+      background: transparent;
+      color: #333;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+      padding: 0 8px;
+    }
+
+    .search-content .close-btn:hover {
+      color: red;
+    }
