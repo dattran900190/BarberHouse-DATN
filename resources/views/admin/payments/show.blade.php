@@ -70,7 +70,8 @@
 
             <div class="mt-4">
                 <a href="{{ route('payments.edit', $payment->id) }}" class="btn btn-warning me-2">Sửa</a>
-                <a href="{{ route('payments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('payments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
+                    lại</a>
             </div>
         </div>
     </div>
@@ -112,8 +113,14 @@
                 </div>
 
                 <div class="mt-3">
-                    <a href="{{ route('appointments.show', $payment->appointment->id) }}" class="btn btn-outline-info">Xem
-                        chi tiết lịch hẹn</a>
+                    <a href="{{ route('appointments.show', [
+                        'appointment' => $payment->appointment->id,
+                        'from_payment' => $payment->id,
+                        'page_payment' => request('page', 1),
+                    ]) }}"
+                        class="btn btn-outline-info">
+                        Xem chi tiết lịch hẹn
+                    </a>
                 </div>
             </div>
         </div>

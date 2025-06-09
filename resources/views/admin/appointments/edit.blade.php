@@ -1,11 +1,11 @@
 @extends('adminlte::page')
 
-@section('title', 'Chỉnh sửa Dịch vụ')
+@section('title', 'Chỉnh sửa lịch hẹn')
 
 @section('content')
     <div class="card">
         <div class="card-header bg-warning text-dark">
-            <h3 class="card-title mb-0">Chỉnh sửa Dịch vụ</h3>
+            <h3 class="card-title mb-0">Chỉnh sửa lịch hẹn</h3>
         </div>
 
         <div class="card-body">
@@ -25,36 +25,53 @@
                 </div>
 
                 @php
-                    $appointmentLocked = in_array($appointment->status, ['completed', 'cancelled']);
-                    $paymentLocked = in_array($appointment->payment_status, ['paid', 'refunded', 'failed']);
-                @endphp
+                    $currentStatus = $appointment->status;
+                    $currentPaymentStatus = $appointment->payment_status;
 
+                    $statusOptions = [
+                        'pending' => 'Chờ xác nhận',
+                        'confirmed' => 'Đã xác nhận',
+                        'completed' => 'Hoàn thành',
+                        'cancelled' => 'Đã hủy',
+                    ];
+                    $paymentOptions = [
+                        'unpaid' => 'Chưa thanh toán',
+                        'paid' => 'Thanh toán thành công',
+                        'refunded' => 'Hoàn trả thanh toán',
+                        'failed' => 'Thanh toán thất bại',
+                    ];
+
+                    // Khi payment đã 'paid' hoặc 'refunded' hoặc 'failed', khóa select này
+                    $paymentLocked = in_array($currentPaymentStatus, ['paid', 'refunded']);
+                    // (Nếu bạn vẫn muốn cho ‘failed’ → ‘paid’, thì hãy loại bỏ 'failed' khỏi mảng trên)
+                @endphp
 
                 {{-- Trạng thái lịch hẹn --}}
                 <div class="mb-3">
                     <label for="status" class="form-label">Trạng thái lịch hẹn</label>
-                    <select class="form-control" id="status" name="status"
-                        {{ $appointmentLocked || $paymentLocked ? 'disabled' : '' }}>
-
-                        @php
-                            $statusOptions = [
-                                'pending' => 'Chờ xác nhận',
-                                'confirmed' => 'Đã xác nhận',
-                                'completed' => 'Hoàn thành',
-                                'cancelled' => 'Đã hủy',
-                            ];
-                        @endphp
-
-                        @foreach ($statusOptions as $status => $label)
-                            <option value="{{ $status }}"
-                                {{ old('status', $appointment->status) === $status ? 'selected' : '' }}
-                                @if ($status === 'pending' && $appointment->status !== 'pending') disabled @endif>
+                    <select class="form-control" id="status" name="status" {{-- Nếu đã cancelled hoặc completed thì disable toàn bộ --}}
+                        @if (in_array($currentStatus, ['completed', 'cancelled'])) disabled @endif>
+                        @foreach ($statusOptions as $statusValue => $label)
+                            <option value="{{ $statusValue }}"
+                                {{ old('status', $currentStatus) === $statusValue ? 'selected' : '' }} {{-- Disabled từng option khi cần --}}
+                                @if (
+                                    // Nếu đang cancelled ⇒ disable mọi option khác
+                                    ($currentStatus === 'cancelled' && $statusValue !== 'cancelled') ||
+                                        // Nếu đang completed ⇒ disable mọi option khác
+                                        ($currentStatus === 'completed' && $statusValue !== 'completed') ||
+                                        // Nếu đang confirmed ⇒ disable option 'pending'
+                                        ($currentStatus === 'confirmed' && $statusValue === 'pending') ||
+                                        // Nếu đang completed/cancelled ⇒ disable 'pending','confirmed'
+                                        (in_array($currentStatus, ['completed', 'cancelled']) && in_array($statusValue, ['pending', 'confirmed']))) disabled @endif>
                                 {{ $label }}
                             </option>
                         @endforeach
                     </select>
-                    @if ($appointmentLocked || $paymentLocked)
-                        <input type="hidden" name="status" value="{{ $appointment->status }}">
+
+                    @if (in_array($currentStatus, ['completed', 'cancelled']))
+                        <small class="text-muted">
+                            Không thể thay đổi vì lịch đã {{ $currentStatus === 'completed' ? 'hoàn thành' : 'bị huỷ' }}.
+                        </small>
                     @endif
 
                     @error('status')
@@ -62,38 +79,38 @@
                     @enderror
                 </div>
 
-
                 {{-- Trạng thái thanh toán --}}
                 <div class="mb-3">
                     <label for="payment_status" class="form-label">Trạng thái thanh toán</label>
                     <select class="form-control" id="payment_status" name="payment_status"
                         {{ $paymentLocked ? 'disabled' : '' }}>
-
-                        @php
-                            $paymentOptions = [
-                                'unpaid' => 'Chưa thanh toán',
-                                'paid' => 'Thanh toán thành công',
-                                'refunded' => 'Hoàn trả thanh toán',
-                                'failed' => 'Thanh toán thất bại',
-                            ];
-                        @endphp
-
-                        @foreach ($paymentOptions as $status => $label)
-                            <option value="{{ $status }}"
-                                {{ old('payment_status', $appointment->payment_status) === $status ? 'selected' : '' }}>
+                        @foreach ($paymentOptions as $payValue => $label)
+                            <option value="{{ $payValue }}"
+                                {{ old('payment_status', $currentPaymentStatus) === $payValue ? 'selected' : '' }}
+                                @if (
+                                    // Nếu đã refunded ⇒ disable mọi option khác
+                                    ($currentPaymentStatus === 'refunded' && $payValue !== 'refunded') ||
+                                        // Nếu đã paid ⇒ disable 'unpaid'
+                                        ($currentPaymentStatus === 'paid' && $payValue === 'unpaid') ||
+                                        // Nếu đã failed ⇒ disable 'unpaid'
+                                        ($currentPaymentStatus === 'failed' && $payValue === 'unpaid')) disabled @endif>
                                 {{ $label }}
                             </option>
                         @endforeach
                     </select>
+
                     @if ($paymentLocked)
-                        <input type="hidden" name="payment_status" value="{{ $appointment->payment_status }}">
+                        <input type="hidden" name="payment_status" value="{{ $currentPaymentStatus }}">
+                        <small class="text-muted">
+                            Thanh toán đã {{ $currentPaymentStatus === 'refunded' ? 'hoàn trả' : 'thành công' }}, không thể
+                            thay đổi.
+                        </small>
                     @endif
 
                     @error('payment_status')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
-
 
                 {{-- Ghi chú --}}
                 <div class="mb-3">
@@ -105,7 +122,8 @@
                 </div>
 
                 <button type="submit" class="btn btn-warning">Cập nhật</button>
-                <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
+                    lại</a>
             </form>
 
         </div>

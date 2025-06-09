@@ -46,7 +46,7 @@
                         <th>Dịch vụ</th>
                         <th>Chi nhánh</th>
                         <th>Thời gian</th>
-                        <th>Trạng thái đặt lịch</th>
+                        <th>Trạng thái lịch hẹn</th>
                         <th>Trạng thái thanh toán</th>
                         <th class="text-center">Hành động</th>
                     </tr>

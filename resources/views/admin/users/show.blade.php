@@ -12,17 +12,18 @@
             <div class="row">
                 <div class="col-md-4 text-center">
                     @if ($user->avatar)
-                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar" 
-                             class="rounded-circle mb-3 img-fluid avatar-img">
+                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar"
+                            class="rounded-circle mb-3 img-fluid avatar-img">
                     @else
-                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mb-3 avatar-placeholder">
+                        <div
+                            class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mb-3 avatar-placeholder">
                             <span class="text-white">N/A</span>
                         </div>
                     @endif
                     <h5>{{ $user->name }}</h5>
                     <p class="text-muted">{{ $user->role }}</p>
                 </div>
-                
+
                 <div class="col-md-8">
                     <p><strong>ID:</strong> {{ $user->id }}</p>
                     <p><strong>Họ tên:</strong> {{ $user->name }}</p>
@@ -31,17 +32,22 @@
                     <p><strong>Giới tính:</strong> {{ $user->gender ?? 'Không xác định' }}</p>
                     <p><strong>Địa chỉ:</strong> {{ $user->address ?? 'Không có' }}</p>
                     <p><strong>Vai trò:</strong> {{ $user->role }}</p>
-                    <p><strong>Trạng thái:</strong> 
-                        <span class="badge 
-                            {{ $user->status == 'active' ? 'badge-success' : 
-                               ($user->status == 'inactive' ? 'badge-warning' : 'badge-danger') }}">
+                    <p><strong>Trạng thái:</strong>
+                        <span
+                            class="badge 
+                            {{ $user->status == 'active'
+                                ? 'badge-success'
+                                : ($user->status == 'inactive'
+                                    ? 'badge-warning'
+                                    : 'badge-danger') }}">
                             {{ $user->status }}
                         </span>
                     </p>
                     <p><strong>Số điểm:</strong> {{ $user->points_balance }}</p>
                     <p><strong>Ngày tạo:</strong> {{ $user->created_at->format('d/m/Y H:i') }}</p>
                     <p><strong>Ngày cập nhật:</strong> {{ $user->updated_at->format('d/m/Y H:i') }}</p>
-                    <a href="{{ route('users.index', ['role' => $role]) }}" class="btn btn-secondary">Quay lại</a>
+                    <a href="{{ route('users.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
+                        lại</a>
                 </div>
             </div>
         </div>
@@ -97,7 +103,9 @@
         }
 
         @media (max-width: 768px) {
-            .avatar-placeholder, .avatar-img {
+
+            .avatar-placeholder,
+            .avatar-img {
                 width: 100px;
                 height: 100px;
                 font-size: 0.9rem;
@@ -107,7 +115,8 @@
                 line-height: 1.5;
             }
 
-            .col-md-4, .col-md-8 {
+            .col-md-4,
+            .col-md-8 {
                 margin-bottom: 1rem;
             }
         }

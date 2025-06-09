@@ -72,8 +72,9 @@ Route::get('/chi-tiet-san-pham', function () {
     return view('client.detailProduct');
 });
 
-// Route::get('/points', [ClientPointController::class, 'index'])->name('client.points.index');
-
+Route::get('/tho-cat', function () {
+    return view('client.listBarber');
+});
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
