@@ -76,6 +76,17 @@ Route::get('/chi-tiet-san-pham', function () {
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
+        Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
+            ->name('barber_schedules.showBranch');
+
+        Route::middleware('branch.admin')->group(function () {
+            Route::resource('barber_schedules', BarberScheduleController::class)
+                ->except(['index', 'show']);
+        });
+
+        // Nếu bạn vẫn muốn index và show có thể xem được bình thường cho tất cả user đăng nhập
+        Route::resource('barber_schedules', BarberScheduleController::class)
+            ->only(['index', 'show']);
     })->name('dashboard');
 
     // Hiển thị giao diện danh sách Thợ cắt tóc
@@ -104,7 +115,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('posts', PostController::class);
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
-      // ==== Volums ====
+    // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
     // ==== Banner ====
     Route::resource('banners', BannerController::class);
@@ -114,6 +125,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('branches', BranchController::class);
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);
+    Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
+        ->name('barber_schedules.showBranch');
+
     // ==== Người dùng ====
     Route::resource('users', UserController::class);
 
