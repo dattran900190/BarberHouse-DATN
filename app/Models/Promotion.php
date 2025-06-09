@@ -14,4 +14,5 @@ class Promotion extends Model
     ];
 
 
+    
 }

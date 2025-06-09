@@ -10,7 +10,7 @@ class Appointment extends Model
     /** @use HasFactory<\Database\Factories\AppointmentFactory> */
     use HasFactory;
 
-      protected $fillable = [
+    protected $fillable = [
         'appointment_code',
         'user_id',
         'barber_id',
@@ -45,9 +45,12 @@ class Appointment extends Model
         return $this->belongsTo(Branch::class);
     }
 
-     public function promotion()
+    public function promotion()
     {
         return $this->belongsTo(Promotion::class);
     }
-
+    public function pointHistories()
+    {
+        return $this->hasMany(PointHistory::class);
+    }
 }
