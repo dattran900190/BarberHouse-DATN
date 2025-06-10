@@ -35,91 +35,107 @@
             <div class="main-list-barber">
                 <div class="top-barber">
                     <div class="img-top-barber">
-                        <a href="">
+                        <a href="{{ asset('chi-tiet-tho-cat') }}">
                             <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
                                 alt="" />
                         </a>
-                        <button href="" class="btn">Đặt lịch ngay</button>
+                        <a href="dat-lich">
+                            <button class="btn">Đặt lịch ngay</button>
+                        </a>
                     </div>
-                    <h5><a href="">Tên ...........</a></h5>
-                    <p><a href="">Địa chỉ .............</a></p>
+                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
+                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
                 </div>
                 <div class="top-barber">
                     <div class="img-top-barber">
-                        <a href="">
+                        <a href="{{ asset('chi-tiet-tho-cat') }}">
                             <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
                                 alt="" />
                         </a>
-                        <button href="" class="btn">Đặt lịch ngay</button>
+                        <a href="dat-lich">
+                            <button class="btn">Đặt lịch ngay</button>
+                        </a>
                     </div>
-                    <h5><a href="">Tên ...........</a></h5>
-                    <p><a href="">Địa chỉ .............</a></p>
+                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
+                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
                 </div>
                 <div class="top-barber">
                     <div class="img-top-barber">
-                        <a href="">
+                        <a href="{{ asset('chi-tiet-tho-cat') }}">
                             <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
                                 alt="" />
                         </a>
-                        <button href="" class="btn">Đặt lịch ngay</button>
+                        <a href="dat-lich">
+                            <button class="btn">Đặt lịch ngay</button>
+                        </a>
                     </div>
-                    <h5><a href="">Tên ...........</a></h5>
-                    <p><a href="">Địa chỉ .............</a></p>
+                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
+                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
                 </div>
                 <div class="top-barber">
                     <div class="img-top-barber">
-                        <a href="">
+                        <a href="{{ asset('chi-tiet-tho-cat') }}">
                             <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
                                 alt="" />
                         </a>
-                        <button href="" class="btn">Đặt lịch ngay</button>
+                        <a href="dat-lich">
+                            <button class="btn">Đặt lịch ngay</button>
+                        </a>
                     </div>
-                    <h5><a href="">Tên ...........</a></h5>
-                    <p><a href="">Địa chỉ .............</a></p>
+                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
+                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
                 </div>
                 <div class="top-barber">
                     <div class="img-top-barber">
-                        <a href="">
+                        <a href="{{ asset('chi-tiet-tho-cat') }}">
                             <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
                                 alt="" />
                         </a>
-                        <button href="" class="btn">Đặt lịch ngay</button>
+                        <a href="dat-lich">
+                            <button class="btn">Đặt lịch ngay</button>
+                        </a>
                     </div>
-                    <h5><a href="">Tên ...........</a></h5>
-                    <p><a href="">Địa chỉ .............</a></p>
+                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
+                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
                 </div>
                 <div class="top-barber">
                     <div class="img-top-barber">
-                        <a href="">
+                        <a href="{{ asset('chi-tiet-tho-cat') }}">
                             <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
                                 alt="" />
                         </a>
-                        <button href="" class="btn">Đặt lịch ngay</button>
+                        <a href="dat-lich">
+                            <button class="btn">Đặt lịch ngay</button>
+                        </a>
                     </div>
-                    <h5><a href="">Tên ...........</a></h5>
-                    <p><a href="">Địa chỉ .............</a></p>
+                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
+                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
                 </div>
                 <div class="top-barber">
                     <div class="img-top-barber">
-                        <a href="">
+                        <a href="{{ asset('chi-tiet-tho-cat') }}">
                             <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
                                 alt="" />
                         </a>
-                        <button href="" class="btn">Đặt lịch ngay</button>
+                        <a href="dat-lich">
+                            <button class="btn">Đặt lịch ngay</button>
+                        </a>
                     </div>
-                    <h5><a href="">Tên ...........</a></h5>
-                    <p><a href="">Địa chỉ .............</a></p>
+                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
+                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
                 </div>
                 <div class="top-barber">
                     <div class="img-top-barber">
-                        <a href="">
+                        <a href="{{ asset('chi-tiet-tho-cat') }}">
                             <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
                                 alt="" />
                         </a>
-                        <button href="" class="btn">Đặt lịch ngay</button>
+                        <a href="dat-lich">
+                            <button class="btn">Đặt lịch ngay</button>
+                        </a>
                     </div>
-                    <h5><a href="">Tên ...........</a></h5>
-                    <p><a href="">Địa chỉ .............</a></p>
+                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
+                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
                 </div>
 
             </div>

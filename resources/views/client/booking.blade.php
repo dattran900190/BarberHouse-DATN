@@ -29,44 +29,132 @@
         <h2 style="text-align: center; font-family: 'Segoe UI', sans-serif">
             Đặt Lịch Cắt Tóc
         </h2>
-        <form id="bookingForm">
-            <label for="fullName">Họ và tên:</label>
-            <input type="text" id="fullName" name="fullName" />
 
-            <label for="phone">Số điện thoại:</label>
-            <input type="tel" id="phone" name="phone" pattern="[0-9]{10,11}" />
+        {{-- @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif --}}
 
-            <label for="branch">Chi nhánh:</label>
-            <select id="branch" name="branch">
-                <option value="">-- Chọn chi nhánh --</option>
-                <option value="quan1">Quận 1 - Tân Định</option>
-                <option value="quan2">Quận 2 - Thảo Điền</option>
-                <option value="binhthanh">Bình Thạnh</option>
-                <!-- Thêm các chi nhánh khác nếu cần -->
-            </select>
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
 
-            <label for="service">Dịch vụ:</label>
-            <select id="service" name="service">
-                <option value="">-- Chọn dịch vụ --</option>
-                <option value="cat-toc">Cắt tóc</option>
-                <option value="goi-dau">Gội đầu</option>
-                <option value="cao-rau">Cạo râu</option>
-                <option value="nhuom-toc">Nhuộm tóc</option>
-                <!-- Thêm các dịch vụ khác nếu cần -->
-            </select>
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
 
-            <label for="date">Ngày hẹn:</label>
-            <input type="date" id="date" name="date" />
+        <form id="bookingForm" method="POST" action="{{ route('dat-lich.store') }}">
+            @csrf
 
-            <label for="timeBooking">Giờ hẹn:</label>
-            <input type="time" id="time" name="date" />
-            {{-- <select id="timeBooking" name="time">
-          <option value="">-- Chọn khung giờ --</option>
-          <!-- Các option sẽ được sinh ra bởi JavaScript -->
-        </select> --}}
 
-            <button type="submit">Đặt lịch</button>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group mb-3">
+                        <span class="form-label">Họ và tên</span>
+                        <input id="name" name="name" class="form-control" type="text"
+                            placeholder="Nhập họ và tên">
+                        @error('name')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group mb-3">
+                        <span class="form-label">Số điện thoại</span>
+                        <input id="phone" name="phone" class="form-control" type="tel" pattern="[0-9]{10,11}"
+                            placeholder="Nhập số điện thoại">
+                        @error('phone')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group mb-3">
+                        <span class="form-label">Ngày hẹn</span>
+                        <input id="appointment_date" name="appointment_date" class="form-control" type="date">
+                        @error('appointment_date')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group mb-3">
+                        <span class="form-label">Giờ hẹn</span>
+                        <input id="appointment_time" name="appointment_time" class="form-control" type="time">
+                        @error('appointment_time')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-group mb-3">
+                <span class="form-label">Chi nhánh</span>
+                <select id="branch" name="branch_id" class="form-control">
+                    <option value="">-- Chọn chi nhánh --</option>
+                    @foreach ($branches as $branch)
+                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                    @endforeach
+                </select>
+                @error('branch_id')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="form-group mb-3">
+                <span class="form-label">Dịch vụ</span>
+                <select id="service" name="service_id" class="form-control">
+                    <option value="">-- Chọn dịch vụ --</option>
+                    @foreach ($services as $service)
+                        <option value="{{ $service->id }}">{{ $service->name }}</option>
+                    @endforeach
+                </select>
+                @error('service_id')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
+
+            <div class="form-group mb-3">
+                <span class="form-label">Thợ</span>
+                <select id="barber" name="barber_id" class="form-control">
+                    <option value="">-- Chọn thợ --</option>
+                    @foreach ($barbers as $barber)
+                        <option value="{{ $barber->id }}">{{ $barber->name }}</option>
+                    @endforeach
+                </select>
+                @error('barber_id')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="form-btn mt-3">
+                <button type="submit" class="submit-btn btn btn-primary">
+                    Đặt lịch
+                </button>
+            </div>
         </form>
+
+
     </main>
     <script>
         const icon = document.getElementById("search-icon");
