@@ -16,6 +16,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarberScheduleController;
+use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\VolumeController;
 
 // ==== Auth ====
@@ -36,9 +37,14 @@ Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart
 Route::get('/', function () {
     return view('client.home');
 })->name('home');
-Route::get('/dat-lich', function () {
-    return view('client.booking');
-});
+
+// Route::get('/dat-lich', function () {
+//     return view('client.booking');
+// });
+
+Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
+Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('dat-lich.store');
+
 
 // Route::get('/gio-hang', function () {
 //     return view('client.cart');
@@ -74,6 +80,10 @@ Route::get('/chi-tiet-san-pham', function () {
 
 Route::get('/tho-cat', function () {
     return view('client.listBarber');
+});
+
+Route::get('/chi-tiet-tho-cat', function () {
+    return view('client.detailBarber');
 });
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
