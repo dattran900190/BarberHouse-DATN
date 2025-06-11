@@ -352,10 +352,10 @@ return [
             'icon' => 'fas fa-box',
         ],
         [
-    'text' => 'Quản lý dung tích',
-    'url'  => 'admin/volumes',
-    'icon' => 'fas fa-glass-whiskey', // Bạn có thể đổi icon nếu muốn
-],
+            'text' => 'Quản lý dung tích',
+            'url'  => 'admin/volumes',
+            'icon' => 'fas fa-glass-whiskey', // Bạn có thể đổi icon nếu muốn
+        ],
         [
             'text' => 'Quản lý bình luận',
             'url'  => 'admin/reviews',
@@ -390,6 +390,11 @@ return [
             'text' => 'Quản lý banner',
             'url'  => 'admin/banners',
             'icon' => 'fas fa-film',
+        ],
+        [
+            'text' => 'Quản lý lịch sử điểm',
+            'url'  => 'admin/point-histories',
+            'icon' => 'fas fa-history',
         ],
 
 
