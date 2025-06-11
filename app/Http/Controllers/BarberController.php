@@ -33,11 +33,11 @@ class BarberController extends Controller
     public function store(BarberRequest $request)
     {
         $data = $request->validated();
+        // dd($data);
 
         if ($request->hasFile('avatar')) {
             $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
-
         Barber::create($data);
 
         return redirect()->route('barbers.index')->with('success', 'Thêm thợ thành công');
