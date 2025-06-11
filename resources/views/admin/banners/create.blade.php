@@ -21,7 +21,7 @@
         </div>
 
         <div class="form-group">
-            <label>Link (nếu có)</label>
+            <label>Link</label>
             <input type="text" name="link" class="form-control @error('link') is-invalid @enderror"
                    value="{{ old('link') }}">
             @error('link')

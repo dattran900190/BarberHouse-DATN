@@ -39,7 +39,8 @@
                                     <span class="text-muted">Không có ảnh</span>
                                 @endif
                             </td>
-                            <td><a href="{{ $banner->link_url }}" target="_blank">{{ $banner->link_url }}</a></td>
+                            <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <a href="{{ $banner->link_url }}" target="_blank">{{ $banner->link_url }}</a></td>
                             <td class="text-center">
                                 @if($banner->is_active)
                                     <span class="badge bg-success">Hiển thị</span>

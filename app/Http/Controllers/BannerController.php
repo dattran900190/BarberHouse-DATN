@@ -23,31 +23,25 @@ class BannerController extends Controller
         return view('admin.banners.create');
     }
 
-  public function store(Request $request)
+ public function store(BannerRequest $request)
 {
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'link' => 'nullable|url',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'status' => 'required|in:0,1',
-    ]);
+    $validated = $request->validated();
 
-    // Upload image nếu có
     $path = null;
     if ($request->hasFile('image')) {
         $path = $request->file('image')->store('uploads/banners', 'public');
     }
 
-    // Tạo bản ghi mới
     Banner::create([
         'title' => $validated['title'],
-        'link_url' => $validated['link'] ?? null, // map đúng tên cột
+        'link_url' => $validated['link_url'] ?? null, // đúng field trong BannerRequest là link_url
         'image_url' => $path,
-        'is_active' => $validated['status'], // map đúng tên cột
+        'is_active' => $validated['is_active'] ?? 0,
     ]);
 
     return redirect()->route('banners.index')->with('success', 'Đã thêm banner thành công!');
 }
+
 
    public function show($id)
 {
@@ -61,39 +55,29 @@ class BannerController extends Controller
     return view('admin.banners.edit', compact('banner'));
 }
 
-public function update(Request $request, Banner $banner)
+public function update(BannerRequest $request, Banner $banner)
 {
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'link' => 'nullable|url',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'status' => 'required|in:0,1',
-        'position' => 'nullable|string|max:50',
-    ]);
+    $validated = $request->validated();
 
-    // Mảng dữ liệu để cập nhật
     $dataToUpdate = [
         'title' => $validated['title'],
-        'link_url' => $validated['link'] ?? null,
-        'is_active' => $validated['status'],
+        'link_url' => $validated['link_url'] ?? null,
+        'is_active' => $validated['is_active'] ?? 0,
         'position' => $validated['position'] ?? null,
     ];
 
-    // Nếu có file ảnh mới, upload ảnh và xóa ảnh cũ nếu tồn tại
     if ($request->hasFile('image')) {
-        // Xóa ảnh cũ
         if ($banner->image_url && Storage::disk('public')->exists($banner->image_url)) {
             Storage::disk('public')->delete($banner->image_url);
         }
-        // Upload ảnh mới
         $dataToUpdate['image_url'] = $request->file('image')->store('uploads/banners', 'public');
     }
 
-    // Cập nhật banner
     $banner->update($dataToUpdate);
 
     return redirect()->route('banners.index')->with('success', 'Cập nhật banner thành công!');
 }
+
 
 
     public function destroy(Banner $banner)
