@@ -391,6 +391,11 @@ return [
             'url'  => 'admin/banners',
             'icon' => 'fas fa-film',
         ],
+         [
+            'text' => 'Quản lý mã giảm giá',
+            'url'  => 'admin/promotions',
+            'icon' => 'fas fa-tags',
+        ],
 
 
     ],
