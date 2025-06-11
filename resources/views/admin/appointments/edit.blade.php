@@ -112,15 +112,6 @@
                     @enderror
                 </div>
 
-                {{-- Ghi chú --}}
-                <div class="mb-3">
-                    <label for="note" class="form-label">Ghi chú</label>
-                    <textarea class="form-control" id="note" name="note" rows="3">{{ old('note', $appointment->note) }}</textarea>
-                    @error('note')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
                 <button type="submit" class="btn btn-warning">Cập nhật</button>
                 <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
                     lại</a>

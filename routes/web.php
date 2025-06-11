@@ -38,10 +38,6 @@ Route::get('/', function () {
     return view('client.home');
 })->name('home');
 
-// Route::get('/dat-lich', function () {
-//     return view('client.booking');
-// });
-
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
 Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('dat-lich.store');
 

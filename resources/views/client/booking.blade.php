@@ -30,16 +30,6 @@
             Đặt Lịch Cắt Tóc
         </h2>
 
-        {{-- @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif --}}
-
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
@@ -57,6 +47,17 @@
                 </button>
             </div>
         @endif
+
+        @if (session('mustLogin'))
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Bạn cần đăng nhập để đặt lịch.</strong>
+        <div class="mt-2">
+            <a href="{{ route('login') }}" class="btn btn-sm btn-primary">Đăng nhập</a>
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="alert">Huỷ</button>
+        </div>
+    </div>
+@endif
+
 
         <form id="bookingForm" method="POST" action="{{ route('dat-lich.store') }}">
             @csrf
@@ -143,6 +144,14 @@
                     @endforeach
                 </select>
                 @error('barber_id')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="form-group mb-3">
+                <span class="form-label">Ghi chú</span>
+                <textarea name="note" id="" class="form-control" rows="4" placeholder="ghi chú có thể bỏ trống ..."></textarea>
+                @error('note')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
             </div>

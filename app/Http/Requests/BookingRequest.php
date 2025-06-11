@@ -2,14 +2,16 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Http\FormRequest;
 
 class BookingRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        // Nếu chưa đăng nhập → từ chối authorize
+    return Auth::check();
     }
 
     public function rules(): array
