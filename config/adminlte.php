@@ -396,6 +396,11 @@ return [
             'url'  => 'admin/point-histories',
             'icon' => 'fas fa-history',
         ],
+        [
+            'text' => 'Quản lý mã giảm giá',
+            'url'  => 'admin/promotions',
+            'icon' => 'fas fa-tags',
+        ],
 
 
     ],
