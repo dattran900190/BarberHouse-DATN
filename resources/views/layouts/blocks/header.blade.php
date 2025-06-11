@@ -16,7 +16,7 @@
 
     <div class="nav-right">
         <ul>
-            <li><a href="{{ asset('dat-lich') }}">Đặt lịch</a></li>
+            <li><a href="{{ route('dat-lich') }}">Đặt lịch</a></li>
             <li><a href="{{ asset('chi-nhanh') }}">Chi nhánh</a></li>
         </ul>
     </div>
