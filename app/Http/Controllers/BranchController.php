@@ -61,9 +61,12 @@ class BranchController extends Controller
     public function update(BranchRequest $request, Branch $branch)
     {
         $branch->update($request->validated());
+        $currentPage = $request->input('page', 1);
 
-        return redirect()->route('branches.index')->with('success', 'Cập nhật thành công');
+        return redirect()->route('branches.index', ['page' => $currentPage])
+            ->with('success', 'Cập nhật thành công');
     }
+
 
     // Xoá chi nhánh
     public function destroy(Branch $branch)

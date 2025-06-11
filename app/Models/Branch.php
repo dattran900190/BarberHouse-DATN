@@ -18,6 +18,6 @@ class Branch extends Model
 
     public function barbers()
     {
-        return $this->hasMany(Barber::class);
+        return $this->hasMany(Barber::class,);
     }
 }

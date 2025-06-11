@@ -15,8 +15,10 @@
             <p><strong>Email:</strong> {{ $branch->email }}</p>
             <p><strong>Ngày tạo:</strong> {{ $branch->created_at->format('d/m/Y H:i') }}</p>
 
-            <a href="{{ route('branches.edit', $branch->id) }}" class="btn btn-warning">Sửa</a>
-            <a href="{{ route('branches.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"
+                class="btn btn-warning">Sửa</a>
+            <a href="{{ route('branches.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
+                lại</a>
         </div>
     </div>
 
@@ -38,6 +40,7 @@
                             <th>Đánh giá</th>
                             <th>Hồ sơ</th>
                             <th>Avatar</th>
+                            <th>Trạng thái</th>
                             <th>Hành động</th>
                         </tr>
                     </thead>
@@ -58,8 +61,25 @@
                                     @endif
                                 </td>
                                 <td>
+                                    @if ($barber->status === 'active')
+                                        <span class="badge bg-success">Đang làm</span>
+                                    @elseif ($barber->status === 'inactive')
+                                        <span class="badge bg-warning">Tạm nghỉ</span>
+                                    @else
+                                        <span class="badge bg-secondary">Nghỉ việc</span>
+                                    @endif
+                                </td>
+
+
+
+                                <td>
+                                    <a href="{{ route('barbers.show', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
+                                        class="btn btn-info btn-sm d-inline-flex align-items-center">
+                                        <i class="fas fa-eye"></i> <span>Xem</span>
+                                    </a>
                                     <a href="{{ route('barbers.edit', $barber->id) }}"
                                         class="btn btn-sm btn-warning">Sửa</a>
+
                                     {{-- Thêm các hành động khác nếu cần --}}
                                 </td>
                             </tr>
