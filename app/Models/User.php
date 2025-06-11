@@ -44,4 +44,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function pointHistories()
+    {
+        return $this->hasMany(PointHistory::class);
+    }
+
+    public function redeemedVouchers()
+    {
+        return $this->hasMany(UserRedeemedVoucher::class);
+    }
 }
