@@ -15,6 +15,8 @@ return new class extends Migration
             $table->bigInteger('id', true);
             $table->string('appointment_code')->unique();
             $table->bigInteger('user_id')->nullable()->index('user_id');
+            $table->string('name')->nullable();
+            $table->string('phone')->nullable();
             $table->bigInteger('barber_id')->nullable();
             $table->bigInteger('service_id')->nullable()->index('service_id');
             $table->bigInteger('branch_id')->nullable()->index('branch_id');
