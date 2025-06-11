@@ -62,14 +62,15 @@
                             <td>{{ $branch->email }}</td>
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('branches.show', $branch->id) }}"
+                                    <a href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-info btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
-                                    <a href="{{ route('branches.edit', $branch->id) }}"
+                                    <a href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>
+
                                     <form action="{{ route('branches.destroy', $branch->id) }}" method="POST"
                                         class="d-inline m-0"
                                         onsubmit="return confirm('Bạn có chắc chắn muốn xoá chi nhánh này không?');">

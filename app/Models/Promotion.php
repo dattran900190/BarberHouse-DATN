@@ -29,6 +29,3 @@ class Promotion extends Model
         'end_date' => 'date',
     ];
 }
-
-    
-
