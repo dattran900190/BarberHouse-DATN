@@ -9,18 +9,17 @@ return new class extends Migration {
     {
         Schema::create('refund_requests', function (Blueprint $table) {
             $table->bigInteger('id', true);
-            $table->bigInteger('user_id')->index('user_id');;
-            $table->bigInteger('appointment_id')->nullable()->index('appointment_id');;
-            $table->bigInteger('order_id')->nullable()->index('order_id');
-            $table->decimal('amount', 10, 2);
+            $table->bigInteger('user_id')->index();
             $table->text('reason');
-            $table->enum('status', ['pending', 'approved', 'rejected', 'refunded'])->default('pending');
-            $table->bigInteger('admin_id')->nullable();
-            $table->timestamp('processed_at')->nullable();
-            $table->text('note')->nullable();
-            $table->timestamps();
+            $table->bigInteger('appointment_id')->nullable()->index();
+            $table->decimal('refund_amount', 10, 2);
+            $table->string('bank_account_name', 100);
+            $table->string('bank_account_number', 50);
+            $table->string('bank_name', 100);
+            $table->enum('refund_status', ['pending', 'refunded'])->default('pending');
+            $table->timestamp('refunded_at')->nullable();
+            $table->timestamps(); 
         });
-        
     }
 
     public function down(): void

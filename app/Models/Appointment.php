@@ -22,7 +22,6 @@ class Appointment extends Model
         'status',
         'payment_status',
         'note',
-        'is_free',
         'promotion_id',
         'discount_amount',
     ];

@@ -16,13 +16,11 @@ return new class extends Migration {
                 ->references(['id'])->on('appointments')
                 ->onUpdate('no action')->onDelete('no action');
 
-            $table->foreign(['order_id'], 'refund_requests_ibfk_3')
-                ->references(['id'])->on('orders')
-                ->onUpdate('no action')->onDelete('no action');
+            // $table->foreign(['order_id'], 'refund_requests_ibfk_3')
+            //     ->references(['id'])->on('orders')
+            //     ->onUpdate('no action')->onDelete('no action');
 
-            $table->foreign(['admin_id'], 'refund_requests_ibfk_4')
-                ->references(['id'])->on('users') // admin là user
-                ->onUpdate('no action')->onDelete('no action');
+
         });
     }
 
@@ -31,8 +29,8 @@ return new class extends Migration {
         Schema::table('refund_requests', function (Blueprint $table) {
             $table->dropForeign('refund_requests_ibfk_1');
             $table->dropForeign('refund_requests_ibfk_2');
-            $table->dropForeign('refund_requests_ibfk_3');
-            $table->dropForeign('refund_requests_ibfk_4');
+            // $table->dropForeign('refund_requests_ibfk_3');
+            
         });
     }
 };

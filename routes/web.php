@@ -19,6 +19,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+use App\Http\Controllers\PointHistoryController;
 use App\Http\Controllers\VolumeController;
 
 // ==== Auth ====
@@ -105,8 +106,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
 
+    // ==== Đơn hàng ====
     Route::resource('orders', OrderController::class);
 
+    // ==== Lịch sử điểm ====
+    Route::resource('point-histories', PointHistoryController::class);
 
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
