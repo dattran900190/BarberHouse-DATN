@@ -16,8 +16,28 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarberScheduleController;
+use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\VolumeController;
+use Illuminate\Support\Facades\Mail;
+
+
+Route::get('/test-mail', function () {
+    try {
+        Mail::raw('Đây là email test từ Laravel', function ($message) {
+            $message->to('trandiep490@gmail.com')
+                    ->subject('Thử gửi email từ Laravel');
+        });
+
+        return response()->json(['message' => 'Gửi email thành công!']);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Gửi email thất bại.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
+
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -128,6 +148,12 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('posts', PostController::class);
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
+
+    // ==== Checkins ====
+    Route::resource('checkins', CheckinController::class);
+    Route::get('/checkins/verify', [CheckinController::class, 'verifyForm'])->name('checkins.verify.form');
+    Route::post('/checkins/verify', [CheckinController::class, 'verifyCode'])->name('checkins.verify');
+
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
     // ==== Banner ====

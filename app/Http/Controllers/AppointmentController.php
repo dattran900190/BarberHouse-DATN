@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AppointmentRequest;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
-
+use App\Models\Checkin;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CheckinCodeMail;
 class AppointmentController extends Controller
 {
     /**
@@ -47,10 +49,44 @@ class AppointmentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
+
+
+public function store(Request $request)
+{
+    $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'service_id' => 'required|exists:services,id',
+        'appointment_time' => 'required|date',
+    ]);
+
+    // Tạo lịch hẹn
+    $appointment = Appointment::create([
+        'user_id' => $request->user_id,
+        'service_id' => $request->service_id,
+        'appointment_time' => $request->appointment_time,
+    ]);
+
+    // Kiểm tra người dùng có email không
+    if (!$appointment->user || !$appointment->user->email) {
+        return redirect()->route('appointments.index')->withErrors(['email' => 'Không tìm thấy email khách hàng!']);
     }
+
+    // Tạo mã checkin
+    $code = rand(100000, 999999);
+
+    Checkin::create([
+        'appointment_id' => $appointment->id,
+        'qr_code_value' => $code,
+        'is_checked_in' => false,
+        'checkin_time' => null,
+    ]);
+
+    // Gửi email mã check-in
+    Mail::to($appointment->user->email)->send(new CheckinCodeMail($appointment, $code));
+
+    return redirect()->route('appointments.index')->with('success', 'Đặt lịch thành công! Mã check-in đã được gửi qua email.');
+}
+
 
     /**
      * Display the specified resource.

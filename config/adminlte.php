@@ -391,6 +391,11 @@ return [
             'url'  => 'admin/banners',
             'icon' => 'fas fa-film',
         ],
+        [
+            'text' => 'Quản lý checkin',
+            'url'  => 'admin/checkins',
+            'icon' => 'fas fa-check-circle',
+        ],
 
 
     ],
