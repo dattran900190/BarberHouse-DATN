@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
@@ -18,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+use App\Http\Controllers\PointHistoryController;
 use App\Http\Controllers\VolumeController;
 use Illuminate\Support\Facades\Mail;
 
@@ -58,13 +61,11 @@ Route::get('/', function () {
     return view('client.home');
 })->name('home');
 
-// Route::get('/dat-lich', function () {
-//     return view('client.booking');
-// });
 
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
 Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('dat-lich.store');
 
+Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
 
 // Route::get('/gio-hang', function () {
 //     return view('client.cart');
@@ -125,8 +126,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
 
+    // ==== Đơn hàng ====
     Route::resource('orders', OrderController::class);
 
+    // ==== Lịch sử điểm ====
+    Route::resource('point-histories', PointHistoryController::class);
 
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
@@ -169,6 +173,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Người dùng ====
     Route::resource('users', UserController::class);
+    Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+
+
+    // ==== Mã giảm giá ====
+ Route::resource('promotions', PromotionController::class);
 
     // ==== Sản phẩm ====
     Route::get('/products', [ProductController::class, 'index'])->name('admin.products.index');

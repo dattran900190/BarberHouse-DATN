@@ -10,7 +10,9 @@ class Appointment extends Model
     /** @use HasFactory<\Database\Factories\AppointmentFactory> */
     use HasFactory;
 
-      protected $fillable = [
+    protected $fillable = [
+        'name',
+        'phone',
         'appointment_code',
         'user_id',
         'barber_id',
@@ -20,7 +22,6 @@ class Appointment extends Model
         'status',
         'payment_status',
         'note',
-        'is_free',
         'promotion_id',
         'discount_amount',
     ];
@@ -45,7 +46,7 @@ class Appointment extends Model
         return $this->belongsTo(Branch::class);
     }
 
-     public function promotion()
+    public function promotion()
     {
         return $this->belongsTo(Promotion::class);
     }
@@ -53,6 +54,7 @@ class Appointment extends Model
 {
     return $this->hasOne(Checkin::class);
 }
+
 
 
 }

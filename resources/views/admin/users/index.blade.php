@@ -128,17 +128,13 @@
                                                         class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                                     </a>
-                                                    <form
-                                                        action="{{ route('users.destroy', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}"
-                                                        method="POST" class="d-inline m-0"
-                                                        onsubmit="return confirm('Bạn có chắc chắn muốn xoá người dùng này không?');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                            class="btn btn-danger btn-sm d-inline-flex align-items-center">
-                                                            <i class="fas fa-trash"></i> <span>Xoá</span>
-                                                        </button>
-                                                    </form>
+                                                    <button type="button"
+                                                        class="btn btn-secondary btn-sm toggle-status-btn d-inline-flex align-items-center"
+                                                        data-id="{{ $user->id }}" data-status="{{ $user->status }}"
+                                                        data-role="{{ $user->role }}">
+                                                        <i class="fas fa-ban mr-1"></i>
+                                                        <span>{{ $user->status === 'active' ? 'Chặn' : 'Bỏ chặn' }}</span>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -241,7 +237,7 @@
                                                     class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                                     <i class="fas fa-edit"></i> <span>Sửa</span>
                                                 </a>
-                                                <form
+                                                {{-- <form
                                                     action="{{ route('users.destroy', ['user' => $admin->id, 'role' => 'admin']) }}"
                                                     method="POST" class="d-inline m-0"
                                                     onsubmit="return confirm('Bạn có chắc chắn muốn xoá quản trị viên này không?');">
@@ -251,7 +247,7 @@
                                                         class="btn btn-danger btn-sm d-inline-flex align-items-center">
                                                         <i class="fas fa-trash"></i> <span>Xoá</span>
                                                     </button>
-                                                </form>
+                                                </form> --}}
                                             </div>
                                         </td>
                                     </tr>
@@ -276,6 +272,29 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/admin/user.css') }}">
+    <style>
+        .badge-status-fixed {
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .toggle-status-btn {
+            min-width: 75px;
+            text-align: center;
+            white-space: nowrap;
+            padding: 6px 10px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .toggle-status-btn i {
+            margin-right: 6px;
+        }
     </style>
 @endsection
 
@@ -290,5 +309,57 @@
                 window.history.pushState({}, '', url);
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gắn sự kiện cho tất cả các nút toggle trạng thái
+            document.querySelectorAll('.toggle-status-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = this.dataset.id;
+                    const btn = this;
+
+                    fetch(`/admin/users/${userId}/toggle-status`, {
+
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector(
+                                    'meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(res => {
+                            if (!res.ok) throw new Error("Server trả về lỗi");
+                            return res.json();
+                        })
+                        .then(data => {
+                            // Cập nhật text trong badge
+                            const row = btn.closest('tr');
+                            const badge = row.querySelector('.badge');
+                            badge.textContent = data.status;
+                            badge.className = 'badge badge-pill ' + data.badge_class;
+
+                            // Cập nhật text của nút
+                            btn.querySelector('span').textContent = data.button_label;
+                            btn.dataset.status = data.status;
+                        })
+                        .catch(err => {
+                            console.error('Lỗi cập nhật trạng thái:', err);
+                            alert('Cập nhật thất bại. Vui lòng thử lại.');
+                        });
+                    const badge = row.querySelector('.badge');
+
+                    // Xóa các màu cũ
+                    badge.classList.remove('badge-success', 'badge-warning', 'badge-danger');
+
+                    // Thêm màu mới
+                    badge.classList.add(data.badge_class);
+
+                    // Cập nhật nội dung
+                    badge.textContent = data.status;
+                });
+            });
+        });
     </script>
+
+
 @endsection

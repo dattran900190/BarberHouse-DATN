@@ -150,4 +150,15 @@ class UserController extends Controller
         return redirect()->route('users.index', ['role' => $role])
             ->with('success', 'Xoá ' . ($role === 'user' ? 'người dùng' : 'quản trị viên') . ' thành công');
     }
+    public function toggleStatus(Request $request, User $user)
+    {
+        $user->status = $user->status === 'active' ? 'banned' : 'active';
+        $user->save();
+
+        return response()->json([
+            'status' => $user->status,
+            'button_label' => $user->status === 'active' ? 'Chặn' : 'Bỏ chặn',
+            'badge_class' => $user->status === 'active' ? 'badge-success' : 'badge-danger',
+        ]);
+    }
 }
