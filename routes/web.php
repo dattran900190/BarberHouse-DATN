@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberController;
@@ -39,9 +40,11 @@ Route::get('/', function () {
     return view('client.home');
 })->name('home');
 
+
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
 Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('dat-lich.store');
 
+Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
 
 // Route::get('/gio-hang', function () {
 //     return view('client.cart');

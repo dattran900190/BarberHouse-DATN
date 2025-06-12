@@ -1,74 +1,72 @@
 html {
   scroll-behavior: smooth;
+  height: 100%;
+margin: 0;
 }
 
 body {
   font-family: Arial, sans-serif;
   margin: 0;
+  height: 100%;
 }
 
 body a:hover {
   color: #444;
 }
 
-/* ban đầu nav trong suốt, sau scroll đổi nền trắng + shadow */
-#mainNav {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  align-items: center;
-  padding: 30px 40px;
-  margin-top: -20px;
-  transition:
-    background-color 0.3s ease,
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-  background: transparent;
-  z-index: 1000;
+/* Cho navbar xuyên suốt, màu trắng khi scroll */
+/* Cho phép dropdown tràn ra khỏi navbar */
+#mainNav,
+#mainNav .container-fluid,
+#mainNav .navbar-nav {
+  overflow: visible !important;
 }
 
-/* Khi add class .scrolled: có nền + đẩy xuống 10px + shadow */
+/* Đặt lại vị trí và z-index cho dropdown */
+#mainNav .dropdown-menu {
+  position: absolute;
+  top: 100%;       /* xổ ngay dưới item cha */
+  right: 0;        /* canh phải */
+  z-index: 2000;   /* cao hơn navbar */
+  margin-top: 0;   /* bớt khoảng thừa nếu có */
+}
+
+#mainNav {
+  background: transparent;
+  transition: background-color .3s, box-shadow .3s;
+  z-index: 1100; /* luôn cao hơn slider */
+  padding: 12px;
+}
 #mainNav.scrolled {
   background-color: #000;
-  transform: translateY(10px);
-  /* box-shadow: 0 4px 12px rgba(0,0,0,0.1); */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-.nav-mid img {
-  max-width: 140px;
-  height: 80px;
-}
-
-/* menu items */
-#mainNav ul {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-  margin: 0;
-  padding: 0;
-  position: relative;
-}
-
-#mainNav a {
-  font-size: 22px;
-  text-decoration: none;
-  text-transform: uppercase;
+/* Link nav trắng, hover xám nhạt */
+#mainNav .nav-link {
+  font-size: 1.2rem;
+  color: #fff;
   font-weight: bold;
-  color: #fff;
-  transition: color 0.3s;
+  text-transform: uppercase;
 }
-
-#mainNav.scrolled a {
+#mainNav.scrolled .nav-link {
   color: #fff;
 }
-
-#mainNav a:hover,
-#mainNav a.active {
-  color: rgb(157, 157, 161);
+#mainNav .nav-link:hover {
+  color: #ccc;
 }
+
+/* Đảm bảo dropdown menu trắng, text tối */
+#mainNav .dropdown-menu {
+  background: #fff;
+}
+#mainNav .dropdown-item {
+  color: #333;
+}
+#mainNav .dropdown-item:hover {
+  background: #f1f1f1;
+}
+
 
 
 /* Hero‑slider để nav overlay lên slider */
@@ -450,7 +448,19 @@ h2 {
     margin-top: 0;
 } */
 
+.site-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* phần này sẽ mở rộng để đẩy footer xuống dưới */
+.site-content {
+  flex: 1;
+}
+
 footer {
+  flex-shrink: 0;
   background-color: #000;
   color: #fff;
   padding: 40px 15%;
@@ -556,7 +566,7 @@ footer {
 }
 
 /* Responsive cho màn hình nhỏ */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .main-footer {
     flex-direction: column;
     text-align: center;
@@ -573,7 +583,7 @@ footer {
   .social ul {
     justify-content: center;
   }
-}
+} */
 
 /* ----------- booking ---------- */
 
@@ -1603,4 +1613,100 @@ footer {
 }
 .display-26 {
     font-size: 1.3rem;
+}
+
+/* ------- profile --------- */
+.ui-w-80 {
+    width: 80px !important;
+    height: auto;
+}
+
+.btn-default {
+    border-color: rgba(24,28,33,0.1);
+    background: rgba(0,0,0,0);
+    color: #4E5155;
+}
+
+label.btn {
+    margin-bottom: 0;
+}
+
+.btn-outline-primary {
+    border-color: #26B4FF;
+    background: transparent;
+    color: #26B4FF;
+}
+
+.btn {
+    cursor: pointer;
+}
+
+.text-light {
+    color: #babbbc !important;
+}
+
+.btn-facebook {
+    border-color: rgba(0,0,0,0);
+    background: #3B5998;
+    color: #fff;
+}
+
+.btn-instagram {
+    border-color: rgba(0,0,0,0);
+    background: #000;
+    color: #fff;
+}
+
+.card {
+    background-clip: padding-box;
+    box-shadow: 0 1px 4px rgba(24,28,33,0.012);
+}
+
+.row-bordered {
+    overflow: hidden;
+}
+
+.account-settings-fileinput {
+    position: absolute;
+    visibility: hidden;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+.account-settings-links .list-group-item.active {
+    font-weight: bold !important;
+}
+html:not(.dark-style) .account-settings-links .list-group-item.active {
+    background: transparent !important;
+}
+.account-settings-multiselect ~ .select2-container {
+    width: 100% !important;
+}
+.light-style .account-settings-links .list-group-item {
+    padding: 0.85rem 1.5rem;
+    border-color: rgba(24, 28, 33, 0.03) !important;
+}
+.light-style .account-settings-links .list-group-item.active {
+    color: #4e5155 !important;
+}
+.material-style .account-settings-links .list-group-item {
+    padding: 0.85rem 1.5rem;
+    border-color: rgba(24, 28, 33, 0.03) !important;
+}
+.material-style .account-settings-links .list-group-item.active {
+    color: #4e5155 !important;
+}
+.dark-style .account-settings-links .list-group-item {
+    padding: 0.85rem 1.5rem;
+    border-color: rgba(255, 255, 255, 0.03) !important;
+}
+.dark-style .account-settings-links .list-group-item.active {
+    color: #fff !important;
+}
+.light-style .account-settings-links .list-group-item.active {
+    color: #4E5155 !important;
+}
+.light-style .account-settings-links .list-group-item {
+    padding: 0.85rem 1.5rem;
+    border-color: rgba(24,28,33,0.03) !important;
 }

@@ -16,22 +16,21 @@ class AppointmentController extends Controller
         $search = $request->input('search');
         $appointments = Appointment::with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name'])
             ->when($search, function ($query, $search) {
-                // tìm theo tên user và tên barber
-                return $query->whereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%');
-                })->orWhereHas('barber', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%');
-                })->orWhereHas('service', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%');
-                })->orWhereHas('barber', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%');
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('user', function ($q2) use ($search) {
+                        $q2->where('name', 'like', '%' . $search . '%');
+                    })->orWhereHas('barber', function ($q2) use ($search) {
+                        $q2->where('name', 'like', '%' . $search . '%');
+                    })->orWhereHas('service', function ($q2) use ($search) {
+                        $q2->where('name', 'like', '%' . $search . '%');
+                    })->orWhereHas('branch', function ($q2) use ($search) {
+                        $q2->where('name', 'like', '%' . $search . '%');
+                    });
                 });
             })
+
             ->orderBy('id', 'DESC')
             ->paginate(5);
-
-        // $appointmentsDebug = Appointment::with(['service','branch'])->take(1)->get();
-        // dd($appointments->toArray());
 
         return view('admin.appointments.index', compact('appointments'));
     }

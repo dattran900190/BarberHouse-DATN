@@ -50,19 +50,23 @@ class AppointmentController extends Controller
             'appointment_date' => 'required|date|after_or_equal:today',
             'appointment_time' => [
                 'required',
-                'regex:/^([01]\d|2[0-3]):([0-5]\d)$/', // định dạng HH:MM 24h
+                'regex:/^([01]\d|2[0-3]):([0-5]\d)$/',
                 function ($attribute, $value, $fail) use ($request) {
-                    // Giới hạn giờ trong khoảng 08:00 - 20:00
                     if ($value < '08:00' || $value > '20:00') {
                         $fail('Giờ đặt lịch phải từ 08:00 đến 20:00.');
                     }
 
-                    // Không cho đặt lịch quá khứ nếu ngày là hôm nay
                     $date = $request->input('appointment_date');
                     if ($date === now()->toDateString() && $value < now()->format('H:i')) {
                         $fail('Không thể đặt lịch ở thời điểm đã qua.');
                     }
                 }
+            ],
+            'name' => 'nullable|string|max:100|required_if:other_person,1',
+            'phone' => [
+                'nullable',
+                'required_if:other_person,1',
+                'regex:/^0[0-9]{9}$/'
             ],
         ], [
             'barber_id.required' => 'Vui lòng chọn thợ cắt.',
@@ -80,22 +84,34 @@ class AppointmentController extends Controller
 
             'appointment_time.required' => 'Vui lòng chọn thời gian đặt lịch.',
             'appointment_time.regex' => 'Thời gian phải có định dạng HH:MM (ví dụ: 14:30).',
+
+            'name.string' => 'Tên không hợp lệ.',
+            'name.max' => 'Tên quá dài (tối đa 100 ký tự).',
+
+            'required_if' => 'Vui lòng nhập :attribute khi đặt cho người khác.',
+            'phone.regex' => 'Số điện thoại không hợp lệ. Phải có 10 chữ số và bắt đầu bằng 0.',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        // Lấy tên và số điện thoại
+        $name = $request->filled('other_person') ? $request->name : Auth::user()->name;
+        $phone = $request->filled('other_person') ? $request->phone : Auth::user()->phone;
+
         $appointment = new Appointment();
         $appointment->appointment_code = strtoupper(Str::random(8));
         $appointment->user_id = Auth::id();
-        $appointment->barber_id = null; // sẽ gán sau khi xác nhận
+        $appointment->barber_id = $request->barber_id;
         $appointment->branch_id = $request->branch_id;
         $appointment->service_id = $request->service_id;
         $appointment->appointment_time = $request->appointment_date . ' ' . $request->appointment_time;
         $appointment->status = 'pending';
         $appointment->payment_status = 'unpaid';
         $appointment->note = $request->note;
+        $appointment->name = $name;
+        $appointment->phone = $phone;
         $appointment->save();
 
         return redirect()->back()->with('success', 'Đặt lịch thành công!');
