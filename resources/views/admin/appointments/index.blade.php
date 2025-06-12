@@ -42,6 +42,7 @@
                         <th>Stt</th>
                         <th>Mã lịch hẹn</th>
                         <th>Khách hàng</th>
+                        <th>Số điện thoại</th>
                         <th>Thợ</th>
                         <th>Dịch vụ</th>
                         <th>Chi nhánh</th>
@@ -57,7 +58,15 @@
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $appointment->appointment_code }}</td>
-                                <td>{{ $appointment->user?->name ?? 'N/A' }}</td>
+                                <td>
+                                    {{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}
+                                    @if ($appointment->name && $appointment->name !== $appointment->user?->name)
+                                        <br>
+                                        <small class="text-muted">(Đặt bởi:
+                                            {{ $appointment->user?->name ?? 'N/A' }})</small>
+                                    @endif
+                                </td>
+                                <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
                                 <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
                                 <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
                                 <td>{{ $appointment->branch?->name ?? 'N/A' }}</td>
