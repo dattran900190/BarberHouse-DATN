@@ -48,39 +48,41 @@
                                                         <span class="badge badge-secondary">Đã đặt</span>
                                                     @endif
                                                 </td>
-                                                @can('branch-admin') {{-- hoặc @if (auth()->user()->role == 'branch_admin') --}}
+                                                <td>
+                                                    @if (auth()->user()->role === 'admin_branch')
+                                                        <a href="{{ route('barber_schedules.edit', $schedule->id) }}"
+                                                            class="btn btn-warning btn-sm">Sửa</a>
+                                                        <form
+                                                            action="{{ route('barber_schedules.destroy', $schedule->id) }}"
+                                                            method="POST" style="display:inline-block">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                                onclick="return confirm('Bạn có chắc muốn hủy lịch này?');">
+                                                                Hủy
+                                                            </button>
+                                                        </form>
+                                                    @endif
 
-                                                    <a href="{{ route('barber_schedules.edit', $schedule->id) }}"
-                                                        class="btn btn-warning btn-sm">Sửa</a>
-                                                    <form action="{{ route('barber_schedules.destroy', $schedule->id) }}"
-                                                        method="POST" style="display:inline-block">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm"
-                                                            onclick="return confirm('Bạn có chắc muốn hủy lịch này?');">
-                                                            Hủy
-                                                        </button>
-                                                    </form>
-                                            @endif
 
 
 
                                             </tr>
-                                @endforeach
-                                </tbody>
+                                        @endforeach
+                                    </tbody>
                                 </table>
-                    @endif
-            </div>
-        </div>
-        @endforeach
-        @endif
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            @endif
         </div>
 
         <div class="card-footer d-flex justify-content-start gap-2">
-            <a href="{{ route('barber_schedules.index') }}" class="btn btn-secondary">← Quay lại</a>
-            @can('branch-admin')
+            <a href="{{ route('barber_schedules.index') }}" class="btn btn-secondary mt-3">← Quay lại</a>
+            @if (auth()->user()->role === 'admin_branch')
                 <a href="{{ route('barber_schedules.create') }}" class="btn btn-primary mt-3">Tạo lịch mới</a>
-            @endcan
+            @endif
             @php
                 $firstSchedule = null;
                 foreach ($branch->barbers as $barber) {
@@ -92,5 +94,5 @@
             @endphp
 
         </div>
-        </div>
-    @endsection
+    </div>
+@endsection
