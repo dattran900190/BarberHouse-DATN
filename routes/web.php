@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\PointHistoryController;
+use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\VolumeController;
 
 // ==== Auth ====
@@ -120,6 +121,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Bình luận ====
     Route::resource('reviews', ReviewController::class);
+
+    
+Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
 
     // ==== Thanh toán ====
     Route::resource('payments', PaymentController::class);

@@ -401,7 +401,11 @@ return [
             'url'  => 'admin/promotions',
             'icon' => 'fas fa-tags',
         ],
-
+    [
+            'text' => 'Quản lý đổi voucher cho khách hàng',
+            'url'  => 'admin/user_redeemed_vouchers',
+            'icon' => 'fas fa-tags',
+        ],
 
     ],
 
