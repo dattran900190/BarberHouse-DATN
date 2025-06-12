@@ -9,14 +9,14 @@ use App\Models\ProductCategory;
 use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-
+use App\Models\Promotion;
 class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
      */
     public function run(): void
-    {
+    {     Promotion::factory(20)->create(); // tạo 20 bản ghi promotion
         // Tạo 4 danh mục sản phẩm
         $categories = ProductCategory::factory(4)->create();
 
