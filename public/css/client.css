@@ -642,6 +642,41 @@ footer {
   background-color: #444;
 }
 
+/* Bắt buộc cho container của Select2 luôn full-width */
+.select2-container {
+  width: 100% !important;
+  margin-bottom: 1.5rem; /* giống khoảng cách form-group của bạn */
+}
+
+/* Đồng bộ form-control và Select2 */
+.select2-container--default .select2-selection--single {
+  min-height: 46px;           /* bằng height input(type=text) */
+  padding: 10px 4px;         /* bằng padding input */
+  border-radius: 6px;         /* cùng radius */
+  box-shadow: none;           /* tắt shadow mặc định */
+  background-color: #fff;
+  transition: border-color .3s;
+  border: 1px solid #ccc !important;
+}
+
+/* Căn dòng text và arrow */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 24px;          /* căn vertical cho text */
+  padding: 10;                 /* padding đã set trên container */
+}
+
+/* Ẩn mũi tên của Select2 */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  display: none !important;
+}
+
+/* Focus state giống input */
+.select2-container--default.select2-container--focus 
+  .select2-selection--single {
+
+  outline: 0;
+}
+
 /* -----------Chi nhánh-------- */
 
 .main-branchs {
