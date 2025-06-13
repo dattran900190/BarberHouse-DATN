@@ -93,8 +93,8 @@ Route::get('/chi-tiet-tho-cat', function () {
     return view('client.detailBarber');
 });
 
-Route::get('/points/redeem', [PointController::class, 'redeemForm'])->name('client.points.redeem');
-Route::post('/points/redeem', [PointController::class, 'redeem'])->name('client.points.redeem.store');
+Route::get('/redeem', [PointController::class, 'redeemForm'])->name('client.redeem');
+Route::post('/redeem', [PointController::class, 'redeem'])->name('client.redeem.store');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {

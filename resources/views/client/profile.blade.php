@@ -207,7 +207,7 @@
                                     @endif
                                     {{-- Nút chuyển sang trang đổi mã giảm giá --}}
                                     <div class="text-end mb-3">
-                                        <a href="{{ route('client.points.redeem') }}" class="btn btn-primary">
+                                        <a href="{{ route('client.redeem') }}" class="btn btn-primary">
                                             Đổi mã giảm giá
                                         </a>
                                     </div>
