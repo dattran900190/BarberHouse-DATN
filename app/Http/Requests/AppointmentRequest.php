@@ -16,7 +16,8 @@ class AppointmentRequest extends FormRequest
     {
         return [
             'appointment_time' => 'required|date',
-            'status' => 'required|in:pending,confirmed,completed,cancelled',
+            // 'status' => 'required|in:pending,confirmed,completed,cancelled',
+            'status' => 'in:pending,confirmed,completed,cancelled',
             'payment_status' => 'required|in:unpaid,paid,refunded,failed',
             'note' => 'nullable|string|max:500',
         ];
@@ -28,7 +29,7 @@ class AppointmentRequest extends FormRequest
             'appointment_time.required' => 'Vui lòng chọn thời gian hẹn.',
             'appointment_time.date' => 'Thời gian hẹn không hợp lệ.',
 
-            'status.required' => 'Vui lòng chọn trạng thái lịch hẹn.',
+            // 'status.required' => 'Vui lòng chọn trạng thái lịch hẹn.',
             'status.in' => 'Trạng thái lịch hẹn không hợp lệ.',
 
             'payment_status.required' => 'Vui lòng chọn trạng thái thanh toán.',

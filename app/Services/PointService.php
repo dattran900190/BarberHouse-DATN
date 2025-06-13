@@ -20,9 +20,10 @@ class PointService
             return false; // Đã tích điểm earned cho lịch hẹn này
         }
         $user = $appointment->user;
+        $service = $appointment->service;
 
         // Tính điểm: 100.000 VNĐ = 10 điểm
-        $points = floor($appointment->discount_amount / 100000) * config('points.points_per_100k', 10);
+        $points = floor($service->price / 100000) * config('points.points_per_100k', 10);
 
         DB::transaction(function () use ($user, $points, $appointment) {
             $user->increment('points_balance', $points);

@@ -33,7 +33,7 @@ class PointController extends Controller
             ->where('required_points', '<=', $user->points_balance) // 👈 chỉ hiện cái user đổi được
             ->get();
 
-        return view('client.points.redeem', compact('promotions'));
+        return view('client.redeem', compact('promotions'));
     }
 
     /**

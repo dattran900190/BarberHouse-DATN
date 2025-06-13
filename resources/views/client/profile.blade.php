@@ -170,7 +170,8 @@
 
                             <div class="tab-pane fade" id="account-point-history" role="tabpanel">
                                 <div class="card-body pb-2">
-                                    <h6 class="mb-4">Lịch sử điểm</h6>
+                                    <h3 class="mb-4">Lịch sử điểm</h3>
+                                    <p><strong>Số điểm hiện có:</strong> {{ $user->points_balance }} điểm</p>
                                     @if (session('success'))
                                         <div class="alert alert-success">
                                             {{ session('success') }}
@@ -196,7 +197,7 @@
                                                         <tr>
                                                             <td>{{ $history->type === 'earned' ? 'Tích điểm' : 'Đổi điểm' }}
                                                             </td>
-                                                            <td>{{ $history->points }}</td>
+                                                            <td>{{ $history->points }} điểm</td> 
                                                             <td>{{ $history->promotion->code ?? '-' }}</td>
                                                             <td>{{ $history->created_at->format('d/m/Y H:i') }}</td>
                                                         </tr>
@@ -207,7 +208,7 @@
                                     @endif
                                     {{-- Nút chuyển sang trang đổi mã giảm giá --}}
                                     <div class="text-end mb-3">
-                                        <a href="{{ route('client.points.redeem') }}" class="btn btn-primary">
+                                        <a href="{{ route('client.redeem') }}" class="btn btn-primary">
                                             Đổi mã giảm giá
                                         </a>
                                     </div>
