@@ -94,8 +94,8 @@ Route::get('/chi-tiet-tho-cat', function () {
     return view('client.detailBarber');
 });
 
-Route::get('/points/redeem', [PointController::class, 'redeemForm'])->name('client.points.redeem');
-Route::post('/points/redeem', [PointController::class, 'redeem'])->name('client.points.redeem.store');
+Route::get('/redeem', [PointController::class, 'redeemForm'])->name('client.redeem');
+Route::post('/redeem', [PointController::class, 'redeem'])->name('client.redeem.store');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
@@ -120,7 +120,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class);
 
     // ==== Lịch sử điểm ====
-    Route::resource('point-histories', PointHistoryController::class);
+    Route::resource('point_histories', PointHistoryController::class);
 
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);

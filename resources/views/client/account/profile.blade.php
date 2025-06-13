@@ -279,7 +279,7 @@
                                     </div>
                                 @endif
                                 <div class="text-end mb-3">
-                                    <a href="{{ route('client.points.redeem') }}" class="btn btn-primary rounded-pill">
+                                    <a href="{{ route('client.redeem') }}" class="btn btn-primary rounded-pill">
                                         Đổi mã giảm giá
                                     </a>
                                 </div>

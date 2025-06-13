@@ -27,7 +27,7 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ route('point-histories.index') }}" method="GET" class="mb-3">
+            <form action="{{ route('point_histories.index') }}" method="GET" class="mb-3">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên người dùng..."
                         value="{{ request()->get('search') }}">
@@ -44,10 +44,8 @@
                         <th>Tên người dùng</th>
                         <th>Điểm</th>
                         <th>Loại</th>
-                        <th>Dịch vụ</th>
-                        <th>Mã đặt lịch</th>
+                        <th>Mã đặt lịch/Khuyến mãi</th>
                         <th>Ngày tạo</th>
-                        {{-- <th>Hành động</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -65,14 +63,16 @@
                                     <span class="badge bg-secondary">Không xác định</span>
                                 @endif
                             </td>
-                            <td>{{ $history->service->name ?? '-' }}</td>
-                            <td>{{ $history->appointment->appointment_code ?? '-' }}</td>
+                            <td>
+                                @if ($history->type === 'earned' && $history->appointment)
+                                    Mã lịch: {{ $history->appointment->appointment_code ?? 'Không rõ' }}
+                                @elseif ($history->type === 'redeemed' && $history->promotion)
+                                    Mã khuyễn mãi: {{ $history->promotion->code ?? 'Không rõ' }}
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td>{{ $history->created_at ? $history->created_at->format('d/m/Y H:i') : '-' }}</td>
-                            {{-- <td class="text-center">
-                                <a href="{{ route('point-histories.show', ['point_history' => $history->id, 'page' => request('page', 1)]) }}"
-                                    class="btn btn-info btn-sm">Xem</a>
-
-                            </td> --}}
                         </tr>
                     @endforeach
 
