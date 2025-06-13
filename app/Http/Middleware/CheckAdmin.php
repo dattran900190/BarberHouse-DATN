@@ -12,7 +12,7 @@ class CheckAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
-            if (Auth::user()->role == 'admin') {
+            if (in_array(Auth::user()->role, ['admin', 'admin_branch'])) {
                 return $next($request);
             } else {
                 return redirect()->route('login')->with([
@@ -20,6 +20,7 @@ class CheckAdmin
                 ]);
             }
         }
+
         return redirect()->route('home')->with('messageError', 'Bạn không có quyền truy cập khu vực quản trị');
     }
 }

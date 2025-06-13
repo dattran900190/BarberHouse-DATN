@@ -23,7 +23,7 @@ class BarberSchedulesRequest extends FormRequest
     {
         return [
             'barber_id' => 'required|exists:barbers,id',
-            'schedule_date' => 'required|date',
+            'schedule_date' => 'required|date|after_or_equal:today',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
         ];
@@ -35,8 +35,8 @@ class BarberSchedulesRequest extends FormRequest
             'barber_id.exists' => 'Thợ cắt tóc không tồn tại.',
 
             'schedule_date.required' => 'Vui lòng chọn ngày.',
-            'schedule_date.date' => 'Ngày không hợp lệ.',
-
+            'schedule_date.after_or_equal' => 'Ngày làm việc phải là hôm nay hoặc sau hôm nay.',
+            'schedule_date.date' => 'Ngày làm việc không đúng định dạng (Y-m-d).',
             'start_time.required' => 'Vui lòng chọn giờ bắt đầu.',
             'start_time.date_format' => 'Giờ bắt đầu không đúng định dạng (H:i).',
 

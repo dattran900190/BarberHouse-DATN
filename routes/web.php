@@ -21,6 +21,7 @@ use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\PointHistoryController;
+use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\VolumeController;
 use Illuminate\Support\Facades\Mail;
 
@@ -141,6 +142,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Bình luận ====
     Route::resource('reviews', ReviewController::class);
 
+
+    Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
+
     // ==== Thanh toán ====
     Route::resource('payments', PaymentController::class);
 
@@ -177,7 +181,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
 
     // ==== Mã giảm giá ====
- Route::resource('promotions', PromotionController::class);
+    Route::resource('promotions', PromotionController::class);
 
     // ==== Sản phẩm ====
     Route::get('/products', [ProductController::class, 'index'])->name('admin.products.index');

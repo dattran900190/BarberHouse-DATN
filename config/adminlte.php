@@ -407,7 +407,11 @@ return [
             'icon' => 'fas fa-tags',
 >>>>>>> 841c816374588f8b02e55996b798804e6eef8e02
         ],
-
+    [
+            'text' => 'Quản lý đổi voucher cho khách hàng',
+            'url'  => 'admin/user_redeemed_vouchers',
+            'icon' => 'fas fa-tags',
+        ],
 
     ],
 
