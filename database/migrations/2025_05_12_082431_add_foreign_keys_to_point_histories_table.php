@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('point_histories', function (Blueprint $table) {
             $table->foreign(['user_id'], 'point_histories_ibfk_1')->references(['id'])->on('users')->onUpdate('no action')->onDelete('no action');
-            $table->foreign(['service_id'], 'point_histories_ibfk_2')->references(['id'])->on('services')->onUpdate('no action')->onDelete('no action');
+            $table->foreign(['promotion_id'], 'point_histories_ibfk_2')->references(['id'])->on('promotions')->onUpdate('no action')->onDelete('no action');
             $table->foreign(['appointment_id'], 'point_histories_ibfk_3')->references(['id'])->on('appointments')->onUpdate('no action')->onDelete('no action');
         });
     }

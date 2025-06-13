@@ -9,7 +9,7 @@
     <main style="padding: 10%">
         <div class="container light-style flex-grow-1 container-p-y">
 
-            
+
             <div class="card overflow-hidden">
                 <h4 class="font-weight-bold text-center py-3 mb-4">
                     Cài đặt tài khoản
@@ -35,6 +35,11 @@
                                 href="#account-notifications" role="tab" aria-controls="account-notifications">
                                 Thông báo
                             </a>
+                            <a class="list-group-item list-group-item-action" id="tab-point-history" data-bs-toggle="list"
+                                href="#account-point-history" role="tab" aria-controls="account-point-history">
+                                Lịch sử điểm
+                            </a>
+
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -162,6 +167,54 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="tab-pane fade" id="account-point-history" role="tabpanel">
+                                <div class="card-body pb-2">
+                                    <h6 class="mb-4">Lịch sử điểm</h6>
+                                    @if (session('success'))
+                                        <div class="alert alert-success">
+                                            {{ session('success') }}
+                                        </div>
+                                    @endif
+
+
+                                    @if ($pointHistories->isEmpty())
+                                        <p>Chưa có lịch sử điểm nào.</p>
+                                    @else
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Loại</th>
+                                                        <th>Điểm</th>
+                                                        <th>Mã giảm giá</th>
+                                                        <th>Ngày</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($pointHistories as $history)
+                                                        <tr>
+                                                            <td>{{ $history->type === 'earned' ? 'Tích điểm' : 'Đổi điểm' }}
+                                                            </td>
+                                                            <td>{{ $history->points }}</td>
+                                                            <td>{{ $history->promotion->code ?? '-' }}</td>
+                                                            <td>{{ $history->created_at->format('d/m/Y H:i') }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @endif
+                                    {{-- Nút chuyển sang trang đổi mã giảm giá --}}
+                                    <div class="text-end mb-3">
+                                        <a href="{{ route('client.points.redeem') }}" class="btn btn-primary">
+                                            Đổi mã giảm giá
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -213,4 +266,23 @@
             if (e.key === "Escape") overlay.style.display = "none";
         });
     }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get("tab");
+
+        if (tab) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active', 'show'));
+            document.querySelectorAll('.account-settings-links a').forEach(el => el.classList.remove('active'));
+
+            const targetTab = document.querySelector(`a[href="#${tab}"]`);
+            const targetPane = document.getElementById(tab);
+
+            if (targetTab && targetPane) {
+                targetTab.classList.add('active');
+                targetPane.classList.add('active', 'show');
+            }
+        }
+    });
 </script>

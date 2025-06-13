@@ -23,7 +23,7 @@ class UserController extends Controller
                 });
             })->orderBy('id', 'DESC')->paginate(10);
 
-        $admins = User::whereIn('role', ['admin', 'admin branch', 'super admin'])
+        $admins = User::whereIn('role', ['admin', 'admin_branch', 'super_admin'])
             ->when($search && $request->input('role_filter') === 'admin', function ($query) use ($search) {
                 return $query->where(function ($query2) use ($search) {
                     $query2->where('name', 'like', '%' . $search . '%')
@@ -49,7 +49,7 @@ class UserController extends Controller
         $role = $request->input('role', 'user');
         $data['status'] = $request->input('status', 'active'); // set mặc định là active
 
-        if ($role === 'admin' && !in_array($data['role'], ['admin', 'admin branch', 'super admin'])) {
+        if ($role === 'admin' && !in_array($data['role'], ['admin', 'admin_branch', 'super_admin'])) {
             return back()->withErrors(['role' => 'Vai trò không hợp lệ cho quản trị viên']);
         }
         if ($role === 'user' && $data['role'] !== 'user') {
@@ -65,9 +65,11 @@ class UserController extends Controller
         User::create($data);
 
         return redirect()->route('users.index', [
-            'role' => $role,
+            'role' => $role
+        ])->with([
+            'success' => 'Thêm ' . ($role === 'user' ? 'người dùng' : 'quản trị viên') . ' thành công',
             'status' => $data['status']
-        ])->with('success', 'Thêm ' . ($role === 'user' ? 'người dùng' : 'quản trị viên') . ' thành công');
+        ]);
     }
 
 
@@ -75,7 +77,7 @@ class UserController extends Controller
     {
         $role = $request->input('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
-            ($role === 'admin' && !in_array($user->role, ['admin', 'admin branch', 'super admin']))
+            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
         ) {
             abort(403, 'Không có quyền truy cập');
         }
@@ -86,7 +88,7 @@ class UserController extends Controller
     {
         $role = $request->input('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
-            ($role === 'admin' && !in_array($user->role, ['admin', 'admin branch', 'super admin']))
+            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
         ) {
             abort(403, 'Không có quyền truy cập');
         }
@@ -98,14 +100,14 @@ class UserController extends Controller
         $currentPage = $request->input('page', 1);
         $role = $request->input('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
-            ($role === 'admin' && !in_array($user->role, ['admin', 'admin branch', 'super admin']))
+            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
         ) {
             abort(403, 'Không có quyền truy cập');
         }
 
         $data = $request->validated();
 
-        if ($role === 'admin' && !in_array($data['role'], ['admin', 'admin branch', 'super admin'])) {
+        if ($role === 'admin' && !in_array($data['role'], ['admin', 'admin_branch', 'super_admin'])) {
             return back()->withErrors(['role' => 'Vai trò không hợp lệ cho quản trị viên']);
         }
         if ($role === 'user' && $data['role'] !== 'user') {
@@ -137,7 +139,7 @@ class UserController extends Controller
     {
         $role = $request->input('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
-            ($role === 'admin' && !in_array($user->role, ['admin', 'admin branch', 'super admin']))
+            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
         ) {
             abort(403, 'Không có quyền truy cập');
         }

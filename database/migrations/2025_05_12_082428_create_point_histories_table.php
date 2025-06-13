@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('user_id')->nullable()->index('user_id');
             $table->integer('points')->nullable();
             $table->enum('type', ['earned', 'redeemed'])->nullable();
-            $table->bigInteger('service_id')->nullable()->index('service_id');
+            $table->bigInteger('promotion_id')->nullable()->index('promotion_id'); // Đã thay đổi ở đây
             $table->bigInteger('appointment_id')->nullable()->index('appointment_id');
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
