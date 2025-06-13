@@ -23,24 +23,8 @@ use App\Http\Controllers\Client\AppointmentController as ClientAppointmentContro
 use App\Http\Controllers\PointHistoryController;
 use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\VolumeController;
-use Illuminate\Support\Facades\Mail;
 
 
-Route::get('/test-mail', function () {
-    try {
-        Mail::raw('Đây là email test từ Laravel', function ($message) {
-            $message->to('trandiep490@gmail.com')
-                    ->subject('Thử gửi email từ Laravel');
-        });
-
-        return response()->json(['message' => 'Gửi email thành công!']);
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'Gửi email thất bại.',
-            'error' => $e->getMessage()
-        ], 500);
-    }
-});
 
 
 // ==== Auth ====
@@ -159,8 +143,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
-    Route::get('/checkins/verify', [CheckinController::class, 'verifyForm'])->name('checkins.verify.form');
-    Route::post('/checkins/verify', [CheckinController::class, 'verifyCode'])->name('checkins.verify');
+    // Route::get('/checkins/verify', [CheckinController::class, 'verifyForm'])->name('checkins.verify.form');
+    // Route::post('/checkins/verify', [CheckinController::class, 'verifyCode'])->name('checkins.verify');
 
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');

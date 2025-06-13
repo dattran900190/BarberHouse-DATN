@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AppointmentRequest;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
-use App\Models\Checkin;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\CheckinCodeMail;
+
 class AppointmentController extends Controller
 {
     /**
@@ -50,46 +48,11 @@ class AppointmentController extends Controller
      */
 
 
-public function store(Request $request)
-{
-    $request->validate([
-        'user_id' => 'required|exists:users,id',
-        'service_id' => 'required|exists:services,id',
-        'appointment_time' => 'required|date',
-    ]);
+    public function store(Request $request)
+    {
+        //
 
-    // Tạo lịch hẹn
-   // Tạo lịch hẹn
-$appointment = Appointment::create([
-    'user_id' => $request->user_id,
-    'service_id' => $request->service_id,
-    'appointment_time' => $request->appointment_time,
-]);
-
-// Nạp lại quan hệ user (vì khi create chưa có sẵn)
-$appointment->load('user');
-
-// Kiểm tra người dùng có email không
-if (!$appointment->user || !$appointment->user->email) {
-    return redirect()->route('appointments.index')->withErrors(['email' => 'Không tìm thấy email khách hàng!']);
-}
-
-// Tạo mã checkin
-$code = rand(100000, 999999);
-
-Checkin::create([
-    'appointment_id' => $appointment->id,
-    'qr_code_value' => $code,
-    'is_checked_in' => false,
-    'checkin_time' => null,
-]);
-
-// Gửi email mã check-in
-Mail::to($appointment->user->email)->send(new CheckinCodeMail($appointment, $code));
-
-return redirect()->route('appointments.index')->with('success', 'Đặt lịch thành công! Mã check-in đã được gửi qua email.');
-
-}
+    }
 
 
     /**
@@ -125,7 +88,7 @@ return redirect()->route('appointments.index')->with('success', 'Đặt lịch t
     public function edit(Appointment $appointment)
     {
         $appointments = Appointment::all();
-        return view('admin.appointments.edit', compact('appointment',));
+        return view('admin.appointments.edit', compact('appointment', ));
     }
 
     /**
@@ -133,10 +96,10 @@ return redirect()->route('appointments.index')->with('success', 'Đặt lịch t
      */
     public function update(AppointmentRequest $request, Appointment $appointment)
     {
-        $currentStatus       = $appointment->status;
-        $newStatus           = $request->status;
+        $currentStatus = $appointment->status;
+        $newStatus = $request->status;
         $currentPaymentStatus = $appointment->payment_status;
-        $newPaymentStatus    = $request->payment_status;
+        $newPaymentStatus = $request->payment_status;
 
         // 1. Nếu đã cancelled rồi thì không được phép chuyển sang bất cứ trạng thái nào khác
         if ($currentStatus === 'cancelled' && $newStatus !== 'cancelled') {
