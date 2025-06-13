@@ -392,20 +392,11 @@ return [
             'icon' => 'fas fa-film',
         ],
         [
-<<<<<<< HEAD
+
             'text' => 'Quản lý checkin',
             'url'  => 'admin/checkins',
             'icon' => 'fas fa-check-circle',
-=======
-            'text' => 'Quản lý lịch sử điểm',
-            'url'  => 'admin/point-histories',
-            'icon' => 'fas fa-history',
-        ],
-        [
-            'text' => 'Quản lý mã giảm giá',
-            'url'  => 'admin/promotions',
-            'icon' => 'fas fa-tags',
->>>>>>> 841c816374588f8b02e55996b798804e6eef8e02
+
         ],
     [
             'text' => 'Quản lý đổi voucher cho khách hàng',
