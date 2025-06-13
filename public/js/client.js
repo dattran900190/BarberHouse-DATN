@@ -80,5 +80,65 @@ document.addEventListener("DOMContentLoaded", function () {
       if (e.key === "Escape") overlay.style.display = "none";
     });
   }
+
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+  const serviceSelect = document.getElementById('service');
+  if (!serviceSelect) {
+    console.error('Không tìm thấy #service trong DOM');
+    return;
+  }
+
+  const priceOutput = document.getElementById('totalPrice');
+  const durationOutput = document.getElementById('totalDuration');
+
+  serviceSelect.addEventListener('change', function () {
+    const opt = this.options[this.selectedIndex];
+    console.log('DEBUG sel.dataset =', opt.dataset);
+
+    const price = parseFloat(opt.dataset.price);
+    const duration = parseInt(opt.dataset.duration, 10);
+
+    priceOutput.textContent = isNaN(price) ? '0 vnđ' : price.toLocaleString('vi-VN') + ' vnđ';
+    durationOutput.textContent = isNaN(duration) ? '0 Phút' : duration + ' Phút';
+  });
+
+  // Trigger nếu old() đã chọn
+  if (serviceSelect.value) {
+    serviceSelect.dispatchEvent(new Event('change'));
+  }
+
+  const icon = document.getElementById("search-icon");
+  const overlay = document.getElementById("search-overlay");
+  const closeBtn = document.querySelector(".close-btn");
+  if (icon && overlay) {
+    icon.addEventListener("click", e => {
+      e.preventDefault();
+      overlay.style.display = "flex";
+    });
+    // đóng
+    closeBtn?.addEventListener("click", () => overlay.style.display = "none");
+    overlay.addEventListener("click", e => {
+      if (!e.target.closest(".search-content")) overlay.style.display = "none";
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") overlay.style.display = "none";
+    });
+  }
+
+  const checkbox = document.getElementById('other_person');
+        const otherInfo = document.getElementById('other-info');
+        checkbox.addEventListener('change', function() {
+            otherInfo.style.display = this.checked ? 'block' : 'none';
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkbox = document.getElementById('other_person');
+            const otherInfo = document.getElementById('other-info');
+
+            checkbox.addEventListener('change', function() {
+                otherInfo.style.display = this.checked ? 'block' : 'none';
+            });
+        });
+});
