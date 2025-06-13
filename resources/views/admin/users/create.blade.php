@@ -92,8 +92,8 @@
                                     <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
                                 @else
                                     <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                    <option value="staff" {{ old('role') == 'super admin' ? 'selected' : '' }}>Super admin</option>
-                                    <option value="editor" {{ old('role') == 'admin branch' ? 'selected' : '' }}>Admin branch</option>
+                                    <option value="super_admin" {{ old('role') == 'super_admin' ? 'selected' : '' }}>Super admin</option>
+                                    <option value="admin_branch" {{ old('role') == 'admin_branch' ? 'selected' : '' }}>Admin branch</option>
                                 @endif
                             </select>
                             @error('role')
