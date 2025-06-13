@@ -25,7 +25,7 @@ class UserRequest extends FormRequest
             'gender' => 'required|in:male,female,other',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Ảnh tối đa 2MB
             'address' => 'nullable|string',
-            'role' => 'required|in:user,admin,staff,editor',
+            'role' => 'required|in:user,admin,super_admin,admin_branch',
             'status' => 'required|in:active,inactive,banned',
             'points_balance' => 'nullable|integer|min:0',
         ];
@@ -55,7 +55,7 @@ class UserRequest extends FormRequest
             'address.string' => 'Địa chỉ phải là một chuỗi.',
             'address.max' => 'Địa chỉ không được vượt quá 255 ký tự.',
             'role.required' => 'Vai trò là bắt buộc.',
-            'role.in' => 'Vai trò phải là user, admin, staff hoặc editor.',
+            'role.in' => 'Vai trò phải là user, admin, super_admin hoặc admin_branch.',
             'status.required' => 'Trạng thái là bắt buộc.',
             'status.in' => 'Trạng thái phải là active, inactive hoặc banned.',
             'points_balance.integer' => 'Số điểm phải là số nguyên.',

@@ -17,7 +17,7 @@
                     <div class="col-md-6 col-12 d-flex flex-column">
                         <div class="mb-3">
                             <label for="name" class="form-label">Họ tên</label>
-                            <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $user->name) }}">
+                            <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $user->name) }}" readonly>
                             @error('name')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -33,7 +33,7 @@
 
                         <div class="mb-3">
                             <label for="phone" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $user->phone) }}">
+                            <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $user->phone) }}" readonly>
                             @error('phone')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -41,7 +41,7 @@
 
                         <div class="mb-3">
                             <label for="points_balance" class="form-label">Số điểm</label>
-                            <input type="number" class="form-control" id="points_balance" name="points_balance" value="{{ old('points_balance', $user->points_balance) }}" min="0">
+                            <input type="number" class="form-control" id="points_balance" name="points_balance" value="{{ old('points_balance', $user->points_balance) }}" min="0" readonly>
                             @error('points_balance')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -49,7 +49,7 @@
 
                         <div class="mb-3 flex-fill">
                             <label for="gender" class="form-label">Giới tính</label>
-                            <select class="form-control" id="gender" name="gender">
+                            <select class="form-control" id="gender" name="gender" readonly>
                                 <option value="">Chọn giới tính</option>
                                 <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : '' }}>Nam</option>
                                 <option value="female" {{ old('gender', $user->gender) == 'female' ? 'selected' : '' }}>Nữ</option>
@@ -65,7 +65,7 @@
                         <div class="mb-3">
                             <label for="avatar" class="form-label">Ảnh đại diện</label>
                             <div class="d-flex align-items-center gap-3 flex-wrap">
-                                <input type="file" class="form-control flex-grow-1" id="avatar" name="avatar" accept="image/*">
+                                {{-- <input type="file" class="form-control flex-grow-1" id="avatar" name="avatar" accept="image/*"> --}}
                                 <div class="avatar-container">
                                     @if ($user->avatar)
                                         <img src="{{ asset('storage/' . $user->avatar) }}" alt="Current Avatar" class="rounded-circle img-fluid avatar-img" id="avatar-preview">
@@ -84,7 +84,7 @@
 
                         <div class="mb-3 flex-fill">
                             <label for="address" class="form-label">Địa chỉ</label>
-                            <textarea class="form-control" id="address" name="address">{{ old('address', $user->address) }}</textarea>
+                            <textarea class="form-control" id="address" name="address" disabled>{{ old('address', $user->address) }} </textarea>
                             @error('address')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -98,8 +98,8 @@
                                     <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User</option>
                                 @else
                                     <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                                    <option value="staff" {{ old('role', $user->role) == 'staff' ? 'selected' : '' }}>Staff</option>
-                                    <option value="editor" {{ old('role', $user->role) == 'editor' ? 'selected' : '' }}>Editor</option>
+                                    <option value="admin_branch" {{ old('role', $user->role) == 'admin_branch' ? 'selected' : '' }}>Admin Branch</option>
+                                    <option value="super_admin" {{ old('role', $user->role) == 'super_admin' ? 'selected' : '' }}>Super Admin</option>
                                 @endif
                             </select>
                             @error('role')
