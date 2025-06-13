@@ -2,21 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\CheckinCodeMail;
-use Illuminate\Support\Facades\Mail;
+use Carbon\Carbon;
+use App\Models\Checkin;
 use App\Models\Appointment;
 
-use App\Models\Checkin;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
+use App\Mail\CheckinCodeMail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 
 class CheckinController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $checkins = Checkin::latest()->paginate(10);
-        return view('admin.checkins.index', compact('checkins'));
+
+    
+
+        return view('admin.checkins.index', compact('checkins' ));
     }
 
 
