@@ -11,7 +11,11 @@ class PointHistory extends Model
 
     protected $table = 'point_histories';
     protected $fillable = [
-        'user_id', 'points', 'type', 'service_id', 'appointment_id'
+        'user_id',
+        'points',
+        'type',
+        'promotion_id',
+        'appointment_id'
     ];
     protected $casts = [
         'type' => 'string',
@@ -22,11 +26,10 @@ class PointHistory extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function service()
+    public function promotion()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(Promotion::class);
     }
-
     public function appointment()
     {
         return $this->belongsTo(Appointment::class);

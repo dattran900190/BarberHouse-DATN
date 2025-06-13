@@ -19,6 +19,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
 use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\VolumeController;
@@ -87,6 +88,9 @@ Route::get('/tho-cat', function () {
 Route::get('/chi-tiet-tho-cat', function () {
     return view('client.detailBarber');
 });
+
+Route::get('/points/redeem', [PointController::class, 'redeemForm'])->name('client.points.redeem');
+Route::post('/points/redeem', [PointController::class, 'redeem'])->name('client.points.redeem.store');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
