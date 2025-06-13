@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Client;
 
 use App\Models\Barber;
 use App\Models\Branch;
+use App\Models\Checkin;
 use App\Models\Service;
 use App\Models\Appointment;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Mail\CheckinCodeMail;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\BookingRequest;
 use Illuminate\Support\Facades\Validator;
 
@@ -113,6 +116,16 @@ class AppointmentController extends Controller
         $appointment->name = $name;
         $appointment->phone = $phone;
         $appointment->save();
+
+        $code = rand(100000, 999999);
+        Checkin::create([
+        'appointment_id' => $appointment->id,
+        'qr_code_value' => $code,
+        'is_checked_in' => false,
+        'checkin_time' => null,
+]);
+
+        Mail::to(Auth::user()->email)->send(new CheckinCodeMail($code, $appointment));
 
         return redirect()->back()->with('success', 'Đặt lịch thành công!');
     }

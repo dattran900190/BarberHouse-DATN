@@ -18,11 +18,15 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarberScheduleController;
+use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
 use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\VolumeController;
+
+
+
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -140,6 +144,12 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('posts', PostController::class);
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
+
+    // ==== Checkins ====
+    Route::resource('checkins', CheckinController::class);
+    // Route::get('/checkins/verify', [CheckinController::class, 'verifyForm'])->name('checkins.verify.form');
+    // Route::post('/checkins/verify', [CheckinController::class, 'verifyCode'])->name('checkins.verify');
+
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
     // ==== Banner ====

@@ -46,10 +46,14 @@ class AppointmentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+
     public function store(Request $request)
     {
         //
+
     }
+
 
     /**
      * Display the specified resource.
@@ -84,7 +88,7 @@ class AppointmentController extends Controller
     public function edit(Appointment $appointment)
     {
         $appointments = Appointment::all();
-        return view('admin.appointments.edit', compact('appointment',));
+        return view('admin.appointments.edit', compact('appointment', ));
     }
 
     /**
@@ -92,10 +96,10 @@ class AppointmentController extends Controller
      */
     public function update(AppointmentRequest $request, Appointment $appointment)
     {
-        $currentStatus       = $appointment->status;
-        $newStatus           = $request->status;
+        $currentStatus = $appointment->status;
+        $newStatus = $request->status;
         $currentPaymentStatus = $appointment->payment_status;
-        $newPaymentStatus    = $request->payment_status;
+        $newPaymentStatus = $request->payment_status;
 
         // 1. Nếu đã cancelled rồi thì không được phép chuyển sang bất cứ trạng thái nào khác
         if ($currentStatus === 'cancelled' && $newStatus !== 'cancelled') {

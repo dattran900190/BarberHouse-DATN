@@ -21,10 +21,10 @@
         </div>
 
         <div class="form-group">
-            <label>Link (nếu có)</label>
-            <input type="text" name="link" class="form-control @error('link') is-invalid @enderror"
-                   value="{{ old('link') }}">
-            @error('link')
+            <label>Link</label>
+            <input type="text" name="link_url" class="form-control @error('link_url') is-invalid @enderror"
+                   value="{{ old('link_url') }}">
+            @error('link_url')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
@@ -39,13 +39,14 @@
 
         <div class="form-group">
             <label>Trạng thái</label>
-            <select name="status" class="form-control @error('status') is-invalid @enderror">
-                <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Ẩn</option>
-                <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Hiển thị</option>
-            </select>
-            @error('status')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <select name="is_active" class="form-control @error('is_active') is-invalid @enderror">
+            <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Ẩn</option>
+            <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Hiển thị</option>
+        </select>
+        @error('is_active')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+
         </div>
 
     </div>
