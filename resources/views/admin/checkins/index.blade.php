@@ -80,7 +80,14 @@
                             <td class="text-center">
                                 {{ $checkin->checkin_time ? \Carbon\Carbon::parse($checkin->checkin_time)->format('H:i d/m/Y') : '-' }}
                             </td>
-                            <td class="text-center">{{ $checkin->appointment->user->name ?? '-' }}</td>
+                            <td class="text-center">
+                                @if ($checkin->appointment->other_person)
+                                    {{ $checkin->appointment->name }}
+                                @else
+                                    {{ $checkin->appointment->user->name ?? '-' }}
+                                @endif
+                            </td>
+
                             <td>
                                 {{ optional($checkin->appointment)->appointment_time ? \Carbon\Carbon::parse($checkin->appointment->appointment_time)->format('H:i d/m/Y') : '-' }}
                             </td>
