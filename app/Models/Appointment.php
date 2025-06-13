@@ -50,8 +50,9 @@ class Appointment extends Model
     {
         return $this->belongsTo(Promotion::class);
     }
-    public function pointHistories()
-    {
-        return $this->hasMany(PointHistory::class);
-    }
+    public function checkin()
+{
+    return $this->hasOne(Checkin::class);
+}
+
 }
