@@ -400,7 +400,7 @@ return [
         ],
         [
             'text' => 'Quản lý lịch sử điểm',
-            'url'  => 'admin/point-histories',
+            'url'  => 'admin/point_histories',
             'icon' => 'fas fa-history',
         ],
         [

@@ -65,7 +65,7 @@
                             </td>
                             <td>
                                 @if ($history->type === 'earned' && $history->appointment)
-                                    Mã lịch: {{ $history->appointment->appointment_code ?? 'Không rõ' }}
+                                    Mã đặt lịch: {{ $history->appointment->appointment_code ?? 'Không rõ' }}
                                 @elseif ($history->type === 'redeemed' && $history->promotion)
                                     Mã khuyễn mãi: {{ $history->promotion->code ?? 'Không rõ' }}
                                 @else
