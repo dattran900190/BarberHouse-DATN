@@ -78,18 +78,19 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                {{ $checkin->checkin_time ? \Carbon\Carbon::parse($checkin->checkin_time)->format('H:i d/m/Y') : '-' }}
+                                {{ $checkin->checkin_time ? \Carbon\Carbon::parse($checkin->checkin_time)->format('d/m/Y H:i') : '-' }}
                             </td>
                             <td class="text-center">
-                                @if ($checkin->appointment->other_person)
+                                @if (!empty($checkin->appointment->name))
                                     {{ $checkin->appointment->name }}
                                 @else
                                     {{ $checkin->appointment->user->name ?? '-' }}
                                 @endif
                             </td>
 
+
                             <td>
-                                {{ optional($checkin->appointment)->appointment_time ? \Carbon\Carbon::parse($checkin->appointment->appointment_time)->format('H:i d/m/Y') : '-' }}
+                                {{ optional($checkin->appointment)->appointment_time ? \Carbon\Carbon::parse($checkin->appointment->appointment_time)->format('d/m/Y H:i') : '-' }}
                             </td>
                             <td class="text-center">{{ $checkin->created_at->format('d/m/Y H:i') }}</td>
                             <td class="text-center">

@@ -14,10 +14,7 @@
                 <p>{{ $banner->title }}</p>
             </div>
 
-            <div class="mb-3">
-                <strong>Link:</strong>
-                <p>{{ $banner->link_url ?? 'Không có' }}</p>
-            </div>
+        
 
             <div class="mb-3">
                 <strong>Hình ảnh:</strong><br>
@@ -47,7 +44,7 @@
         </div>
         <div class="card-footer text-right">
             <a href="{{ route('banners.index') }}" class="btn btn-secondary">Quay lại</a>
-           
+
         </div>
     </div>
 @endsection
