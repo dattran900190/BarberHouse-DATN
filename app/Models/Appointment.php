@@ -55,6 +55,4 @@ class Appointment extends Model
     return $this->hasOne(Checkin::class);
 }
 
-
-
 }
