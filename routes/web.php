@@ -120,7 +120,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class);
 
     // ==== Lịch sử điểm ====
-    Route::resource('point-histories', PointHistoryController::class);
+    Route::resource('point_histories', PointHistoryController::class);
 
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
