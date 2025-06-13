@@ -37,6 +37,12 @@ class AppointmentController extends Controller
         return view('client.booking', compact('barbers', 'services', 'branches'));
     }
 
+    public function getBarbersByBranch($branch_id)
+    {
+        $barbers = Barber::where('branch_id', $branch_id)->get();
+        return response()->json($barbers);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -119,11 +125,11 @@ class AppointmentController extends Controller
 
         $code = rand(100000, 999999);
         Checkin::create([
-        'appointment_id' => $appointment->id,
-        'qr_code_value' => $code,
-        'is_checked_in' => false,
-        'checkin_time' => null,
-]);
+            'appointment_id' => $appointment->id,
+            'qr_code_value' => $code,
+            'is_checked_in' => false,
+            'checkin_time' => null,
+        ]);
 
         Mail::to(Auth::user()->email)->send(new CheckinCodeMail($code, $appointment));
 

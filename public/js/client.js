@@ -84,6 +84,28 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('branch').addEventListener('change', function() {
+        var branchId = this.value;
+        var barberSelect = document.getElementById('barber');
+        
+        // Xóa các tùy chọn hiện tại và đặt lại mặc định
+        barberSelect.innerHTML = '<option value="">-- Chọn thợ --</option>';
+
+        if (branchId) {
+            fetch('/get-barbers-by-branch/' + branchId)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(function(barber) {
+                        var option = document.createElement('option');
+                        option.value = barber.id;
+                        option.text = barber.name;
+                        barberSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Lỗi:', error));
+        }
+    });
+    
   const serviceSelect = document.getElementById('service');
   if (!serviceSelect) {
     console.error('Không tìm thấy #service trong DOM');
@@ -128,17 +150,19 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const checkbox = document.getElementById('other_person');
-        const otherInfo = document.getElementById('other-info');
-        checkbox.addEventListener('change', function() {
-            otherInfo.style.display = this.checked ? 'block' : 'none';
-        });
+  const otherInfo = document.getElementById('other-info');
+  checkbox.addEventListener('change', function () {
+    otherInfo.style.display = this.checked ? 'block' : 'none';
+  });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const checkbox = document.getElementById('other_person');
-            const otherInfo = document.getElementById('other-info');
+  document.addEventListener('DOMContentLoaded', function () {
+    const checkbox = document.getElementById('other_person');
+    const otherInfo = document.getElementById('other-info');
 
-            checkbox.addEventListener('change', function() {
-                otherInfo.style.display = this.checked ? 'block' : 'none';
-            });
-        });
+    checkbox.addEventListener('change', function () {
+      otherInfo.style.display = this.checked ? 'block' : 'none';
+    });
+  });
+
+
 });

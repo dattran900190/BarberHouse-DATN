@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <main style="padding: 5%">
+    <main style="padding: 10%">
         <div class="container light-style flex-grow-1 container-p-y">
             <div class="card overflow-hidden">
                 <h4 class="font-weight-bold text-center py-3 mb-4">
@@ -57,6 +57,11 @@
             </div>
         </div>
     </main>
+    <style>
+        #mainNav {
+            background-color: #000;
+        }
+    </style>
 @endsection
 
 @section('card-footer')
