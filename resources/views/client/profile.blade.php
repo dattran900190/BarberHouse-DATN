@@ -15,11 +15,13 @@
                     <div class="col-md-3 pt-0">
                         <div class="list-group list-group-flush account-settings-links" role="tablist">
                             <a class="list-group-item list-group-item-action active" id="tab-general" data-bs-toggle="list"
-                                href="#account-general" role="tab" aria-controls="account-general" data-tab="account-general">
+                                href="#account-general" role="tab" aria-controls="account-general"
+                                data-tab="account-general">
                                 Tổng quan
                             </a>
                             <a class="list-group-item list-group-item-action" id="tab-password" data-bs-toggle="list"
-                                href="#account-change-password" role="tab" aria-controls="account-change-password" data-tab="account-change-password">
+                                href="#account-change-password" role="tab" aria-controls="account-change-password"
+                                data-tab="account-change-password">
                                 Đổi mật khẩu
                             </a>
                             <a class="list-group-item list-group-item-action" id="tab-info" data-bs-toggle="list"
@@ -27,11 +29,13 @@
                                 Thông tin
                             </a>
                             <a class="list-group-item list-group-item-action" id="tab-notifications" data-bs-toggle="list"
-                                href="#account-notifications" role="tab" aria-controls="account-notifications" data-tab="account-notifications">
+                                href="#account-notifications" role="tab" aria-controls="account-notifications"
+                                data-tab="account-notifications">
                                 Thông báo
                             </a>
                             <a class="list-group-item list-group-item-action" id="tab-point-history" data-bs-toggle="list"
-                                href="#account-point-history" role="tab" aria-controls="account-point-history" data-tab="account-point-history">
+                                href="#account-point-history" role="tab" aria-controls="account-point-history"
+                                data-tab="account-point-history">
                                 Lịch sử điểm
                             </a>
                         </div>
@@ -45,7 +49,7 @@
                                     <input type="hidden" name="tab" value="account-general">
                                     <div class="card-body d-flex align-items-center">
                                         <div class="position-relative">
-                                            
+
                                             <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
                                                 alt="Avatar" class="rounded-circle avatar-preview"
                                                 style="width:80px; height:80px; object-fit:cover;">
@@ -55,11 +59,13 @@
                                     <div class="card-body">
                                         <div class="form-group mb-3">
                                             <label class="form-label fw-bold">Tên tài khoản (Email)</label>
-                                            <input type="text" class="form-control mb-1" value="{{ auth()->user()->email }}" disabled>
+                                            <input type="text" class="form-control mb-1"
+                                                value="{{ auth()->user()->email }}" disabled>
                                         </div>
                                         <div class="form-group mb-3">
                                             <label class="form-label fw-bold">Tên người dùng</label>
-                                            <input type="text" name="name" class="form-control" value="{{ old('name', auth()->user()->name) }}" readonly>
+                                            <input type="text" name="name" class="form-control"
+                                                value="{{ old('name', auth()->user()->name) }}" readonly>
                                             @error('name')
                                                 <div class="text-danger small">{{ $message }}</div>
                                             @enderror
@@ -73,7 +79,8 @@
                                     @if (session('success-password'))
                                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                                             {{ session('success-password') }}
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                aria-label="Close"></button>
                                         </div>
                                     @endif
                                     <form action="{{ route('client.password') }}" method="POST">
@@ -97,8 +104,9 @@
                                         <div class="mb-3 position-relative">
                                             <label class="form-label fw-bold">Mật khẩu mới</label>
                                             <div style="position: relative;">
-                                                <input type="password" name="new_password" class="form-control input-field"
-                                                    id="new_password" placeholder="Nhập mật khẩu mới">
+                                                <input type="password" name="new_password"
+                                                    class="form-control input-field" id="new_password"
+                                                    placeholder="Nhập mật khẩu mới">
                                                 <span class="toggle-password" data-target="new_password"
                                                     style="position:absolute; right:10px; top:50%; transform: translateY(-50%); cursor:pointer;">
                                                     <i class="fa-solid fa-eye" id="icon_new_password"></i>
@@ -135,10 +143,12 @@
                                     @if (session('success-info'))
                                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                                             {{ session('success-info') }}
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                aria-label="Close"></button>
                                         </div>
                                     @endif
-                                    <form action="{{ route('client.update') }}" method="POST" enctype="multipart/form-data">
+                                    <form action="{{ route('client.update') }}" method="POST"
+                                        enctype="multipart/form-data">
                                         @csrf
                                         <input type="hidden" name="tab" value="account-info">
                                         <div class="card-body d-flex align-items-center">
@@ -148,10 +158,13 @@
                                             <div class="ms-4">
                                                 <label class="btn btn-outline-primary">
                                                     Tải ảnh mới lên
-                                                    <input type="file" name="avatar" class="account-settings-fileinput" accept="image/*">
+                                                    <input type="file" name="avatar"
+                                                        class="account-settings-fileinput" accept="image/*">
                                                 </label>
-                                                <button type="button" class="btn btn-default md-btn-flat" onclick="resetAvatar(this)">Reset</button>
-                                                <div class="text-dark small mt-1">Cho phép JPG, GIF hoặc PNG. Kích thước tối đa 2MB.</div>
+                                                <button type="button" class="btn btn-default md-btn-flat"
+                                                    onclick="resetAvatar(this)">Reset</button>
+                                                <div class="text-dark small mt-1">Cho phép JPG, GIF hoặc PNG. Kích thước
+                                                    tối đa 2MB.</div>
                                                 @error('avatar')
                                                     <div class="text-danger small">{{ $message }}</div>
                                                 @enderror
@@ -183,9 +196,15 @@
                                         <div class="form-group mb-3">
                                             <label class="form-label fw-bold">Giới tính</label>
                                             <select name="gender" class="form-select rounded-3">
-                                                <option value="male" {{ old('gender', auth()->user()->gender) === 'male' ? 'selected' : '' }}>Nam</option>
-                                                <option value="female" {{ old('gender', auth()->user()->gender) === 'female' ? 'selected' : '' }}>Nữ</option>
-                                                <option value="other" {{ old('gender', auth()->user()->gender) === 'other' ? 'selected' : '' }}>Khác</option>
+                                                <option value="male"
+                                                    {{ old('gender', auth()->user()->gender) === 'male' ? 'selected' : '' }}>
+                                                    Nam</option>
+                                                <option value="female"
+                                                    {{ old('gender', auth()->user()->gender) === 'female' ? 'selected' : '' }}>
+                                                    Nữ</option>
+                                                <option value="other"
+                                                    {{ old('gender', auth()->user()->gender) === 'other' ? 'selected' : '' }}>
+                                                    Khác</option>
                                             </select>
                                             @error('gender')
                                                 <div class="text-danger small">{{ $message }}</div>
@@ -213,7 +232,8 @@
                                                 <span class="switcher-yes"></span>
                                                 <span class="switcher-no"></span>
                                             </span>
-                                            <span class="switcher-label">Gửi email cho tôi khi ai đó bình luận về bài viết của tôi</span>
+                                            <span class="switcher-label">Gửi email cho tôi khi ai đó bình luận về bài viết
+                                                của tôi</span>
                                         </label>
                                     </div>
                                     <div class="form-group mb-3">
@@ -223,7 +243,8 @@
                                                 <span class="switcher-yes"></span>
                                                 <span class="switcher-no"></span>
                                             </span>
-                                            <span class="switcher-label">Gửi email cho tôi khi ai đó trả lời trên chủ đề diễn đàn của tôi</span>
+                                            <span class="switcher-label">Gửi email cho tôi khi ai đó trả lời trên chủ đề
+                                                diễn đàn của tôi</span>
                                         </label>
                                     </div>
                                 </div>
@@ -235,7 +256,8 @@
                                     @if (session('success'))
                                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                                             {{ session('success') }}
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                aria-label="Close"></button>
                                         </div>
                                     @endif
                                     @if ($pointHistories->isEmpty())
@@ -247,16 +269,32 @@
                                                     <tr>
                                                         <th>Loại</th>
                                                         <th>Điểm</th>
-                                                        <th>Mã giảm giá</th>
+                                                        <th>Mã giảm giá/Mã đặt lịch</th>
                                                         <th>Ngày</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @foreach ($pointHistories as $history)
                                                         <tr>
-                                                            <td>{{ $history->type === 'earned' ? 'Tích điểm' : 'Đổi điểm' }}</td>
-                                                            <td>{{ $history->points }}</td>
-                                                            <td>{{ $history->promotion->code ?? '-' }}</td>
+                                                            <td>{{ $history->type === 'earned' ? 'Tích điểm' : 'Đổi điểm' }}
+                                                            </td>
+                                                            <td
+                                                                class="{{ $history->type === 'earned' ? 'text-success' : 'text-danger' }}">
+                                                                {{ $history->type === 'earned' ? '+' : '-' }}
+                                                                {{ abs($history->points) }} điểm
+                                                            </td>
+
+                                                            <td>
+                                                                @if ($history->type === 'earned' && $history->appointment)
+                                                                    Mã đặt lịch:
+                                                                    {{ $history->appointment->appointment_code ?? 'Không rõ' }}
+                                                                @elseif ($history->type === 'redeemed' && $history->promotion)
+                                                                    Mã khuyễn mãi:
+                                                                    {{ $history->promotion->code ?? 'Không rõ' }}
+                                                                @else
+                                                                    -
+                                                                @endif
+                                                            </td>
                                                             <td>{{ $history->created_at->format('d/m/Y H:i') }}</td>
                                                         </tr>
                                                     @endforeach
@@ -313,7 +351,7 @@
         function resetAvatar(button) {
             const preview = button.closest('.card-body').querySelector('.avatar-preview');
             const input = button.closest('.card-body').querySelector('.account-settings-fileinput');
-            preview.src = '{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : "/default-avatar.png" }}';
+            preview.src = '{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}';
             input.value = '';
         }
 

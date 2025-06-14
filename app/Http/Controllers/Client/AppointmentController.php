@@ -15,10 +15,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\BookingRequest;
+use App\Models\UserRedeemedVoucher;
+use App\Services\AppointmentService;
 use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends Controller
 {
+    protected $appointmentService;
+
+    public function __construct(AppointmentService $appointmentService)
+    {
+        $this->appointmentService = $appointmentService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -27,6 +35,12 @@ class AppointmentController extends Controller
         $services = Service::all();
         $branches = Branch::all();
 
+        // Lấy danh sách mã giảm giá khả dụng của người dùng
+        $vouchers = Auth::check() ? UserRedeemedVoucher::where('user_id', Auth::id())
+            ->where('is_used', false)
+            ->with('promotion')
+            ->get() : collect();
+
         // Mặc định: hiển thị tất cả barber nếu chưa chọn thời gian
         if ($request->filled('appointment_date') && $request->filled('appointment_time')) {
             $barbers = $this->getAvailableBarbers($request->appointment_date, $request->appointment_time);
@@ -34,7 +48,7 @@ class AppointmentController extends Controller
             $barbers = Barber::all();
         }
 
-        return view('client.booking', compact('barbers', 'services', 'branches'));
+        return view('client.booking', compact('barbers', 'services', 'branches', 'vouchers'));
     }
 
     /**
@@ -51,6 +65,7 @@ class AppointmentController extends Controller
             'branch_id' => 'required|exists:branches,id',
             'service_id' => 'required|exists:services,id',
             'appointment_date' => 'required|date|after_or_equal:today',
+            'voucher_id' => 'nullable|exists:user_redeemed_vouchers,id,user_id,' . Auth::id(),
             'appointment_time' => [
                 'required',
                 'regex:/^([01]\d|2[0-3]):([0-5]\d)$/',
@@ -117,13 +132,22 @@ class AppointmentController extends Controller
         $appointment->phone = $phone;
         $appointment->save();
 
+        // Áp dụng mã giảm giá nếu có
+        if ($request->voucher_id) {
+            $voucher = UserRedeemedVoucher::where('id', $request->voucher_id)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
+            $this->appointmentService->applyPromotion($appointment, $voucher);
+        }
+        
         $code = rand(100000, 999999);
         Checkin::create([
-        'appointment_id' => $appointment->id,
-        'qr_code_value' => $code,
-        'is_checked_in' => false,
-        'checkin_time' => null,
-]);
+            'appointment_id' => $appointment->id,
+            'qr_code_value' => $code,
+            'is_checked_in' => false,
+            'checkin_time' => null,
+
+        ]);
 
         Mail::to(Auth::user()->email)->send(new CheckinCodeMail($code, $appointment));
 

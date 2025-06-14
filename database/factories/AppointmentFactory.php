@@ -33,6 +33,8 @@ class AppointmentFactory extends Factory
             'note' => $this->faker->optional()->sentence(),
             'promotion_id' => null, // vì chưa có bảng promotions
             'discount_amount' => 0,
+            'email' => $this->faker->unique()->safeEmail(),
+            'total_amount' => $this->faker->randomFloat(2, 100000, 500000), // ví dụ giá trị từ 100k đến 500k
         ];
     }
 }
