@@ -1,0 +1,204 @@
+[33m466c648[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mSon[m[33m)[m Sửa profile
+[33m0595ab8[m Merge pull request #76 from dattran900190/Diep
+[33m9bb4129[m diep fix checkin va banner
+[33m64584cd[m fix checkin
+[33m6a2a948[m fix checkin
+[33md6b48d1[m fix checkins
+[33mf81a880[m[33m ([m[1;32mmain[m[33m)[m Merge pull request #75 from dattran900190/Son
+[33m0f88cb8[m[33m ([m[1;31morigin/Son[m[33m)[m Profile user
+[33m6a9471b[m Merge pull request #74 from dattran900190/Dung
+[33m0b23dec[m[33m ([m[1;31morigin/Dung[m[33m)[m point history edit
+[33mdd26556[m point history edit
+[33m62eff29[m Merge pull request #73 from dattran900190/Diep
+[33maab60cf[m[33m ([m[1;31morigin/Diep[m[33m)[m fix checkinsssss
+[33mdb864af[m fix checkins
+[33m1946242[m Merge pull request #72 from dattran900190/Dat
+[33m0e42ae5[m[33m ([m[1;31morigin/Dat[m[33m)[m update appointment
+[33m73474d2[m fix checkins
+[33ma9aa9f3[m fix code checkins
+[33mc9963cb[m fix code checkins
+[33m36a57b1[m Merge pull request #71 from dattran900190/Ngoc
+[33m2671ad5[m[33m ([m[1;31morigin/Ngoc[m[33m)[m update BarberSchedules
+[33m6a35043[m Merge pull request #70 from dattran900190/Tuan
+[33m1a94b24[m[33m ([m[1;31morigin/Tuan[m[33m)[m cập nhập đổi vocher cho người dùng
+[33mb1b5f41[m fix code checkins
+[33m4b441a8[m fix checkin
+[33m841c816[m Merge pull request #69 from dattran900190/Dat
+[33m2ad8a54[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Dat
+[33m33c1a75[m update account
+[33m4ba6045[m Merge pull request #68 from dattran900190/Dung
+[33m1ea4e1e[m point history
+[33m3f479ae[m point history
+[33m4ba1aab[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Dat
+[33m70f31c1[m update mustlogin appointment
+[33md27fc7e[m Merge pull request #67 from dattran900190/Son
+[33m0629dc4[m Resolve merge conflict in Promotion.php
+[33m5e16968[m Mã giảm giá
+[33m7df9d39[m Merge pull request #66 from dattran900190/Dung
+[33m4b476ef[m add refund request
+[33m84a9e13[m add refund request
+[33m52a9ece[m fix baanner
+[33mf6b9cbe[m fix banner
+[33m8f614ff[m Merge pull request #65 from dattran900190/Dat
+[33m65fc049[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Dat
+[33mc3fd899[m update detail barber + client appoinment
+[33me22c390[m Merge pull request #64 from dattran900190/Ngoc
+[33mc5441ae[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Ngoc
+[33mb93628c[m update barber_scherdules
+[33m3363c85[m point
+[33m78cbc7a[m point
+[33m7f952b4[m Merge pull request #63 from dattran900190/Dat
+[33m290809f[m client list barber
+[33mf77cff6[m Merge pull request #62 from dattran900190/Ngoc
+[33mc249600[m update reset page
+[33m989e63a[m Merge pull request #61 from dattran900190/Son
+[33m9175fc0[m Sửa lại phân trang
+[33m38ca9bf[m Merge pull request #60 from dattran900190/Dat
+[33m8ed5d97[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Dat
+[33ma642a4f[m update appointment + payment
+[33ma7d77e7[m Merge pull request #59 from dattran900190/Dung
+[33m20832d1[m update order
+[33me7a73c0[m Merge pull request #58 from dattran900190/Dat
+[33mb904571[m fix pagination
+[33mb77f922[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Dat
+[33m7bde1ac[m fix pagination
+[33m85ac317[m Merge pull request #57 from dattran900190/Tuan
+[33m581d45f[m Cập nhập giao diện chỉnh lại crud
+[33md74e0a2[m edit status order
+[33m58cacf1[m Merge pull request #55 from dattran900190/Tuan
+[33mafc36d0[m CRUD BIẾN thể thể tích
+[33m81ec233[m Merge pull request #54 from dattran900190/Dat
+[33mdb31946[m upadate appointment + payment
+[33m26ad261[m Merge pull request #53 from dattran900190/Diep
+[33m44b9e58[m crud banner
+[33me3077c0[m fix code
+[33m32ae15a[m fix code
+[33m4f8e774[m Merge pull request #52 from dattran900190/Ngoc
+[33m74219f2[m Merge branch 'recovered-crud-schedule' into Ngoc
+[33m7a6e0fa[m  crud table barber_schedules
+[33ma5f0968[m Merge pull request #51 from dattran900190/Dung
+[33me5b8dfb[m  xy ly don hang
+[33m23d2f4f[m xu ly don hang
+[33md60c747[m Merge pull request #50 from dattran900190/Son
+[33m1a22f8d[m Cart
+[33mc7240a0[m Merge pull request #49 from dattran900190/Dung
+[33me96cae0[m oder item
+[33md3bb772[m oder item
+[33madd5172[m Merge pull request #48 from dattran900190/Son
+[33m17d3f20[m Thêm giao diện vào login
+[33mcb539e0[m Merge pull request #47 from dattran900190/Dat
+[33me858403[m client
+[33m65bc4b9[m Merge pull request #46 from dattran900190/Dat
+[33m10a1239[m update show + edit  appointment
+[33me749102[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Dat
+[33ma434063[m Merge pull request #45 from dattran900190/Dung
+[33m0d40d4e[m pay status
+[33mdb1573b[m pay status
+[33m68e864f[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Dat
+[33mf6fb032[m Merge pull request #44 from dattran900190/Dung
+[33mc023d34[m create db banner
+[33m6faab61[m create banners
+[33md12171e[m fix config
+[33m7853950[m Merge pull request #43 from dattran900190/Dung
+[33m56454e0[m fake data
+[33m9c27dc8[m Merge pull request #41 from dattran900190/Diep
+[33m0d4c3a0[m diep update category và posts
+[33m232ab0a[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Dat
+[33m725336c[m update payment
+[33m642bb81[m Merge pull request #40 from dattran900190/Son
+[33m48080fa[m Sửa validate password
+[33m5545bfc[m Merge pull request #39 from dattran900190/Diep
+[33m1229995[m diep bổ sung crud danh muc
+[33m15d0b35[m diep crud trang danh mục
+[33m99d8c10[m diep crud categories
+[33m9abcc73[m update payment
+[33ma486955[m Merge pull request #38 from dattran900190/Tuan
+[33mf1f035a[m Cập nhập product_bienthe
+[33mc07dd82[m Cập nhập code
+[33m9cefd13[m Merge pull request #37 from dattran900190/Diep
+[33m05f5194[m fix product_bienthe và chỉnh lại factory
+[33mef53178[m update posts
+[33m0ed521a[m update post
+[33m910c09e[m Merge pull request #36 from dattran900190/Dung
+[33m0dddf13[m sua xoa barber
+[33mc19555b[m update delete barber
+[33ma8d7a7a[m Merge pull request #35 from dattran900190/Dung
+[33m40b6594[m delete barber fk
+[33m46c4ed9[m delete barber fk
+[33m87ed4d1[m delete barber fk
+[33m7bd15a4[m Merge pull request #34 from dattran900190/Dat
+[33m31edadf[m appointion
+[33mc88aeae[m test nhánh
+[33m72b40eb[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Dat
+[33m84d7660[m fix conflict
+[33m81d86b6[m Merge pull request #33 from dattran900190/Ngoc
+[33md4caef7[m update barber va branches show detail branches
+[33mada7616[m Merge pull request #32 from dattran900190/Ngoc
+[33me5ffaae[m update route
+[33m75142d4[m sửa giao diện
+[33m03c5c46[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Dat
+[33med62632[m fix route
+[33m38f2773[m Sửa giao diện
+[33ma043399[m Merge pull request #31 from dattran900190/Dung
+[33m597452b[m update database promotion
+[33me33b2e3[m update database promotion
+[33m964b67f[m Merge pull request #30 from dattran900190/Ngoc
+[33m8eddec7[m Merge pull request #29 from dattran900190/Son
+[33m6272035[m fix users
+[33m9284ee1[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Ngoc
+[33m908969e[m Merge pull request #28 from dattran900190/Dat
+[33m8e34297[m fix review
+[33m003be49[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Dat
+[33meaea109[m review update
+[33m353654b[m Merge pull request #27 from dattran900190/Dung
+[33mf842bc0[m edit barber
+[33m11dc329[m Edit Barber
+[33m719fdd6[m reviews
+[33m74f84bd[m Merge pull request #26 from dattran900190/Dung
+[33mc2d4b09[m crud order
+[33m170df5e[m CRUD order
+[33m629eb73[m Merge pull request #25 from dattran900190/Son
+[33m690d500[m Tách quản lý user và admin
+[33m2472bad[m Merge pull request #24 from dattran900190/Dat
+[33m6e3ceba[m update route service
+[33m526b74c[m Merge pull request #23 from dattran900190/Dung
+[33m9067d8b[m update role account
+[33m8f9dc74[m Merge pull request #22 from dattran900190/Dung
+[33m16f64c7[m update database
+[33m9355685[m Them bang database
+[33m4471d13[m Merge pull request #20 from dattran900190/Dung
+[33m0b22a4b[m fix conflict
+[33mff1e60f[m phan trang barber
+[33ma478c3b[m Merge pull request #19 from dattran900190/Tuan
+[33m28334bb[m Cập nhập auth và giao diện productadmin (route)
+[33m6bc0a6a[m Merge pull request #18 from dattran900190/Diep
+[33m6d16d6d[m sua crud bai viet tin tuc
+[33m72ddbfd[m Merge pull request #16 from dattran900190/Diep
+[33m3582d00[m Merge pull request #15 from DiepIT23/Diep
+[33m9410b6a[m check
+[33m6cf6a95[m Merge pull request #14 from dattran900190/Dung
+[33mfd7252d[m validate barber
+[33mc36f5cb[m Merge pull request #13 from dattran900190/Tuan
+[33m1c5dcd6[m Fix  validate và giao diện thêm mới
+[33m345828c[m Merge pull request #12 from dattran900190/Diep
+[33m3fbc530[m Merge branch 'main' into Diep
+[33m902ed9b[m Merge pull request #11 from DiepIT23/Diep
+[33mac8e748[m crud tin tuc
+[33m8fc7926[m Merge pull request #10 from dattran900190/Dung
+[33m6b4234a[m update ControllerBarber
+[33m0605996[m update barberController
+[33m030619f[m cập nhật và sửa lại bảng branches
+[33mc84b919[m Merge branch 'main' of https://github.com/dattran900190/BarberHouse-DATN into Ngoc
+[33m617758d[m chỉnh sửa file routes/web.php
+[33mc65035b[m Merge pull request #9 from dattran900190/Tuan
+[33m6c06d0d[m Thêm chức năng crud hiển thị chi tiết sản phẩm
+[33md78fad6[m Merge pull request #8 from dattran900190/Dung
+[33m509fed4[m CRUD barber
+[33mb574c30[m Merge pull request #7 from dattran900190/Son
+[33mc2f8050[m CRUD bảng users
+[33mf34884b[m Merge pull request #3 from DiepIT23/Diep
+[33m4ebe011[m Merge pull request #2 from dattran900190/Dat
+[33maadac8b[m CRUD cho dịch vụ
+[33ma54ee00[m Merge pull request #1 from dattran900190/Ngoc
+[33mfb0c2e1[m Cấu hình lại toàn bộ code Crud bảng Branches
+[33m099ef4e[m first commit
