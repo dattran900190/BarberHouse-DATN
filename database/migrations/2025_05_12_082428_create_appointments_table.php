@@ -17,6 +17,7 @@ return new class extends Migration
             $table->bigInteger('user_id')->nullable()->index('user_id');
             $table->string('name')->nullable();
             $table->string('phone')->nullable();
+            $table->string('email')->nullable();
             $table->bigInteger('barber_id')->nullable();
             $table->bigInteger('service_id')->nullable()->index('service_id');
             $table->bigInteger('branch_id')->nullable()->index('branch_id');
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->bigInteger('promotion_id')->nullable()->index('promotion_id');
             $table->decimal('discount_amount', 10)->nullable()->default(0);
+            $table->decimal('total_amount', 10, 2)->nullable()->default(0);
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
 

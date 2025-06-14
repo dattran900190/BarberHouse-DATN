@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class AppointmentRequest extends FormRequest
@@ -19,6 +20,7 @@ class AppointmentRequest extends FormRequest
             'status' => 'required|in:pending,confirmed,completed,cancelled',
             'payment_status' => 'required|in:unpaid,paid,refunded,failed',
             'note' => 'nullable|string|max:500',
+            'voucher_id' => 'nullable|exists:user_redeemed_vouchers,id,user_id,' . Auth::id(),
         ];
     }
 

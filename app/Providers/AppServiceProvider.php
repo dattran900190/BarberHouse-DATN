@@ -26,6 +26,6 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
 
         // Đăng ký observer cho Appointment
-        Appointment::observe(AppointmentObserver::class);
+        Appointment::observe(AppointmentObserver::class);   
     }
 }
