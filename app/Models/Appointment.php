@@ -13,6 +13,7 @@ class Appointment extends Model
     protected $fillable = [
         'name',
         'phone',
+        'email',
         'appointment_code',
         'user_id',
         'barber_id',
@@ -24,6 +25,7 @@ class Appointment extends Model
         'note',
         'promotion_id',
         'discount_amount',
+        'totanl_amount'
     ];
 
     public function user()

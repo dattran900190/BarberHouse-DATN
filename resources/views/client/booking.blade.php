@@ -141,7 +141,7 @@
                         <option value="{{ $service->id }}" data-name="{{ $service->name }}"
                             data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
                             {{ old('service_id') == $service->id ? 'selected' : '' }}>
-                            {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }} 
+                            {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }}
                         </option>
                     @endforeach
                 </select>
@@ -171,11 +171,18 @@
 
 
             <div class="form-group mb-3">
-                <span class="form-label">Mã giảm giá</span>
-                <input id="promotion_id" name="promotion_id" class="form-control" type="tel"
-                    placeholder="Nhập mã giảm giá" value="{{ old('promotion_id') }}">
-                @error('promotion_id')
-                    <small class="text-danger">{{ $message }}</small>
+                <label for="voucher_id">Mã giảm giá (nếu có)</label>
+                <select name="voucher_id" id="voucher_id" class="form-control">
+                    <option value="">Không sử dụng mã giảm giá</option>
+                    @foreach ($vouchers as $voucher)
+                        <option value="{{ $voucher->id }}" {{ old('voucher_id') == $voucher->id ? 'selected' : '' }}>
+                            {{ $voucher->promotion->code }}
+                            ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
+                        </option>
+                    @endforeach
+                </select>
+                @error('voucher_id')
+                    <div class="text-danger">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -238,9 +245,9 @@
         //         let name = $(data.element).data('name');
         //         let price = $(data.element).data('price');
         //         return $(`<div style="display: flex; justify-content: space-between;">
-        //             <span>${name}</span>
-        //             <span>${price}</span>
-        //         </div>`);
+    //             <span>${name}</span>
+    //             <span>${price}</span>
+    //         </div>`);
         //     },
         //     templateSelection: function(data) {
         //         return data.text;

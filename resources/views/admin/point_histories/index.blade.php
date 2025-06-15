@@ -53,7 +53,11 @@
                         <tr>
                             <td>{{ $loop->iteration + ($histories->currentPage() - 1) * $histories->perPage() }}</td>
                             <td>{{ $history->user->name ?? 'Không có' }}</td>
-                            <td>{{ $history->points }}</td>
+                            <td class="{{ $history->type === 'earned' ? 'text-success' : 'text-danger' }}">
+                                {{ $history->type === 'earned' ? '+' : '-' }}
+                                {{ abs($history->points) }} điểm
+                            </td>
+
                             <td>
                                 @if ($history->type === 'earned')
                                     <span class="badge bg-success">Tích điểm</span>

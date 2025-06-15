@@ -183,8 +183,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/products/search', [ProductController::class, 'search'])->name('admin.products.search');
 });
 
-// ==== pprofile ====
-    Route::get('/account/profile', [AccountController::class, 'index'])->name('client.account.profile');
-    Route::post('/account/update', [AccountController::class, 'update'])->name('client.account.update');
-    Route::post('/account/password', [AccountController::class, 'updatePassword'])->name('client.account.password');
-    
+// ==== profile ====
+    Route::get('/profile', [ProfileController::class, 'index'])->name('client.profile');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('client.update');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('client.password');
+
