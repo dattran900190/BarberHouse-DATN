@@ -174,33 +174,4 @@
             }
         });
     });
-
-    const nav = document.getElementById("mainNav");
-
-    window.addEventListener("scroll", () => {
-        if (window.scrollY = 100) {
-            nav.classList.add("scrolled");
-        } else {
-            nav.classList.remove("scrolled");
-        }
-    });
-
-
-    const icon = document.getElementById("search-icon");
-    const overlay = document.getElementById("search-overlay");
-    const closeBtn = document.querySelector(".close-btn");
-    if (icon && overlay) {
-        icon.addEventListener("click", e => {
-            e.preventDefault();
-            overlay.style.display = "flex";
-        });
-        // đóng
-        closeBtn?.addEventListener("click", () => overlay.style.display = "none");
-        overlay.addEventListener("click", e => {
-            if (!e.target.closest(".search-content")) overlay.style.display = "none";
-        });
-        document.addEventListener("keydown", e => {
-            if (e.key === "Escape") overlay.style.display = "none";
-        });
-    }
 </script>

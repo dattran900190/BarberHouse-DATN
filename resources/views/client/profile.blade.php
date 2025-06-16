@@ -323,7 +323,7 @@
 @endsection
 
 @section('card-footer')
-    {{-- {{ $sanPhams->links() }} --}}
+    
 @endsection
 
 @section('scripts')
@@ -412,16 +412,5 @@
             });
         });
 
-        // Scroll effect cho navbar
-        const nav = document.getElementById("mainNav");
-        if (nav) {
-            window.addEventListener("scroll", function() {
-                if (window.scrollY >= 100) {
-                    nav.classList.add("scrolled");
-                } else {
-                    nav.classList.remove("scrolled");
-                }
-            });
-        }
     </script>
 @endsection

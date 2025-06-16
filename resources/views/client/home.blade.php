@@ -229,6 +229,6 @@
 @endsection
 
 @section('card-footer')
-    {{-- {{ $sanPhams->links() }} --}}
+    
 @endsection
 

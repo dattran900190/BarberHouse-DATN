@@ -25,7 +25,7 @@ class Appointment extends Model
         'note',
         'promotion_id',
         'discount_amount',
-        'totanl_amount'
+        'total_amount'
     ];
 
     public function user()

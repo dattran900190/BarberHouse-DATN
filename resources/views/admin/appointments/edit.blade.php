@@ -68,11 +68,11 @@
                         @endforeach
                     </select>
 
-                    @if (in_array($currentStatus, ['completed', 'cancelled']))
+                    {{-- @if (in_array($currentStatus, ['completed', 'cancelled']))
                         <small class="text-muted">
                             Không thể thay đổi vì lịch đã {{ $currentStatus === 'completed' ? 'hoàn thành' : 'bị huỷ' }}.
                         </small>
-                    @endif
+                    @endif --}}
 
                     @error('status')
                         <div class="text-danger">{{ $message }}</div>

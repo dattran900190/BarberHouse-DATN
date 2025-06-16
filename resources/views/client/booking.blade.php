@@ -39,6 +39,15 @@
             </div>
         @endif
 
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+        @endif
+
         @if (session('mustLogin'))
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <strong>Bạn cần đăng nhập để đặt lịch.</strong>
@@ -92,6 +101,14 @@
                             @enderror
                         </div>
                     </div>
+                </div>
+                <div class="form-group mb-3">
+                    <span class="form-label">Email</span>
+                    <input id="email" name="email" value="{{ old('email') }}"class="form-control"
+                        placeholder="Nhập email" type="text">
+                    @error('email')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
             </div>
 
@@ -205,39 +222,6 @@
 
     </main>
     <script>
-        // const checkbox = document.getElementById('other_person');
-        // const otherInfo = document.getElementById('other-info');
-        // checkbox.addEventListener('change', function() {
-        //     otherInfo.style.display = this.checked ? 'block' : 'none';
-        // });
-
-        // document.addEventListener('DOMContentLoaded', function() {
-        //     const checkbox = document.getElementById('other_person');
-        //     const otherInfo = document.getElementById('other-info');
-
-        //     checkbox.addEventListener('change', function() {
-        //         otherInfo.style.display = this.checked ? 'block' : 'none';
-        //     });
-        // });
-
-        // const icon = document.getElementById("search-icon");
-        // const overlay = document.getElementById("search-overlay");
-        // const closeBtn = document.querySelector(".close-btn");
-        // if (icon && overlay) {
-        //     icon.addEventListener("click", e => {
-        //         e.preventDefault();
-        //         overlay.style.display = "flex";
-        //     });
-        //     // đóng
-        //     closeBtn?.addEventListener("click", () => overlay.style.display = "none");
-        //     overlay.addEventListener("click", e => {
-        //         if (!e.target.closest(".search-content")) overlay.style.display = "none";
-        //     });
-        //     document.addEventListener("keydown", e => {
-        //         if (e.key === "Escape") overlay.style.display = "none";
-        //     });
-        // }
-
         // $('#service').select2({
         //     width: '100%',
         //     templateResult: function(data) {
@@ -253,6 +237,7 @@
         //         return data.text;
         //     }
         // });
+
         serviceSelect.addEventListener('change', function() {
             const sel = this.options[this.selectedIndex];
             console.log('DEBUG sel.dataset =', sel.dataset);…
@@ -261,5 +246,4 @@
 @endsection
 
 @section('card-footer')
-    {{-- {{ $sanPhams->links() }} --}}
 @endsection
