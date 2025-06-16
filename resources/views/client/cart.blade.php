@@ -225,7 +225,7 @@
 @endsection
 
 @section('card-footer')
-    {{-- {{ $sanPhams->links() }} --}}
+    
 @endsection
 
 @section('scripts')
@@ -332,22 +332,5 @@
                 .classList.toggle('scrolled', scrollY >= 100));
         });
 
-        const icon = document.getElementById("search-icon");
-        const overlay = document.getElementById("search-overlay");
-        const closeBtn = document.querySelector(".close-btn");
-        if (icon && overlay) {
-            icon.addEventListener("click", e => {
-                e.preventDefault();
-                overlay.style.display = "flex";
-            });
-            // đóng
-            closeBtn?.addEventListener("click", () => overlay.style.display = "none");
-            overlay.addEventListener("click", e => {
-                if (!e.target.closest(".search-content")) overlay.style.display = "none";
-            });
-            document.addEventListener("keydown", e => {
-                if (e.key === "Escape") overlay.style.display = "none";
-            });
-        }
     </script>
 @endsection

@@ -1,4 +1,23 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // —— Search overlay ——
+  const icon = document.getElementById("search-icon");
+  const overlay = document.getElementById("search-overlay");
+  const closeBtn = document.querySelector(".close-btn");
+  if (icon && overlay) {
+    icon.addEventListener("click", e => {
+      e.preventDefault();
+      overlay.style.display = "flex";
+    });
+    // đóng
+    closeBtn?.addEventListener("click", () => overlay.style.display = "none");
+    overlay.addEventListener("click", e => {
+      if (!e.target.closest(".search-content")) overlay.style.display = "none";
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") overlay.style.display = "none";
+    });
+  }
+
   // —— Nav background on scroll ——
   const nav = document.getElementById("mainNav");
   window.addEventListener("scroll", () => {
@@ -62,56 +81,97 @@ document.addEventListener("DOMContentLoaded", function () {
     chatClose.addEventListener('click', () => chatBox.style.display = 'none');
   }
 
-  // —— Search overlay ——
-  const icon = document.getElementById("search-icon");
-  const overlay = document.getElementById("search-overlay");
-  const closeBtn = document.querySelector(".close-btn");
-  if (icon && overlay) {
-    icon.addEventListener("click", e => {
-      e.preventDefault();
-      overlay.style.display = "flex";
-    });
-    // đóng
-    closeBtn?.addEventListener("click", () => overlay.style.display = "none");
-    overlay.addEventListener("click", e => {
-      if (!e.target.closest(".search-content")) overlay.style.display = "none";
-    });
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") overlay.style.display = "none";
-    });
-  }
+
 
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-  document.getElementById('branch').addEventListener('change', function() {
-        var branchId = this.value;
-        var barberSelect = document.getElementById('barber');
-        
-        // Xóa các tùy chọn hiện tại và đặt lại mặc định
-        barberSelect.innerHTML = '<option value="">-- Chọn thợ --</option>';
-
-        if (branchId) {
-            fetch('/get-barbers-by-branch/' + branchId)
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(function(barber) {
-                        var option = document.createElement('option');
-                        option.value = barber.id;
-                        option.text = barber.name;
-                        barberSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Lỗi:', error));
-        }
-    });
-    
+  const appointmentDate = document.getElementById('appointment_date');
+  const appointmentTime = document.getElementById('appointment_time');
+  const branchSelect = document.getElementById('branch');
+  const barberSelect = document.getElementById('barber');
   const serviceSelect = document.getElementById('service');
-  if (!serviceSelect) {
-    console.error('Không tìm thấy #service trong DOM');
-    return;
+
+  let lastRequest = null; // Track last request to avoid duplicates
+
+  function updateBarbers(branchId, date, time = null, serviceId = null) {
+    const requestKey = `${branchId}-${date}-${time}-${serviceId}`; // Unique key for request
+    if (lastRequest === requestKey) {
+      return; // Skip if same request is already made
+    }
+    lastRequest = requestKey;
+
+    barberSelect.innerHTML = '<option value="">-- Chọn thợ --</option>';
+
+    if (!branchId || !date) {
+      barberSelect.innerHTML = '<option value="">Vui lòng chọn chi nhánh và ngày</option>';
+      return;
+    }
+
+    let url = `/get-available-barbers-by-date/${branchId}/${date}`;
+    if (time) {
+      url += `/${encodeURIComponent(time)}`;
+    } 
+    if (serviceId) {
+      url += `/${serviceId}`; // Thêm service_id vào URL
+    }
+
+    fetch(url)
+      .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Response data:', data);
+        // Xử lý response
+        if (data.error) {
+          barberSelect.innerHTML = `<option value="">${data.error}</option>`;
+        } else if (!data.length) {
+          barberSelect.innerHTML = `<option value="">Không có thợ khả dụng</option>`;
+        } else {
+          const addedBarbers = new Set(); // Track added barber IDs
+          data.forEach(barber => {
+            if (!addedBarbers.has(barber.id)) {
+              const option = document.createElement('option');
+              option.value = barber.id;
+              option.text = barber.name;
+              barberSelect.appendChild(option);
+              addedBarbers.add(barber.id);
+            }
+          });
+        }
+      })
+      .catch(() => {
+        console.error('Fetch error:', error);
+        barberSelect.innerHTML = '<option value="">Lỗi khi tải danh sách thợ</option>';
+      });
   }
 
+  appointmentDate.addEventListener('change', function () {
+    updateBarbers(branchSelect.value, this.value, appointmentTime.value);
+  });
+
+  appointmentTime.addEventListener('change', function () {
+    updateBarbers(branchSelect.value, appointmentDate.value, this.value);
+  });
+
+  branchSelect.addEventListener('change', function () {
+    updateBarbers(this.value, appointmentDate.value, appointmentTime.value);
+  });
+
+  serviceSelect.addEventListener('change', function () {
+    updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, this.value);
+  });
+  // const serviceSelect = document.getElementById('service');
+  // if (!serviceSelect) {
+  //   console.error('Không tìm thấy #service trong DOM');
+  //   return;
+  // }
+
+  // tiền dịch vụ và thời gian 
   const priceOutput = document.getElementById('totalPrice');
   const durationOutput = document.getElementById('totalDuration');
 
@@ -149,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // checkbox hiển thị khi đặt lịch hộ
   const checkbox = document.getElementById('other_person');
   const otherInfo = document.getElementById('other-info');
   checkbox.addEventListener('change', function () {
