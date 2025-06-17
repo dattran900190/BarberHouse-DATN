@@ -232,9 +232,7 @@ public function index(Request $request)
 
         // Apply voucher if provided
         if ($request->voucher_id) {
-            $voucher = UserRedeemedVoucher::where('id', $request->voucher_id)
-                ->where('user_id', Auth::id())
-                ->firstOrFail();
+            $voucher = UserRedeemedVoucher::findOrFail($request->voucher_id);
             $this->appointmentService->applyPromotion($appointment, $voucher);
         }
 

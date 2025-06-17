@@ -58,7 +58,7 @@
                 <tbody>
                     @foreach ($barbers as $index => $barber)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $index + 1 + ($barbers->currentPage() - 1) * $barbers->perPage() }}</td>
                             <td class="text-center">
                                 @if ($barber->avatar)
                                     <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar"
@@ -123,7 +123,7 @@
             </table>
         </div>
     </div>
-    {{ $barbers->appends(request()->query())->links() }}
+    {{ $barbers->links() }}
 @endsection
 
 @section('css')
