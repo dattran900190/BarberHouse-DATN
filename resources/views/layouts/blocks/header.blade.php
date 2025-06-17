@@ -42,6 +42,7 @@
                                 <h6 class="dropdown-header">{{ Auth::user()->name }}</h6>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.profile') }}">Quản lý tài khoản</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.redeem') }}">Đổi mã giản giá</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

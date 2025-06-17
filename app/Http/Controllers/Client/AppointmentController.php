@@ -36,10 +36,10 @@ class AppointmentController extends Controller
         $branches = Branch::all();
 
         // Lấy danh sách mã giảm giá khả dụng của người dùng
-        $vouchers = Auth::check() ? UserRedeemedVoucher::where('user_id', Auth::id())
+        $vouchers = UserRedeemedVoucher::where('user_id', Auth::id())
             ->where('is_used', false)
             ->with('promotion')
-            ->get() : collect();
+            ->get();
 
         // Mặc định: hiển thị tất cả barber nếu chưa chọn thời gian
         if ($request->filled('appointment_date') && $request->filled('appointment_time')) {
@@ -134,12 +134,10 @@ class AppointmentController extends Controller
 
         // Áp dụng mã giảm giá nếu có
         if ($request->voucher_id) {
-            $voucher = UserRedeemedVoucher::where('id', $request->voucher_id)
-                ->where('user_id', Auth::id())
-                ->firstOrFail();
+            $voucher = UserRedeemedVoucher::findOrFail($request->voucher_id);
             $this->appointmentService->applyPromotion($appointment, $voucher);
         }
-        
+
         $code = rand(100000, 999999);
         Checkin::create([
             'appointment_id' => $appointment->id,

@@ -94,8 +94,8 @@ Route::get('/chi-tiet-tho-cat', function () {
     return view('client.detailBarber');
 });
 
-Route::get('/redeem', [PointController::class, 'redeemForm'])->name('client.redeem');
-Route::post('/redeem', [PointController::class, 'redeem'])->name('client.redeem.store');
+Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem');
+Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redeem.store');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
@@ -120,7 +120,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class);
 
     // ==== Lịch sử điểm ====
-    Route::resource('point_histories', PointHistoryController::class);
+    Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');
+    Route::get('/point_histories/user/{id}', [PointHistoryController::class, 'userHistory'])->name('point_histories.user');
 
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
@@ -184,7 +185,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 });
 
 // ==== profile ====
-    Route::get('/profile', [ProfileController::class, 'index'])->name('client.profile');
-    Route::post('/profile/update', [ProfileController::class, 'update'])->name('client.update');
-    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('client.password');
-
+Route::get('/profile', [ProfileController::class, 'index'])->name('client.profile');
+Route::post('/profile/update', [ProfileController::class, 'update'])->name('client.update');
+Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('client.password');

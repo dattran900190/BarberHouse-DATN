@@ -18,7 +18,7 @@ class BarberController extends Controller
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'like', '%' . $search . '%');
             })
-            ->latest()
+            ->orderByDesc('id')
             ->paginate(5);
 
         return view('admin.barbers.index', compact('barbers', 'search'));

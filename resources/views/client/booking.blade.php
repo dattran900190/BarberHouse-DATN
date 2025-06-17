@@ -170,20 +170,14 @@
             </div>
 
 
-            <div class="form-group mb-3">
-                <label for="voucher_id">Mã giảm giá (nếu có)</label>
-                <select name="voucher_id" id="voucher_id" class="form-control">
-                    <option value="">Không sử dụng mã giảm giá</option>
+            <div class="form-group">
+                <label>Mã giảm giá (nếu có)</label>
+                <select name="voucher_id" class="form-control">
+                    <option value="">Không sử dụng</option>
                     @foreach ($vouchers as $voucher)
-                        <option value="{{ $voucher->id }}" {{ old('voucher_id') == $voucher->id ? 'selected' : '' }}>
-                            {{ $voucher->promotion->code }}
-                            ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
-                        </option>
+                        <option value="{{ $voucher->id }}">{{ $voucher->promotion->code }}</option>
                     @endforeach
                 </select>
-                @error('voucher_id')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
             </div>
 
             <div class="form-group mb-3">
