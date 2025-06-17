@@ -43,10 +43,12 @@
                         <th>Mã lịch hẹn</th>
                         <th>Khách hàng</th>
                         <th>Số điện thoại</th>
+                        <th>Email</th>
                         <th>Thợ</th>
                         <th>Dịch vụ</th>
                         <th>Chi nhánh</th>
                         <th>Thời gian</th>
+                        <th>Tổng tiền</th>
                         <th>Trạng thái lịch hẹn</th>
                         <th>Trạng thái thanh toán</th>
                         <th class="text-center">Hành động</th>
@@ -66,11 +68,19 @@
                                             {{ $appointment->user?->name ?? 'N/A' }})</small>
                                     @endif
                                 </td>
-                                <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
+                                <td>
+                                    {{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}
+                                    @if ($appointment->phone && $appointment->phone !== $appointment->user?->phone)
+                                    @endif
+                                <td>
+                                    {{ $appointment->email ?? ($appointment->user?->email ?? 'N/A') }}
+                                    @if ($appointment->email && $appointment->email !== $appointment->user?->email)
+                                    @endif
                                 <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
                                 <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
                                 <td>{{ $appointment->branch?->name ?? 'N/A' }}</td>
                                 <td>{{ $appointment->appointment_time }}</td>
+                                <td>{{ $appointment->total_amount }}</td>
                                 <td>
                                     @php
                                         $statusColors = [
