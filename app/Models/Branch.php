@@ -13,7 +13,10 @@ class Branch extends Model
         'name',
         'address',
         'phone',
-        'email',
+        'google_map_url',
+        'image',
+        'content',
+
     ];
 
     public function barbers()

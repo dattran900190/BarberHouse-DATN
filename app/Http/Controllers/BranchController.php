@@ -29,9 +29,14 @@ class BranchController extends Controller
     public function store(BranchRequest $request)
     {
         $data = $request->validated();
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('branches', 'public');
+        }
+
         Branch::create($data);
 
-        return redirect()->route('branches.index')->with('success', 'Thêm chi nhánh thành công');
+        return redirect()->route('branches.index')->with('success', 'Thêm chi nhánh thành công!');
     }
 
     // Hiển thị chi tiết chi nhánh
@@ -60,12 +65,31 @@ class BranchController extends Controller
     // Cập nhật chi nhánh
     public function update(BranchRequest $request, Branch $branch)
     {
-        $branch->update($request->validated());
+        // Lấy dữ liệu đã validate
+        $data = $request->validated();
+
+        // Nếu có upload ảnh mới
+        if ($request->hasFile('image')) {
+            // Xoá ảnh cũ nếu tồn tại
+            if ($branch->image && file_exists(public_path('storage/' . $branch->image))) {
+                unlink(public_path('storage/' . $branch->image));
+            }
+
+            // Lưu ảnh mới vào thư mục public/storage/branches
+            $imagePath = $request->file('image')->store('branches', 'public');
+            $data['image'] = $imagePath;
+        }
+
+        // Cập nhật dữ liệu chi nhánh
+        $branch->update($data);
+
+        // Trở lại trang trước (có phân trang nếu có)
         $currentPage = $request->input('page', 1);
 
         return redirect()->route('branches.index', ['page' => $currentPage])
             ->with('success', 'Cập nhật thành công');
     }
+
 
 
     // Xoá chi nhánh
