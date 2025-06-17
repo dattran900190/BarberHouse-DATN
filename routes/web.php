@@ -21,6 +21,7 @@ use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+use App\Http\Controllers\Client\ClientBranchController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
 use App\Http\Controllers\UserRedeemedVoucherController;
@@ -63,13 +64,11 @@ Route::get('/thanh-toan', function () {
     return view('client.checkout');
 });
 
-Route::get('/chi-nhanh', function () {
-    return view('client.branch');
-});
+// web.php
+Route::get('/chi-nhanh', [ClientBranchController::class, 'index'])->name('client.branch');
+Route::get('/chi-nhanh/{id}', [ClientBranchController::class, 'detail'])->name('client.detailBranch');
 
-Route::get('/chi-tiet-chi-nhanh', function () {
-    return view('client.detailBranch');
-});
+
 
 Route::get('/bai-viet', function () {
     return view('client.post');

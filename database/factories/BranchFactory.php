@@ -20,7 +20,9 @@ class BranchFactory extends Factory
             'name' => $this->faker->company,
             'address' => $this->faker->address,
             'phone' => $this->faker->phoneNumber,
-            'email' => $this->faker->unique()->safeEmail,
+            'google_map_url' => $this->faker->url,
+            'image' => $this->faker->imageUrl(640, 480, 'business', true, 'Branch', true),
+            'content' => $this->faker->paragraph(3),
         ];
     }
 }

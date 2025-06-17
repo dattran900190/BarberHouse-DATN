@@ -21,11 +21,9 @@ class BranchRequest extends FormRequest
             'name' => 'required|string|max:255',
             'address' => 'required|string',
             'phone' => 'required|string|max:20',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('branches', 'email')->ignore($branchId),
-            ],
+            'google_map_url' => 'nullable|url',
+            'image' => 'nullable|max:2048',
+            'content' => 'nullable|string', // 
         ];
     }
 
@@ -40,9 +38,10 @@ class BranchRequest extends FormRequest
             'phone.required' => 'Số điện thoại không được để trống',
             'phone.string' => 'Số điện thoại phải là kiểu chuỗi ký tự',
             'phone.max' => 'Số điện thoại không được vượt quá 10 ký tự',
-            'email.required' => 'Email không được để trống',
-            'email.email' => 'Email không đúng định dạng',
-            'email.unique' => 'Email đã tồn tại trong hệ thống',
+            'image.max' => 'Ảnh đại diện không được vượt quá 2MB',
+            'content.string' => 'Nội dung phải là kiểu chuỗi ký tự',
+            'google_map_url' => ['nullable', 'url', 'regex:/^https:\/\/www\.google\.com\/maps\/embed\?pb=.*/'],
+
         ];
     }
 }
