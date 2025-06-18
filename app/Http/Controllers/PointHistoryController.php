@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PointHistory;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PointHistoryController extends Controller
@@ -10,40 +11,30 @@ class PointHistoryController extends Controller
     /**
      * Hiển thị danh sách lịch sử điểm (có tìm kiếm theo tên user và phân trang).
      */
+    // Sửa lại method index: chỉ lấy danh sách người dùng
     public function index(Request $request)
     {
         $search = $request->input('search');
 
-        $histories = PointHistory::with(['user', 'promotion', 'appointment'])
-            ->when($search, function ($query, $search) {
-                $query->whereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%');
-                });
-            })
-            ->latest()
-            ->paginate(10);
+        $users = User::when($search, function ($query, $search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        })
+            ->orderByDesc('id')
+            ->paginate(5);
 
-        return view('admin.point_histories.index', compact('histories', 'search'));
+        return view('admin.point_histories.index', compact('users', 'search'));
     }
 
-    /**
-     * Hiển thị chi tiết lịch sử điểm.
-     */
-    public function show(PointHistory $pointHistory)
+    // Trang hiển thị lịch sử điểm của user cụ thể
+    public function userHistory($userId)
     {
-        // Load các quan hệ: user, promotion, appointment
-        $pointHistory->load(['user', 'promotion', 'appointment']);
+        $user = User::findOrFail($userId);
 
-        return view('admin.point_histories.show', compact('pointHistory'))->with('title', 'Chi tiết lịch sử điểm');
-    }
+        $pointHistories = PointHistory::with(['promotion', 'appointment'])
+            ->where('user_id', $userId)
+            ->orderByDesc('created_at')
+            ->paginate(5);
 
-    /**
-     * Xóa một lịch sử điểm (nếu cần).
-     */
-    public function destroy(PointHistory $pointHistory)
-    {
-        $pointHistory->delete();
-
-        return redirect()->route('point_histories.index')->with('success', 'Xóa lịch sử điểm thành công.');
+        return view('admin.point_histories.user_history', compact('user', 'pointHistories'));
     }
 }

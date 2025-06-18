@@ -19,8 +19,10 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\CheckinController;
-use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+use App\Http\Controllers\Client\BarberController as ClientBarberController;
+use App\Http\Controllers\Client\ClientBranchController;
+use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
 use App\Http\Controllers\UserRedeemedVoucherController;
@@ -37,16 +39,14 @@ Route::post('register', [AuthController::class, 'postRegister'])->name('postRegi
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // ==== Trang chủ ====
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Giỏ hàng
 Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
 Route::put('/cart/update/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
 Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
-
-Route::get('/', function () {
-    return view('client.home');
-})->name('home');
+Route::put('/cart/update-variant/{cartItem}', [CartController::class, 'updateVariant'])->name('cart.update.variant');
 
 
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
@@ -63,13 +63,11 @@ Route::get('/thanh-toan', function () {
     return view('client.checkout');
 });
 
-Route::get('/chi-nhanh', function () {
-    return view('client.branch');
-});
+// web.php
+Route::get('/chi-nhanh', [ClientBranchController::class, 'index'])->name('client.branch');
+Route::get('/chi-nhanh/{id}', [ClientBranchController::class, 'detail'])->name('client.detailBranch');
 
-Route::get('/chi-tiet-chi-nhanh', function () {
-    return view('client.detailBranch');
-});
+
 
 Route::get('/bai-viet', function () {
     return view('client.post');
@@ -87,16 +85,19 @@ Route::get('/chi-tiet-san-pham', function () {
     return view('client.detailProduct');
 });
 
-Route::get('/tho-cat', function () {
-    return view('client.listBarber');
-});
+
+// == Thợ cắt tóc ==
+Route::get('/tho-cat', [ClientBarberController::class, 'index'])->name('client.listBarber');
+Route::get('/tho-cat/{id}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
+
 
 Route::get('/chi-tiet-tho-cat', function () {
     return view('client.detailBarber');
 });
 
-Route::get('/redeem', [PointController::class, 'redeemForm'])->name('client.redeem');
-Route::post('/redeem', [PointController::class, 'redeem'])->name('client.redeem.store');
+// == Đổi điểm ==
+Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem');
+Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redeem.store');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
@@ -121,7 +122,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class);
 
     // ==== Lịch sử điểm ====
-    Route::resource('point_histories', PointHistoryController::class);
+    Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');
+    Route::get('/point_histories/user/{id}', [PointHistoryController::class, 'userHistory'])->name('point_histories.user');
 
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
@@ -185,7 +187,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 });
 
 // ==== profile ====
-    Route::get('/profile', [ProfileController::class, 'index'])->name('client.profile');
-    Route::post('/profile/update', [ProfileController::class, 'update'])->name('client.update');
-    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('client.password');
-
+Route::get('/profile', [ProfileController::class, 'index'])->name('client.profile');
+Route::post('/profile/update', [ProfileController::class, 'update'])->name('client.update');
+Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('client.password');

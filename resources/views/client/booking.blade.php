@@ -39,15 +39,6 @@
             </div>
         @endif
 
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-        @endif
-
         @if (session('mustLogin'))
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <strong>Bạn cần đăng nhập để đặt lịch.</strong>
@@ -101,14 +92,6 @@
                             @enderror
                         </div>
                     </div>
-                </div>
-                <div class="form-group mb-3">
-                    <span class="form-label">Email</span>
-                    <input id="email" name="email" value="{{ old('email') }}"class="form-control"
-                        placeholder="Nhập email" type="text">
-                    @error('email')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
                 </div>
             </div>
 
@@ -187,20 +170,43 @@
             </div>
 
 
+<<<<<<< HEAD
+            <div class="form-group">
+                <label>Mã giảm giá (nếu có)</label>
+                <select name="voucher_id" class="form-control">
+                    <option value="">Không sử dụng</option>
+                    @foreach ($vouchers as $voucher)
+                        <option value="{{ $voucher->id }}">{{ $voucher->promotion->code }}</option>
+                    @endforeach
+                </select>
+=======
             <div class="form-group mb-3">
                 <label for="voucher_id">Mã giảm giá (nếu có)</label>
                 <select name="voucher_id" id="voucher_id" class="form-control">
-                    <option value="">Không sử dụng mã giảm giá</option>
-                    @foreach ($vouchers as $voucher)
-                        <option value="{{ $voucher->id }}" {{ old('voucher_id') == $voucher->id ? 'selected' : '' }}>
-                            {{ $voucher->promotion->code }}
-                            ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
-                        </option>
-                    @endforeach
-                </select>
+    <option value="">Không sử dụng mã giảm giá</option>
+    {{-- Voucher đã đổi --}}
+    @if(isset($vouchers))
+        @foreach ($vouchers as $voucher)
+            <option value="{{ $voucher->id }}">
+                {{ $voucher->promotion->code }}
+                ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
+            </option>
+        @endforeach
+    @endif
+    {{-- Voucher công khai --}}
+    @if(isset($publicPromotions))
+        @foreach ($publicPromotions as $promotion)
+            <option value="public_{{ $promotion->id }}">
+                {{ $promotion->code }}
+                ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }}) [Công khai]
+            </option>
+        @endforeach
+    @endif
+</select>
                 @error('voucher_id')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
+>>>>>>> 57b57c21ee72f1e6f689c985a102d3d7ed5ef805
             </div>
 
             <div class="form-group mb-3">
@@ -222,6 +228,39 @@
 
     </main>
     <script>
+        // const checkbox = document.getElementById('other_person');
+        // const otherInfo = document.getElementById('other-info');
+        // checkbox.addEventListener('change', function() {
+        //     otherInfo.style.display = this.checked ? 'block' : 'none';
+        // });
+
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const checkbox = document.getElementById('other_person');
+        //     const otherInfo = document.getElementById('other-info');
+
+        //     checkbox.addEventListener('change', function() {
+        //         otherInfo.style.display = this.checked ? 'block' : 'none';
+        //     });
+        // });
+
+        // const icon = document.getElementById("search-icon");
+        // const overlay = document.getElementById("search-overlay");
+        // const closeBtn = document.querySelector(".close-btn");
+        // if (icon && overlay) {
+        //     icon.addEventListener("click", e => {
+        //         e.preventDefault();
+        //         overlay.style.display = "flex";
+        //     });
+        //     // đóng
+        //     closeBtn?.addEventListener("click", () => overlay.style.display = "none");
+        //     overlay.addEventListener("click", e => {
+        //         if (!e.target.closest(".search-content")) overlay.style.display = "none";
+        //     });
+        //     document.addEventListener("keydown", e => {
+        //         if (e.key === "Escape") overlay.style.display = "none";
+        //     });
+        // }
+
         // $('#service').select2({
         //     width: '100%',
         //     templateResult: function(data) {
@@ -237,7 +276,6 @@
         //         return data.text;
         //     }
         // });
-
         serviceSelect.addEventListener('change', function() {
             const sel = this.options[this.selectedIndex];
             console.log('DEBUG sel.dataset =', sel.dataset);…
@@ -246,4 +284,5 @@
 @endsection
 
 @section('card-footer')
+    {{-- {{ $sanPhams->links() }} --}}
 @endsection

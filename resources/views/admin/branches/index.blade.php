@@ -41,26 +41,35 @@
                 </div>
             </form>
 
-            <table class="table table-bordered table-hover">
-                <thead class="thead-light text-center align-middle">
+            <table class="table table-bordered table-hover text-center align-middle">
+                <thead class="thead-light">
                     <tr>
                         <th>STT</th>
+                        <th>Ảnh</th>
                         <th>Tên chi nhánh</th>
                         <th>Địa chỉ</th>
                         <th>SĐT</th>
-                        <th>Email</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($branches as $index => $branch)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td>
+                                {{ ($branches->currentPage() - 1) * $branches->perPage() + $loop->iteration }}
+                            </td>
+                            <td>
+                                @if ($branch->image)
+                                    <img src="{{ asset('storage/' . $branch->image) }}" width="80" height="80"
+                                        alt="Ảnh">
+                                @else
+                                    <span class="text-muted">Không có ảnh</span>
+                                @endif
+                            </td>
                             <td>{{ $branch->name }}</td>
                             <td>{{ $branch->address }}</td>
                             <td>{{ $branch->phone }}</td>
-                            <td>{{ $branch->email }}</td>
-                            <td class="text-center">
+                            <td>
                                 <div class="d-inline-flex gap-1">
                                     <a href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"
                                         class="btn btn-info btn-sm d-inline-flex align-items-center">
@@ -93,8 +102,8 @@
                 </tbody>
             </table>
         </div>
-
     </div>
+
     <div class="d-flex justify-content-center mt-4">
         {{ $branches->links('pagination::bootstrap-5') }}
     </div>

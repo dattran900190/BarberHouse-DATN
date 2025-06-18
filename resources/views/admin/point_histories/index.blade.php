@@ -1,29 +1,11 @@
 @extends('adminlte::page')
 
-@section('title', 'Lịch sử tích điểm')
+@section('title', 'Danh sách người dùng - Lịch sử điểm')
 
 @section('content')
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-
     <div class="card">
         <div class="card-header bg-primary text-white text-center">
-            <h3 class="card-title mb-0">Lịch sử tích điểm</h3>
+            <h3 class="card-title mb-0">Danh sách người dùng</h3>
         </div>
 
         <div class="card-body">
@@ -37,68 +19,68 @@
                 </div>
             </form>
 
-            <table class="table table-bordered table-hover">
-                <thead class="thead-light text-center">
+            <table class="table table-bordered table-hover text-center">
+                <thead class="thead-light">
                     <tr>
-                        <th>Stt</th>
+                        <th>STT</th>
                         <th>Tên người dùng</th>
-                        <th>Điểm</th>
-                        <th>Loại</th>
-                        <th>Mã đặt lịch/Khuyến mãi</th>
-                        <th>Ngày tạo</th>
+                        <th>Email</th>
+                        <th>Điểm hiện có</th>
+                        <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($histories as $index => $history)
+                    @forelse ($users as $index => $user)
                         <tr>
-                            <td>{{ $loop->iteration + ($histories->currentPage() - 1) * $histories->perPage() }}</td>
-                            <td>{{ $history->user->name ?? 'Không có' }}</td>
-                            <td class="{{ $history->type === 'earned' ? 'text-success' : 'text-danger' }}">
-                                {{ $history->type === 'earned' ? '+' : '-' }}
-                                {{ abs($history->points) }} điểm
-                            </td>
-
+                            <td>{{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}</td>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->email }}</td>
                             <td>
-                                @if ($history->type === 'earned')
-                                    <span class="badge bg-success">Tích điểm</span>
-                                @elseif ($history->type === 'redeemed')
-                                    <span class="badge bg-danger">Đổi điểm</span>
-                                @else
-                                    <span class="badge bg-secondary">Không xác định</span>
-                                @endif
+                                <span class="badge badge-success">
+                                    {{ $user->points_balance }} điểm
+                                </span>
                             </td>
                             <td>
-                                @if ($history->type === 'earned' && $history->appointment)
-                                    Mã đặt lịch: {{ $history->appointment->appointment_code ?? 'Không rõ' }}
-                                @elseif ($history->type === 'redeemed' && $history->promotion)
-                                    Mã khuyễn mãi: {{ $history->promotion->code ?? 'Không rõ' }}
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>{{ $history->created_at ? $history->created_at->format('d/m/Y H:i') : '-' }}</td>
-                        </tr>
-                    @endforeach
+                                <a href="{{ route('point_histories.user', ['id' => $user->id, 'page' => request('page', 1)]) }}"
+                                    class="btn btn-sm btn-info d-inline-flex align-items-center">
+                                    <i class="fas fa-eye mr-1"></i> <span>Xem chi tiết</span>
+                                </a>
 
-                    @if ($histories->isEmpty())
-                        <tr>
-                            <td colspan="7" class="text-center">Không có dữ liệu</td>
+                            </td>
                         </tr>
-                    @endif
+                    @empty
+                        <tr>
+                            <td colspan="5">Không có người dùng nào.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
 
-            {{ $histories->appends(request()->query())->links() }}
+            <div class="mt-3">
+                {{ $users->links() }}
+            </div>
         </div>
     </div>
 @endsection
 
 @section('css')
     <style>
+        /* Hiệu ứng hover cho bảng */
         .table-hover tbody tr:hover {
             background-color: #f5f5f5;
         }
 
+        /* Nút thêm đơn hàng */
+        .btn-icon-toggle .btn-text {
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-icon-toggle:hover .btn-text {
+            display: inline;
+        }
+
+        /* Cải thiện thẩm mỹ cho input tìm kiếm */
         .input-group input {
             border-right: 0;
         }

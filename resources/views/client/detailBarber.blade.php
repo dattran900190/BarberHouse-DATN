@@ -1,233 +1,147 @@
 @extends('layouts.ClientLayout')
 
 @section('title-page')
-    {{-- {{ $titlePage }} --}}
-    Chi tiết tin tức Baber House
+    Chi tiết thợ cắt tóc - {{ $barber->name }}
 @endsection
 
 @section('content')
-    <main class="container">
+    <main class="container py-5">
         <div class="main-detail-barber">
-            <section class="bg-light">
+            <section class="bg-light py-5">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-12 mb-4 mb-sm-5">
-                            <div class="card card-style1 border-0">
-                                <div class="card-body p-1-9 p-sm-2-3 p-md-6 p-lg-7">
+                        <div class="col-lg-12 mb-5">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-4 p-md-5 p-lg-6">
                                     <div class="row align-items-center">
                                         <div class="col-lg-6 mb-4 mb-lg-0">
-                                            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="...">
+                                            <img src="{{ $barber->avatar ?? 'https://bootdey.com/img/Content/avatar/avatar7.png' }}"
+                                                alt="{{ $barber->name }}" class="img-fluid rounded">
                                         </div>
                                         <div class="col-lg-6 px-xl-10">
-                                            <div class="py-1-9 px-1-9 px-sm-6 mb-1-9 rounded">
-                                                <h3 class="h2 text-dark mb-0">HỰ HẠ HỢ HẸ</h3>
-                                                <span class="text-primary">Nhân viên</span>
+                                            <div class="bg-white p-4 mb-4 rounded">
+                                                <h3 class="h2 text-dark mb-0">{{ $barber->name }}</h3>
+                                                <span class="text-primary">Thợ cắt tóc tại
+                                                    {{ $barber->branch->name ?? 'chưa có chi nhánh' }}</span>
                                             </div>
-                                            <ul class="list-unstyled mb-1-9">
-                                                <li class="mb-2 mb-xl-3 display-28">
-                                                    <span class="display-26 text-secondary me-2 font-weight-600">
-                                                        Kinh nghiệm:
-                                                    </span>
-                                                    10 Years
+                                            <ul class="list-unstyled mb-4">
+                                                <li class="mb-3">
+                                                    <span class="text-secondary me-2 font-weight-600">Chi nhánh:</span>
+                                                    {{ $barber->branch->address ?? 'Chưa cập nhật' }}
                                                 </li>
-                                                <li class="mb-2 mb-xl-3 display-28">
-                                                    <span class="display-26 text-secondary me-2 font-weight-600">
-                                                        Email:
-                                                    </span>
-                                                    edith@mail.com
+                                                <li class="mb-3">
+                                                    <span class="text-secondary me-2 font-weight-600">Trình độ kỹ
+                                                        năng:</span>
+                                                    {{ $barber->skill_level ?? 'Chưa cập nhật' }}
                                                 </li>
-                                                <li class="mb-2 mb-xl-3 display-28">
-                                                    <span class="display-26 text-secondary me-2 font-weight-600">
-                                                        Số điện thoại:
-                                                    </span>
-                                                    0946576578
-                                                </li>
-                                                <li class="mb-2 mb-xl-3 display-28">
-                                                    <span class="display-26 text-secondary me-2 font-weight-600">
-                                                        Đánh giá:
-                                                    </span>
-                                                    5 <i class="fa-solid fa-star fa-2xs"></i>
+                                                <li class="mb-3">
+                                                    <span class="text-secondary me-2 font-weight-600">Đánh giá trung
+                                                        bình:</span>
+                                                    {{ number_format($barber->rating_avg ?? 0, 1) }}
+                                                    <i class="fa-solid fa-star text-warning"></i>
                                                 </li>
                                             </ul>
-                                            <ul class="social-icon-style1 list-unstyled mb-0 ps-0">
-                                                <li><a href="#!"><i class="ti-twitter-alt"></i></a></li>
-                                                <li><a href="#!"><i class="ti-facebook"></i></a></li>
-                                                <li><a href="#!"><i class="ti-pinterest"></i></a></li>
-                                                <li><a href="#!"><i class="ti-instagram"></i></a></li>
-                                            </ul>
+                                            <a href="{{ route('dat-lich', $barber->id) }}" class="btn btn-primary">Đặt lịch
+                                                hẹn</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-12 mb-4 mb-sm-5">
+                        <div class="col-lg-12 mb-5">
                             <div>
-                                <h4 class="text-primary mb-3 mb-sm-4">Mô tả</h4>
-                                <p>Edith is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
-                                    the
-                                    industry's standard dummy text ever since the 1500s, when an unknown printer took a
-                                    galley
-                                    of type and scrambled it to make a type specimen book.</p>
-                                <p class="mb-0">It is a long established fact that a reader will be distracted by the
-                                    readable
-                                    content of a page when looking at its layout. The point of using Lorem Ipsum is that it
-                                    has
-                                    a more-or-less normal distribution of letters, as opposed.</p>
+                                <h4 class="text-primary mb-4">Hồ sơ</h4>
+                                <p>{!! $barber->profile ?? 'Chưa có thông tin hồ sơ.' !!}</p>
                             </div>
                         </div>
                         <div class="col-lg-12">
-                            <div class="row">
-                                <div class="col-lg-12 mb-4 mb-sm-5">
-                                    {{-- <div class="mb-4 mb-sm-5">
-                                        <span class="text-primary mb-3 mb-sm-4">Skill</span>
-                                        <div class="progress-text">
-                                            <div class="row">
-                                                <div class="col-6">Driving range</div>
-                                                <div class="col-6 text-end">80%</div>
-                                            </div>
-                                        </div>
-                                        <div class="custom-progress progress progress-medium mb-3" style="height: 4px;">
-                                            <div class="animated custom-bar progress-bar slideInLeft bg-secondary"
-                                                style="width:80%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="10"
-                                                role="progressbar"></div>
-                                        </div>
-                                        <div class="progress-text">
-                                            <div class="row">
-                                                <div class="col-6">Short Game</div>
-                                                <div class="col-6 text-end">90%</div>
-                                            </div>
-                                        </div>
-                                        <div class="custom-progress progress progress-medium mb-3" style="height: 4px;">
-                                            <div class="animated custom-bar progress-bar slideInLeft bg-secondary"
-                                                style="width:90%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="70"
-                                                role="progressbar"></div>
-                                        </div>
-                                        <div class="progress-text">
-                                            <div class="row">
-                                                <div class="col-6">Side Bets</div>
-                                                <div class="col-6 text-end">50%</div>
-                                            </div>
-                                        </div>
-                                        <div class="custom-progress progress progress-medium mb-3" style="height: 4px;">
-                                            <div class="animated custom-bar progress-bar slideInLeft bg-secondary"
-                                                style="width:50%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="70"
-                                                role="progressbar"></div>
-                                        </div>
-                                        <div class="progress-text">
-                                            <div class="row">
-                                                <div class="col-6">Putting</div>
-                                                <div class="col-6 text-end">60%</div>
-                                            </div>
-                                        </div>
-                                        <div class="custom-progress progress progress-medium" style="height: 4px;">
-                                            <div class="animated custom-bar progress-bar slideInLeft bg-secondary"
-                                                style="width:60%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="70"
-                                                role="progressbar"></div>
-                                        </div>
-                                    </div> --}}
-                                    <div>
-                                        <h4 class="text-primary mb-3 mb-sm-4">Đánh giá</h4>
-                                        <div class="py-2">
-                                            <div class="media mb-3">
-                                                <div style="background-image: url(https://bootdey.com/img/Content/avatar/avatar2.png)"
-                                                    class="media-object avatar avatar-md mr-3"></div>
-                                                <div class="media-body">
-                                                    <div class="media-heading"><small
-                                                            class="float-right text-muted">12/12/12</small>
-                                                        <h5>HẸ HẸ HẸ</h5>
-                                                    </div>
-                                                    <div class="text-muted text-small">Samsa was a travelling salesman - and
-                                                        above it there hung a picture that he had recently cut out of an
-                                                        illustrated magazine and housed in a nice, gilded frame.</div>
+                            <h4 class="text-primary mb-4">Đánh giá</h4>
+                            @if ($barber->reviews->where('is_visible', true)->isEmpty())
+                                <p class="text-muted">Chưa có đánh giá nào.</p>
+                            @else
+                                <div class="py-2">
+                                    @foreach ($barber->reviews->where('is_visible', true) as $review)
+                                        <div class="media mb-4">
+                                            <div style="background-image: url({{ $review->user->avatar ?? 'https://bootdey.com/img/Content/avatar/avatar2.png' }})"
+                                                class="media-object avatar avatar-md mr-3 rounded-circle"></div>
+                                            <div class="media-body">
+                                                <div class="media-heading">
+                                                    <small
+                                                        class="float-right text-muted">{{ $review->created_at->format('d/m/Y') }}</small>
+                                                    <h5>{{ $review->user->name ?? 'Khách hàng ẩn danh' }}</h5>
+                                                </div>
+                                                <div class="text-muted mb-2">
+                                                    {{ $review->comment ?? 'Không có bình luận.' }}</div>
+                                                <div class="text-warning">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        <i
+                                                            class="fa-solid fa-star {{ $i <= $review->rating ? '' : 'fa-regular' }}"></i>
+                                                    @endfor
                                                 </div>
                                             </div>
-                                            <hr>
-                                            <div class="media mb-3">
-                                                <div style="background-image: url(https://bootdey.com/img/Content/avatar/avatar2.png)"
-                                                    class="media-object avatar avatar-md mr-3"></div>
-                                                <div class="media-body">
-                                                    <div class="media-heading"><small
-                                                            class="float-right text-muted">12/12/12</small>
-                                                        <h5>HẸ HẸ HẸ</h5>
-                                                    </div>
-                                                    <div class="text-muted text-small">Samsa was a travelling salesman - and
-                                                        above it there hung a picture that he had recently cut out of an
-                                                        illustrated magazine and housed in a nice, gilded frame.</div>
-                                                </div>
-                                            </div>
-                                            <hr>
-                                            <div class="media mb-3">
-                                                <div style="background-image: url(https://bootdey.com/img/Content/avatar/avatar2.png)"
-                                                    class="media-object avatar avatar-md mr-3"></div>
-                                                <div class="media-body">
-                                                    <div class="media-heading"><small
-                                                            class="float-right text-muted">12/12/12</small>
-                                                        <h5>HẸ HẸ HẸ</h5>
-                                                    </div>
-                                                    <div class="text-muted text-small">Samsa was a travelling salesman - and
-                                                        above it there hung a picture that he had recently cut out of an
-                                                        illustrated magazine and housed in a nice, gilded frame.</div>
-                                                </div>
-                                            </div>
-                                            <hr>
-                                            <div class="media mb-3">
-                                                <div style="background-image: url(https://bootdey.com/img/Content/avatar/avatar2.png)"
-                                                    class="media-object avatar avatar-md mr-3"></div>
-                                                <div class="media-body">
-                                                    <div class="media-heading"><small
-                                                            class="float-right text-muted">12/12/12</small>
-                                                        <h5>HẸ HẸ HẸ</h5>
-                                                    </div>
-                                                    <div class="text-muted text-small">Samsa was a travelling salesman - and
-                                                        above it there hung a picture that he had recently cut out of an
-                                                        illustrated magazine and housed in a nice, gilded frame.</div>
-                                                </div>
-                                            </div>
-                                            <hr>
-                                            <div class="media mb-3">
-                                                <div style="background-image: url(https://bootdey.com/img/Content/avatar/avatar2.png)"
-                                                    class="media-object avatar avatar-md mr-3"></div>
-                                                <div class="media-body">
-                                                    <div class="media-heading"><small
-                                                            class="float-right text-muted">12/12/12</small>
-                                                        <h5>HẸ HẸ HẸ</h5>
-                                                    </div>
-                                                    <div class="text-muted text-small">Samsa was a travelling salesman - and
-                                                        above it there hung a picture that he had recently cut out of an
-                                                        illustrated magazine and housed in a nice, gilded frame.</div>
-                                                </div>
-                                            </div>
-
-                                            <nav class="pagination" aria-label="Page navigation">
-                                                <button class="page-btn prev" disabled>‹ Prev</button>
-                                                <ul class="page-list">
-                                                    <li><button class="page-number active">1</button></li>
-                                                    <li><button class="page-number">2</button></li>
-                                                    <li><button class="page-number">3</button></li>
-                                                    <li><button class="page-number">4</button></li>
-                                                    <li><span class="ellipsis">…</span></li>
-                                                    <li><button class="page-number">10</button></li>
-                                                </ul>
-                                                <button class="page-btn next">Next ›</button>
-                                            </nav>
                                         </div>
-                                    </div>
+                                        <hr>
+                                    @endforeach
+                                    <nav class="pagination mt-4" aria-label="Page navigation">
+                                        {{ $reviews->links() }}
+                                    </nav>
                                 </div>
-                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
             </section>
         </div>
-        <style>
-            #mainNav {
-                background-color: #000;
-            }
-        </style>
     </main>
+    <style>
+        #mainNav {
+            background-color: #000;
+        }
+    </style>
 @endsection
 
 @section('card-footer')
-    
 @endsection
 
+<style>
+    .main-detail-barber .card {
+        transition: transform 0.3s;
+    }
+
+    .main-detail-barber .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .avatar {
+        width: 50px;
+        height: 50px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .pagination .page-link {
+        color: #007bff;
+        margin: 0 5px;
+        border-radius: 5px;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #f8f9fa;
+    }
+
+    .pagination .active .page-link {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+</style>

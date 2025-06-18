@@ -13,11 +13,13 @@ class Branch extends Model
         'name',
         'address',
         'phone',
-        'email',
+        'google_map_url',
+        'image',
+        'content',
     ];
 
     public function barbers()
     {
-        return $this->hasMany(Barber::class,);
+        return $this->hasMany(Barber::class);
     }
 }

@@ -1,165 +1,73 @@
 @extends('layouts.ClientLayout')
 
 @section('title-page')
-    Danh sách thợ Baber House
+    Danh sách thợ Barber House
 @endsection
 
 @section('content')
-    <main class="container">
-        <div class="list-barber">
-            <h2>Top thợ cắt của Barber House</h2>
-            <div class="product-filters">
-                <div class="filter-selects">
-                    <div class="filter-group">
-                        <label for="filter-category">Chi nhánh:</label>
-                        <select id="filter-category">
-                            <option value="">Tất cả</option>
-                            <option value="cat-toc">Sáp vuốt tóc</option>
-                            <option value="goi-dau">Dầu gội & dầu xả</option>
-                            <option value="nhuom-toc">Tông Đơ cắt tóc</option>
-                            <option value="cao-rau">Kéo cắt tóc</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filter-price">Đánh giá:</label>
-                        <select id="filter-price">
-                            <option value="">Tất cả</option>
-                            <option value="0-100">Dưới 100k</option>
-                            <option value="100-200">100k–200k</option>
-                            <option value="200-500">200k–500k</option>
-                            <option value="500-9999">Trên 500k</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="main-list-barber">
-                <div class="top-barber">
-                    <div class="img-top-barber">
-                        <a href="{{ asset('chi-tiet-tho-cat') }}">
-                            <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
-                                alt="" />
-                        </a>
-                        <a href="dat-lich">
-                            <button class="btn">Đặt lịch ngay</button>
-                        </a>
-                    </div>
-                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
-                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
-                </div>
-                <div class="top-barber">
-                    <div class="img-top-barber">
-                        <a href="{{ asset('chi-tiet-tho-cat') }}">
-                            <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
-                                alt="" />
-                        </a>
-                        <a href="dat-lich">
-                            <button class="btn">Đặt lịch ngay</button>
-                        </a>
-                    </div>
-                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
-                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
-                </div>
-                <div class="top-barber">
-                    <div class="img-top-barber">
-                        <a href="{{ asset('chi-tiet-tho-cat') }}">
-                            <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
-                                alt="" />
-                        </a>
-                        <a href="dat-lich">
-                            <button class="btn">Đặt lịch ngay</button>
-                        </a>
-                    </div>
-                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
-                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
-                </div>
-                <div class="top-barber">
-                    <div class="img-top-barber">
-                        <a href="{{ asset('chi-tiet-tho-cat') }}">
-                            <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
-                                alt="" />
-                        </a>
-                        <a href="dat-lich">
-                            <button class="btn">Đặt lịch ngay</button>
-                        </a>
-                    </div>
-                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
-                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
-                </div>
-                <div class="top-barber">
-                    <div class="img-top-barber">
-                        <a href="{{ asset('chi-tiet-tho-cat') }}">
-                            <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
-                                alt="" />
-                        </a>
-                        <a href="dat-lich">
-                            <button class="btn">Đặt lịch ngay</button>
-                        </a>
-                    </div>
-                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
-                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
-                </div>
-                <div class="top-barber">
-                    <div class="img-top-barber">
-                        <a href="{{ asset('chi-tiet-tho-cat') }}">
-                            <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
-                                alt="" />
-                        </a>
-                        <a href="dat-lich">
-                            <button class="btn">Đặt lịch ngay</button>
-                        </a>
-                    </div>
-                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
-                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
-                </div>
-                <div class="top-barber">
-                    <div class="img-top-barber">
-                        <a href="{{ asset('chi-tiet-tho-cat') }}">
-                            <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
-                                alt="" />
-                        </a>
-                        <a href="dat-lich">
-                            <button class="btn">Đặt lịch ngay</button>
-                        </a>
-                    </div>
-                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
-                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
-                </div>
-                <div class="top-barber">
-                    <div class="img-top-barber">
-                        <a href="{{ asset('chi-tiet-tho-cat') }}">
-                            <img src="https://kenh14cdn.com/2020/6/30/img0096-1592366363868430058761-1593507888983990295582.jpeg"
-                                alt="" />
-                        </a>
-                        <a href="dat-lich">
-                            <button class="btn">Đặt lịch ngay</button>
-                        </a>
-                    </div>
-                    <h5><a href="{{ asset('chi-tiet-tho-cat') }}">Tên ...........</a></h5>
-                    <p><a href="{{ asset('chi-tiet-tho-cat') }}">Địa chỉ .............</a></p>
-                </div>
+<main class="container">
+    <div class="list-barber">
+        <h2>Top thợ cắt của Barber House</h2>
 
+        <!-- Bộ lọc -->
+        <form method="GET" action="{{ route('client.listBarber') }}" class="product-filters">
+            <div class="filter-selects">
+                <div class="filter-group">
+                    <label for="branch_id">Chi nhánh:</label>
+                    <select name="branch_id" id="branch_id" onchange="this.form.submit()">
+                        <option value="">Tất cả</option>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}" {{ request('branch_id') == $branch->id ? 'selected' : '' }}>
+                                {{ $branch->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="rating">Đánh giá:</label>
+                    <select name="rating" id="rating" onchange="this.form.submit()">
+                        <option value="">Tất cả</option>
+                        <option value="1" {{ request('rating') == '1' ? 'selected' : '' }}>Từ 1 sao</option>
+                        <option value="2" {{ request('rating') == '2' ? 'selected' : '' }}>Từ 2 sao</option>
+                        <option value="3" {{ request('rating') == '3' ? 'selected' : '' }}>Từ 3 sao</option>
+                        <option value="4" {{ request('rating') == '4' ? 'selected' : '' }}>Từ 4 sao</option>
+                        <option value="5" {{ request('rating') == '5' ? 'selected' : '' }}>Từ 5 sao</option>
+                    </select>
+                </div>
             </div>
-            <nav class="pagination" aria-label="Page navigation">
-                <button class="page-btn prev" disabled>‹ Prev</button>
-                <ul class="page-list">
-                    <li><button class="page-number active">1</button></li>
-                    <li><button class="page-number">2</button></li>
-                    <li><button class="page-number">3</button></li>
-                    <li><button class="page-number">4</button></li>
-                    <li><span class="ellipsis">…</span></li>
-                    <li><button class="page-number">10</button></li>
-                </ul>
-                <button class="page-btn next">Next ›</button>
-            </nav>
+        </form>
+
+        <!-- Danh sách thợ -->
+        <div class="main-list-barber">
+            @forelse ($barbers as $barber)
+                <div class="top-barber">
+                    <div class="img-top-barber">
+                        <a href="{{ route('client.detailBarber', $barber->id) }}">
+                            <img src="{{ asset('storage/' . $barber->avatar) }}" alt="{{ $barber->name }}" />
+                        </a>
+                        <a href="{{ url('/dat-lich?barber_id=' . $barber->id) }}">
+                            <button class="btn">Đặt lịch ngay</button>
+                        </a>
+                    </div>
+                    <h5><a href="{{ route('client.detailBarber', $barber->id) }}">{{ $barber->name }}</a></h5>
+                    <p>Chi nhánh: {{ $barber->branch->name ?? 'Không rõ' }}</p>
+                    <p>⭐ {{ number_format($barber->rating_avg, 1) }} / 5</p>
+                </div>
+            @empty
+                <p>Không có thợ nào phù hợp với bộ lọc.</p>
+            @endforelse
         </div>
-    </main>
-    <style>
-        #mainNav {
-            background-color: #000;
-        }
-    </style>
-@endsection
 
-@section('card-footer')
-    
+        <!-- Phân trang -->
+        <div class="mt-3">
+            {{ $barbers->withQueryString()->links() }}
+        </div>
+    </div>
+</main>
+
+<style>
+    #mainNav {
+        background-color: #000;
+    }
+</style>
 @endsection
