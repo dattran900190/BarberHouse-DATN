@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name', 100)->nullable();
             $table->text('address')->nullable();
             $table->string('phone', 20)->nullable();
-            $table->string('google_map_url')->nullable(); // link Google Maps
+            $table->text('google_map_url')->nullable(); // link Google Maps
             $table->string('image')->nullable();           // ảnh đại diện
             $table->text('content')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();

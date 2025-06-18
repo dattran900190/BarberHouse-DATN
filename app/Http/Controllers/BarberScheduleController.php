@@ -39,26 +39,44 @@ class BarberScheduleController extends Controller
         return view('admin.barber_schedules.show', compact('branch', 'barbers'));
     }
 
-    public function create()
+    // Cập nhật method create để nhận branchId
+    public function create($branchId = null)
     {
-        $barbers = Barber::whereNotNull('branch_id')->get();
-        return view('admin.barber_schedules.create', compact('barbers'));
+        if ($branchId) {
+            // Nếu có branchId, chỉ lấy thợ của chi nhánh đó
+            $branch = Branch::findOrFail($branchId);
+            $barbers = $branch->barbers()->whereNotNull('branch_id')->get();
+        } else {
+            // Nếu không có branchId, lấy tất cả thợ (trường hợp truy cập trực tiếp)
+            $barbers = Barber::whereNotNull('branch_id')->get();
+            $branch = null;
+        }
+
+        return view('admin.barber_schedules.create', compact('barbers', 'branch'));
     }
 
     public function store(BarberSchedulesRequest $request)
     {
         $data = $request->validated();
 
-        // Kiểm tra trùng lịch
+        // Kiểm tra trùng lịch - logic cải thiện
         $exists = BarberSchedule::where('barber_id', $data['barber_id'])
             ->where('schedule_date', $data['schedule_date'])
             ->where(function ($query) use ($data) {
-                $query->whereBetween('start_time', [$data['start_time'], $data['end_time']])
-                    ->orWhereBetween('end_time', [$data['start_time'], $data['end_time']])
-                    ->orWhere(function ($q) use ($data) {
-                        $q->where('start_time', '<', $data['start_time'])
-                            ->where('end_time', '>', $data['end_time']);
-                    });
+                // Kiểm tra overlap: lịch mới có bị trùng với lịch cũ không
+                $query->where(function ($q) use ($data) {
+                    // Trường hợp 1: start_time mới nằm trong khoảng thời gian cũ
+                    $q->where('start_time', '<=', $data['start_time'])
+                        ->where('end_time', '>', $data['start_time']);
+                })->orWhere(function ($q) use ($data) {
+                    // Trường hợp 2: end_time mới nằm trong khoảng thời gian cũ  
+                    $q->where('start_time', '<', $data['end_time'])
+                        ->where('end_time', '>=', $data['end_time']);
+                })->orWhere(function ($q) use ($data) {
+                    // Trường hợp 3: lịch mới bao trùm lịch cũ
+                    $q->where('start_time', '>=', $data['start_time'])
+                        ->where('end_time', '<=', $data['end_time']);
+                });
             })->exists();
 
         if ($exists) {
@@ -71,6 +89,7 @@ class BarberScheduleController extends Controller
         return redirect()->route('barber_schedules.showBranch', $barber->branch_id)
             ->with('success', 'Thêm lịch thành công!');
     }
+
     public function edit($id)
     {
         $schedule = BarberSchedule::findOrFail($id);
@@ -84,19 +103,26 @@ class BarberScheduleController extends Controller
     {
         $data = $request->validated();
 
-        // Kiểm tra trùng lịch (bỏ qua lịch hiện tại)
+        // Kiểm tra trùng lịch (bỏ qua lịch hiện tại) - logic cải thiện
         $exists = BarberSchedule::where('barber_id', $data['barber_id'])
             ->where('schedule_date', $data['schedule_date'])
-            ->where(function ($query) use ($data) {
-                $query->whereBetween('start_time', [$data['start_time'], $data['end_time']])
-                    ->orWhereBetween('end_time', [$data['start_time'], $data['end_time']])
-                    ->orWhere(function ($q) use ($data) {
-                        $q->where('start_time', '<', $data['start_time'])
-                            ->where('end_time', '>', $data['end_time']);
-                    });
-            })
             ->where('id', '!=', $id) // loại trừ chính lịch này
-            ->exists();
+            ->where(function ($query) use ($data) {
+                // Kiểm tra overlap: lịch mới có bị trùng với lịch cũ không
+                $query->where(function ($q) use ($data) {
+                    // Trường hợp 1: start_time mới nằm trong khoảng thời gian cũ
+                    $q->where('start_time', '<=', $data['start_time'])
+                        ->where('end_time', '>', $data['start_time']);
+                })->orWhere(function ($q) use ($data) {
+                    // Trường hợp 2: end_time mới nằm trong khoảng thời gian cũ  
+                    $q->where('start_time', '<', $data['end_time'])
+                        ->where('end_time', '>=', $data['end_time']);
+                })->orWhere(function ($q) use ($data) {
+                    // Trường hợp 3: lịch mới bao trùm lịch cũ
+                    $q->where('start_time', '>=', $data['start_time'])
+                        ->where('end_time', '<=', $data['end_time']);
+                });
+            })->exists();
 
         if ($exists) {
             return back()->withErrors(['msg' => 'Thời gian đã bị trùng lịch với thợ cắt tóc này!'])->withInput();
@@ -108,6 +134,7 @@ class BarberScheduleController extends Controller
         return redirect()->route('barber_schedules.showBranch', $schedule->barber->branch_id)
             ->with('success', 'Cập nhật lịch thành công!');
     }
+
     public function destroy($id)
     {
         $schedule = BarberSchedule::findOrFail($id);

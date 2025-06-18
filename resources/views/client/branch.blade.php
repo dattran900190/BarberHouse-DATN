@@ -33,17 +33,15 @@
                     <div class="branch">
                         <div class="image-branch">
                             <img src="{{ asset('storage/' . $branch->image) }}" alt="{{ $branch->name }}">
+                            <div class="overlaybranch"></div>
                             <div class="overlay">
                                 <h4>
-                                    <a href="{{ route('client.detailBranch', $branch->id) }}">
+                                    <a style="color:white;!important"
+                                        href="{{ route('client.detailBranch', $branch->id) }}">
                                         {{ $branch->name }}
                                     </a>
                                 </h4>
-                                <p>
-                                    <a href="{{ $branch->google_map_url }}" target="_blank">
-                                        📍 Xem bản đồ
-                                    </a>
-                                </p>
+                                <h6>{{ $branch->address }}</h6>
                             </div>
                         </div>
                     </div>

@@ -21,7 +21,6 @@ return new class extends Migration
             $table->boolean('is_available')->default(true);
             $table->timestamps();
 
-            $table->unique(['barber_id', 'date', 'time_slot'], 'unique_barber_schedule');
 
             $table->foreign('barber_id')
                 ->references('id')
