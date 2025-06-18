@@ -95,9 +95,9 @@ document.addEventListener('DOMContentLoaded', function () {
   let lastRequest = null; // Track last request to avoid duplicates
 
   function updateBarbers(branchId, date, time = null, serviceId = null) {
-    const requestKey = `${branchId}-${date}-${time}-${serviceId}`; // Unique key for request
+    const requestKey = `${branchId}-${date}-${time}-${serviceId}`;
     if (lastRequest === requestKey) {
-      return; // Skip if same request is already made
+      return;
     }
     lastRequest = requestKey;
 
@@ -111,28 +111,29 @@ document.addEventListener('DOMContentLoaded', function () {
     let url = `/get-available-barbers-by-date/${branchId}/${date}`;
     if (time) {
       url += `/${encodeURIComponent(time)}`;
-    } 
-    if (serviceId) {
-      url += `/${serviceId}`; // Thêm service_id vào URL
+    } else {
+      url += '/null'; // Gửi $time = null khi không chọn thời gian
     }
+    if (serviceId) {
+      url += `/${serviceId}`;
+    }
+
+    // console.log('Fetching URL:', url); // Debug URL
 
     fetch(url)
       .then(response => {
-        console.log('Response status:', response.status);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         return response.json();
       })
       .then(data => {
-        console.log('Response data:', data);
-        // Xử lý response
         if (data.error) {
           barberSelect.innerHTML = `<option value="">${data.error}</option>`;
         } else if (!data.length) {
           barberSelect.innerHTML = `<option value="">Không có thợ khả dụng</option>`;
         } else {
-          const addedBarbers = new Set(); // Track added barber IDs
+          const addedBarbers = new Set();
           data.forEach(barber => {
             if (!addedBarbers.has(barber.id)) {
               const option = document.createElement('option');
@@ -144,8 +145,8 @@ document.addEventListener('DOMContentLoaded', function () {
           });
         }
       })
-      .catch(() => {
-        console.error('Fetch error:', error);
+      .catch(error => {
+        // console.error('Fetch error:', error);
         barberSelect.innerHTML = '<option value="">Lỗi khi tải danh sách thợ</option>';
       });
   }
@@ -177,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   serviceSelect.addEventListener('change', function () {
     const opt = this.options[this.selectedIndex];
-    console.log('DEBUG sel.dataset =', opt.dataset);
+    // console.log('DEBUG sel.dataset =', opt.dataset);
 
     const price = parseFloat(opt.dataset.price);
     const duration = parseInt(opt.dataset.duration, 10);
