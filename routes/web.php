@@ -166,6 +166,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('barber_schedules', BarberScheduleController::class);
     Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
         ->name('barber_schedules.showBranch');
+    Route::get('barber-schedules/create/{branchId}', [BarberScheduleController::class, 'create'])
+        ->name('barber_schedules.createForBranch');
 
     // ==== Người dùng ====
     Route::resource('users', UserController::class);

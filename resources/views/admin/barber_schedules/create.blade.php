@@ -5,7 +5,12 @@
 @section('content')
     <div class="card">
         <div class="card-header bg-success text-white">
-            <h3 class="card-title">Tạo lịch cho thợ cắt tóc</h3>
+            <h3 class="card-title">
+                Tạo lịch cho thợ cắt tóc
+                @if (isset($branch))
+                    - Chi nhánh: {{ $branch->name }}
+                @endif
+            </h3>
         </div>
 
         <div class="card-body">
@@ -27,7 +32,10 @@
                         <option value="">-- Chọn thợ --</option>
                         @foreach ($barbers as $barber)
                             <option value="{{ $barber->id }}" {{ old('barber_id') == $barber->id ? 'selected' : '' }}>
-                                {{ $barber->name }} ({{ $barber->branch->name ?? 'Không có chi nhánh' }})
+                                {{ $barber->name }}
+                                @if (!isset($branch))
+                                    ({{ $barber->branch->name ?? 'Không có chi nhánh' }})
+                                @endif
                             </option>
                         @endforeach
                     </select>
@@ -52,7 +60,12 @@
 
                 <div class="form-group mt-3">
                     <button type="submit" class="btn btn-success">Tạo lịch</button>
-                    <a href="{{ route('barber_schedules.index') }}" class="btn btn-secondary">Quay lại</a>
+                    @if (isset($branch))
+                        <a href="{{ route('barber_schedules.showBranch', $branch->id) }}" class="btn btn-secondary">Quay
+                            lại</a>
+                    @else
+                        <a href="{{ route('barber_schedules.index') }}" class="btn btn-secondary">Quay lại</a>
+                    @endif
                 </div>
             </form>
         </div>
