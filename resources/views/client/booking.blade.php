@@ -170,16 +170,7 @@
             </div>
 
 
-<<<<<<< HEAD
-            <div class="form-group">
-                <label>Mã giảm giá (nếu có)</label>
-                <select name="voucher_id" class="form-control">
-                    <option value="">Không sử dụng</option>
-                    @foreach ($vouchers as $voucher)
-                        <option value="{{ $voucher->id }}">{{ $voucher->promotion->code }}</option>
-                    @endforeach
-                </select>
-=======
+
             <div class="form-group mb-3">
                 <label for="voucher_id">Mã giảm giá (nếu có)</label>
                 <select name="voucher_id" id="voucher_id" class="form-control">
@@ -206,7 +197,7 @@
                 @error('voucher_id')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
->>>>>>> 57b57c21ee72f1e6f689c985a102d3d7ed5ef805
+
             </div>
 
             <div class="form-group mb-3">

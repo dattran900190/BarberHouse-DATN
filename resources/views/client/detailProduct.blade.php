@@ -1,149 +1,98 @@
 @extends('layouts.ClientLayout')
 
 @section('title-page')
-    {{-- {{ $titlePage }} --}}
-    Chi tiết sản phẩm Baber House
+    Chi tiết sản phẩm - {{ $product->name }}
 @endsection
 
 @section('content')
-    <main class="container">
-        <section class="h-100 h-custom">
-            <div class="mainDetailPro">
-                <div class="detailPro-left">
-                    <div class="image-top">
-                        <img src="https://4rau.vn/upload/sanpham/download7547_250x250.jpeg" alt="">
-                    </div>
+<main class="container">
+    <section class="h-100 h-custom">
+        <div class="mainDetailPro d-flex flex-wrap gap-4">
+            {{-- Hình ảnh sản phẩm --}}
+            <div class="detailPro-left">
+                <div class="image-top mb-3">
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="max-width: 100%;">
+                </div>
+
+                {{-- Nếu bạn có nhiều ảnh thì dùng album --}}
+                @if (!empty($product->gallery))
                     <div class="album-wrapper">
                         <button class="prev-btn">❮</button>
-                        <div class="image-bottom">
-                            <div class="image-track">
-                                <img src="https://4rau.vn/upload/sanpham/download7547_250x250.jpeg" alt="">
-                                <img src="https://4rau.vn/upload/sanpham/download7547_250x250.jpeg" alt="">
-                                <img src="https://4rau.vn/upload/sanpham/download7547_250x250.jpeg" alt="">
-                                <img src="https://4rau.vn/upload/sanpham/download7547_250x250.jpeg" alt="">
-                                <img src="https://4rau.vn/upload/sanpham/download7547_250x250.jpeg" alt="">
+                        <div class="image-bottom overflow-hidden">
+                            <div class="image-track d-flex gap-2" style="transition: all 0.3s ease;">
+                                @foreach (json_decode($product->gallery) as $img)
+                                    <img src="{{ asset('storage/' . $img) }}" style="width: 150px;" alt="Gallery Image">
+                                @endforeach
                             </div>
                         </div>
                         <button class="next-btn">❯</button>
                     </div>
-                </div>
-
-                <div class="detailPro-right">
-                    <h3>BROSH CLAY FIBER POMADE (mini)</h3>
-                    <h5>Giá: 295.000 vnđ</h5>
-                    <p>Một loại pomade mới kết hợp giữa 2 dòng best seller
-                        nhất của BROSH tại Việt Nam, cho ra đời phiên bản lai
-                        giống không quá cứng,
-                        nhưng không hề làm tóc bẹp mềm nhanh chóng!</p>
-                    <p>
-                        Số lượng: <input type="number" class=" form-control-sm mx-2 quantity-input" id="quantity-input"
-                            value="1" min="1" />
-                    </p>
-
-                    <a href="" class="btn btn-dark">Thêm vào giỏ hàng</a>
-                </div>
+                @endif
             </div>
 
-            <div class="information-product">
-                <h4>Thông tin chi tiết</h4>
-                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                    Nostrum beatae expedita quasi harum suscipit, voluptatum ad modi at,
-                    mollitia sapiente pariatur illum cumque iusto nobis. Excepturi, cum. Illum, quasi ipsa.</p>
+            {{-- Thông tin sản phẩm --}}
+            <div class="detailPro-right">
+                <h3>{{ $product->name }}</h3>
+                <h5 class="text-danger fw-bold">Giá: {{ number_format($product->price) }} đ</h5>
+                <p>{{ $product->description }}</p>
+
+                <form action="{{ route('cart.add', $product->id) }}" method="POST" class="mt-3">
+                    @csrf
+                    <label for="quantity" class="me-2">Số lượng:</label>
+                    <input type="number" name="quantity" id="quantity" class="form-control-sm d-inline-block w-auto"
+                        value="1" min="1" />
+                    <button type="submit" class="btn btn-dark ms-3">Thêm vào giỏ hàng</button>
+                </form>
             </div>
+        </div>
 
-            <div class="orther-product">
-                <h2>Sản phẩm khác</h2>
-                <div class="products">
-                    <div class="product">
-                        <div class="image-product">
-                            <a href="{{ asset('chi-tiet-san-pham') }}"><img
-                                    src="https://kenh14cdn.com/2020/6/5/photo-1-15913191386161819866915.jpg"
-                                    alt="" /></a>
+        {{-- Thông tin chi tiết --}}
+        <div class="information-product mt-5">
+            <h4>Thông tin chi tiết</h4>
+            <p>{{ $product->details ?? 'Đang cập nhật...' }}</p>
+        </div>
+
+        {{-- Sản phẩm liên quan --}}
+        <div class="orther-product mt-5">
+            <h2 class="mb-4">Sản phẩm khác</h2>
+            <div class="products row">
+                @forelse ($relatedProducts as $item)
+                    <div class="col-6 col-md-3 mb-4">
+                        <div class="card h-100 text-center">
+                            <a href="{{ route('client.product.detail', $item->id) }}" class="text-decoration-none text-dark">
+                                <img src="{{ asset('storage/' . $item->image) }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ $item->name }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $item->name }}</h5>
+                                    <p class="card-text text-danger fw-bold">{{ number_format($item->price) }} đ</p>
+                                </div>
+                            </a>
                         </div>
-                        <h4><a href="{{ asset('chi-tiet-san-pham') }}">Sản phẩm 1</a></h4>
-                        <p><a href="">Giá sản phẩm</a></p>
                     </div>
-                    <div class="product">
-                        <div class="image-product">
-                            <a href="{{ asset('chi-tiet-san-pham') }}"><img
-                                    src="https://kenh14cdn.com/2020/6/5/photo-1-15913191386161819866915.jpg"
-                                    alt="" /></a>
-                        </div>
-                        <h4><a href="{{ asset('chi-tiet-san-pham') }}">Sản phẩm 2</a></h4>
-                        <p><a href="">Giá sản phẩm</a></p>
-                    </div>
-                    <div class="product">
-                        <div class="image-product">
-                            <a href="{{ asset('chi-tiet-san-pham') }}"><img
-                                    src="https://kenh14cdn.com/2020/6/5/photo-1-15913191386161819866915.jpg"
-                                    alt="" /></a>
-                        </div>
-                        <h4><a href="{{ asset('chi-tiet-san-pham') }}">Sản phẩm 3</a></h4>
-                        <p><a href="">Giá sản phẩm</a></p>
-                    </div>
-                    <div class="product">
-                        <div class="image-product">
-                            <a href="{{ asset('chi-tiet-san-pham') }}"><img
-                                    src="https://kenh14cdn.com/2020/6/5/photo-1-15913191386161819866915.jpg"
-                                    alt="" /></a>
-                        </div>
-                        <h4><a href="{{ asset('chi-tiet-san-pham') }}">Sản phẩm 4</a></h4>
-                        <p><a href="">Giá sản phẩm</a></p>
-                    </div>
-                    <div class="product">
-                        <div class="image-product">
-                            <a href="{{ asset('chi-tiet-san-pham') }}"><img
-                                    src="https://kenh14cdn.com/2020/6/5/photo-1-15913191386161819866915.jpg"
-                                    alt="" /></a>
-                        </div>
-                        <h4><a href="{{ asset('chi-tiet-san-pham') }}">Sản phẩm 5</a></h4>
-                        <p><a href="">Giá sản phẩm</a></p>
-                    </div>
-                    <div class="product">
-                        <div class="image-product">
-                            <a href="{{ asset('chi-tiet-san-pham') }}"><img
-                                    src="https://kenh14cdn.com/2020/6/5/photo-1-15913191386161819866915.jpg"
-                                    alt="" /></a>
-                        </div>
-                        <h4><a href="{{ asset('chi-tiet-san-pham') }}">Sản phẩm 6</a></h4>
-                        <p><a href="">Giá sản phẩm</a></p>
-                    </div>
-                    <div class="product">
-                        <div class="image-product">
-                            <a href="{{ asset('chi-tiet-san-pham') }}"><img
-                                    src="https://kenh14cdn.com/2020/6/5/photo-1-15913191386161819866915.jpg"
-                                    alt="" /></a>
-                        </div>
-                        <h4><a href="{{ asset('chi-tiet-san-pham') }}">Sản phẩm 7</a></h4>
-                        <p><a href="">Giá sản phẩm</a></p>
-                    </div>
-                    <div class="product">
-                        <div class="image-product">
-                            <a href="{{ asset('chi-tiet-san-pham') }}"><img
-                                    src="https://kenh14cdn.com/2020/6/5/photo-1-15913191386161819866915.jpg"
-                                    alt="" /></a>
-                        </div>
-                        <h4><a href="{{ asset('chi-tiet-san-pham') }}">Sản phẩm 8</a></h4>
-                        <p><a href="">Giá sản phẩm</a></p>
-                    </div>
-                </div>
+                @empty
+                    <p>Không có sản phẩm liên quan.</p>
+                @endforelse
             </div>
-        </section>
-    </main>
-    <style>
-        #mainNav {
-            background-color: #000;
-        }
-    </style>
-    <script>
-        const track = document.querySelector('.image-track');
-        const prevBtn = document.querySelector('.prev-btn');
-        const nextBtn = document.querySelector('.next-btn');
+        </div>
+    </section>
+</main>
 
-        let scrollIndex = 0;
-        const maxVisible = 4; // số ảnh hiển thị cùng lúc
-        const imageWidth = 160; // bao gồm cả margin phải (150px + 10px)
+{{-- Custom style và script cho album --}}
+<style>
+    #mainNav {
+        background-color: #000;
+    }
+    .image-track {
+        transition: transform 0.3s ease;
+    }
+</style>
+<script>
+    const track = document.querySelector('.image-track');
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    let scrollIndex = 0;
+    const imageWidth = 160; // 150px ảnh + 10px margin
 
+    if (track) {
         prevBtn.addEventListener('click', () => {
             if (scrollIndex > 0) {
                 scrollIndex--;
@@ -153,11 +102,11 @@
 
         nextBtn.addEventListener('click', () => {
             const totalImages = track.querySelectorAll('img').length;
-            if (scrollIndex < totalImages - maxVisible) {
+            if (scrollIndex < totalImages - 4) {
                 scrollIndex++;
                 track.style.transform = `translateX(-${scrollIndex * imageWidth}px)`;
             }
         });
-
-    </script>
+    }
+</script>
 @endsection

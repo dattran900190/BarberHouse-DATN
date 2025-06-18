@@ -5,7 +5,9 @@ namespace App\Providers;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Appointment;
+use App\Models\ProductCategory;
 use App\Observers\AppointmentObserver;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,5 +29,6 @@ class AppServiceProvider extends ServiceProvider
 
         // Đăng ký observer cho Appointment
         Appointment::observe(AppointmentObserver::class);   
+           View::share('globalCategories', ProductCategory::all());
     }
 }
