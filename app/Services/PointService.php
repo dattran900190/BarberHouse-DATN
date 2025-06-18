@@ -49,6 +49,14 @@ class PointService
             throw new \Exception('Mã giảm giá không hợp lệ hoặc đã hết hạn.');
         }
 
+        $exists = UserRedeemedVoucher::where('user_id', $user->id)
+            ->where('promotion_id', $promotion->id)
+            ->exists();
+
+        if ($exists) {
+            throw new \Exception('Bạn đã đổi mã này rồi!');
+        }
+
         DB::transaction(function () use ($user, $promotion) {
             $user->decrement('points_balance', $promotion->required_points);
             PointHistory::create([

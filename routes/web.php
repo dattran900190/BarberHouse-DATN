@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\ClientBranchController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
@@ -84,14 +85,17 @@ Route::get('/chi-tiet-san-pham', function () {
     return view('client.detailProduct');
 });
 
-Route::get('/tho-cat', function () {
-    return view('client.listBarber');
-});
+
+// == Thợ cắt tóc ==
+Route::get('/tho-cat', [ClientBarberController::class, 'index'])->name('client.listBarber');
+Route::get('/tho-cat/{id}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
+
 
 Route::get('/chi-tiet-tho-cat', function () {
     return view('client.detailBarber');
 });
 
+// == Đổi điểm ==
 Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem');
 Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redeem.store');
 

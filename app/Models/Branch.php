@@ -16,11 +16,10 @@ class Branch extends Model
         'google_map_url',
         'image',
         'content',
-
     ];
 
     public function barbers()
     {
-        return $this->hasMany(Barber::class,);
+        return $this->hasMany(Barber::class);
     }
 }
