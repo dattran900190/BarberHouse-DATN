@@ -86,17 +86,18 @@ class CartController extends Controller
         return response()->json(['success' => true, 'message' => 'Số lượng sản phẩm đã được cập nhật.']);
     }
 
- 
+
     public function show()
     {
         $user = Auth::user();
         $cart = $this->getOrCreateCart($user);
-        $cart->load('items.productVariant.product');
+        $cart->load('items.productVariant.product.variants');
+
 
         return view('client.cart', compact('cart'));
     }
 
-  
+
     private function getOrCreateCart($user)
     {
         if ($user) {
@@ -114,4 +115,19 @@ class CartController extends Controller
         }
         return $cart;
     }
+    public function updateVariant(Request $request, CartItem $cartItem)
+{
+    $request->validate([
+        'product_variant_id' => 'required|exists:product_variants,id',
+    ]);
+
+    $newVariant = ProductVariant::findOrFail($request->product_variant_id);
+    $cartItem->update([
+        'product_variant_id' => $newVariant->id,
+        'price' => $newVariant->price, // cập nhật lại giá
+    ]);
+
+    return redirect()->route('cart.show');
+}
+
 }

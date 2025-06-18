@@ -19,9 +19,9 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\CheckinController;
-use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\Client\ClientBranchController;
+use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
 use App\Http\Controllers\UserRedeemedVoucherController;
@@ -38,16 +38,14 @@ Route::post('register', [AuthController::class, 'postRegister'])->name('postRegi
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // ==== Trang chủ ====
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Giỏ hàng
 Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
 Route::put('/cart/update/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
 Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
-
-Route::get('/', function () {
-    return view('client.home');
-})->name('home');
+Route::put('/cart/update-variant/{cartItem}', [CartController::class, 'updateVariant'])->name('cart.update.variant');
 
 
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
