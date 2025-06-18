@@ -36,7 +36,8 @@
                     <h3>{{ $branch->name }}</h3>
                     <h3>{{ $branch->address }}</h3>
                     <h3>HOTLINE : {{ $branch->phone }}</h3>
-                    <h3><a href="{{ $branch->google_map_url }}" target="_blank">📍 Xem bản đồ</a></h3>
+                    <iframe src="{{ $branch->google_map_url }}" frameborder="0" height="500" width="750"></iframe>
+
                 </div>
             </div>
         </section>
