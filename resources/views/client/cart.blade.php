@@ -51,14 +51,42 @@
                                                         <tbody id="cart-items">
                                                             @foreach ($cart->items as $item)
                                                                 <tr id="cart-item-{{ $item->id }}">
-                                                                    <td class="product-name">
-                                                                        {{ $item->productVariant->product->name ?? 'N/A' }}
-                                                                    </td>
                                                                     <td>
-                                                                        <img src="{{ $item->productVariant->image ?? 'https://via.placeholder.com/100' }}"
+                                                                        <strong>{{ $item->productVariant->product->name }}</strong><br>
+                                                                        @php
+                                                                            $product = $item->productVariant->product;
+                                                                            $currentVariantId =
+                                                                                $item->product_variant_id;
+                                                                            $variants = $product->variants ?? collect();
+                                                                        @endphp
+
+                                                                        <form
+                                                                            action="{{ route('cart.update.variant', $item->id) }}"
+                                                                            method="POST">
+                                                                            @csrf
+                                                                            @method('PUT')
+                                                                            <label class="form-label text-muted small">Dung
+                                                                                tích:</label>
+                                                                            <select name="product_variant_id"
+                                                                                class="form-select form-select-sm mt-1"
+                                                                                onchange="this.form.submit()">
+                                                                                @foreach ($variants as $variant)
+                                                                                    <option value="{{ $variant->id }}"
+                                                                                        {{ $variant->id == $currentVariantId ? 'selected' : '' }}>
+                                                                                        {{ $variant->volume->name ?? ($variant->name ?? 'Không rõ') }}
+                                                                                    </option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </form>
+
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <img src="{{ $item->productVariant->image ? Storage::url($item->productVariant->image) : asset('images/no-image.png') }}"
+                                                                            alt="{{ $item->productVariant->product->name }}"
                                                                             class="img-fluid rounded-3"
-                                                                            alt="{{ $item->productVariant->product->name ?? 'Sản phẩm' }}"
-                                                                            style="width: 80px;">
+                                                                            style="width: 100px;">
+
                                                                     </td>
                                                                     <td>
                                                                         <div class="quantity d-flex align-items-center">
@@ -68,7 +96,8 @@
                                                                                 data-csrf="{{ csrf_token() }}">−</button>
                                                                             <input type="number"
                                                                                 class="form-control form-control-sm mx-2 quantity-input"
-                                                                                value="{{ $item->quantity }}" min="1"
+                                                                                value="{{ $item->quantity }}"
+                                                                                min="1"
                                                                                 data-item-id="{{ $item->id }}"
                                                                                 data-price="{{ $item->price }}"
                                                                                 style="width: 60px; text-align: center;" />
@@ -225,112 +254,128 @@
 @endsection
 
 @section('card-footer')
-    
 @endsection
 
 @section('scripts')
-    <script>
-        addEventListener('DOMContentLoaded', () => {
-            const formatVND = n => n.toLocaleString('vi-VN', {
-                style: 'currency',
-                currency: 'VND'
-            }).replace('₫', '') + ' ₫';
+<script>
+window.onload = function() {
+    const formatVND = n => n.toLocaleString('vi-VN', {
+        style: 'currency',
+        currency: 'VND'
+    }).replace('₫', '') + ' ₫';
 
-            const updateTotal = () => {
-                const s = [...document.querySelectorAll('.subtotal')].reduce((a, b) => a + (parseFloat(b
-                    .textContent.replace(/[^0-9]/g, '')) || 0), 0);
-                const f = parseInt(document.getElementById('shipping-method').value) || 5e4;
-                const c = document.querySelectorAll('.subtotal').length;
+    const updateTotal = () => {
+        const s = [...document.querySelectorAll('.subtotal')].reduce((a, b) => a + (parseFloat(b
+            .textContent.replace(/[^0-9]/g, '')) || 0), 0);
+        const f = parseInt(document.getElementById('shipping-method').value) || 5e4;
 
-                document.getElementById('cart-subtotal').textContent = formatVND(s);
-                document.getElementById('cart-total').textContent = formatVND(s + f);
+        const totalQuantity = [...document.querySelectorAll('.quantity-input')].reduce(
+            (sum, input) => sum + (parseInt(input.value) || 0), 0
+        );
 
-                const itemCountEl = document.getElementById('item-count');
-                const itemCountSideEl = document.getElementById('item-count-side');
+        document.getElementById('cart-subtotal').textContent = formatVND(s);
+        document.getElementById('cart-total').textContent = formatVND(s + f);
 
-                if (itemCountEl) itemCountEl.textContent = `${c} sản phẩm`;
-                if (itemCountSideEl) itemCountSideEl.textContent = c;
-            };
+        const itemCountEl = document.getElementById('item-count');
+        const itemCountSideEl = document.getElementById('item-count-side');
 
-            const showMsg = (m, t = 'danger') => {
-                let d = document.getElementById('error-message') || Object.assign(document.createElement(
-                    'div'), {
-                    id: 'error-message',
-                    className: `alert alert-${t}`
-                });
-                d.textContent = m;
-                document.querySelector('.p-4').prepend(d);
-                setTimeout(() => d.remove(), 3e3);
-            };
+        if (itemCountEl) itemCountEl.textContent = `${totalQuantity} sản phẩm`;
+        if (itemCountSideEl) itemCountSideEl.textContent = totalQuantity;
+    };
 
-            const ajax = (u, m, d, b, s) => {
-                b && (b.disabled = true);
-                fetch(u, {
-                        method: m,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': b?.dataset.csrf || document.querySelector(
-                                `[data-item-id="${u.split('/').pop()}"]`)?.dataset.csrf,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(d)
-                    })
-                    .then(r => r.ok ? r.json() : r.text().then(t => {
-                        throw Error(`HTTP ${r.status}: ${t}`);
-                    }))
-                    .then(s)
-                    .catch(e => (console.error(e), showMsg(
-                        `Lỗi ${m === 'PUT' ? 'cập nhật số lượng' : 'xóa sản phẩm'}.`), b && (b
-                        .disabled = false)));
-            };
-
-            document.querySelectorAll('.quantity-minus, .quantity-plus, .quantity-input, .remove-form').forEach(
-                el => {
-                    el.addEventListener(el.classList.contains('remove-form') ? 'submit' : el.tagName ===
-                        'INPUT' ? 'change' : 'click', e => {
-                            if (el.classList.contains('remove-form')) {
-                                e.preventDefault();
-                                if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
-                                const id = el.action.split('/').pop();
-                                ajax(el.action, 'DELETE', {}, el.querySelector('button'), d => {
-                                    if (d.success) {
-                                        document.getElementById(`cart-item-${id}`).remove();
-                                        !document.querySelectorAll('.subtotal').length && (document
-                                            .getElementById('cart-items').parentElement
-                                            .innerHTML =
-                                            '<p id="empty-cart-message">Giỏ hàng trống.</p>');
-                                        updateTotal();
-                                    } else showMsg(d.message || 'Xóa thất bại.');
-                                    el.querySelector('button').disabled = false;
-                                });
-                            } else {
-                                const id = el.dataset.itemId,
-                                    input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
-                                let v = parseInt(input.value) || 1;
-                                if (el.classList.contains('quantity-minus') && v > 1) v--;
-                                else if (el.classList.contains('quantity-plus')) v++;
-                                if (v !== parseInt(input.value)) {
-                                    input.value = v;
-                                    ajax(`/cart/update/${id}`, 'PUT', {
-                                        quantity: v
-                                    }, el.tagName === 'BUTTON' ? el : null, d => {
-                                        if (d.success) {
-                                            document.getElementById(`cart-item-${id}`)
-                                                .querySelector('.subtotal').textContent = formatVND(
-                                                    parseFloat(input.dataset.price) * v);
-                                            updateTotal();
-                                        } else showMsg(d.message || 'Cập nhật thất bại.');
-                                        el.tagName === 'BUTTON' && (el.disabled = false);
-                                    });
-                                }
-                            }
-                        });
-                });
-
-            document.getElementById('shipping-method').addEventListener('change', updateTotal);
-            document.getElementById('mainNav')?.addEventListener('scroll', () => document.getElementById('mainNav')
-                .classList.toggle('scrolled', scrollY >= 100));
+    const showMsg = (m, t = 'danger') => {
+        let d = document.getElementById('error-message') || Object.assign(document
+            .createElement('div'), {
+            id: 'error-message',
+            className: `alert alert-${t}`
         });
+        d.textContent = m;
+        document.querySelector('.p-5vh').prepend(d);
+        setTimeout(() => d.remove(), 3e3);
+    };
 
-    </script>
+    const ajax = (u, m, d, b, s) => {
+        b && (b.disabled = true);
+        fetch(u, {
+                method: m,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': b?.dataset.csrf || document.querySelector(
+                        `[data-item-id="${u.split('/').pop()}"]`)?.dataset.csrf,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(d)
+            })
+            .then(r => r.ok ? r.json() : r.text().then(t => {
+                throw Error(`HTTP ${r.status}: ${t}`);
+            }))
+            .then(data => {
+                s(data);
+                b && (b.disabled = false); // Bật lại nút sau khi thành công
+            })
+            .catch(e => (console.error(e), showMsg(
+                `Lỗi ${m === 'PUT' ? 'cập nhật số lượng' : 'xóa sản phẩm'}.`), b && (b
+                .disabled = false)));
+    };
+
+    // Debug xem có tìm thấy nút không
+    console.log('quantity-plus:', document.querySelectorAll('.quantity-plus').length);
+    console.log('quantity-minus:', document.querySelectorAll('.quantity-minus').length);
+
+    document.querySelectorAll('.quantity-plus').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.itemId;
+            const input = document.querySelector(
+                `.quantity-input[data-item-id="${id}"]`);
+            let value = parseInt(input.value) || 1;
+            value++;
+            input.value = value;
+            updateQuantity(id, value, btn);
+        });
+    });
+
+    document.querySelectorAll('.quantity-minus').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.itemId;
+            const input = document.querySelector(
+                `.quantity-input[data-item-id="${id}"]`);
+            let value = parseInt(input.value) || 1;
+            if (value > 1) {
+                value--;
+                input.value = value;
+                updateQuantity(id, value, btn);
+            }
+        });
+    });
+
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('change', () => {
+            const id = input.dataset.itemId;
+            let value = parseInt(input.value) || 1;
+            if (value < 1) value = 1;
+            input.value = value;
+            updateQuantity(id, value);
+        });
+    });
+
+    updateTotal();
+
+    function updateQuantity(id, quantity, btn = null) {
+        const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
+        const price = parseFloat(input.dataset.price);
+        const subtotal = document.querySelector(`#cart-item-${id} .subtotal`);
+
+        ajax(`/cart/update/${id}`, 'PUT', {
+            quantity: quantity
+        }, btn, d => {
+            if (d.success) {
+                subtotal.textContent = formatVND(price * quantity);
+                updateTotal();
+            } else {
+                showMsg(d.message || 'Cập nhật thất bại.');
+            }
+        });
+    }
+};
+</script>
 @endsection
