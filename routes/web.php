@@ -22,6 +22,7 @@ use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\ClientBranchController;
+use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
@@ -77,13 +78,10 @@ Route::get('/chi-tiet-bai-viet', function () {
     return view('client.detailPost');
 });
 
-Route::get('/san-pham', function () {
-    return view('client.product');
-});
+Route::get('/san-pham', [ClientProductController::class, 'index'])->name('client.product');
 
-Route::get('/chi-tiet-san-pham', function () {
-    return view('client.detailProduct');
-});
+
+Route::get('/chi-tiet-san-pham/{id}', [ClientProductController::class, 'show'])->name('client.product.detail');
 
 
 // == Thợ cắt tóc ==
