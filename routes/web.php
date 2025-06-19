@@ -1,33 +1,35 @@
 <?php
 
-use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\BannerController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\Client\ProfileController;
-use App\Http\Controllers\OrderController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BarberController;
 use App\Http\Controllers\BranchController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\ProductCategoryController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BarberScheduleController;
+use App\Http\Controllers\VolumeController;
 use App\Http\Controllers\CheckinController;
-use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
-use App\Http\Controllers\Client\BarberController as ClientBarberController;
-use App\Http\Controllers\Client\ClientBranchController;
-use App\Http\Controllers\Client\ClientProductController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
+use App\Http\Controllers\BarberScheduleController;
+use App\Http\Controllers\Client\ProfileController;
+use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\Client\ClientPostController;
+use App\Http\Controllers\Client\ClientBranchController;
 use App\Http\Controllers\UserRedeemedVoucherController;
-use App\Http\Controllers\VolumeController;
+use App\Http\Controllers\Client\ClientProductController;
+use App\Http\Controllers\Client\BarberController as ClientBarberController;
+use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+
 
 
 
@@ -70,13 +72,10 @@ Route::get('/chi-nhanh/{id}', [ClientBranchController::class, 'detail'])->name('
 
 
 
-Route::get('/bai-viet', function () {
-    return view('client.post');
-});
-
-Route::get('/chi-tiet-bai-viet', function () {
-    return view('client.detailPost');
-});
+// Đặt route danh sách
+Route::get('/bai-viet', [ClientPostController::class, 'index'])->name('client.posts');
+Route::get('/bai-viet-chi-tiet/{id}', [ClientPostController::class, 'detail'])->name('client.detailPost');
+// Route::get('/bai-viet/{id}', [ClientPostController::class, 'show'])->name('client.detailPost');
 
 Route::get('/san-pham', [ClientProductController::class, 'index'])->name('client.product');
 
@@ -86,7 +85,7 @@ Route::get('/chi-tiet-san-pham/{id}', [ClientProductController::class, 'show'])-
 
 // == Thợ cắt tóc ==
 Route::get('/tho-cat', [ClientBarberController::class, 'index'])->name('client.listBarber');
-Route::get('/tho-cat/{id}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
+Route::get('/tho-cat/{slug}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
 
 
 Route::get('/chi-tiet-tho-cat', function () {
@@ -149,8 +148,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
-    // Route::get('/checkins/verify', [CheckinController::class, 'verifyForm'])->name('checkins.verify.form');
-    // Route::post('/checkins/verify', [CheckinController::class, 'verifyCode'])->name('checkins.verify');
+
 
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
@@ -190,3 +188,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 Route::get('/profile', [ProfileController::class, 'index'])->name('client.profile');
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('client.update');
 Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('client.password');
+
+
+
