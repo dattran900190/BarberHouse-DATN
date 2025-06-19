@@ -36,20 +36,10 @@
                                     {{ old('discount_type', $promotion->discount_type) == 'percent' ? 'selected' : '' }}>
                                     Phần trăm</option>
                             </select>
-                            <small class="form-text text-muted">
-                                Nếu là giảm theo phần trăm, giá trị tối đa là 100%.
-                            </small>
+                            
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="description">Mô tả</label>
-                            <textarea name="description" class="form-control" rows="4" placeholder="Nhập mô tả">{{ old('description', $promotion->description) }}</textarea>
-                            @error('description')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
+                    
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="discount_value">Giá trị giảm giá</label>
@@ -64,6 +54,9 @@
                                     </span>
                                 </div>
                             </div>
+                            <small class="form-text text-muted">
+                                Nếu là giảm theo phần trăm, giá trị tối đa là 100%.
+                            </small>
                             @error('discount_value')
                                 <small class="text-danger d-block mt-1">{{ $message }}</small>
                             @enderror
@@ -140,6 +133,15 @@
                             <input type="date" name="end_date" class="form-control"
                                 value="{{ old('end_date', $promotion->end_date->format('Y-m-d')) }}">
                             @error('end_date')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="description">Mô tả</label>
+                            <textarea name="description" class="form-control" rows="4" placeholder="Nhập mô tả">{{ old('description', $promotion->description) }}</textarea>
+                            @error('description')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
