@@ -32,23 +32,12 @@
                                 <option value="percent" {{ old('discount_type') == 'percent' ? 'selected' : '' }}>Phần trăm
                                 </option>
                             </select>
-                            <small class="form-text text-muted">
-                                Nếu là giảm theo phần trăm, giá trị tối đa là 100%.
-                            </small>
                             @error('discount_type')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="description">Mô tả </label>
-                            <textarea name="description" class="form-control" rows="2" placeholder="Nhập mô tả">{{ old('description') }}</textarea>
-                            @error('description')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="discount_value">Giá trị giảm giá </label>
@@ -59,13 +48,17 @@
                                     <span class="input-group-text"
                                         id="discount_unit">{{ old('discount_type') == 'percent' ? '%' : 'VND' }}</span>
                                 </div>
+
                             </div>
+                            <small class="form-text text-muted">
+                                Nếu là giảm theo phần trăm, giá trị tối đa là 100%.
+                            </small>
                             @error('discount_value')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
                     </div>
-                    {{-- <div class="col-md-6">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="max_discount_amount">Giảm giá tối đa</label>
                             <input type="number" step="0.01" name="max_discount_amount" class="form-control"
@@ -74,7 +67,7 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                    </div> --}}
+                    </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="min_order_value">Giá trị đơn hàng tối thiểu</label>
@@ -107,6 +100,16 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
+                            <label for="required_point">Điểm yêu cầu </label>
+                            <input type="number" name="required_point" class="form-control"
+                                value="{{ old('required_point', 0) }}" placeholder="Nhập điểm yêu cầu">
+                            @error('required_point')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
                             <label for="start_date">Ngày bắt đầu </label>
                             <input type="date" name="start_date" class="form-control" value="{{ old('start_date') }}">
                             @error('start_date')
@@ -119,6 +122,15 @@
                             <label for="end_date">Ngày kết thúc </label>
                             <input type="date" name="end_date" class="form-control" value="{{ old('end_date') }}">
                             @error('end_date')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="description">Mô tả </label>
+                            <textarea name="description" class="form-control" rows="2" placeholder="Nhập mô tả">{{ old('description') }}</textarea>
+                            @error('description')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>

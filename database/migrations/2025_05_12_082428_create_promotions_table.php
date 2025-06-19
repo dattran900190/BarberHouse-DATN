@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('promotions', function (Blueprint $table) {
             $table->bigInteger('id', true);
             $table->string('code', 50)->unique();               // Mã giảm giá, duy nhất
-            $table->text('description');
+            $table->text('description')->nullable(); // Mô tả khuyến mãi, có thể null
             $table->integer('required_points')->nullable();
             $table->integer('usage_limit')->default(1);
             $table->enum('discount_type', ['fixed', 'percent']);
