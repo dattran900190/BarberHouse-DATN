@@ -140,6 +140,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Đặt lịch ====
     Route::resource('appointments', AppointmentController::class);
+    Route::post('/appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
 
     // ==== Bài viết ====
 

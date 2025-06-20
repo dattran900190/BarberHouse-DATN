@@ -93,6 +93,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group mb-3">
+                    <span class="form-label">Email</span>
+                    <input id="email" name="email" value="{{ old('email') }}"class="form-control"
+                        placeholder="Nhập email" type="text">
+                    @error('email')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
             </div>
 
             <div class="row">
@@ -174,26 +182,27 @@
             <div class="form-group mb-3">
                 <label for="voucher_id">Mã giảm giá (nếu có)</label>
                 <select name="voucher_id" id="voucher_id" class="form-control">
-    <option value="">Không sử dụng mã giảm giá</option>
-    {{-- Voucher đã đổi --}}
-    @if(isset($vouchers))
-        @foreach ($vouchers as $voucher)
-            <option value="{{ $voucher->id }}">
-                {{ $voucher->promotion->code }}
-                ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
-            </option>
-        @endforeach
-    @endif
-    {{-- Voucher công khai --}}
-    @if(isset($publicPromotions))
-        @foreach ($publicPromotions as $promotion)
-            <option value="public_{{ $promotion->id }}">
-                {{ $promotion->code }}
-                ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }}) [Công khai]
-            </option>
-        @endforeach
-    @endif
-</select>
+                    <option value="">Không sử dụng mã giảm giá</option>
+                    {{-- Voucher đã đổi --}}
+                    @if (isset($vouchers))
+                        @foreach ($vouchers as $voucher)
+                            <option value="{{ $voucher->id }}">
+                                {{ $voucher->promotion->code }}
+                                ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
+                            </option>
+                        @endforeach
+                    @endif
+                    {{-- Voucher công khai --}}
+                    @if (isset($publicPromotions))
+                        @foreach ($publicPromotions as $promotion)
+                            <option value="public_{{ $promotion->id }}">
+                                {{ $promotion->code }}
+                                ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
+                                [Công khai]
+                            </option>
+                        @endforeach
+                    @endif
+                </select>
                 @error('voucher_id')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror

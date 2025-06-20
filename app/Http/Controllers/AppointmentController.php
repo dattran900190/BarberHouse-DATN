@@ -14,6 +14,9 @@ class AppointmentController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $pendingAppointments = Appointment::where('status', 'pending') ->orderBy('id', 'DESC')->get();
+        $confirmedAppointments = Appointment::where('status', 'confirmed') ->orderBy('id', 'DESC')->get();
+
         $appointments = Appointment::with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
@@ -32,27 +35,18 @@ class AppointmentController extends Controller
             ->orderBy('id', 'DESC')
             ->paginate(5);
 
-        return view('admin.appointments.index', compact('appointments'));
+        return view('admin.appointments.index', compact('appointments', 'pendingAppointments', 'confirmedAppointments'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function confirm($id)
     {
-        //
+        $appointment = Appointment::findOrFail($id);
+        $appointment->status = 'confirmed';
+        $appointment->save();
+
+        return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được xác nhận.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-
-
-    public function store(Request $request)
-    {
-        //
-
-    }
 
 
     /**
@@ -88,7 +82,7 @@ class AppointmentController extends Controller
     public function edit(Appointment $appointment)
     {
         $appointments = Appointment::all();
-        return view('admin.appointments.edit', compact('appointment', ));
+        return view('admin.appointments.edit', compact('appointment',));
     }
 
     /**

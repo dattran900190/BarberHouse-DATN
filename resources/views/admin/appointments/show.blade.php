@@ -71,6 +71,8 @@
             </div>
 
             <div class="row mb-3">
+                <div class="col-md-6"><strong>Số tiền thanh toán:</strong>
+                    {{ number_format($appointment->total_amount, 0, ',', '.') }} VNĐ</div><br>
                 <div class="col-md-6"><strong>Số tiền giảm:</strong>
                     {{ number_format($appointment->discount_amount, 0, ',', '.') }} VNĐ</div>
                 <div class="col-md-6"><strong>Ngày tạo:</strong>
