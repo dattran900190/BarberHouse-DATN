@@ -23,6 +23,15 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="short_description" class="form-label">Mô tả</label>
+                    <input type="text" class="form-control" id="short_description" name="short_description"
+                           value="{{ old('short_description', $post->short_description) }}">
+                    @error('short_description')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
                     <label for="content" class="form-label">Nội dung</label>
                     <textarea class="form-control" id="content" name="content" rows="10">{{ old('content', $post->content) }}</textarea>
                     @error('content')

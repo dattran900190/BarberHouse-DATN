@@ -28,6 +28,7 @@
                     <tr>
                         <th>STT</th>
                         <th>Tiêu đề</th>
+                        <th>Mô tả</th>
                         <th>Ảnh</th>
                         <th>Trạng thái</th>
                         <th>Ngày xuất bản</th>
@@ -39,6 +40,7 @@
                         <tr>
                             <td class="text-center">{{ $index + 1 }}</td>
                             <td>{{ $post->title }}</td>
+                            <td>{{ Str::limit($post->short_description, 100) }}</td>
                             <td class="text-center">
                                 @if($post->image)
                                     <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh" width="80" class="img-thumbnail">

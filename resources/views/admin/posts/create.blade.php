@@ -33,6 +33,16 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+               {{-- mô tả ngắn --}}
+                <div class="form-group">
+                    <label>Mô tả</label>
+                    <input type="text" name="short_description"
+                        class="form-control @error('short_description') is-invalid @enderror"
+                        value="{{ old('short_description') }}">
+                    @error('short_description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
 
                {{-- Nội dung --}}
@@ -114,6 +124,8 @@
             height: 400,
             menubar: false,
             branding: false,
+            paste_data_images: true,
+
         });
     </script>
 @endsection
