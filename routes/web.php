@@ -125,9 +125,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
-    // ==== Dịch vụ ====
-    Route::resource('services', ServiceController::class);
-
     // ==== Bình luận ====
     Route::resource('reviews', ReviewController::class);
 
@@ -142,20 +139,18 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
 
     // ==== Bài viết ====
-
     Route::resource('posts', PostController::class);
+
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
 
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
 
-
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
     // ==== Banner ====
     Route::resource('banners', BannerController::class);
-
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
@@ -169,7 +164,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Người dùng ====
     Route::resource('users', UserController::class);
     Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
-
 
     // ==== Mã giảm giá ====
     Route::resource('promotions', PromotionController::class);

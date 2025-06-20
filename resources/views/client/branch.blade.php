@@ -36,7 +36,7 @@
                             <div class="overlaybranch"></div>
                             <div class="overlay">
                                 <h4>
-                                    <a style="color:white;!important"
+                                    <a style="color: white"
                                         href="{{ route('client.detailBranch', $branch->id) }}">
                                         {{ $branch->name }}
                                     </a>

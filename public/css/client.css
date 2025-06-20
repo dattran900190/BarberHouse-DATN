@@ -775,6 +775,7 @@ color: #fff;
   color: #fff;
   box-sizing: border-box;
   text-align: center;
+  z-index: 1000;
 }
 
 .image-branch .overlay h4 {
@@ -1346,6 +1347,10 @@ color: #fff;
 
 .mainDetailPost {
   margin: 5%;
+}
+
+.path-post p a{
+  text-decoration: none;
 }
 
 .orther-post {
