@@ -24,6 +24,7 @@ class PostRequest extends FormRequest
                 'max:255',
                 Rule::unique('posts', 'slug')->ignore($postId),
             ],
+            'short_description' => 'nullable|string|max:500',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'status' => 'required|boolean',
@@ -38,6 +39,7 @@ class PostRequest extends FormRequest
             'title.max' => 'Tiêu đề không được vượt quá 255 ký tự.',
             'slug.max' => 'Slug không được vượt quá 255 ký tự.',
             'slug.unique' => 'Slug này đã được sử dụng, vui lòng chọn slug khác.',
+            'short_description.max' => 'Mô tả ngắn không được vượt quá 500 ký tự.',
             'content.required' => 'Nội dung bài viết không được để trống.',
             'image.image' => 'Tệp tải lên phải là hình ảnh.',
             'image.mimes' => 'Ảnh phải có định dạng: jpeg, png, jpg, gif, svg, webp.',
@@ -48,4 +50,3 @@ class PostRequest extends FormRequest
         ];
     }
 }
-
