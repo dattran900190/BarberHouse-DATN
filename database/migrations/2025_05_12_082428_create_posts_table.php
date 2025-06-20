@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigInteger('id', true);
             $table->string('title')->nullable();
             $table->string('slug')->nullable()->unique('slug');
+            $table->text('short_description')->nullable();
             $table->text('content')->nullable();
             $table->string('image')->nullable();
             $table->bigInteger('author_id')->nullable()->index('author_id');

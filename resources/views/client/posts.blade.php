@@ -18,12 +18,12 @@
                 @if ($topPost)
                 <div class="post-top">
                     <div class="image-top">
-                        <a href="{{ route('client.detailPost', $topPost->id) }}">
+                        <a href="{{ route('client.detailPost', $topPost->slug) }}">
                             <img src="{{ asset('storage/' . $topPost->image) }}" alt="" />
                         </a>
                     </div>
                     <h4>
-                        <a href="{{ route('client.detailPost', $topPost->id) }}">
+                        <a href="{{ route('client.detailPost', $topPost->slug) }}">
                             {{ $topPost->title }}
                         </a>
                     </h4>
@@ -61,7 +61,7 @@
                     </div>
                     <h5>
                         <a href="{{ route('client.detailPost', $post->id) }}">
-                            {{ $post->title }}
+                           
                         </a>
                     </h5>
                 </div>

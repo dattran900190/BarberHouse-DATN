@@ -75,7 +75,7 @@ Route::get('/chi-nhanh/{id}', [ClientBranchController::class, 'detail'])->name('
 // Đặt route danh sách
 Route::get('/bai-viet', [ClientPostController::class, 'index'])->name('client.posts');
 Route::get('/bai-viet-chi-tiet/{id}', [ClientPostController::class, 'detail'])->name('client.detailPost');
-// Route::get('/bai-viet/{id}', [ClientPostController::class, 'show'])->name('client.detailPost');
+
 
 Route::get('/san-pham', [ClientProductController::class, 'index'])->name('client.product');
 
