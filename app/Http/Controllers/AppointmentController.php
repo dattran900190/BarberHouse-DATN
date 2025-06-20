@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AppointmentRequest;
+use App\Models\Checkin;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
+use App\Mail\CheckinCodeMail;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\AppointmentRequest;
 
 class AppointmentController extends Controller
 {
@@ -14,6 +17,9 @@ class AppointmentController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $pendingAppointments = Appointment::where('status', 'pending') ->orderBy('id', 'DESC')->get();
+        $confirmedAppointments = Appointment::where('status', 'confirmed') ->orderBy('id', 'DESC')->get();
+
         $appointments = Appointment::with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
@@ -32,27 +38,29 @@ class AppointmentController extends Controller
             ->orderBy('id', 'DESC')
             ->paginate(5);
 
-        return view('admin.appointments.index', compact('appointments'));
+        return view('admin.appointments.index', compact('appointments', 'pendingAppointments', 'confirmedAppointments'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function confirm($id)
     {
-        //
+        $appointment = Appointment::findOrFail($id);
+        $appointment->status = 'confirmed';
+        $appointment->save();
+
+         // // Create check-in QR code
+        $qrCode = rand(100000, 999999);
+        Checkin::create([
+            'appointment_id' => $appointment->id,
+            'qr_code_value' => $qrCode,
+            'is_checked_in' => false,
+            'checkin_time' => null,
+        ]);
+        $checkin = Checkin::where('appointment_id', $appointment->id)->first();
+        Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment));
+
+        return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được xác nhận.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-
-
-    public function store(Request $request)
-    {
-        //
-
-    }
 
 
     /**
@@ -88,7 +96,7 @@ class AppointmentController extends Controller
     public function edit(Appointment $appointment)
     {
         $appointments = Appointment::all();
-        return view('admin.appointments.edit', compact('appointment', ));
+        return view('admin.appointments.edit', compact('appointment',));
     }
 
     /**

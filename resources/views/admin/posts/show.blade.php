@@ -13,6 +13,8 @@
 
             <p><strong>Slug:</strong> {{ $post->slug }}</p>
 
+            <p><strong>Mô tả:</strong> {{ $post->short_description }}</p>
+
             <p><strong>Nội dung:</strong></p>
             <div>{!! $post->content !!}</div>
 

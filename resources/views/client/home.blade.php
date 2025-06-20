@@ -34,12 +34,13 @@
                     @foreach ($posts as $post)
                         <div class="post">
                             <div class="image-container">
-                                <a href="">
+                                <a href="{{ route('client.detailPost', $post->id) }}">
                                     <img src="{{ Storage::url($post->image) }}" alt="{{ $post->title }}">
                                 </a>
                             </div>
-                            <h4><a href="">{{ $post->title }}</a></h4>
-                            <p><a href="">{{ Str::limit(strip_tags($post->content), 50) }}</a>
+                            <h4><a href="{{ route('client.detailPost', $post->id) }}">{{ $post->title }}</a></h4>
+                            <p><a
+                                    href="{{ route('client.detailPost', $post->id) }}">{{ Str::limit(strip_tags($post->content), 50) }}</a>
                             </p>
                         </div>
                     @endforeach
@@ -51,17 +52,19 @@
                 @foreach ($normalPosts as $post)
                     <div class="post-nomal">
                         <div class="image-nomal">
-                            <a href="">
+                            <a href="{{ route('client.detailPost', $post->slug) }}">
                                 <img src="{{ Storage::url($post->image) }}" alt="{{ $post->title }}">
                             </a>
                         </div>
-                        <h4><a href="">{{ $post->title }}</a></h4>
-                        <p><a href="">{{ Str::limit(strip_tags($post->content), 50) }}</a>
+                        <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
+                        <p><a
+                                href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->content), 50) }}</a>
                         </p>
                     </div>
                 @endforeach
             </div>
-            <button id="loadMore" class="btn-xem-them">Xem thêm</button>
+
+            <button id="loadMore" class="btn-xem-them"><a href="{{ route('client.posts')}}">Xem thêm</a></button>
         </section>
 
         <section id="product">

@@ -93,6 +93,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group mb-3">
+                    <span class="form-label">Email</span>
+                    <input id="email" name="email" value="{{ old('email') }}"class="form-control"
+                        placeholder="Nhập email" type="text">
+                    @error('email')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
             </div>
 
             <div class="row">
