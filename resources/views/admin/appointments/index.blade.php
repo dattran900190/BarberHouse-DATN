@@ -35,121 +35,122 @@
                     </div>
                 </div>
             </form>
-
-            <table class="table table-bordered table-hover">
-                <thead class="thead-light">
-                    <tr>
-                        <th>Stt</th>
-                        <th>Mã lịch hẹn</th>
-                        <th>Khách hàng</th>
-                        <th>Số điện thoại</th>
-                        <th>Email</th>
-                        <th>Thợ</th>
-                        <th>Dịch vụ</th>
-                        <th>Chi nhánh</th>
-                        <th>Thời gian</th>
-                        <th>Tổng tiền</th>
-                        <th>Trạng thái lịch hẹn</th>
-                        <th>Trạng thái thanh toán</th>
-                        <th class="text-center">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if ($appointments->count())
-                        @foreach ($appointments as $index => $appointment)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $appointment->appointment_code }}</td>
-                                <td>
-                                    {{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}
-                                    @if ($appointment->name && $appointment->name !== $appointment->user?->name)
-                                        <br>
-                                        <small class="text-muted">(Đặt bởi:
-                                            {{ $appointment->user?->name ?? 'N/A' }})</small>
-                                    @endif
-                                </td>
-                                <td>
-                                    {{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}
-                                    @if ($appointment->phone && $appointment->phone !== $appointment->user?->phone)
-                                    @endif
-                                <td>
-                                    {{ $appointment->email ?? ($appointment->user?->email ?? 'N/A') }}
-                                    @if ($appointment->email && $appointment->email !== $appointment->user?->email)
-                                    @endif
-                                <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
-                                <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
-                                <td>{{ $appointment->branch?->name ?? 'N/A' }}</td>
-                                <td>{{ $appointment->appointment_time }}</td>
-                                <td>{{ $appointment->total_amount }}</td>
-                                <td>
-                                    @php
-                                        $statusColors = [
-                                            'pending' => 'warning',
-                                            'confirmed' => 'primary',
-                                            'completed' => 'success',
-                                            'cancelled' => 'danger',
-                                        ];
-
-                                        $statusTexts = [
-                                            'pending' => 'Chờ xác nhận',
-                                            'confirmed' => 'Đã xác nhận',
-                                            'completed' => 'Hoàn thành',
-                                            'cancelled' => 'Đã hủy',
-                                        ];
-                                    @endphp
-                                    <span class="badge bg-{{ $statusColors[$appointment->status] ?? 'secondary' }}">
-                                        {{ $statusTexts[$appointment->status] ?? 'Không xác định' }}
-                                    </span>
-                                </td>
-
-                                <td>
-                                    @php
-                                        $paymentColors = [
-                                            'unpaid' => 'warning',
-                                            'paid' => 'success',
-                                            'refunded' => 'info',
-                                            'failed' => 'danger',
-                                        ];
-                                        $statusTexts = [
-                                            'unpaid' => 'Chưa thanh toán',
-                                            'paid' => 'Thanh toán thành công',
-                                            'refunded' => 'Hoàn trả thanh toán',
-                                            'failed' => 'Thanh toán thất bại',
-                                        ];
-                                    @endphp
-                                    <span
-                                        class="badge bg-{{ $paymentColors[$appointment->payment_status] ?? 'secondary' }}">
-                                        {{ $statusTexts[$appointment->payment_status] ?? 'Không xác định' }}
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <a href="{{ route('appointments.show', ['appointment' => $appointment->id, 'page' => request('page', 1)]) }}"
-                                        class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i> Xem
-                                    </a>
-                                    <a href="{{ route('appointments.edit', ['appointment' => $appointment->id, 'page' => request('page', 1)]) }}"
-                                        class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit"></i> Sửa
-                                    </a>
-                                    <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST"
-                                        style="display:inline-block;"
-                                        onsubmit="return confirm('Bạn có chắc chắn muốn huỷ lịch hẹn này không?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-ban"></i> Huỷ
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @else
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-light">
                         <tr>
-                            <td colspan="9" class="text-center text-muted">Không tìm thấy lịch hẹn nào phù hợp.</td>
+                            <th>Stt</th>
+                            <th>Mã lịch hẹn</th>
+                            <th>Khách hàng</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Thợ</th>
+                            <th>Dịch vụ</th>
+                            <th>Chi nhánh</th>
+                            <th>Thời gian</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái lịch hẹn</th>
+                            <th>Trạng thái thanh toán</th>
+                            <th class="text-center">Hành động</th>
                         </tr>
-                    @endif
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @if ($appointments->count())
+                            @foreach ($appointments as $index => $appointment)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $appointment->appointment_code }}</td>
+                                    <td>
+                                        {{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}
+                                        @if ($appointment->name && $appointment->name !== $appointment->user?->name)
+                                            <br>
+                                            <small class="text-muted">(Đặt bởi:
+                                                {{ $appointment->user?->name ?? 'N/A' }})</small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}
+                                        @if ($appointment->phone && $appointment->phone !== $appointment->user?->phone)
+                                        @endif
+                                    <td>
+                                        {{ $appointment->email ?? ($appointment->user?->email ?? 'N/A') }}
+                                        @if ($appointment->email && $appointment->email !== $appointment->user?->email)
+                                        @endif
+                                    <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
+                                    <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
+                                    <td>{{ $appointment->branch?->name ?? 'N/A' }}</td>
+                                    <td>{{ $appointment->appointment_time }}</td>
+                                    <td>{{ $appointment->total_amount }}</td>
+                                    <td>
+                                        @php
+                                            $statusColors = [
+                                                'pending' => 'warning',
+                                                'confirmed' => 'primary',
+                                                'completed' => 'success',
+                                                'cancelled' => 'danger',
+                                            ];
+
+                                            $statusTexts = [
+                                                'pending' => 'Chờ xác nhận',
+                                                'confirmed' => 'Đã xác nhận',
+                                                'completed' => 'Hoàn thành',
+                                                'cancelled' => 'Đã hủy',
+                                            ];
+                                        @endphp
+                                        <span class="badge bg-{{ $statusColors[$appointment->status] ?? 'secondary' }}">
+                                            {{ $statusTexts[$appointment->status] ?? 'Không xác định' }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @php
+                                            $paymentColors = [
+                                                'unpaid' => 'warning',
+                                                'paid' => 'success',
+                                                'refunded' => 'info',
+                                                'failed' => 'danger',
+                                            ];
+                                            $statusTexts = [
+                                                'unpaid' => 'Chưa thanh toán',
+                                                'paid' => 'Thanh toán thành công',
+                                                'refunded' => 'Hoàn trả thanh toán',
+                                                'failed' => 'Thanh toán thất bại',
+                                            ];
+                                        @endphp
+                                        <span
+                                            class="badge bg-{{ $paymentColors[$appointment->payment_status] ?? 'secondary' }}">
+                                            {{ $statusTexts[$appointment->payment_status] ?? 'Không xác định' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ route('appointments.show', ['appointment' => $appointment->id, 'page' => request('page', 1)]) }}"
+                                            class="btn btn-info btn-sm">
+                                            <i class="fas fa-eye"></i> Xem
+                                        </a>
+                                        <a href="{{ route('appointments.edit', ['appointment' => $appointment->id, 'page' => request('page', 1)]) }}"
+                                            class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </a>
+                                        <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST"
+                                            style="display:inline-block;"
+                                            onsubmit="return confirm('Bạn có chắc chắn muốn huỷ lịch hẹn này không?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-ban"></i> Huỷ
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="9" class="text-center text-muted">Không tìm thấy lịch hẹn nào phù hợp.</td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     {{ $appointments->links() }}

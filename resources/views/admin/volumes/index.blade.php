@@ -2,7 +2,7 @@
 
 @section('title', 'Danh sách dung tích')
 
-@section('content')  
+@section('content')
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
@@ -24,8 +24,7 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách dung tích sản phẩm</h3>
-            <a href="{{ route('admin.volumes.create') }}"
-               class="btn btn-success btn-icon-toggle d-flex align-items-center">
+            <a href="{{ route('admin.volumes.create') }}" class="btn btn-success btn-icon-toggle d-flex align-items-center">
                 <i class="fas fa-plus"></i>
                 <span class="btn-text ms-2">Thêm sản phẩm</span>
             </a>
@@ -47,12 +46,14 @@
                                 <td>{{ $volume->id }}</td>
                                 <td>{{ $volume->name }}</td>
                                 <td>
-                                    <a href="{{ route('admin.volumes.edit', $volume) }}?page={{ request()->get('page') }}" 
-                                       class="btn btn-sm btn-warning mr-1">
+                                    <a href="{{ route('admin.volumes.edit', $volume) }}?page={{ request()->get('page') }}"
+                                        class="btn btn-sm btn-warning mr-1">
                                         <i class="fas fa-edit"></i> Sửa
                                     </a>
-                                    <form action="{{ route('admin.volumes.destroy', $volume) }}?page={{ request()->get('page') }}" 
-                                          method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
+                                    <form
+                                        action="{{ route('admin.volumes.destroy', $volume) }}?page={{ request()->get('page') }}"
+                                        method="POST" class="d-inline"
+                                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger">

@@ -49,6 +49,7 @@
                         <th>Loại</th>
                         <th>Giá trị</th>
                         <th>Số lượng</th>
+                        <th>Điểm</th>
                         <th>Ngày bắt đầu</th>
                         <th>Ngày kết thúc</th>
                         <th>Trạng thái</th>
@@ -63,6 +64,7 @@
                             <td>{{ $promotion->discount_type == 'fixed' ? 'Cố định' : 'Phần trăm' }}</td>
                             <td>{{ number_format($promotion->discount_value, 2) }}</td>
                             <td>{{ $promotion->quantity }}</td>
+                            <td>{{ $promotion->required_points }}</td>
                             <td>{{ $promotion->start_date->format('d/m/Y') }}</td>
                             <td>{{ $promotion->end_date->format('d/m/Y') }}</td>
                             <td>{{ $promotion->is_active ? 'Hoạt động' : 'Không hoạt động' }}</td>
