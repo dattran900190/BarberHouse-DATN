@@ -88,26 +88,42 @@
                             @enderror
                         </div>
 
+                        @php
+                            $isRetired = $barber->status === 'retired';
+                        @endphp
+
                         <div class="form-group">
                             <label for="status">Trạng thái</label>
-                            <select id="status" name="status" class="form-control">
+
+                            <select id="status" name="status" class="form-control" {{ $isRetired ? 'disabled' : '' }}>
                                 <option value="active" {{ old('status', $barber->status) == 'active' ? 'selected' : '' }}>
-                                    Đang hoạt động</option>
+                                    Đang hoạt động
+                                </option>
                                 <option value="inactive"
-                                    {{ old('status', $barber->status) == 'inactive' ? 'selected' : '' }}>Tạm nghỉ/đang làm việc</option>
+                                    {{ old('status', $barber->status) == 'inactive' ? 'selected' : '' }}>
+                                    Tạm nghỉ/đang làm việc
+                                </option>
                                 <option value="retired"
-                                    {{ old('status', $barber->status) == 'retired' ? 'selected' : '' }}>Nghỉ việc</option>
+                                    {{ old('status', $barber->status) == 'retired' ? 'selected' : '' }}>
+                                    Nghỉ việc
+                                </option>
                             </select>
+
+                            {{-- Khi bị disabled thì phải thêm hidden input để giữ lại dữ liệu --}}
+                            @if ($isRetired)
+                                <input type="hidden" name="status" value="retired">
+                            @endif
+
                             @error('status')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-
                     </div>
                 </div>
 
                 <button type="submit" class="btn btn-warning">Cập nhật</button>
-                <a href="{{ route('barbers.index',['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay lại</a>
+                <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
+                    lại</a>
             </form>
         </div>
     </div>

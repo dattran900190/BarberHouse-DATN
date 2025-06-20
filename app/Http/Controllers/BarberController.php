@@ -60,17 +60,16 @@ class BarberController extends Controller
     {
         $data = $request->validated();
 
-        // Lấy trạng thái hiện tại và trạng thái mới
         $currentStatus = $barber->status;
-        $newStatus = $data['status'] ?? $currentStatus; // phòng trường hợp không có status trong request
+        $newStatus = $data['status'] ?? $currentStatus;
 
-        // Kiểm tra quy tắc chuyển trạng thái
-        if ($currentStatus === 'retired' && $newStatus === 'inactive') {
+        if ($currentStatus === 'retired' && $newStatus !== 'retired') {
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['status' => 'Không thể chuyển trạng thái từ Nghỉ việc sang Tạm nghỉ/đang làm việc.']);
+                ->withErrors(['status' => 'Không thể thay đổi trạng thái khi thợ đã nghỉ việc.']);
         }
 
+        // Xử lý ảnh đại diện
         if ($request->hasFile('avatar')) {
             if ($barber->avatar && Storage::disk('public')->exists($barber->avatar)) {
                 Storage::disk('public')->delete($barber->avatar);
@@ -80,30 +79,33 @@ class BarberController extends Controller
             $data['avatar'] = $barber->avatar;
         }
 
-        
-
         $barber->update($data);
-        // Lấy số trang từ request
-        $currentPage = $request->input('page', 1);
 
-        return redirect()->route('barbers.index', ['page' => $currentPage])
+        return redirect()->route('barbers.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Cập nhật thành công');
     }
 
+
+
     public function destroy(Barber $barber)
     {
+        // Lấy lại số trang hiện tại từ form
+        $page = request('page', 1);
+
         // Kiểm tra lịch hẹn còn hoạt động
         $hasActiveAppointments = $barber->appointments()
             ->whereNotIn('status', ['cancelled', 'completed'])
             ->exists();
 
         if ($hasActiveAppointments) {
-            return redirect()->route('barbers.index')
+            return redirect()->route('barbers.index', ['page' => $page])
                 ->with('error', 'Không thể vô hiệu hóa thợ vì còn lịch hẹn chưa hoàn tất.');
         }
+
         $barber->status = 'retired';
         $barber->save();
 
-        return redirect()->route('barbers.index')->with('success', 'Thợ đã nghỉ việc.');
+        return redirect()->route('barbers.index', ['page' => $page])
+            ->with('success', 'Thợ đã nghỉ việc.');
     }
 }
