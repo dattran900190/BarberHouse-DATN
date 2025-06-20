@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AppointmentRequest;
+use App\Models\Checkin;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
+use App\Mail\CheckinCodeMail;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\AppointmentRequest;
 
 class AppointmentController extends Controller
 {
@@ -43,6 +46,17 @@ class AppointmentController extends Controller
         $appointment = Appointment::findOrFail($id);
         $appointment->status = 'confirmed';
         $appointment->save();
+
+         // // Create check-in QR code
+        $qrCode = rand(100000, 999999);
+        Checkin::create([
+            'appointment_id' => $appointment->id,
+            'qr_code_value' => $qrCode,
+            'is_checked_in' => false,
+            'checkin_time' => null,
+        ]);
+        $checkin = Checkin::where('appointment_id', $appointment->id)->first();
+        Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment));
 
         return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được xác nhận.');
     }
