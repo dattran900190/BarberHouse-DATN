@@ -83,35 +83,43 @@
                                     <span class="badge bg-secondary">Nghỉ việc</span>
                                 @endif
                             </td>
-
-
                             <td class="text-center">
-                                <div class="d-inline-flex gap-1">
+                                <div class="d-flex flex-column align-items-center">
+                                    <!-- Nút Xem -->
                                     <a href="{{ route('barbers.show', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
-                                        class="btn btn-info btn-sm d-inline-flex align-items-center">
-                                        <i class="fas fa-eye"></i> <span>Xem</span>
+                                        class="btn btn-info btn-sm d-flex align-items-center justify-content-center action-btn uniform-btn mb-2">
+                                        <i class="fas fa-eye me-1"></i> <span>Xem</span>
                                     </a>
-                                    <a href="{{ route('barbers.edit', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
-                                        class="btn btn-warning btn-sm d-inline-flex align-items-center">
-                                        <i class="fas fa-edit"></i> <span>Sửa</span>
-                                    </a>
+
                                     @if ($barber->status !== 'retired')
+                                        <!-- Nút Sửa -->
+                                        <a href="{{ route('barbers.edit', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
+                                            class="btn btn-warning btn-sm d-flex align-items-center justify-content-center action-btn uniform-btn mb-2">
+                                            <i class="fas fa-edit me-1"></i> <span>Sửa</span>
+                                        </a>
+
+                                        <!-- Nút Nghỉ việc -->
                                         <form action="{{ route('barbers.destroy', $barber->id) }}" method="POST"
-                                            class="d-inline m-0"
+                                            class="m-0"
                                             onsubmit="return confirm('Bạn có chắc chắn muốn cho thợ này nghỉ việc không?');">
                                             @csrf
                                             @method('DELETE')
+                                            <input type="hidden" name="page" value="{{ request('page', 1) }}">
                                             <button type="submit"
-                                                class="btn btn-danger btn-sm d-inline-flex align-items-center">
-                                                <i class="fas fa-user-slash"></i> <span>Nghỉ việc</span>
+                                                class="btn btn-danger btn-sm d-flex align-items-center justify-content-center action-btn uniform-btn">
+                                                <i class="fas fa-user-slash me-1"></i> <span>Nghỉ việc</span>
                                             </button>
                                         </form>
                                     @else
-                                        <span class="badge bg-secondary">Đã nghỉ</span>
+                                        <!-- Nút Đã nghỉ -->
+                                        <span
+                                            class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center action-btn uniform-btn mt-2">
+                                            <i class="fas fa-user-slash me-1"></i> Đã nghỉ
+                                        </span>
                                     @endif
-
                                 </div>
                             </td>
+
                         </tr>
                     @endforeach
                     @if ($barbers->isEmpty())
@@ -160,6 +168,16 @@
         .img-fluid {
             max-width: 100%;
             height: auto;
+        }
+
+        /* CSS cho các nút có kích thước đồng nhất */
+        .uniform-btn {
+            min-width: 110px;
+            min-height: 36px;
+            padding: 6px 12px;
+            font-size: 14px;
+            white-space: nowrap;
+            text-align: center;
         }
     </style>
 @endsection
