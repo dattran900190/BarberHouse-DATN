@@ -52,7 +52,7 @@
                                 @if($post->status)
                                     <span class="badge bg-success">Đã xuất bản</span>
                                 @else
-                                    <span class="badge bg-secondary">Chưa xuất bản</span>
+                                    <span class="badge bg-secondary">Bản nháp</span>
                                 @endif
                             </td>
                             <td class="text-center">
