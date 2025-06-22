@@ -46,7 +46,9 @@
                                 <h6 class="dropdown-header">{{ Auth::user()->name }}</h6>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.profile') }}">Quản lý tài khoản</a></li>
-                            <li><a class="dropdown-item" href="{{ route('client.redeem') }}">Đổi mã giản giá</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.redeem') }}">Đổi mã giảm giá</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.orderHistory') }}">lịch sử đặt hàng</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.appointmentHistory') }}">lịch sử đặt lịch</a></li>
 
                             {{-- THÊM LINK ADMIN VÀO DROPDOWN CHO BRANCH ADMIN --}}
                             @if (Auth::user()->role === 'branch_admin')

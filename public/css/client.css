@@ -1775,3 +1775,162 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
     padding: 0.85rem 1.5rem;
     border-color: rgba(24,28,33,0.03) !important;
 }
+
+/* ----------- order hisrtory ---------- */
+.order-history {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.order-history .order-item {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.order-history .order-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.order-history .order-item .col-md-7,
+.order-history .order-item .col-md-2,
+.order-history .order-item .col-md-3 {
+    padding: 15px;
+}
+
+.order-history .order-item .col-md-7 {
+    border-right: 1px solid #e9ecef;
+}
+
+.order-history .order-item .col-md-2 {
+    border-right: 1px solid #e9ecef;
+}
+
+.order-history .status-label {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+}
+
+.order-history .status-label:hover {
+    transform: scale(1.05);
+}
+
+.order-history .status-canceled {
+    background-color: #ffe5e7;
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.order-history .status-processing {
+    background-color: #fff3cd;
+    color: #ffc107;
+    border-color: #ffc107;
+}
+
+.order-history .status-delivered {
+    background-color: #d4edda;
+    color: #28a745;
+    border-color: #28a745;
+}
+
+.order-history .btn-outline-primary,
+.order-history .btn-outline-danger {
+    font-size: 14px;
+    padding: 6px 12px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.order-history .btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.order-history .btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.order-history .form-control,
+.order-history .btn-primary {
+    font-size: 14px;
+    padding: 10px;
+}
+
+/* ---------- detail order history --------- */
+.order-detail {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.order-detail .card-header {
+    background-color: #f8f9fa;
+}
+
+.order-detail .status-label {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+    
+}
+
+.order-detail .status-label:hover {
+    transform: scale(1.05);
+}
+
+.order-detail .status-processing {
+    background-color: #fff3cd;
+    color: #ffc107;
+    border-color: #ffc107;
+}
+
+.order-detail .status-delivered {
+    background-color: #d4edda;
+    color: #28a745;
+    border-color: #28a745;
+}
+
+.order-detail .status-canceled {
+    background-color: #ffe5e7;
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.order-detail .table th,
+.order-detail .table td {
+    vertical-align: middle;
+}
+
+.order-detail .btn-outline-primary,
+.order-detail .btn-outline-danger,
+.order-detail .btn-outline-secondary {
+    font-size: 14px;
+    padding: 6px 12px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.order-detail .btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.order-detail .btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.order-detail .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+}

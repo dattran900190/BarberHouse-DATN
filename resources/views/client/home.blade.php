@@ -49,7 +49,7 @@
             </div>
 
             <div class="posts-nomal">
-                @foreach ($normalPosts as $post)
+                @foreach ($posts as $post)
                     <div class="post-nomal">
                         <div class="image-nomal">
                             <a href="{{ route('client.detailPost', $post->slug) }}">
