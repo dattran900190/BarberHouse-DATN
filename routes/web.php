@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Client\WalletController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
@@ -87,6 +88,11 @@ Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redee
 // == Lịch sử đơn hàng ==
 Route::get('/lich-su-don-hang', [ClientOrderController::class, 'index'])->name('client.orderHistory');
 Route::get('/chi-tiet-don-hang', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory');
+
+// == ví tài khoản ==
+Route::get('/vi-tai-khoan', [WalletController::class, 'index'])->name('client.wallet');
+Route::get('/chi-tiet-vi', [WalletController::class, 'show'])->name('client.detailWallet');
+Route::get('/rut-ten', [WalletController::class, 'withdrawal'])->name('client.withdrawal');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
