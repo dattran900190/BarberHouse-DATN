@@ -29,10 +29,7 @@ use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
-
-
-
-
+use App\Http\Controllers\Client\OrderController as ClientOrderController;
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -58,9 +55,10 @@ Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::c
 Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}', [ClientAppointmentController::class, 'getAvailableBarbersByDate']);
 Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
 
-// Route::get('/gio-hang', function () {
-//     return view('client.cart');
-// });
+// == Lịch sử đặt lịch ==
+Route::get('/lich-su-dat-lich', [ClientAppointmentController::class, 'appointmentHistory'])->name('client.appointmentHistory');
+Route::get('/chi-tiet-dat-lich', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
+
 
 Route::get('/thanh-toan', function () {
     return view('client.checkout');
@@ -70,31 +68,25 @@ Route::get('/thanh-toan', function () {
 Route::get('/chi-nhanh', [ClientBranchController::class, 'index'])->name('client.branch');
 Route::get('/chi-nhanh/{id}', [ClientBranchController::class, 'detail'])->name('client.detailBranch');
 
-
-
 // Đặt route danh sách
 Route::get('/bai-viet', [ClientPostController::class, 'index'])->name('client.posts');
 Route::get('/bai-viet-chi-tiet/{id}', [ClientPostController::class, 'detail'])->name('client.detailPost');
 
-
+// == Sản phẩm ==
 Route::get('/san-pham', [ClientProductController::class, 'index'])->name('client.product');
-
-
 Route::get('/chi-tiet-san-pham/{id}', [ClientProductController::class, 'show'])->name('client.product.detail');
-
 
 // == Thợ cắt tóc ==
 Route::get('/tho-cat', [ClientBarberController::class, 'index'])->name('client.listBarber');
 Route::get('/tho-cat/{slug}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
 
-
-Route::get('/chi-tiet-tho-cat', function () {
-    return view('client.detailBarber');
-});
-
 // == Đổi điểm ==
 Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem');
 Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redeem.store');
+
+// == Lịch sử đơn hàng ==
+Route::get('/lich-su-don-hang', [ClientOrderController::class, 'index'])->name('client.orderHistory');
+Route::get('/chi-tiet-don-hang', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
@@ -125,9 +117,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
 
-    // ==== Dịch vụ ====
-    Route::resource('services', ServiceController::class);
-
     // ==== Bình luận ====
     Route::resource('reviews', ReviewController::class);
 
@@ -142,20 +131,18 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
 
     // ==== Bài viết ====
-
     Route::resource('posts', PostController::class);
+
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
 
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
 
-
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
     // ==== Banner ====
     Route::resource('banners', BannerController::class);
-
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
@@ -169,7 +156,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Người dùng ====
     Route::resource('users', UserController::class);
     Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
-
 
     // ==== Mã giảm giá ====
     Route::resource('promotions', PromotionController::class);
