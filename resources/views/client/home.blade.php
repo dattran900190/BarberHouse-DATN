@@ -34,13 +34,13 @@
                     @foreach ($posts as $post)
                         <div class="post">
                             <div class="image-container">
-                                <a href="{{ route('client.detailPost', $post->id) }}">
+                                <a href="{{ route('client.detailPost', $post->slug) }}">
                                     <img src="{{ Storage::url($post->image) }}" alt="{{ $post->title }}">
                                 </a>
                             </div>
-                            <h4><a href="{{ route('client.detailPost', $post->id) }}">{{ $post->title }}</a></h4>
+                            <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
                             <p><a
-                                    href="{{ route('client.detailPost', $post->id) }}">{{ Str::limit(strip_tags($post->content), 50) }}</a>
+                                    href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->content), 50) }}</a>
                             </p>
                         </div>
                     @endforeach

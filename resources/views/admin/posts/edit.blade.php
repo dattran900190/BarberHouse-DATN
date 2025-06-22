@@ -43,7 +43,7 @@
                     <label for="status" class="form-label">Trạng thái</label>
                     <select class="form-control" id="status" name="status">
                         <option value="1" {{ $post->status ? 'selected' : '' }}>Xuất bản</option>
-                        <option value="0" {{ !$post->status ? 'selected' : '' }}>Chưa xuất bản</option>
+                        <option value="0" {{ !$post->status ? 'selected' : '' }}>Bản nháp</option>
                     </select>
                     @error('status')
                         <div class="text-danger">{{ $message }}</div>

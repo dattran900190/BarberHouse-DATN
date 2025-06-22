@@ -86,7 +86,7 @@
                 <div class="form-group">
                     <label>Trạng thái</label>
                     <select name="status" class="form-control @error('status') is-invalid @enderror">
-                        <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Chưa xuất bản</option>
+                        <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Bản nháp</option>
                         <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Xuất bản</option>
                     </select>
                     @error('status')
