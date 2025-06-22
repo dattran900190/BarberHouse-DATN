@@ -10,7 +10,7 @@
 
             {{-- Thông tin người dùng --}}
             <div class="bg-white p-4 rounded shadow mb-4">
-                <h3 class="mb-4 text-primary">Thông tin người dùng</h3>
+                <h3 class="mb-4">Thông tin người dùng</h3>
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label">Tên người dùng</label>
@@ -29,7 +29,7 @@
 
             {{-- Danh sách mã khuyến mãi --}}
             <div class="bg-white p-4 rounded shadow">
-                <h3 class="mb-4 text-primary">Danh sách mã khuyến mãi</h3>
+                <h3 class="mb-4">Danh sách mã khuyến mãi</h3>
                 @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show">
                         {{ session('error') }}
