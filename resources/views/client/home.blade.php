@@ -34,13 +34,13 @@
                     @foreach ($posts as $post)
                         <div class="post">
                             <div class="image-container">
-                                <a href="{{ route('client.detailPost', $post->id) }}">
+                                <a href="{{ route('client.detailPost', $post->slug) }}">
                                     <img src="{{ Storage::url($post->image) }}" alt="{{ $post->title }}">
                                 </a>
                             </div>
-                            <h4><a href="{{ route('client.detailPost', $post->id) }}">{{ $post->title }}</a></h4>
+                            <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
                             <p><a
-                                    href="{{ route('client.detailPost', $post->id) }}">{{ Str::limit(strip_tags($post->content), 50) }}</a>
+                                    href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->content), 50) }}</a>
                             </p>
                         </div>
                     @endforeach
@@ -49,7 +49,7 @@
             </div>
 
             <div class="posts-nomal">
-                @foreach ($normalPosts as $post)
+                @foreach ($posts as $post)
                     <div class="post-nomal">
                         <div class="image-nomal">
                             <a href="{{ route('client.detailPost', $post->slug) }}">
@@ -64,7 +64,7 @@
                 @endforeach
             </div>
 
-            <button id="loadMore" class="btn-xem-them"><a href="{{ route('client.posts')}}">Xem thêm</a></button>
+           <a href="{{ route('client.posts')}}" style="text-decoration: none"><button id="loadMore" class="btn-xem-them">Xem thêm</button></a>
         </section>
 
         <section id="product">

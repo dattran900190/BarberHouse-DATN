@@ -13,7 +13,7 @@
 
                 <div class="path-post">
                     <p>
-                        <a href="">Tin tức Barber House </a>
+                        <a href="{{ route('client.posts') }}">Tin tức Barber House </a>
                         <i class="fa-solid fa-angle-right"></i>
                         Cắt Tóc Gió ở Sài Gòn: Nét Văn Hóa Vỉa Hè Xưa
                     </p>

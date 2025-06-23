@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('content')->nullable();
             $table->string('image')->nullable();
             $table->bigInteger('author_id')->nullable()->index('author_id');
-            $table->enum('status', ['draft', 'published', 'archived'])->nullable()->default('draft');
+            $table->enum('status', ['draft', 'published'])->nullable()->default('published');
             $table->dateTime('published_at')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();

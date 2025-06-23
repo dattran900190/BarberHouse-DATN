@@ -22,6 +22,10 @@
                 <li class="nav-item mx-2"><a class="nav-link" href="{{ url('chi-nhanh') }}">Chi nhánh</a></li>
                 <li class="nav-item mx-2"><a class="nav-link" href="{{ url('cart') }}"><i
                             class="fa-solid fa-cart-shopping"></i></a></li>
+
+                {{-- ICON ADMIN CHO BRANCH ADMIN --}}
+
+
                 <li class="nav-item mx-2"><a class="nav-link" href="#"><i class="fa-brands fa-facebook"></i></a>
                 </li>
                 <li class="nav-item mx-2"><a class="nav-link" href="#"><i class="fa-brands fa-instagram"></i></a>
@@ -42,7 +46,18 @@
                                 <h6 class="dropdown-header">{{ Auth::user()->name }}</h6>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.profile') }}">Quản lý tài khoản</a></li>
-                            <li><a class="dropdown-item" href="{{ route('client.redeem') }}">Đổi mã giản giá</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.wallet') }}">Ví tài khoản</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.redeem') }}">Đổi mã giảm giá</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.orderHistory') }}">Lịch sử đặt hàng</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.appointmentHistory') }}">Lịch sử đặt lịch</a></li>
+
+                            {{-- THÊM LINK ADMIN VÀO DROPDOWN CHO BRANCH ADMIN --}}
+                            @if (Auth::user()->role === 'branch_admin')
+                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">
+                                        <i class="fa-solid fa-cogs me-2"></i>Quản lý chi nhánh
+                                    </a></li>
+                            @endif
+
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -54,9 +69,21 @@
                             </li>
                         @endguest
                     </ul>
-                <li class="nav-item mx-2"><a class="nav-link" id="search-icon" href="#"><i class="fa-solid fa-magnifying-glass"></i></i></a>
                 </li>
+                <li class="nav-item mx-2"><a class="nav-link" id="search-icon" href="#"><i
+                            class="fa-solid fa-magnifying-glass"></i></a>
+                </li>
+                @auth
+                    @if (Auth::user()->role != 'user')
+                        <li class="nav-item mx-2">
+                            <a class="nav-link" href="{{ route('dashboard') }}" title="Đến trang quản trị">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </a>
+                        </li>
+                    @endif
+                @endauth
             </ul>
+
 
             <!-- Search Overlay -->
             <div id="search-overlay">
