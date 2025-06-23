@@ -39,6 +39,7 @@
             </p>
 
             <a href="{{ route('posts.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-primary">Chỉnh sửa</a>
         </div>
     </div>
 @endsection

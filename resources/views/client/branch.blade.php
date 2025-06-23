@@ -49,6 +49,11 @@
             </div>
         </div>
     </main>
+    <style>
+        #mainNav {
+            background-color: #000;
+        }
+    </style>
 @endsection
 
 @section('card-footer')
