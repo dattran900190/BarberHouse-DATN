@@ -49,7 +49,7 @@
             </div>
 
             <div class="posts-nomal">
-                @foreach ($normalPosts as $post)
+                @foreach ($posts as $post)
                     <div class="post-nomal">
                         <div class="image-nomal">
                             <a href="{{ route('client.detailPost', $post->slug) }}">
@@ -64,7 +64,7 @@
                 @endforeach
             </div>
 
-            <button id="loadMore" class="btn-xem-them"><a href="{{ route('client.posts')}}">Xem thêm</a></button>
+           <a href="{{ route('client.posts')}}" style="text-decoration: none"><button id="loadMore" class="btn-xem-them">Xem thêm</button></a>
         </section>
 
         <section id="product">

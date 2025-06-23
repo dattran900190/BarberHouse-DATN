@@ -33,43 +33,47 @@ class AppointmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-   
-public function index(Request $request)
-{
-    $services = Service::select('id', 'name', 'price', 'duration')->get();
-    $branches = Branch::all();
 
-    // Lấy danh sách mã giảm giá khả dụng của người dùng
-    $vouchers = Auth::check() ? UserRedeemedVoucher::where('user_id', Auth::id())
-        ->where('is_used', false)
-        ->with('promotion')
-        ->get() : collect();
+    public function index(Request $request)
+    {
+        $services = Service::select('id', 'name', 'price', 'duration')->get();
+        $branches = Branch::all();
 
-    // Lấy voucher công khai (required_points null hoặc 0)
-    $publicPromotions = \App\Models\Promotion::where(function($q) {
+        // Lấy danh sách mã giảm giá khả dụng của người dùng
+        $vouchers = Auth::check() ? UserRedeemedVoucher::where('user_id', Auth::id())
+            ->where('is_used', false)
+            ->with('promotion')
+            ->get() : collect();
+
+        // Lấy voucher công khai (required_points null hoặc 0)
+        $publicPromotions = \App\Models\Promotion::where(function ($q) {
             $q->whereNull('required_points')
-              ->orWhere('required_points', 0);
+                ->orWhere('required_points', 0);
         })
-        ->where('is_active', true)
-        ->where('quantity', '>', 0)
-        ->where('start_date', '<=', now())
-        ->where('end_date', '>=', now())
-        ->get();
+            ->where('is_active', true)
+            ->where('quantity', '>', 0)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->get();
 
-    // Mặc định: hiển thị tất cả barber nếu chưa chọn thời gian
-    if ($request->filled('appointment_date') && $request->filled('appointment_time')) {
-        $barbers = $this->getAvailableBarbers($request->appointment_date, $request->appointment_time);
-    } else {
-        $barbers = Barber::where('branch_id', $request->input('branch_id'))->get();
+        // Mặc định: hiển thị tất cả barber nếu chưa chọn thời gian
+        if ($request->filled('appointment_date') && $request->filled('appointment_time')) {
+            $barbers = $this->getAvailableBarbers($request->appointment_date, $request->appointment_time);
+        } else {
+            $barbers = Barber::where('branch_id', $request->input('branch_id'))->get();
+        }
+
+        return view('client.booking', compact('barbers', 'services', 'branches', 'vouchers', 'publicPromotions'));
     }
 
-    return view('client.booking', compact('barbers', 'services', 'branches', 'vouchers', 'publicPromotions'));
-}
-
-    public function getBarbersByBranch($branch_id)
+    public function appointmentHistory(Request $request)
     {
-        $barbers = Barber::where('branch_id', $branch_id)->get();
-        return response()->json($barbers);
+        return view('client.appointmentHistory');
+    }
+
+    public function detailAppointmentHistory(Request $request)
+    {
+        return view('client.detailAppointmentHistory');
     }
 
 
@@ -144,7 +148,7 @@ public function index(Request $request)
             Log::error('Lỗi khi gửi sự kiện NewAppointment', ['error' => $e->getMessage()]);
         }
         Mail::to($appointment->email)->send(new PendingBookingMail($appointment));
-        
+
 
         return redirect()->back()->with('success', 'Đặt lịch thành công!');
     }
@@ -247,6 +251,12 @@ public function index(Request $request)
             ]);
             return response()->json(['error' => 'Server error'], 500);
         }
+    }
+
+     public function getBarbersByBranch($branch_id)
+    {
+        $barbers = Barber::where('branch_id', $branch_id)->get();
+        return response()->json($barbers);
     }
 
     public function completeAppointment($appointmentId)

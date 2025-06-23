@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Cảm ơn ban đã đặt lịch</title>
+    <title>Cảm ơn ban đã đặt lịch tại Barber House</title>
 </head>
 
 <body>
