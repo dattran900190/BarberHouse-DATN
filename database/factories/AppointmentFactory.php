@@ -29,7 +29,7 @@ class AppointmentFactory extends Factory
             'branch_id' => Branch::inRandomOrder()->first()?->id ?? null,
             'appointment_time' => $this->faker->dateTimeBetween('+1 days', '+1 week'),
             'status' => $this->faker->randomElement(['pending', 'confirmed', 'cancelled', 'completed']),
-            'payment_status' => $this->faker->randomElement(['unpaid', 'paid']),
+            // 'payment_status' => $this->faker->randomElement(['unpaid', 'paid']),
             'note' => $this->faker->optional()->sentence(),
             'promotion_id' => null, // vì chưa có bảng promotions
             'discount_amount' => 0,

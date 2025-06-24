@@ -12,8 +12,8 @@ return new class extends Migration {
                 ->references(['id'])->on('users')
                 ->onUpdate('no action')->onDelete('no action');
 
-            $table->foreign(['appointment_id'], 'refund_requests_ibfk_2')
-                ->references(['id'])->on('appointments')
+            $table->foreign(['order_id'], 'refund_requests_ibfk_2')
+                ->references(['id'])->on('orders')
                 ->onUpdate('no action')->onDelete('no action');
 
             // $table->foreign(['order_id'], 'refund_requests_ibfk_3')

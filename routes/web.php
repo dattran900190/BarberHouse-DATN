@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RefundRequestController;
 use App\Http\Controllers\Client\WalletController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -90,9 +91,9 @@ Route::get('/lich-su-don-hang', [ClientOrderController::class, 'index'])->name('
 Route::get('/chi-tiet-don-hang', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory');
 
 // == ví tài khoản ==
-Route::get('/vi-tai-khoan', [WalletController::class, 'index'])->name('client.wallet');
-Route::get('/chi-tiet-vi', [WalletController::class, 'show'])->name('client.detailWallet');
-Route::get('/rut-ten', [WalletController::class, 'withdrawal'])->name('client.withdrawal');
+Route::get('refunds', [WalletController::class, 'index'])->name('client.detailWallet');
+Route::get('refunds/create', [WalletController::class, 'create'])->name('client.wallet');
+Route::post('refunds', [WalletController::class, 'store'])->name('client.wallet.store');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
@@ -112,6 +113,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
+
+    Route::resource('refunds', RefundRequestController::class);
 
     // ==== Đơn hàng ====
     Route::resource('orders', OrderController::class);

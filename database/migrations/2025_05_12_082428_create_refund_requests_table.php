@@ -11,12 +11,12 @@ return new class extends Migration {
             $table->bigInteger('id', true);
             $table->bigInteger('user_id')->index();
             $table->text('reason');
-            $table->bigInteger('appointment_id')->nullable()->index();
+            $table->bigInteger('order_id')->nullable()->index();
             $table->decimal('refund_amount', 10, 2);
             $table->string('bank_account_name', 100);
             $table->string('bank_account_number', 50);
             $table->string('bank_name', 100);
-            $table->enum('refund_status', ['pending', 'refunded'])->default('pending');
+            $table->enum('refund_status', ['pending', 'processing', 'refunded', 'rejected'])->default('pending');
             $table->timestamp('refunded_at')->nullable();
             $table->timestamps(); 
         });

@@ -413,6 +413,11 @@ return [
             'url'  => 'admin/user_redeemed_vouchers',
             'icon' => 'fas fa-tags',
         ],
+        [
+            'text' => 'Hoàn tiền',
+            'url'  => 'admin/refunds',
+            'icon' => 'fas fa-undo',
+        ],
 
     ],
 

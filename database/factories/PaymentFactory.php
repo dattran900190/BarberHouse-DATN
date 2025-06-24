@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Appointment;
+use App\Models\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +21,7 @@ class PaymentFactory extends Factory
     $status = $this->faker->randomElement(['pending', 'paid']);
 
     return [
-        'appointment_id' => Appointment::inRandomOrder()->first()?->id ?? null,
+        'order_id' => Order::inRandomOrder()->first()?->id ?? null,
         'method' => $this->faker->randomElement(['momo', 'cash']),
         'amount' => $this->faker->randomFloat(2, 50, 500),
         'status' => $status,
