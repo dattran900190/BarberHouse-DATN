@@ -6,43 +6,43 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class BarberSchedulesRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return true; // Cho phép dùng request này, nếu bạn muốn kiểm tra quyền có thể sửa lại
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'barber_id' => 'required|exists:barbers,id',
-            'schedule_date' => 'required|date|after_or_equal:today',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            'barber_id'      => 'required|exists:barbers,id',
+            'schedule_date'  => 'required|date|after_or_equal:today',
+            'status'         => 'required|in:off,custom',
+
+            // Chỉ yêu cầu giờ nếu là custom
+            'start_time'     => 'required_if:status,custom|nullable|date_format:H:i',
+            'end_time'       => 'required_if:status,custom|nullable|date_format:H:i|after:start_time',
         ];
     }
+
     public function messages(): array
     {
         return [
-            'barber_id.required' => 'Vui lòng chọn thợ cắt tóc.',
-            'barber_id.exists' => 'Thợ cắt tóc không tồn tại.',
+            'barber_id.required'      => 'Vui lòng chọn thợ cắt tóc.',
+            'barber_id.exists'        => 'Thợ cắt tóc không tồn tại.',
 
-            'schedule_date.required' => 'Vui lòng chọn ngày.',
+            'schedule_date.required'  => 'Vui lòng chọn ngày.',
+            'schedule_date.date'      => 'Ngày làm việc không hợp lệ.',
             'schedule_date.after_or_equal' => 'Ngày làm việc phải là hôm nay hoặc sau hôm nay.',
-            'schedule_date.date' => 'Ngày làm việc không đúng định dạng (Y-m-d).',
-            'start_time.required' => 'Vui lòng chọn giờ bắt đầu.',
-            'start_time.date_format' => 'Giờ bắt đầu không đúng định dạng (H:i).',
 
-            'end_time.required' => 'Vui lòng chọn giờ kết thúc.',
-            'end_time.date_format' => 'Giờ kết thúc không đúng định dạng (H:i).',
-            'end_time.after' => 'Giờ kết thúc phải sau giờ bắt đầu.',
+            'status.required'         => 'Vui lòng chọn loại lịch.',
+            'status.in'               => 'Loại lịch không hợp lệ.',
+            'status.off'              => 'Lịch nghỉ cả ngày không thể có giờ làm.',
+            'start_time.required_if'  => 'Vui lòng nhập giờ bắt đầu khi chọn thay đổi giờ làm.',
+            'start_time.date_format'  => 'Giờ bắt đầu không đúng định dạng (H:i).',
+
+            'end_time.required_if'    => 'Vui lòng nhập giờ kết thúc khi chọn thay đổi giờ làm.',
+            'end_time.date_format'    => 'Giờ kết thúc không đúng định dạng (H:i).',
+            'end_time.after'          => 'Giờ kết thúc phải sau giờ bắt đầu.',
         ];
     }
 }
