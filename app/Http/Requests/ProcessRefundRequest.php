@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProcessRefundRequest extends FormRequest
 {
@@ -14,7 +15,10 @@ class ProcessRefundRequest extends FormRequest
     public function rules()
     {
         return [
-            'refund_status' => 'required|in:refunded',
+            'refund_status' => [
+                'required',
+                Rule::in(['pending', 'processing', 'refunded', 'rejected']),
+            ],
         ];
     }
 }

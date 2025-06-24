@@ -1,7 +1,7 @@
 @extends('layouts.ClientLayout')
 
 @section('title-page')
-    Ví tài khoản
+    Gửi yêu cầu hoàn tiền
 @endsection
 
 @section('content')
@@ -9,100 +9,73 @@
         <div class="container">
             <div class="card wallet-page mt-4 shadow-sm">
                 <div class="card-header border-0">
-                    <h3 class="mb-0 fw-bold">Ví của tôi</h3>
-                    <div class="d-flex justify-content-between">
-                        <span class="mt-2">Số dư hiện tại: 2.500.000 VNĐ</span>
-                        <a href="{{ route('client.withdrawal') }}" class="btn btn-primary m-0">Rút tiền</a>
-                    </div>
+                    <h3 class="mb-0 fw-bold">Yêu cầu hoàn tiền</h3>
                 </div>
-                <div class="card-body">
-                    <h4 class="fw-bold mb-3">Yêu cầu hoàn tiền</h4>
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <form class="d-flex w-50">
-                            <input type="text" class="form-control me-2" placeholder="Tìm kiếm theo mã đặt lịch">
-                            <button type="submit" class="btn btn-primary">Tìm</button>
-                        </form>
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
-                                id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                Lọc theo trạng thái
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
-                                <li><a class="dropdown-item" href="#">Đang chờ</a></li>
-                                <li><a class="dropdown-item" href="#">Đã duyệt</a></li>
-                                <li><a class="dropdown-item" href="#">Bị từ chối</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- Yêu cầu hoàn tiền 1 -->
-                    <div class="refund-item mb-3 p-3 rounded-3">
-                        <div class="row align-items-center">
-                            <div class="col-md-7">
-                                <span class="fw-bold">Mã đặt lịch: AP12345</span><br>
-                                <span class="text-muted">Lý do: Không thể tham gia</span><br>
-                                <span class="text-muted">Số tiền hoàn: 1.250.000 VNĐ</span><br>
-                                <span class="text-muted">Ngày yêu cầu: 22/06/2025</span>
-                            </div>
-                            <div class="col-md-2 text-center">
-                                <span class="status-label status-processing">Đang chờ</span>
-                            </div>
-                            <div class="col-md-3 text-center">
-                                <a class="btn btn-outline-primary btn-sm" href="{{ route('client.detailWallet') }}">Xem chi
-                                    tiết</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Yêu cầu hoàn tiền 2 -->
-                    <div class="refund-item mb-3 p-3 rounded-3">
-                        <div class="row align-items-center">
-                            <div class="col-md-7">
-                                <span class="fw-bold">Mã đặt lịch: AP12346</span><br>
-                                <span class="text-muted">Lý do: Dịch vụ bị hủy</span><br>
-                                <span class="text-muted">Số tiền hoàn: 1.875.000 VNĐ</span><br>
-                                <span class="text-muted">Ngày yêu cầu: 20/06/2025</span><br>
-                                <span class="text-muted">Ngày hoàn tiền: 21/06/2025</span>
-                            </div>
-                            <div class="col-md-2 text-center">
-                                <span class="status-label status-delivered">Đã hoàn thành</span>
-                            </div>
-                            <div class="col-md-3 text-center">
-                                <a class="btn btn-outline-primary btn-sm" href="{{ route('client.detailWallet') }}">Xem chi
-                                    tiết</a>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="refund-item mb-3 p-3 rounded-3">
-                        <div class="row align-items-center">
-                            <div class="col-md-7">
-                                <span class="fw-bold">Mã đặt lịch: AP12346</span><br>
-                                <span class="text-muted">Lý do: Dịch vụ bị hủy</span><br>
-                                <span class="text-muted">Số tiền hoàn: 1.875.000 VNĐ</span><br>
-                                <span class="text-muted">Ngày yêu cầu: 20/06/2025</span><br>
-                                <span class="text-muted">Ngày hoàn tiền: 21/06/2025</span>
-                            </div>
-                            <div class="col-md-2 text-center">
-                                <span class="status-label status-canceled">Từ chối</span>
-                            </div>
-                            <div class="col-md-3 text-center">
-                                <a class="btn btn-outline-primary btn-sm" href="{{ route('client.detailWallet') }}">Xem chi
-                                    tiết</a>
-                            </div>
+                <div class="card-body">
+                    @if (session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            @foreach ($errors->all() as $error)
+                                <div>{{ $error }}</div>
+                            @endforeach
                         </div>
-                    </div>
+                    @endif
+                    {{-- Form gửi yêu cầu hoàn tiền --}}
+                    <form action="{{ route('client.wallet.store') }}" method="POST" class="mb-4">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="order_id" class="form-label">Chọn đơn hàng</label>
+                            <select name="order_id" id="order_id" class="form-control" required>
+                                <option value="">-- Chọn đơn hàng --</option>
+                                @foreach ($orders as $order)
+                                    <option value="{{ $order->id }}">
+                                        {{ $order->order_code }} - {{ number_format($order->total_money, 0) }} VNĐ
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Lý do hoàn tiền</label>
+                            <textarea name="reason" id="reason" class="form-control" rows="3" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bank_account_name" class="form-label">Tên chủ tài khoản</label>
+                            <input type="text" name="bank_account_name" id="bank_account_name" class="form-control"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bank_account_number" class="form-label">Số tài khoản</label>
+                            <input type="text" name="bank_account_number" id="bank_account_number" class="form-control"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bank_name" class="form-label">Tên ngân hàng</label>
+                            <input type="text" name="bank_name" id="bank_name" class="form-control" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">Gửi yêu cầu hoàn tiền</button>
+                    </form>
+
+                    @if ($orders->isEmpty())
+                        <div class="alert alert-info">
+                            Bạn không có đơn hàng nào đủ điều kiện hoàn tiền.
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </main>
+
     <style>
         #mainNav {
             background-color: #000;
         }
     </style>
-@endsection
-
-@section('card-footer')
-@endsection
-
-@section('scripts')
 @endsection
