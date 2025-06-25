@@ -27,81 +27,42 @@
                         <input type="text" class="form-control me-2" placeholder="Tìm kiếm đơn hàng">
                         <button type="submit" class="btn btn-primary">Tìm</button>
                     </form>
-                    <!-- Đơn hàng 1 -->
-                    <div class="order-item mb-3 p-3 rounded-3">
-                        <div class="row align-items-center">
-                            <div class="col-md-7">
-                                <span class="fw-bold">Đơn hàng: OD649344</span>
-                                <br>
-                                <span class="text-dark">Sáp VIP</span>
-                                <br>
-                                <span class="text-muted">Tổng số lượng: 2, Giá: $323.13</span>
-                                <br>
-                                <span class="text-muted">Tổng tiền: $323.13</span>
-                                <br>
-                                <span class="text-muted">Ngày đặt: 05/31/2025</span>
-                            </div>
-                            <div class="col-md-2 text-center">
-                                <span class="status-label status-canceled">Đã hủy</span>
-                            </div>
-                            <div class="col-md-3 text-center">
-                                <div class="d-flex justify-content-center">
-                                    <a class="btn btn-outline-primary btn-sm" href="{{ route('client.detailOrderHistory') }}">Xem chi tiết</a>
+                    @foreach ($orders as $order)
+                        <div class="order-item mb-3 p-3 rounded-3 shadow-sm">
+                            <div class="row align-items-center">
+                                <div class="col-md-7">
+                                    <span class="fw-bold">Đơn hàng: {{ $order->order_code }}</span><br>
+                                    <span class="text-dark">
+                                        {{ $order->items->pluck('name')->join(', ') }}
+                                    </span><br>
+                                    <span class="text-muted">Tổng số lượng: {{ $order->items->sum('quantity') }}</span><br>
+                                    <span class="text-muted">Tổng tiền:
+                                        {{ number_format($order->total_money, 0, ',', '.') }} VNĐ</span><br>
+                                    <span class="text-muted">Ngày đặt: {{ $order->created_at->format('d/m/Y') }}</span>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <span class="status-label status-{{ $order->status }}">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="d-flex justify-content-center">
+                                        <a class="btn btn-outline-primary btn-sm me-1"
+                                            href="{{ route('client.detailOrderHistory', $order->id) }}">Xem chi tiết</a>
+                                        @if ($order->status === 'pending')
+                                            <form method="POST" action="">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button class="btn btn-outline-danger btn-sm" type="submit">Hủy đơn
+                                                    hàng</button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- Đơn hàng 2 -->
-                    <div class="order-item mb-3 p-3 rounded-3">
-                        <div class="row align-items-center">
-                            <div class="col-md-7">
-                                <span class="fw-bold">Đơn hàng: OD649344</span>
-                                <br>
-                                <span class="text-dark">Sáp VIP, sáp Hot</span>
-                                <br>
-                                <span class="text-muted">Tổng số lượng: 12</span>
-                                <br>
-                                <span class="text-muted">Tổng tiền: $12623.13</span>
-                                <br>
-                                <span class="text-muted">Ngày đặt: 06/12/2025</span>
-                            </div>
-                            <div class="col-md-2 text-center">
-                                <span class="status-label status-processing">Đang xử lý</span>
-                            </div>
-                            <div class="col-md-3 text-center">
-                                <div class="d-flex justify-content-center">
-                                    <a class="btn btn-outline-primary btn-sm me-1" href="{{ route('client.detailOrderHistory') }}">Xem
- tiết</a>
-                                    <a class="btn btn-outline-danger btn-sm" href="#" title="Hủy đơn hàng">Hủy đơn
-                                        hàng</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Đơn hàng 3 -->
-                    <div class="order-item mb-3 p-3 rounded-3">
-                        <div class="row align-items-center">
-                            <div class="col-md-7">
-                                <span class="fw-bold">Đơn hàng: OD649344</span>
-                                <br>
-                                <span class="text-dark">Dầu gội kokomi</span>
-                                <br>
-                                <span class="text-muted">Tổng số lượng: 4</span>
-                                <br>
-                                <span class="text-muted">Tổng tiền: $523.13</span>
-                                <br>
-                                <span class="text-muted">Ngày đặt: 06/20/2025</span>
-                            </div>
-                            <div class="col-md-2 text-center">
-                                <span class="status-label status-delivered">Đã giao</span>
-                            </div>
-                            <div class="col-md-3 text-center">
-                                <div class="d-flex justify-content-center">
-                                    <a class="btn btn-outline-primary btn-sm" href="{{ route('client.detailOrderHistory') }}">Xem chi tiết</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    @endforeach
+
                 </div>
             </div>
         </div>

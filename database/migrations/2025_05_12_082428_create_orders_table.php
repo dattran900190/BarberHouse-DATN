@@ -16,8 +16,11 @@ return new class extends Migration
             $table->string('order_code')->unique();
             $table->bigInteger('user_id')->nullable()->index('user_id'); // ID người dùng
             $table->string('name'); // Tên người nhận
+            $table->string('email')->nullable(); // Email người nhận
             $table->string('phone'); // Số điện thoại
             $table->text('address'); // Địa chỉ
+            $table->string('shipping_method')->nullable(); // Phương thức vận chuyển
+            $table->decimal('shipping_fee', 10, 2)->default(0);
             $table->decimal('total_money', 10, 2); // Tổng tiền
             $table->enum('status', ['pending', 'processing','shipping', 'completed', 'cancelled'])->nullable(); // Trạng thái đơn
             $table->enum('payment_method', ['cash', 'momo', 'vnpay', 'card'])->nullable(); // Phương thức thanh toán

@@ -25,10 +25,11 @@ class Order extends Model
 
     public $timestamps = true;
 
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
+    public function items()
+{
+    return $this->hasMany(\App\Models\OrderItem::class);
+}
+
     public function payment()
     {
         return $this->hasOne(Payment::class);
