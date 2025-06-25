@@ -11,14 +11,19 @@
                 <div class="card-header d-flex justify-content-between align-items-center border-0">
                     <h3 class="mb-0 fw-bold">Chi tiết đơn hàng</h3>
                     <div>
-                        <strong>Trạng thái:</strong> <span class="status-label status-processing">Đang xử lý</span>
+                        <strong>Trạng thái:</strong>
+                        <span class="status-label status-{{ $order->status }}">
+                            {{ ucfirst($order->status) }}
+                        </span>
                     </div>
+
                 </div>
                 <div class="card-body">
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <p><strong>Mã đơn hàng:</strong> OD649344</p>
-                            <p><strong>Ngày đặt hàng:</strong> 05/31/2025</p>
+                            <p><strong>Mã đơn hàng:</strong> {{ $order->order_code }}</p>
+                            <p><strong>Ngày đặt hàng:</strong> {{ $order->created_at->format('d/m/Y') }}</p>
+
                         </div>
 
                     </div>
@@ -33,26 +38,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Sáp VIP</td>
-                                <td>2</td>
-                                <td>$161.57</td>
-                                <td>$323.13</td>
-                            </tr>
-                            <tr>
-                                <td>Dầu gội kokomi</td>
-                                <td>2</td>
-                                <td>$161.57</td>
-                                <td>$323.13</td>
-                            </tr>
-                            <!-- Thêm các sản phẩm khác nếu có -->
+                            @foreach ($items as $item)
+                                <tr>
+                                    <td>{{ $item->name }}</td>
+                                    <td>{{ $item->quantity }}</td>
+                                    <td>{{ number_format($item->price, 0, ',', '.') }} VNĐ</td>
+                                    <td>{{ number_format($item->price * $item->quantity, 0, ',', '.') }} VNĐ</td>
+                                </tr>
+                            @endforeach
                         </tbody>
+
                     </table>
                     <h5 class="fw-bold mt-4">Thông tin giao hàng</h5>
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Địa chỉ giao hàng:</strong> 123 Đường ABC, Quận XYZ, TP. HCM</p>
-                            <p><strong>Phương thức giao hàng:</strong> Giao hàng tiêu chuẩn</p>
+                            <p><strong>Địa chỉ giao hàng:</strong> {{ $order->address }}</p>
+                            <p><strong>Phương thức giao hàng:</strong>
+                                {{ $order->shipping_fee == 25000 ? 'Giao hàng tiêu chuẩn' : 'Giao hàng nhanh' }}
+                            </p>
+
                         </div>
                         <div class="col-md-6">
                             <p><strong>Ngày dự kiến giao hàng:</strong> 06/05/2025</p>
@@ -60,7 +64,8 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-between align-items-center border-0">
-                    <h5 class="fw-bold">Tổng tiền: $323.13</h5>
+                    <h5 class="fw-bold">Tổng tiền: {{ number_format($order->total_money, 0, ',', '.') }} VNĐ</h5>
+
                     <div>
                         <a href="#" class="btn btn-outline-danger btn-sm me-2">Hủy đơn hàng</a>
                         <a href="{{ route('client.orderHistory') }}" class="btn btn-outline-secondary btn-sm">Quay lại</a>
