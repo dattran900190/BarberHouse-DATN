@@ -134,11 +134,37 @@ class AppointmentController extends Controller
 
         // dd($appointment);
 
-        // Apply voucher if provided
-        if ($request->voucher_id) {
-            $voucher = UserRedeemedVoucher::findOrFail($request->voucher_id);
-            $this->appointmentService->applyPromotion($appointment, $voucher);
+   if ($request->voucher_code) {
+    $code = trim($request->voucher_code);
+
+    // Ưu tiên tìm trong danh sách voucher đã đổi
+    $redeemedVoucher = UserRedeemedVoucher::whereHas('promotion', function ($q) use ($code) {
+        $q->where('code', $code);
+    })
+    ->where('user_id', Auth::id())
+    ->where('is_used', false)
+    ->first();
+
+    if ($redeemedVoucher) {
+        $this->appointmentService->applyPromotion($appointment, $redeemedVoucher);
+    } else {
+        // Nếu không tìm thấy, thử tìm trong promotions công khai
+        $promotion = \App\Models\Promotion::where('code', $code)
+            ->where(function ($q) {
+                $q->whereNull('required_points')->orWhere('required_points', 0);
+            })
+            ->where('is_active', true)
+            ->where('quantity', '>', 0)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->first();
+
+        if ($promotion) {
+            $this->appointmentService->applyPromotion($appointment, null, $promotion);
         }
+    }
+}
+
 
         try {
             Log::info('Kích hoạt sự kiện NewAppointment', [$appointment->toArray()]);
