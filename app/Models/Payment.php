@@ -11,16 +11,21 @@ class Payment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'appointment_id',
+        'order_id',
         'method',
         'amount',
         'status',
         'transaction_code',
-        'paid_at'
+        'paid_at',
     ];
 
-    public function appointment()
+    protected $casts = [
+        'status' => 'string',
+        'paid_at' => 'datetime',
+    ];
+
+    public function order()
     {
-        return $this->belongsTo(Appointment::class);
+        return $this->belongsTo(Order::class);
     }
 }

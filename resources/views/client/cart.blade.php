@@ -39,7 +39,11 @@
                                                 <div class="table-responsive">
                                                     <table class="table">
                                                         <thead>
+                                                            <!-- Thêm vào <thead> -->
                                                             <tr>
+                                                                <th scope="col">
+                                                                    <input type="checkbox" id="check-all-cart">
+                                                                </th>
                                                                 <th scope="col">Tên sản phẩm</th>
                                                                 <th scope="col">Hình ảnh</th>
                                                                 <th scope="col">Số lượng</th>
@@ -50,7 +54,12 @@
                                                         </thead>
                                                         <tbody id="cart-items">
                                                             @foreach ($cart->items as $item)
+                                                                <!-- Thêm vào <tbody> mỗi sản phẩm -->
                                                                 <tr id="cart-item-{{ $item->id }}">
+                                                                    <td>
+                                                                        <input type="checkbox" class="cart-item-checkbox"
+                                                                            data-item-id="{{ $item->id }}" checked>
+                                                                    </td>
                                                                     <td>
                                                                         <strong>{{ $item->productVariant->product->name }}</strong><br>
                                                                         @php
@@ -154,39 +163,24 @@
                                                     ₫</h5>
                                             </div>
 
-                                            <h5 class="text-uppercase mb-3">Phí ship</h5>
-                                            <div class="mb-4 pb-2">
-                                                <select class="form-select" id="shipping-method">
-                                                    <option value="50000" selected>Standard-Delivery - 50.000 ₫</option>
-                                                    <option value="100000">Express-Delivery - 100.000 ₫</option>
-                                                    <option value="150000">Premium-Delivery - 150.000 ₫</option>
-                                                </select>
-                                            </div>
 
-                                            <h5 class="text-uppercase mb-3">Mã khuyến mại</h5>
-                                            <div class="mb-5">
-                                                <div class="form-outline">
-                                                    <input type="text" id="promo-code"
-                                                        class="form-control form-control-lg" />
-                                                    <label class="form-label" for="promo-code">Nhập mã khuyến mại</label>
-                                                </div>
-                                            </div>
+
+                                          
 
                                             <hr class="my-4">
 
                                             <div class="d-flex justify-content-between mb-5">
                                                 <h5 class="text-uppercase">Tổng tiền</h5>
                                                 <h5 id="cart-total">
-                                                    {{ number_format($cart->items->sum(fn($item) => $item->price * $item->quantity) + 50000, 0, ',', '.') }}
+                                                    {{ number_format($cart->items->sum(fn($item) => $item->price * $item->quantity) , 0, ',', '.') }}
                                                     ₫</h5>
                                             </div>
 
-                                            <a href="">
-                                                <button type="button" class="btn btn-dark btn-block btn-lg"
-                                                    data-mdb-ripple-color="dark">
-                                                    Xác nhận
-                                                </button>
-                                            </a>
+                                            <form id="checkout-form" action="{{ route('cart.checkout') }}" method="GET">
+
+                                                <button type="submit" class="btn btn-dark btn-block btn-lg">Xác
+                                                    nhận</button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -257,125 +251,147 @@
 @endsection
 
 @section('scripts')
-<script>
-window.onload = function() {
-    const formatVND = n => n.toLocaleString('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-    }).replace('₫', '') + ' ₫';
+    @section('scripts')
+    <script>
+        window.onload = function () {
+            const formatVND = n => n.toLocaleString('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).replace('₫', '') + ' ₫';
 
-    const updateTotal = () => {
-        const s = [...document.querySelectorAll('.subtotal')].reduce((a, b) => a + (parseFloat(b
-            .textContent.replace(/[^0-9]/g, '')) || 0), 0);
-        const f = parseInt(document.getElementById('shipping-method').value) || 5e4;
+            const updateTotal = () => {
+                const checkedBoxes = [...document.querySelectorAll('.cart-item-checkbox:checked')];
+                let s = 0, totalQuantity = 0;
 
-        const totalQuantity = [...document.querySelectorAll('.quantity-input')].reduce(
-            (sum, input) => sum + (parseInt(input.value) || 0), 0
-        );
+                checkedBoxes.forEach(box => {
+                    const id = box.dataset.itemId;
+                    const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
+                    const subtotal = document.querySelector(`#cart-item-${id} .subtotal`);
+                    s += parseFloat(subtotal.textContent.replace(/[^0-9]/g, '')) || 0;
+                    totalQuantity += parseInt(input.value) || 0;
+                });
 
-        document.getElementById('cart-subtotal').textContent = formatVND(s);
-        document.getElementById('cart-total').textContent = formatVND(s + f);
+                const shippingEl = document.getElementById('shipping_fee_input');
+                const f = shippingEl ? parseInt(shippingEl.value) || 0 : 0;
 
-        const itemCountEl = document.getElementById('item-count');
-        const itemCountSideEl = document.getElementById('item-count-side');
+                document.getElementById('cart-subtotal').textContent = formatVND(s);
+                document.getElementById('cart-total').textContent = formatVND(s + f);
 
-        if (itemCountEl) itemCountEl.textContent = `${totalQuantity} sản phẩm`;
-        if (itemCountSideEl) itemCountSideEl.textContent = totalQuantity;
-    };
+                const itemCountEl = document.getElementById('item-count');
+                const itemCountSideEl = document.getElementById('item-count-side');
 
-    const showMsg = (m, t = 'danger') => {
-        let d = document.getElementById('error-message') || Object.assign(document
-            .createElement('div'), {
-            id: 'error-message',
-            className: `alert alert-${t}`
-        });
-        d.textContent = m;
-        document.querySelector('.p-5vh').prepend(d);
-        setTimeout(() => d.remove(), 3e3);
-    };
+                if (itemCountEl) itemCountEl.textContent = `${totalQuantity} sản phẩm`;
+                if (itemCountSideEl) itemCountSideEl.textContent = totalQuantity;
+            };
 
-    const ajax = (u, m, d, b, s) => {
-        b && (b.disabled = true);
-        fetch(u, {
-                method: m,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': b?.dataset.csrf || document.querySelector(
-                        `[data-item-id="${u.split('/').pop()}"]`)?.dataset.csrf,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(d)
-            })
-            .then(r => r.ok ? r.json() : r.text().then(t => {
-                throw Error(`HTTP ${r.status}: ${t}`);
-            }))
-            .then(data => {
-                s(data);
-                b && (b.disabled = false); // Bật lại nút sau khi thành công
-            })
-            .catch(e => (console.error(e), showMsg(
-                `Lỗi ${m === 'PUT' ? 'cập nhật số lượng' : 'xóa sản phẩm'}.`), b && (b
-                .disabled = false)));
-    };
+            const showMsg = (m, t = 'danger') => {
+                let d = document.getElementById('error-message') || Object.assign(document.createElement('div'), {
+                    id: 'error-message',
+                    className: `alert alert-${t}`
+                });
+                d.textContent = m;
+                document.querySelector('.p-5vh').prepend(d);
+                setTimeout(() => d.remove(), 3000);
+            };
 
-    // Debug xem có tìm thấy nút không
-    console.log('quantity-plus:', document.querySelectorAll('.quantity-plus').length);
-    console.log('quantity-minus:', document.querySelectorAll('.quantity-minus').length);
+            const ajax = (u, m, d, b, s) => {
+                if (b) b.disabled = true;
+                fetch(u, {
+                    method: m,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': b?.dataset.csrf || document.querySelector(`[data-item-id="${u.split('/').pop()}"]`)?.dataset.csrf,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(d)
+                })
+                .then(r => r.ok ? r.json() : r.text().then(t => { throw Error(`HTTP ${r.status}: ${t}`); }))
+                .then(data => {
+                    s(data);
+                    if (b) b.disabled = false;
+                })
+                .catch(e => {
+                    console.error(e);
+                    showMsg(`Lỗi ${m === 'PUT' ? 'cập nhật số lượng' : 'xóa sản phẩm'}.`);
+                    if (b) b.disabled = false;
+                });
+            };
 
-    document.querySelectorAll('.quantity-plus').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.dataset.itemId;
-            const input = document.querySelector(
-                `.quantity-input[data-item-id="${id}"]`);
-            let value = parseInt(input.value) || 1;
-            value++;
-            input.value = value;
-            updateQuantity(id, value, btn);
-        });
-    });
+            document.querySelectorAll('.quantity-plus').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.itemId;
+                    const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
+                    let value = parseInt(input.value) || 1;
+                    input.value = ++value;
+                    updateQuantity(id, value, btn);
+                });
+            });
 
-    document.querySelectorAll('.quantity-minus').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.dataset.itemId;
-            const input = document.querySelector(
-                `.quantity-input[data-item-id="${id}"]`);
-            let value = parseInt(input.value) || 1;
-            if (value > 1) {
-                value--;
-                input.value = value;
-                updateQuantity(id, value, btn);
-            }
-        });
-    });
+            document.querySelectorAll('.quantity-minus').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.itemId;
+                    const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
+                    let value = parseInt(input.value) || 1;
+                    if (value > 1) {
+                        input.value = --value;
+                        updateQuantity(id, value, btn);
+                    }
+                });
+            });
 
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        input.addEventListener('change', () => {
-            const id = input.dataset.itemId;
-            let value = parseInt(input.value) || 1;
-            if (value < 1) value = 1;
-            input.value = value;
-            updateQuantity(id, value);
-        });
-    });
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('change', () => {
+                    const id = input.dataset.itemId;
+                    let value = parseInt(input.value) || 1;
+                    if (value < 1) value = 1;
+                    input.value = value;
+                    updateQuantity(id, value);
+                });
+            });
 
-    updateTotal();
+            document.querySelectorAll('.cart-item-checkbox').forEach(box => {
+                box.addEventListener('change', updateTotal);
+            });
 
-    function updateQuantity(id, quantity, btn = null) {
-        const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
-        const price = parseFloat(input.dataset.price);
-        const subtotal = document.querySelector(`#cart-item-${id} .subtotal`);
-
-        ajax(`/cart/update/${id}`, 'PUT', {
-            quantity: quantity
-        }, btn, d => {
-            if (d.success) {
-                subtotal.textContent = formatVND(price * quantity);
+            document.getElementById('check-all-cart').addEventListener('change', function () {
+                const checked = this.checked;
+                document.querySelectorAll('.cart-item-checkbox').forEach(box => box.checked = checked);
                 updateTotal();
-            } else {
-                showMsg(d.message || 'Cập nhật thất bại.');
+            });
+
+            function updateQuantity(id, quantity, btn = null) {
+                const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
+                const price = parseFloat(input.dataset.price);
+                const subtotal = document.querySelector(`#cart-item-${id} .subtotal`);
+
+                ajax(`/cart/update/${id}`, 'PUT', { quantity }, btn, d => {
+                    if (d.success) {
+                        subtotal.textContent = formatVND(price * quantity);
+                        updateTotal();
+                    } else {
+                        showMsg(d.message || 'Cập nhật thất bại.');
+                    }
+                });
             }
-        });
-    }
-};
-</script>
+
+            document.getElementById('checkout-form').addEventListener('submit', function (e) {
+                const checkedBoxes = [...document.querySelectorAll('.cart-item-checkbox:checked')];
+                const items = checkedBoxes.map(box => {
+                    const id = box.dataset.itemId;
+                    const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
+                    return { id, quantity: input.value };
+                });
+
+                if (items.length === 0) {
+                    alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                    e.preventDefault();
+                    return false;
+                }
+
+                document.getElementById('checkout-items').value = JSON.stringify(items);
+            });
+
+            updateTotal();
+        };
+    </script>
 @endsection

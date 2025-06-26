@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\RefundRequestController;
 use App\Http\Controllers\Client\WalletController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CartController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
@@ -49,6 +50,14 @@ Route::put('/cart/update/{cartItem}', [CartController::class, 'updateQuantity'])
 Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
 Route::put('/cart/update-variant/{cartItem}', [CartController::class, 'updateVariant'])->name('cart.update.variant');
 
+//checkout
+
+Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('cart.checkout.process');
+Route::get('/success', function () {
+    return view('client.order-success');
+})->name('order.success');
+
 
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
 Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('dat-lich.store');
@@ -63,9 +72,6 @@ Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentControll
 
 
 
-Route::get('/thanh-toan', function () {
-    return view('client.checkout');
-});
 
 // web.php
 Route::get('/chi-nhanh', [ClientBranchController::class, 'index'])->name('client.branch');
@@ -89,12 +95,13 @@ Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redee
 
 // == Lịch sử đơn hàng ==
 Route::get('/lich-su-don-hang', [ClientOrderController::class, 'index'])->name('client.orderHistory');
-Route::get('/chi-tiet-don-hang', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory');
+Route::get('/chi-tiet-don-hang/{order}', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory');
+
 
 // == ví tài khoản ==
-Route::get('/vi-tai-khoan', [WalletController::class, 'index'])->name('client.wallet');
-Route::get('/chi-tiet-vi', [WalletController::class, 'show'])->name('client.detailWallet');
-Route::get('/rut-ten', [WalletController::class, 'withdrawal'])->name('client.withdrawal');
+Route::get('refunds', [WalletController::class, 'index'])->name('client.detailWallet');
+Route::get('refunds/create', [WalletController::class, 'create'])->name('client.wallet');
+Route::post('refunds', [WalletController::class, 'store'])->name('client.wallet.store');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
@@ -115,8 +122,13 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
 
+    Route::resource('refunds', RefundRequestController::class);
+
     // ==== Đơn hàng ====
-    Route::resource('orders', OrderController::class);
+  Route::resource('orders', OrderController::class)->names('admin.orders');
+ Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
+
+   
 
     // ==== Lịch sử điểm ====
     Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');

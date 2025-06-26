@@ -10,21 +10,45 @@ use Illuminate\Http\Request;
 class OrderController extends Controller
 {
     // Hiển thị danh sách đơn hàng với bộ lọc tìm kiếm và phân trang
-    public function index(Request $request)
-    {
-        $search = $request->input('search');
+public function index(Request $request)
+{
+    $search = $request->input('search');
 
-        $orders = Order::when($search, function ($query, $search) {
+    $pendingOrders = Order::query()
+        ->when($search, function ($query, $search) {
             return $query->where(function ($q) use ($search) {
                 $q->where('order_code', 'like', '%' . $search . '%')
                     ->orWhere('name', 'like', '%' . $search . '%');
             });
         })
-            ->latest()
-            ->paginate(5);
+        ->where('status', 'pending')
+        ->latest()
+        ->get();
 
-        return view('admin.orders.index', compact('orders', 'search'));
+    $confirmedOrders = Order::query()
+        ->when($search, function ($query, $search) {
+            return $query->where(function ($q) use ($search) {
+                $q->where('order_code', 'like', '%' . $search . '%')
+                    ->orWhere('name', 'like', '%' . $search . '%');
+            });
+        })
+        ->where('status', '!=', 'pending')
+        ->latest()
+        ->get();
+
+    return view('admin.orders.index', compact('pendingOrders', 'confirmedOrders', 'search'));
+}
+public function confirm(Order $order)
+{
+    if ($order->status === 'pending') {
+        $order->status = 'processing';
+        $order->save();
+
+        return back()->with('success', 'Đã xác nhận đơn hàng.');
     }
+
+    return back()->with('error', 'Đơn hàng không thể xác nhận.');
+}
 
 
     // Hiển thị chi tiết đơn hàng, load quan hệ orderItems và productVariant
