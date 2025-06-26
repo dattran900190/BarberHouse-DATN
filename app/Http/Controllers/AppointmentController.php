@@ -6,6 +6,7 @@ use App\Models\Checkin;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use App\Mail\CheckinCodeMail;
+use App\Events\AppointmentConfirmed;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\AppointmentRequest;
 
@@ -14,32 +15,101 @@ class AppointmentController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index(Request $request)
+    // {
+    //     $search = $request->input('search');
+    //     $activeTab = 'pending'; // Mặc định tab
+    //     $allAppointments = collect();
+    //     $statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+    //     $appointments = [];
+
+    //     // Hàm tìm kiếm chung
+    //     $buildQuery = function ($query, $search) {
+    //         $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
+    //             ->when($search, function ($q) use ($search) {
+    //                 $q->where(function ($subQuery) use ($search) {
+    //                     $subQuery->whereHas('user', function ($q2) use ($search) {
+    //                         $q2->where('name', 'like', '%' . $search . '%');
+    //                     })->orWhereHas('barber', function ($q2) use ($search) {
+    //                         $q2->where('name', 'like', '%' . $search . '%');
+    //                     })->orWhereHas('service', function ($q2) use ($search) {
+    //                         $q2->where('name', 'like', '%' . $search . '%');
+    //                     });
+    //                 });
+    //             })
+    //             ->orderBy('id', 'DESC');
+    //     };
+
+    //     // Tìm kiếm toàn cục nếu có search không rỗng
+    //     if (trim($search)) {
+    //         $allAppointments = Appointment::query();
+    //         $buildQuery($allAppointments, $search);
+    //         $allAppointments = $allAppointments->get();
+
+    //         // Chọn tab dựa trên trạng thái của lịch hẹn đầu tiên
+    //         if ($allAppointments->count() > 0) {
+    //             $activeTab = $allAppointments->first()->status;
+    //         }
+    //     }
+
+    //     // Lấy phân trang cho từng trạng thái
+    //     foreach ($statuses as $status) {
+    //         $query = Appointment::where('status', $status);
+    //         $buildQuery($query, $search);
+    //         $appointments[$status . 'Appointments'] = $query->paginate(5, ['*'], $status . '_page');
+    //     }
+
+    //     return view('admin.appointments.index', array_merge(
+    //         compact('activeTab', 'allAppointments', 'search'),
+    //         $appointments
+    //     ));
+    // }
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $pendingAppointments = Appointment::where('status', 'pending') ->orderBy('id', 'DESC')->get();
-        $confirmedAppointments = Appointment::where('status', 'confirmed') ->orderBy('id', 'DESC')->get();
+        $activeTab = 'pending';
+        $allAppointments = collect();
+        $statuses = ['pending', 'confirmed', 'completed', 'cancelled', 'pending_cancellation'];
+        $appointments = [];
 
-        $appointments = Appointment::with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name'])
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->whereHas('user', function ($q2) use ($search) {
-                        $q2->where('name', 'like', '%' . $search . '%');
-                    })->orWhereHas('barber', function ($q2) use ($search) {
-                        $q2->where('name', 'like', '%' . $search . '%');
-                    })->orWhereHas('service', function ($q2) use ($search) {
-                        $q2->where('name', 'like', '%' . $search . '%');
-                    })->orWhereHas('branch', function ($q2) use ($search) {
-                        $q2->where('name', 'like', '%' . $search . '%');
+        $buildQuery = function ($query, $search) {
+            $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
+                ->when($search, function ($q) use ($search) {
+                    $q->where(function ($subQuery) use ($search) {
+                        $subQuery->whereHas('user', function ($q2) use ($search) {
+                            $q2->where('name', 'like', '%' . $search . '%');
+                        })->orWhereHas('barber', function ($q2) use ($search) {
+                            $q2->where('name', 'like', '%' . $search . '%');
+                        })->orWhereHas('service', function ($q2) use ($search) {
+                            $q2->where('name', 'like', '%' . $search . '%');
+                        });
                     });
-                });
-            })
+                })
+                ->orderBy('updated_at', 'DESC');
+        };
 
-            ->orderBy('id', 'DESC')
-            ->paginate(5);
+        if ($search) {
+            $allAppointments = Appointment::query();
+            $buildQuery($allAppointments, $search);
+            $allAppointments = $allAppointments->get();
 
-        return view('admin.appointments.index', compact('appointments', 'pendingAppointments', 'confirmedAppointments'));
+            if ($allAppointments->count() > 0) {
+                $activeTab = $allAppointments->first()->status;
+            }
+        }
+
+        foreach ($statuses as $status) {
+            $query = Appointment::where('status', $status);
+            $buildQuery($query, $search);
+            $appointments[$status . 'Appointments'] = $query->paginate(5, ['*'], $status . '_page');
+        }
+
+        return view('admin.appointments.index', array_merge(
+            compact('activeTab', 'allAppointments', 'search'),
+            $appointments
+        ));
     }
+
 
     public function confirm($id)
     {
@@ -47,7 +117,7 @@ class AppointmentController extends Controller
         $appointment->status = 'confirmed';
         $appointment->save();
 
-         // // Create check-in QR code
+        // // Create check-in QR code
         $qrCode = rand(100000, 999999);
         Checkin::create([
             'appointment_id' => $appointment->id,
@@ -58,10 +128,98 @@ class AppointmentController extends Controller
         $checkin = Checkin::where('appointment_id', $appointment->id)->first();
         Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment));
 
+        // Gửi sự kiện Pusher khi xác nhận lịch hẹn
+        event(new AppointmentConfirmed($appointment));
+
         return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được xác nhận.');
     }
 
+    public function completed($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        $appointment->status = 'completed';
+        $appointment->payment_status = 'paid';
+        $appointment->save();
 
+        return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được hoàn thành.');
+    }
+
+    // public function cancel(Request $request, Appointment $appointment)
+    // {
+    //     // Validate lý do hủy
+    //     $request->validate([
+    //         'cancellation_reason' => 'required|string|min:5|max:500',
+    //     ], [
+    //         'cancellation_reason.required' => 'Vui lòng nhập lý do hủy.',
+    //         'cancellation_reason.min' => 'Lý do hủy phải có ít nhất 5 ký tự.',
+    //         'cancellation_reason.max' => 'Lý do hủy không được vượt quá 500 ký tự.',
+    //     ]);
+
+    //     // Cập nhật trạng thái và lý do hủy
+    //     $appointment->update([
+    //         'status' => 'cancelled',
+    //         'cancellation_reason' => $request->input('cancellation_reason'),
+    //     ]);
+
+    //     // (Tùy chọn) Gửi thông báo cho khách hàng hoặc admin
+    //     // Ví dụ: Notification::send($appointment->user, new AppointmentCancelled($appointment));
+
+    //     return redirect()->route('appointments.index')
+    //         ->with('success', 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy thành công.');
+    // }
+    public function cancel(Request $request, Appointment $appointment)
+    {
+        if (!in_array($appointment->status, ['pending', 'confirmed'])) {
+            return redirect()->route('appointments.index')
+                ->with('error', 'Lịch hẹn này không thể hủy.');
+        }
+
+        $appointment->update([
+            'status' => 'cancelled',
+            'cancellation_reason' => $request->input('cancellation_reason', 'Hủy bởi admin'),
+        ]);
+
+        return redirect()->route('appointments.index')
+            ->with('success', 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.');
+    }
+
+    public function approveCancel(Appointment $appointment)
+    {
+        if ($appointment->status !== 'pending_cancellation') {
+            return redirect()->route('appointments.index')
+                ->with('error', 'Lịch hẹn này không ở trạng thái chờ hủy.');
+        }
+
+        $appointment->update([
+            'status' => 'cancelled',
+            'payment_status' => 'failed'
+        ]);
+
+        // (Tùy chọn) Gửi thông báo cho người dùng
+        // $appointment->user->notify(new CancellationApproved($appointment));
+
+        return redirect()->route('appointments.index')
+            ->with('success', 'Đã chấp nhận hủy lịch hẹn ' . $appointment->appointment_code . '.');
+    }
+
+    public function rejectCancel(Appointment $appointment)
+    {
+        if ($appointment->status !== 'pending_cancellation') {
+            return redirect()->route('appointments.index')
+                ->with('error', 'Lịch hẹn này không ở trạng thái chờ hủy.');
+        }
+
+        $appointment->update([
+            'status' => $appointment->status == 'confirmed' ? 'confirmed' : 'pending',
+            'cancellation_reason' => null,
+        ]);
+
+        // (Tùy chọn) Gửi thông báo cho người dùng
+        // $appointment->user->notify(new CancellationRejected($appointment));
+
+        return redirect()->route('appointments.index')
+            ->with('success', 'Đã từ chối yêu cầu hủy lịch hẹn ' . $appointment->appointment_code . '.');
+    }
 
     /**
      * Display the specified resource.
@@ -217,12 +375,17 @@ class AppointmentController extends Controller
             return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được huỷ trước đó.');
         }
 
+        if (!$appointment->cancellation_reason) {
+            return redirect()->route('appointments.index')
+                ->with('error', 'Vui lòng cung cấp lý do hủy qua chức năng hủy.');
+        }
+
         // Thực hiện huỷ lịch hẹn
         $appointment->update([
             'status' => 'cancelled',
             'payment_status' => 'failed'
         ]);
 
-        return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được huỷ.');
+        return redirect()->route('appointments.index')->with('success', 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.');
     }
 }

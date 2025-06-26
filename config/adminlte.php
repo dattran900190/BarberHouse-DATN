@@ -301,7 +301,7 @@ return [
     */
 
     'menu' => [
-
+        
         // Navbar items
         [
             'type'         => 'navbar-search',
@@ -320,6 +320,11 @@ return [
         ],
 
         // Sidebar menu items
+        [
+            'text' => 'Tổng quan',
+            'url'  => 'admin/dashboard',
+            'icon' => 'fas fa-concierge-bell',
+        ],
         [
             'text' => 'Quản lý dịch vụ',
             'url'  => 'admin/services',
@@ -442,6 +447,7 @@ return [
         JeroenNoten\LaravelAdminLte\Menu\Filters\ClassesFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\LangFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\DataFilter::class,
+        App\Filters\AppointmentCountFilter::class,
     ],
 
     /*

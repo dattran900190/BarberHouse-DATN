@@ -23,6 +23,7 @@ class Appointment extends Model
         'status',
         // 'payment_status',
         'note',
+        'cancellation_reason',
         'promotion_id',
         'discount_amount',
         'total_amount'

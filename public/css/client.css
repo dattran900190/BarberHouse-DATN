@@ -1877,6 +1877,25 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
   border-color: #28a745;
 }
 
+.status-confirmed {
+  background-color: #d1ecf1;
+  color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.status-completed {
+  background-color: #d4edda;
+  color: #28a745;
+  border-color: #28a745;
+}
+
+.status-warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border-color: #856404;
+
+}
+
 .order-history .btn-outline-primary,
 .order-history .btn-outline-danger {
   font-size: 14px;

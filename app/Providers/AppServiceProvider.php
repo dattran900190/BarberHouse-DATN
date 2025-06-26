@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
+
     /**
      * Register any application services.
      */
@@ -28,7 +29,13 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
 
         // Đăng ký observer cho Appointment
-        Appointment::observe(AppointmentObserver::class);   
-           View::share('globalCategories', ProductCategory::all());
+        Appointment::observe(AppointmentObserver::class);
+        View::share('globalCategories', ProductCategory::all());
+
+        // số lượng lịch chưa xác nhận
+        // View::composer('vendor.adminlte.partials.sidebar.menu', function ($view) {
+        //     $pendingCount = Appointment::where('status', 'pending')->count();
+        //     $view->with('pendingCount', $pendingCount);
+        // });
     }
 }

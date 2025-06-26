@@ -67,7 +67,9 @@ Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai
 
 // == Lịch sử đặt lịch ==
 Route::get('/lich-su-dat-lich', [ClientAppointmentController::class, 'appointmentHistory'])->name('client.appointmentHistory');
-Route::get('/chi-tiet-dat-lich', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
+Route::get('/lich-su-dat-lich/{id}', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
+Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
+
 
 
 
@@ -147,6 +149,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Đặt lịch ====
     Route::resource('appointments', AppointmentController::class);
     Route::post('/appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
+    Route::post('/appointments/{appointment}/completed', [AppointmentController::class, 'completed'])->name('appointments.completed');
+    Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
+    Route::post('/appointments/{appointment}/approve-cancel', [AppointmentController::class, 'approveCancel'])->name('appointments.approve-cancel');
+    Route::post('/appointments/{appointment}/reject-cancel', [AppointmentController::class, 'rejectCancel'])->name('appointments.reject-cancel');
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);
