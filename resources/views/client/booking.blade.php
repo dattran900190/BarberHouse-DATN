@@ -172,42 +172,25 @@
                 @enderror
             </div>
 
-            <div class="form-group mb-3">
-                <p>Tổng tiền: <strong id="totalPrice">0 vnđ</strong></p>
-                <p>Thời lượng dự kiến: <strong id="totalDuration">0 Phút</strong></p>
-            </div>
 
 
 
-            <div class="form-group mb-3">
-                <label for="voucher_id">Mã giảm giá (nếu có)</label>
-                <select name="voucher_id" id="voucher_id" class="form-control">
-                    <option value="">Không sử dụng mã giảm giá</option>
-                    {{-- Voucher đã đổi --}}
-                    @if (isset($vouchers))
-                        @foreach ($vouchers as $voucher)
-                            <option value="{{ $voucher->id }}">
-                                {{ $voucher->promotion->code }}
-                                ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
-                            </option>
-                        @endforeach
-                    @endif
-                    {{-- Voucher công khai --}}
-                    @if (isset($publicPromotions))
-                        @foreach ($publicPromotions as $promotion)
-                            <option value="public_{{ $promotion->id }}">
-                                {{ $promotion->code }}
-                                ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
-                                [Công khai]
-                            </option>
-                        @endforeach
-                    @endif
-                </select>
-                @error('voucher_id')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
+           <input type="text" name="voucher_code" class="form-control" list="voucherSuggestions" placeholder="Nhập hoặc chọn mã giảm giá">
+<datalist id="voucherSuggestions">
+    @foreach ($vouchers as $voucher)
+        <option value="{{ $voucher->promotion->code }}">
+            {{ $voucher->promotion->code }} - 
+            {{ $voucher->promotion->discount_value }}
+        </option>
+    @endforeach
+    @foreach ($publicPromotions as $promotion)
+        <option value="{{ $promotion->code }}">
+            {{ $promotion->code }} - 
+            {{ $promotion->discount_value }}
+        </option>
+    @endforeach
+</datalist>
 
-            </div>
 
             <div class="form-group mb-3">
                 <span class="form-label">Ghi chú</span>
@@ -216,6 +199,11 @@
                 @error('note')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
+            </div>
+            
+            <div class="form-group mb-3">
+                <p>Tổng tiền: <strong id="totalPrice">0 vnđ</strong></p>
+                <p>Thời lượng dự kiến: <strong id="totalDuration">0 Phút</strong></p>
             </div>
 
             <div class="form-btn mt-3">

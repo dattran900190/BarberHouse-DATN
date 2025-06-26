@@ -165,14 +165,7 @@
 
 
 
-                                            <h5 class="text-uppercase mb-3">Mã khuyến mại</h5>
-                                            <div class="mb-5">
-                                                <div class="form-outline">
-                                                    <input type="text" id="promo-code"
-                                                        class="form-control form-control-lg" />
-                                                    <label class="form-label" for="promo-code">Nhập mã khuyến mại</label>
-                                                </div>
-                                            </div>
+                                          
 
                                             <hr class="my-4">
 

@@ -123,7 +123,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('refunds', RefundRequestController::class);
 
     // ==== Đơn hàng ====
-    Route::resource('orders', OrderController::class);
+  Route::resource('orders', OrderController::class)->names('admin.orders');
+ Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
+
+   
 
     // ==== Lịch sử điểm ====
     Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');
