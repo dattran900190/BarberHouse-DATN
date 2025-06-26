@@ -68,12 +68,78 @@ class AppointmentController extends Controller
 
     public function appointmentHistory(Request $request)
     {
-        return view('client.appointmentHistory');
+        $query = Appointment::where('user_id', Auth::id())
+            ->with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name']);
+
+        // Lọc theo trạng thái
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        // Tìm kiếm theo mã đặt lịch, dịch vụ, hoặc thợ
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('appointment_code', 'like', '%' . $search . '%')
+                    ->orWhereHas('service', function ($q2) use ($search) {
+                        $q2->where('name', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('barber', function ($q2) use ($search) {
+                        $q2->where('name', 'like', '%' . $search . '%');
+                    });
+            });
+        }
+
+        $appointments = $query->orderBy('id', 'DESC')->paginate(5);
+
+        return view('client.appointmentHistory', compact('appointments'));
     }
 
-    public function detailAppointmentHistory(Request $request)
+    public function detailAppointmentHistory($id)
     {
-        return view('client.detailAppointmentHistory');
+        $appointment = Appointment::where('user_id', Auth::id())
+            ->with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name'])
+            ->findOrFail($id);
+
+        return view('client.detailAppointmentHistory', compact('appointment'));
+    }
+
+    public function cancel(Request $request, Appointment $appointment)
+    {
+        // Kiểm tra quyền sở hữu
+        if ($appointment->user_id !== Auth::id()) {
+            return redirect()->route('client.appointmentHistory')
+                ->with('error', 'Bạn không có quyền hủy lịch hẹn này.');
+        }
+
+        // Kiểm tra trạng thái hợp lệ
+        if (!in_array($appointment->status, ['pending', 'confirmed'])) {
+            return redirect()->route('client.appointmentHistory')
+                ->with('error', 'Lịch hẹn này không thể hủy.');
+        }
+
+        // Validate lý do hủy
+        $request->validate([
+            'cancellation_reason' => 'required|string|min:5|max:500',
+        ], [
+            'cancellation_reason.required' => 'Vui lòng nhập lý do hủy.',
+            'cancellation_reason.min' => 'Lý do hủy phải có ít nhất 5 ký tự.',
+            'cancellation_reason.max' => 'Lý do hủy không được vượt quá 500 ký tự.',
+        ]);
+
+        // Cập nhật trạng thái và lý do
+        $appointment->update([
+            'status' => 'pending_cancellation',
+            'status_before_cancellation' => $appointment->status, // Lưu trạng thái hiện tại
+            'cancellation_reason' => $request->input('cancellation_reason'),
+        ]);
+
+        // (Tùy chọn) Gửi thông báo cho admin
+        // \App\Models\Admin::all()->each(function ($admin) use ($appointment) {
+        //     $admin->notify(new CancellationRequest($appointment));
+        // });
+
+        return redirect()->route('client.appointmentHistory')
+            ->with('success', 'Yêu cầu hủy lịch hẹn ' . $appointment->appointment_code . ' đã được gửi.');
     }
 
 
@@ -117,7 +183,7 @@ class AppointmentController extends Controller
 
         // Create appointment
         $appointment = Appointment::create([
-            'appointment_code' => 'APP' . strtoupper(Str::random(6)),
+            'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
             'user_id' => Auth::id(),
             'barber_id' => $request->barber_id,
             'branch_id' => $request->branch_id,
@@ -129,6 +195,9 @@ class AppointmentController extends Controller
             'name' => $name,
             'phone' => $phone,
             'email' => $email,
+            'cancellation_reason' => null,
+            'rejection_reason' => null,
+            'status_before_cancellation' => null,
             'total_amount' => $service->price ?? 0,
         ]);
 
@@ -253,7 +322,7 @@ class AppointmentController extends Controller
         }
     }
 
-     public function getBarbersByBranch($branch_id)
+    public function getBarbersByBranch($branch_id)
     {
         $barbers = Barber::where('branch_id', $branch_id)->get();
         return response()->json($barbers);

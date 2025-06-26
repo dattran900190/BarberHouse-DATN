@@ -22,9 +22,12 @@ return new class extends Migration
             $table->bigInteger('service_id')->nullable()->index('service_id');
             $table->bigInteger('branch_id')->nullable()->index('branch_id');
             $table->dateTime('appointment_time')->nullable();
-            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed'])->nullable();
+            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed', 'pending_cancellation'])->nullable();
             $table->enum('payment_status', ['unpaid', 'paid' , 'failed', 'refunded'])->nullable();
             $table->text('note')->nullable();
+            $table->text('cancellation_reason')->nullable();
+            $table->text('rejection_reason')->nullable();
+            $table->string('status_before_cancellation')->nullable();
             $table->bigInteger('promotion_id')->nullable()->index('promotion_id');
             $table->decimal('discount_amount', 10)->nullable()->default(0);
             $table->decimal('total_amount', 10, 2)->nullable()->default(0);
