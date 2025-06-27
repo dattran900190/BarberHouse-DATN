@@ -27,87 +27,104 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ route('refunds.index') }}" method="GET" class="mb-3" id="searchForm">
-                <div class="row">
-                    <div class="col-md-3">
-                        <select name="status" onchange="this.form.submit()" class="form-control">
-                            <option value="">Tất cả</option>
-                            <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>Chờ duyệt</option>
-                            <option value="processing" {{ $status === 'processing' ? 'selected' : '' }}>Đang xử lý</option>
-                            <option value="refunded" {{ $status === 'refunded' ? 'selected' : '' }}>Đã hoàn tiền</option>
-                            <option value="rejected" {{ $status === 'rejected' ? 'selected' : '' }}>Từ chối</option>
-                        </select>
-                    </div>
-                    <div class="input-group col-md-9">
-                        <input type="text" name="search" id="searchInput" class="form-control"
-                            placeholder="Tìm kiếm theo tên người dùng hoặc mã đơn..."
-                            value="{{ request()->get('search') }}">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-                        </div>
+            {{-- Form tìm kiếm --}}
+            <form method="GET" action="{{ route('refunds.index') }}" class="mb-3">
+                <input type="hidden" name="status" value="{{ $activeTab }}">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm yêu cầu hoàn..."
+                        value="{{ request()->get('search') }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
                     </div>
                 </div>
             </form>
 
-            <table class="table table-bordered table-hover">
-                <thead class="thead-light text-center align-middle">
-                    <tr>
-                        <th>STT</th>
-                        <th>Người dùng</th>
-                        <th>Mã đơn hàng</th>
-                        <th>Số tiền hoàn</th>
-                        <th>Trạng thái</th>
-                        <th>Ngày tạo</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($refunds as $index => $refund)
-                        <tr>
-                            <td>{{ $index + 1 + ($refunds->currentPage() - 1) * $refunds->perPage() }}</td>
-                            <td>{{ $refund->user->name ?? 'N/A' }}</td>
-                            <td>{{ $refund->order->order_code ?? 'Không có đơn' }}</td>
-                            <td class="text-end">{{ number_format($refund->refund_amount, 0, ',', '.') }} đ</td>
-                            <td class="text-center">
-                                @php
-                                    $statusMap = [
-                                        'pending' => ['label' => 'Chờ duyệt', 'class' => 'warning'],
-                                        'processing' => ['label' => 'Đang xử lý', 'class' => 'primary'],
-                                        'refunded' => ['label' => 'Đã hoàn tiền', 'class' => 'success'],
-                                        'rejected' => ['label' => 'Từ chối', 'class' => 'danger'],
-                                    ];
-                                    $info = $statusMap[$refund->refund_status] ?? ['label' => ucfirst($refund->refund_status), 'class' => 'secondary'];
-                                @endphp
-                                <span class="badge bg-{{ $info['class'] }}">
-                                    {{ $info['label'] }}
-                                </span>
-                            </td>
-                            <td>{{ $refund->created_at->format('d/m/Y H:i') }}</td>
-                            <td class="text-center">
-                                <a href="{{ route('refunds.show', $refund->id) }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-eye"></i> Xem
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="text-center">Không có yêu cầu hoàn tiền nào.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+            {{-- Nếu không có kết quả tìm kiếm --}}
+            @if ($search && trim($search) && $refunds->where('refund_status', $activeTab)->isEmpty())
+                <div class="alert alert-warning">
+                    Không tìm thấy yêu cầu hoàn tiền nào khớp với "{{ $search }}".
+                </div>
+            @endif
+
+            {{-- Tabs --}}
+            <ul class="nav nav-tabs" id="refundTabs" role="tablist">
+                @php
+                    $tabs = [
+                        'pending' => 'Chờ duyệt',
+                        'processing' => 'Đang xử lý',
+                        'refunded' => 'Đã hoàn tiền',
+                        'rejected' => 'Từ chối',
+                    ];
+                @endphp
+                @foreach ($tabs as $key => $label)
+                    <li class="nav-item">
+                        <a class="nav-link {{ $activeTab == $key ? 'active' : '' }}" id="{{ $key }}-tab"
+                            href="{{ route('refunds.index', ['status' => $key, 'search' => request('search')]) }}"
+                            role="tab">
+                            {{ $label }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+
+            {{-- Nội dung từng tab --}}
+            <div class="tab-content" id="refundTabsContent">
+                @foreach ($tabs as $key => $label)
+                    <div class="tab-pane fade {{ $activeTab == $key ? 'show active' : '' }}" id="{{ $key }}"
+                        role="tabpanel">
+                        <table class="table table-bordered table-hover mt-3">
+                            <thead class="thead-light text-center align-middle">
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Người dùng</th>
+                                    <th>Mã đơn hàng</th>
+                                    <th>Số tiền hoàn</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php $filtered = $refunds->where('refund_status', $key); @endphp
+                                @forelse ($filtered as $index => $refund)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $refund->user->name ?? 'N/A' }}</td>
+                                        <td>{{ $refund->order->order_code ?? 'Không có đơn' }}</td>
+                                        <td class="text-end">{{ number_format($refund->refund_amount, 0, ',', '.') }} đ
+                                        </td>
+                                        <td class="text-center">
+                                            @php
+                                                $statusMap = [
+                                                    'pending' => ['label' => 'Chờ duyệt', 'class' => 'warning'],
+                                                    'processing' => ['label' => 'Đang xử lý', 'class' => 'primary'],
+                                                    'refunded' => ['label' => 'Đã hoàn tiền', 'class' => 'success'],
+                                                    'rejected' => ['label' => 'Từ chối', 'class' => 'danger'],
+                                                ];
+                                                $info = $statusMap[$refund->refund_status] ?? [
+                                                    'label' => ucfirst($refund->refund_status),
+                                                    'class' => 'secondary',
+                                                ];
+                                            @endphp
+                                            <span class="badge bg-{{ $info['class'] }}">{{ $info['label'] }}</span>
+                                        </td>
+                                        <td>{{ $refund->created_at->format('d/m/Y H:i') }}</td>
+                                        <td class="text-center">
+                                            <a href="{{ route('refunds.show', $refund->id) }}" class="btn btn-info btn-sm">
+                                                <i class="fas fa-eye"></i> Xem
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center">Không có yêu cầu nào.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
-
-    <div class="mt-3">
-        {{ $refunds->links() }}
-    </div>
-@endsection
-
-@section('css')
-    <style>
-        .table-hover tbody tr:hover {
-            background-color: #f5f5f5;
-        }
-    </style>
 @endsection
