@@ -26,7 +26,9 @@ class Appointment extends Model
         'cancellation_reason',
         'promotion_id',
         'discount_amount',
-        'total_amount'
+        'total_amount',
+        'rating',
+        'review_content'
     ];
 
     public function user()
@@ -54,8 +56,8 @@ class Appointment extends Model
         return $this->belongsTo(Promotion::class);
     }
     public function checkin()
-{
-    return $this->hasOne(Checkin::class);
-}
+    {
+        return $this->hasOne(Checkin::class);
+    }
 
 }

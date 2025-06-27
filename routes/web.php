@@ -1,10 +1,7 @@
 <?php
 
-use App\Http\Controllers\RefundRequestController;
-use App\Http\Controllers\Client\WalletController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
@@ -19,9 +16,12 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
+use App\Http\Controllers\Client\WalletController;
+use App\Http\Controllers\RefundRequestController;
 use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\ProductCategoryController;
@@ -29,9 +29,9 @@ use App\Http\Controllers\Client\ClientPostController;
 use App\Http\Controllers\Client\ClientBranchController;
 use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\Client\ClientProductController;
+use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
-use App\Http\Controllers\Client\OrderController as ClientOrderController;
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -69,6 +69,8 @@ Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai
 Route::get('/lich-su-dat-lich', [ClientAppointmentController::class, 'appointmentHistory'])->name('client.appointmentHistory');
 Route::get('/lich-su-dat-lich/{id}', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
 Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
+Route::post('/danh-gia/{appointment}', [ClientAppointmentController::class, 'submitReview'])->name('client.appointments.review');
+Route::get('/lich-hen-hoan-thanh', [ClientAppointmentController::class, 'completed'])->name('client.appointments.completed');
 
 
 
@@ -128,7 +130,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
   Route::resource('orders', OrderController::class)->names('admin.orders');
  Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
 
-   
+
 
     // ==== Lịch sử điểm ====
     Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');

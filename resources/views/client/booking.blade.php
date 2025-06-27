@@ -25,6 +25,19 @@
 @endsection
 
 @section('content')
+    {{-- Thông báo thành công / lỗi --}}
+    {{-- @if (session('success'))
+        <div class="alert alert-success mt-2">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger mt-2">
+            {{ session('error') }}
+        </div>
+    @endif --}}
+
     <main class="container">
         <h2 style="text-align: center; font-family: 'Segoe UI', sans-serif">
             Đặt Lịch Cắt Tóc
@@ -175,21 +188,22 @@
 
 
 
-           <input type="text" name="voucher_code" class="form-control" list="voucherSuggestions" placeholder="Nhập hoặc chọn mã giảm giá">
-<datalist id="voucherSuggestions">
-    @foreach ($vouchers as $voucher)
-        <option value="{{ $voucher->promotion->code }}">
-            {{ $voucher->promotion->code }} - 
-            {{ $voucher->promotion->discount_value }}
-        </option>
-    @endforeach
-    @foreach ($publicPromotions as $promotion)
-        <option value="{{ $promotion->code }}">
-            {{ $promotion->code }} - 
-            {{ $promotion->discount_value }}
-        </option>
-    @endforeach
-</datalist>
+            <input type="text" name="voucher_code" class="form-control" list="voucherSuggestions"
+                placeholder="Nhập hoặc chọn mã giảm giá">
+            <datalist id="voucherSuggestions">
+                @foreach ($vouchers as $voucher)
+                    <option value="{{ $voucher->promotion->code }}">
+                        {{ $voucher->promotion->code }} -
+                        {{ $voucher->promotion->discount_value }}
+                    </option>
+                @endforeach
+                @foreach ($publicPromotions as $promotion)
+                    <option value="{{ $promotion->code }}">
+                        {{ $promotion->code }} -
+                        {{ $promotion->discount_value }}
+                    </option>
+                @endforeach
+            </datalist>
 
 
             <div class="form-group mb-3">
@@ -200,7 +214,7 @@
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
             </div>
-            
+
             <div class="form-group mb-3">
                 <p>Tổng tiền: <strong id="totalPrice">0 vnđ</strong></p>
                 <p>Thời lượng dự kiến: <strong id="totalDuration">0 Phút</strong></p>

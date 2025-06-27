@@ -94,14 +94,6 @@ class AppointmentController extends Controller
         return view('client.appointmentHistory', compact('appointments'));
     }
 
-    public function detailAppointmentHistory($id)
-    {
-        $appointment = Appointment::where('user_id', Auth::id())
-            ->with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name'])
-            ->findOrFail($id);
-
-        return view('client.detailAppointmentHistory', compact('appointment'));
-    }
 
     public function cancel(Request $request, Appointment $appointment)
     {
@@ -387,4 +379,42 @@ class AppointmentController extends Controller
 
         return response()->json(['message' => 'Lịch hẹn đã được xác nhận']);
     }
+    public function submitReview(Request $request, Appointment $appointment)
+    {
+        if ($appointment->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'Bạn không có quyền đánh giá lịch hẹn này.');
+        }
+
+        if ($appointment->status !== 'completed' || $appointment->rating) {
+            return redirect()->back()->with('error', 'Lịch hẹn không hợp lệ để đánh giá.');
+        }
+
+        $validated = $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'review_content' => 'nullable|string|max:1000',
+        ]);
+
+        $appointment->update([
+            'rating' => $validated['rating'],
+            'review_content' => $validated['review_content'] ?? '', // đảm bảo không bị null
+        ]);
+
+        return redirect()->route('client.detailAppointmentHistory', $appointment->id)->with('success', 'Cảm ơn bạn đã đánh giá!');
+    }
+    public function detailAppointmentHistory($id)
+    {
+        $appointment = Appointment::where('user_id', Auth::id())
+            ->with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name'])
+            ->findOrFail($id);
+
+
+        return view('client.detailAppointmentHistory', compact('appointment'));
+    }
+
+    public function completed(Request $request)
+    {
+        return $this->appointmentHistory($request->merge(['status' => 'completed']));
+    }
+
+
 }

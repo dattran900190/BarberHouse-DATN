@@ -55,6 +55,36 @@
                         </div>
                     </div>
                 </div>
+                @if ($appointment->status === 'completed')
+                    <div class="card mt-4 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Đánh giá của bạn</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (!is_null($appointment->rating))
+                                <div class="mb-2">
+                                    <strong>Số sao:</strong>
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= $appointment->rating)
+                                            <i class="fa fa-star text-warning"></i>
+                                        @else
+                                            <i class="fa fa-star text-secondary"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <div>
+                                    <strong>Nhận xét:</strong>
+                                    <p>{{ $appointment->review_content ?? 'Không có nhận xét.' }}</p>
+                                </div>
+                            @else
+                                <p class="text-muted">Bạn chưa đánh giá lịch hẹn này.</p>
+                            @endif
+                        </div>
+
+                    </div>
+                @endif
+
+
                 <div class="card-footer d-flex justify-content-between align-items-center border-0">
                     <h5 class="fw-bold">Tổng tiền: {{ number_format($appointment->total_amount) }}đ</h5>
                     <div>
