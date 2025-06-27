@@ -5,6 +5,15 @@
 @endsection
 
 @section('content')
+@php
+        $statusMap = [
+            'pending' => 'Chờ xử lý',
+            'processing' => 'Đang xử lý',
+            'shipping' => 'Đang giao hàng',
+            'completed' => 'Hoàn thành',
+            'cancelled' => 'Đã hủy',
+        ];
+    @endphp
     <main style="padding: 10%">
         <div class="container mt-5">
             <div class="card order-detail shadow-sm">
@@ -13,8 +22,9 @@
                     <div>
                         <strong>Trạng thái:</strong>
                         <span class="status-label status-{{ $order->status }}">
-                            {{ ucfirst($order->status) }}
+                            {{ $statusMap[$order->status] ?? ucfirst($order->status) }}
                         </span>
+
                     </div>
 
                 </div>
@@ -31,6 +41,7 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
+                                <th>Hình ảnh</th>
                                 <th>Tên sản phẩm</th>
                                 <th>Số lượng</th>
                                 <th>Giá</th>
@@ -38,15 +49,29 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($items as $item)
+                            @php
+                                $statusMap = [
+                                    'pending' => 'Chờ xử lý',
+                                    'processing' => 'Đang xử lý',
+                                    'shipping' => 'Đang giao hàng',
+                                    'completed' => 'Hoàn thành',
+                                    'cancelled' => 'Đã hủy',
+                                ];
+                            @endphp
+                            @foreach ($order->items as $item)
+                                @php
+                                    $variant = $item->productVariant;
+                                    $product = $variant->product ?? null;
+                                @endphp
                                 <tr>
-                                    <td>{{ $item->name }}</td>
+                                    <td><img src="{{ $product?->image ? asset('storage/' . $product->image) : asset('images/no-image.png') }}"
+                                            alt="Hình ảnh" width="80"></td>
+                                    <td>{{ $product?->name ?? 'Sản phẩm không tồn tại' }}</td>
                                     <td>{{ $item->quantity }}</td>
-                                    <td>{{ number_format($item->price, 0, ',', '.') }} VNĐ</td>
-                                    <td>{{ number_format($item->price * $item->quantity, 0, ',', '.') }} VNĐ</td>
+                                    <td>{{ number_format($item->price_at_time, 0, ',', '.') }} VNĐ</td>
+                                    <td>{{ number_format($item->total_price, 0, ',', '.') }} VNĐ</td>
                                 </tr>
                             @endforeach
-                        </tbody>
 
                     </table>
                     <h5 class="fw-bold mt-4">Thông tin giao hàng</h5>
@@ -67,7 +92,13 @@
                     <h5 class="fw-bold">Tổng tiền: {{ number_format($order->total_money, 0, ',', '.') }} VNĐ</h5>
 
                     <div>
-                        <a href="#" class="btn btn-outline-danger btn-sm me-2">Hủy đơn hàng</a>
+                        <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
+                            style="display:inline-block;"
+                            onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Hủy đơn hàng</button>
+                        </form>
+
                         <a href="{{ route('client.orderHistory') }}" class="btn btn-outline-secondary btn-sm">Quay lại</a>
                     </div>
                 </div>

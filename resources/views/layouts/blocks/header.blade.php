@@ -20,7 +20,7 @@
             <ul class="navbar-nav d-flex flex-row flex-nowrap ms-4">
                 <li class="nav-item mx-2"><a class="nav-link" href="{{ route('dat-lich') }}">Đặt lịch</a></li>
                 <li class="nav-item mx-2"><a class="nav-link" href="{{ url('chi-nhanh') }}">Chi nhánh</a></li>
-                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('cart') }}"><i
+                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('gio-hang') }}"><i
                             class="fa-solid fa-cart-shopping"></i></a></li>
 
                 {{-- ICON ADMIN CHO BRANCH ADMIN --}}

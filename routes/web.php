@@ -32,6 +32,7 @@ use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
+use App\Models\Cart;
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -44,19 +45,21 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Giỏ hàng
-Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
-Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
-Route::put('/cart/update/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
-Route::delete('/cart/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
-Route::put('/cart/update-variant/{cartItem}', [CartController::class, 'updateVariant'])->name('cart.update.variant');
+Route::get('/gio-hang', [CartController::class, 'show'])->name('cart.show');
+Route::post('/gio-hang/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::put('/gio-hang/update/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
+Route::delete('/gio-hang/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
+Route::put('/gio-hang/update-variant/{cartItem}', [CartController::class, 'updateVariant'])->name('cart.update.variant');
 
 //checkout
 
-Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
-Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('cart.checkout.process');
-Route::get('/success', function () {
+Route::get('/thanh-toan', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::post('/thanh-toan/process', [CartController::class, 'processCheckout'])->name('cart.checkout.process');
+Route::get('/dat-hang-thanh-cong', function () {
     return view('client.order-success');
 })->name('order.success');
+Route::post('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('client.orders.cancel');
+
 
 
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
@@ -125,10 +128,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('refunds', RefundRequestController::class);
 
     // ==== Đơn hàng ====
-  Route::resource('orders', OrderController::class)->names('admin.orders');
- Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
+    Route::resource('orders', OrderController::class)->names('admin.orders');
+    Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
 
-   
+
 
     // ==== Lịch sử điểm ====
     Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');

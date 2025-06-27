@@ -32,10 +32,5 @@ class AppServiceProvider extends ServiceProvider
         Appointment::observe(AppointmentObserver::class);
         View::share('globalCategories', ProductCategory::all());
 
-        // số lượng lịch chưa xác nhận
-        // View::composer('vendor.adminlte.partials.sidebar.menu', function ($view) {
-        //     $pendingCount = Appointment::where('status', 'pending')->count();
-        //     $view->with('pendingCount', $pendingCount);
-        // });
     }
 }
