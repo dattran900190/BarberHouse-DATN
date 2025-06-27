@@ -59,7 +59,7 @@
             <div class="small-box bg-warning">
                 <div class="inner">
                     <h3>32</h3>
-                    <p>Lịch đặt hôm nay</p>
+                    <p>Lịch đặt hôm nay</p><span id="pending-appointment-count" class="badge badge-danger" style="display: none;">0</span>
                 </div>
                 <div class="icon">
                     <i class="fas fa-calendar-check"></i>
@@ -130,38 +130,7 @@
             </table>
         </div>
     </div>
-    <!-- Trong dashboard.blade.php, thêm vào -->
-    {{-- <div id="notification" class="alert alert-success" style="display: none;">
-        <span id="notification-message"></span>
-    </div> --}}
-    {{-- <script>
-        Echo.channel('appointments')
-            .listen('NewAppointment', (event) => {
-                alert(event.message); // Hiển thị thông báo đơn giản
-                // Bạn có thể thay bằng cách cập nhật giao diện, ví dụ: thêm vào danh sách lịch hẹn
-            });
-    </script> --}}
 
-    <!-- Container cho Bootstrap Toast -->
-    {{-- <div aria-live="polite" aria-atomic="true" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
-        <div id="appointmentToast" class="toast" role="alert" data-bs-delay="5000">
-            <div class="toast-header bg-success text-white">
-                <strong class="me-auto">Thông báo lịch hẹn</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="toastMessage"></div>
-        </div>
-    </div>
-
-    <!-- Existing content của bạn -->
-    <div class="row">
-        <!-- Box 1, Box 2, v.v. -->
-    </div> --}}
-
-<a href="{{ url('admin/appointments') }}">
-    Quản lý đặt lịch 
-    <span id="pending-appointment-count" class="badge badge-danger" style="display: none;">0</span>
-</a>
 @stop
 
 @vite('resources/js/app.js')
@@ -203,56 +172,54 @@
         // }
 
         // function showToast(event) {
-        // try {
-        //     const toastContainer = document.getElementById('toastContainer');
-        //     const toastTemplate = document.getElementById('appointmentToastTemplate');
-        //     if (!toastContainer || !toastTemplate) {
-        //         console.error('Toast container or template not found');
-        //         return;
+        //     try {
+        //         const toastContainer = document.getElementById('toastContainer');
+        //         const toastTemplate = document.getElementById('appointmentToastTemplate');
+        //         if (!toastContainer || !toastTemplate) {
+        //             console.error('Toast container or template not found');
+        //             return;
+        //         }
+        //         const newToast = toastTemplate.cloneNode(true);
+        //         newToast.id = 'appointmentToast-' + Date.now();
+        //         newToast.style.display = 'block';
+
+        //         const toastMessage = newToast.querySelector('#toastMessage');
+        //         const toastDetailLink = newToast.querySelector('#toastDetailLink');
+        //         if (!toastMessage || !toastDetailLink) {
+        //             console.error('Toast elements not found');
+        //             return;
+        //         }
+        //         toastMessage.textContent = event?.message || 'Không có thông tin chi tiết';
+        //         toastDetailLink.href = `/admin/appointments/${event?.appointment_id || ''}`;
+
+        //         toastContainer.appendChild(newToast);
+
+        //         const toast = new bootstrap.Toast(newToast, {
+        //             delay: 180000 // 3 phút
+        //         });
+        //         toast.show();
+        //         console.log('Toast shown successfully');
+
+        //         newToast.addEventListener('hidden.bs.toast', () => {
+        //             newToast.remove();
+        //         });
+        //     } catch (error) {
+        //         console.error('Error showing toast:', error);
         //     }
-        //     const newToast = toastTemplate.cloneNode(true);
-        //     newToast.id = 'appointmentToast-' + Date.now();
-        //     newToast.style.display = 'block';
-
-        //     const toastMessage = newToast.querySelector('#toastMessage');
-        //     const toastDetailLink = newToast.querySelector('#toastDetailLink');
-        //     if (!toastMessage || !toastDetailLink) {
-        //         console.error('Toast elements not found');
-        //         return;
-        //     }
-        //     toastMessage.textContent = event?.message || 'Không có thông tin chi tiết';
-        //     toastDetailLink.href = `/admin/appointments/${event?.appointment_id || ''}`;
-
-        //     toastContainer.appendChild(newToast);
-
-        //     const toast = new bootstrap.Toast(newToast, {
-        //         delay: 180000 // 3 phút
-        //     });
-        //     toast.show();
-        //     console.log('Toast shown successfully');
-
-        //     newToast.addEventListener('hidden.bs.toast', () => {
-        //         newToast.remove();
-        //     });
-        // } catch (error) {
-        //     console.error('Error showing toast:', error);
-        // }
         // }
 
         function initEchoListener() {
             if (typeof Echo !== 'undefined' && Echo !== null) {
-                console.log('Echo is defined:', Echo);
+                // console.log('Echo is defined:', Echo);
                 const channel = Echo.channel('appointments');
                 channel.subscribed(() => {
-                        console.log('Subscribed to appointments channel');
+                        // console.log('Subscribed to appointments channel');
                     })
                     .listen('NewAppointment', (event) => {
-                        console.log('New appointment received (NewAppointment):', event);
                         showToast(event);
                         updatePendingCount(1); // Tăng badge khi có lịch mới
                     })
                     .listen('.NewAppointment', (event) => {
-                        console.log('New appointment received (.NewAppointment):', event);
                         showToast(event);
                         updatePendingCount(1); // Tăng badge khi có lịch mới
                     })
@@ -261,12 +228,10 @@
                         updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
                     })
                     .listen('App\\Events\\NewAppointment', (event) => {
-                        console.log('New appointment received (App\\Events\\NewAppointment):', event);
                         showToast(event);
                         updatePendingCount(1); // Tăng badge khi có lịch mới
                     })
                     .listen('.App\\Events\\AppointmentConfirmed', (event) => {
-                        console.log('New appointment received (.App\\Events\\AppointmentConfirmed):', event);
                         updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
                     })
                     .error((error) => {
@@ -286,7 +251,6 @@
                 currentCount = Math.max(0, currentCount + change); // Đảm bảo số không âm
                 countElement.textContent = currentCount;
                 countElement.style.display = currentCount > 0 ? 'inline' : 'none'; // Hiển thị/ẩn badge
-                console.log('Updated pending count to:', currentCount); // Log để kiểm tra
             } else {
                 console.error('Pending appointment count element not found');
             }
@@ -296,20 +260,14 @@
             try {
                 const toastContainer = document.getElementById('toastContainer');
                 const toastTemplate = document.getElementById('appointmentToastTemplate');
-                if (!toastContainer || !toastTemplate) {
-                    console.error('Toast container or template not found');
-                    return;
-                }
+               
                 const newToast = toastTemplate.cloneNode(true);
                 newToast.id = 'appointmentToast-' + Date.now();
                 newToast.style.display = 'block';
 
                 const toastMessage = newToast.querySelector('#toastMessage');
                 const toastDetailLink = newToast.querySelector('#toastDetailLink');
-                if (!toastMessage || !toastDetailLink) {
-                    console.error('Toast elements not found');
-                    return;
-                }
+                
                 toastMessage.textContent = event?.message || 'Không có thông tin chi tiết';
                 toastDetailLink.href = `/admin/appointments/${event?.appointment_id || ''}`;
 
@@ -319,14 +277,12 @@
                     delay: 180000 // 3 phút
                 });
                 toast.show();
-                console.log('Toast shown successfully');
+                // console.log('Toast shown successfully');
 
                 newToast.addEventListener('hidden.bs.toast', () => {
                     newToast.remove();
                 });
 
-                // Cập nhật số lượng lịch hẹn chưa xác nhận
-                updatePendingCount(1); // Tăng 1 khi có lịch mới
             } catch (error) {
                 console.error('Error showing toast:', error);
             }
