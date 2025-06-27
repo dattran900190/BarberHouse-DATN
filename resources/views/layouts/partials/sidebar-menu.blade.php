@@ -1,4 +1,4 @@
- <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     @foreach (config('adminlte.menu') as $menu)
         @if (is_array($menu) && isset($menu['text']) && !isset($menu['type']))
             <li class="nav-item">
@@ -7,9 +7,9 @@
                     <p>
                         {{ $menu['text'] }}
                         @if ($menu['text'] === 'Quản lý đặt lịch' && isset($pendingCount) && $pendingCount > 0)
-                            <span class="badge badge-danger pending-appointment-count">{{ $pendingCount }}</span>
+                            <span id="pending-appointment-count" class="badge badge-danger">{{ $pendingCount }}</span>
                         @elseif ($menu['text'] === 'Quản lý đặt lịch')
-                            <span class="badge badge-danger pending-appointment-count" style="display: none;">0</span>
+                            <span id="pending-appointment-count" class="badge badge-danger" style="display: none;">0</span>
                         @endif
                     </p>
                 </a>

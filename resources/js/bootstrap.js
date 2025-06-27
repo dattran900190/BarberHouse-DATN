@@ -13,6 +13,6 @@ window.Echo = new Echo({
     forceTLS: true
 });
 
-console.log('Echo initialized:', window.Echo);
-console.log('Pusher key:', import.meta.env.VITE_PUSHER_APP_KEY);
-console.log('Pusher cluster:', import.meta.env.VITE_PUSHER_APP_CLUSTER);
+// console.log('Echo initialized:', window.Echo);
+// console.log('Pusher key:', import.meta.env.VITE_PUSHER_APP_KEY);
+// console.log('Pusher cluster:', import.meta.env.VITE_PUSHER_APP_CLUSTER);
