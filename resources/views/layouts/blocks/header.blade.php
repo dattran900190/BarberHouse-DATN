@@ -46,7 +46,7 @@
                                 <h6 class="dropdown-header">{{ Auth::user()->name }}</h6>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.profile') }}">Quản lý tài khoản</a></li>
-                            <li><a class="dropdown-item" href="{{ route('client.wallet') }}">Ví tài khoản</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.detailWallet') }}">Hoàn tiền</a></li>
                             <li><a class="dropdown-item" href="{{ route('client.redeem') }}">Đổi mã giảm giá</a></li>
                             <li><a class="dropdown-item" href="{{ route('client.orderHistory') }}">Lịch sử đặt hàng</a></li>
                             <li><a class="dropdown-item" href="{{ route('client.appointmentHistory') }}">Lịch sử đặt lịch</a></li>

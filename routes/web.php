@@ -102,9 +102,9 @@ Route::get('/chi-tiet-don-hang/{order}', [ClientOrderController::class, 'show'])
 
 
 // == ví tài khoản ==
-Route::get('refunds', [WalletController::class, 'index'])->name('client.detailWallet');
-Route::get('refunds/create', [WalletController::class, 'create'])->name('client.wallet');
-Route::post('refunds', [WalletController::class, 'store'])->name('client.wallet.store');
+Route::get('hoan-tien', [WalletController::class, 'index'])->name('client.detailWallet');
+Route::get('hoan-tien/create', [WalletController::class, 'create'])->name('client.wallet');
+Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.wallet.store');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
