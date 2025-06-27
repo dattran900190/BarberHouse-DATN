@@ -20,7 +20,7 @@
             <ul class="navbar-nav d-flex flex-row flex-nowrap ms-4">
                 <li class="nav-item mx-2"><a class="nav-link" href="{{ route('dat-lich') }}">Đặt lịch</a></li>
                 <li class="nav-item mx-2"><a class="nav-link" href="{{ url('chi-nhanh') }}">Chi nhánh</a></li>
-                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('cart') }}"><i
+                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('gio-hang') }}"><i
                             class="fa-solid fa-cart-shopping"></i></a></li>
 
                 {{-- ICON ADMIN CHO BRANCH ADMIN --}}
@@ -46,7 +46,7 @@
                                 <h6 class="dropdown-header">{{ Auth::user()->name }}</h6>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.profile') }}">Quản lý tài khoản</a></li>
-                            <li><a class="dropdown-item" href="{{ route('client.wallet') }}">Ví tài khoản</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.detailWallet') }}">Hoàn tiền</a></li>
                             <li><a class="dropdown-item" href="{{ route('client.redeem') }}">Đổi mã giảm giá</a></li>
                             <li><a class="dropdown-item" href="{{ route('client.orderHistory') }}">Lịch sử đặt hàng</a></li>
                             <li><a class="dropdown-item" href="{{ route('client.appointmentHistory') }}">Lịch sử đặt lịch</a></li>

@@ -10,51 +10,53 @@ use Illuminate\Http\Request;
 class OrderController extends Controller
 {
     // Hiển thị danh sách đơn hàng với bộ lọc tìm kiếm và phân trang
-public function index(Request $request)
-{
-    $search = $request->input('search');
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
 
-    $pendingOrders = Order::query()
-        ->when($search, function ($query, $search) {
-            return $query->where(function ($q) use ($search) {
-                $q->where('order_code', 'like', '%' . $search . '%')
-                    ->orWhere('name', 'like', '%' . $search . '%');
-            });
-        })
-        ->where('status', 'pending')
-        ->latest()
-        ->get();
+        $pendingOrders = Order::query()
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('order_code', 'like', '%' . $search . '%')
+                        ->orWhere('name', 'like', '%' . $search . '%');
+                });
+            })
+            ->where('status', 'pending')
+            ->latest()
+            ->get();
 
-    $confirmedOrders = Order::query()
-        ->when($search, function ($query, $search) {
-            return $query->where(function ($q) use ($search) {
-                $q->where('order_code', 'like', '%' . $search . '%')
-                    ->orWhere('name', 'like', '%' . $search . '%');
-            });
-        })
-        ->where('status', '!=', 'pending')
-        ->latest()
-        ->get();
+        $confirmedOrders = Order::query()
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('order_code', 'like', '%' . $search . '%')
+                        ->orWhere('name', 'like', '%' . $search . '%');
+                });
+            })
+            ->where('status', '!=', 'pending')
+            ->latest()
+            ->get();
 
-    return view('admin.orders.index', compact('pendingOrders', 'confirmedOrders', 'search'));
-}
-public function confirm(Order $order)
-{
-    if ($order->status === 'pending') {
-        $order->status = 'processing';
-        $order->save();
+        return view('admin.orders.index', compact('pendingOrders', 'confirmedOrders', 'search'));
+    }
+    public function confirm(Order $order)
+    {
+        if ($order->status === 'pending') {
+            $order->status = 'processing';
+            $order->save();
 
-        return back()->with('success', 'Đã xác nhận đơn hàng.');
+            return back()->with('success', 'Đã xác nhận đơn hàng.');
+        }
+
+        return back()->with('error', 'Đơn hàng không thể xác nhận.');
     }
 
-    return back()->with('error', 'Đơn hàng không thể xác nhận.');
-}
 
-
-    // Hiển thị chi tiết đơn hàng, load quan hệ orderItems và productVariant
+    // Hiển thị chi tiết đơn hàng, load quan hệ items và productVariant
     public function show(Order $order)
     {
-        $order->load('orderItems.productVariant');
+        $order->load('items.productVariant.product');
+
+
 
         return view('admin.orders.show', compact('order'))->with('title', 'Chi tiết đơn hàng');
     }
@@ -116,10 +118,9 @@ public function confirm(Order $order)
 
     public function destroy(Order $order)
     {
-        // Cập nhật trạng thái thành cancelled
         $order->status = 'cancelled';
         $order->save();
 
-        return redirect()->route('orders.index')->with('success', 'Đơn hàng đã được hủy.');
+        return redirect()->route('admin.orders.index')->with('success', 'Đơn hàng đã được hủy.');
     }
 }

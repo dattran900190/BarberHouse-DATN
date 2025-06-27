@@ -14,32 +14,39 @@ class RefundRequestController extends Controller
 {
     public function index(Request $request)
     {
-        $status = $request->query('status'); // status có thể null (hiện tất cả)
-        $search = $request->query('search');
+        $status = $request->query('status'); // tab trạng thái
+        $search = $request->query('search'); // từ khóa tìm kiếm
 
-        $refunds = RefundRequest::with(['user', 'order'])
-            ->when($status, function ($query, $status) {
-                $query->where('refund_status', $status);
-            })
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->whereHas('user', function ($q2) use ($search) {
-                        $q2->where('name', 'like', "%{$search}%");
-                    })
-                        ->orWhereHas('order', function ($q3) use ($search) {
-                            $q3->where('order_code', 'like', "%{$search}%"); // thay `code` nếu bạn tìm theo mã đơn hàng
-                        });
+        $query = RefundRequest::with(['user', 'order']);
+
+        if ($status) {
+            $query->where('refund_status', $status);
+        }
+
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('user', function ($q2) use ($search) {
+                    $q2->where('name', 'like', "%{$search}%");
+                })->orWhereHas('order', function ($q3) use ($search) {
+                    $q3->where('order_code', 'like', "%{$search}%");
                 });
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->appends([
-                'status' => $status,
-                'search' => $search,
-            ]);
+            });
+        }
 
-        return view('admin.refunds.index', compact('refunds', 'status', 'search'));
+        $refunds = $query->orderBy('created_at', 'desc')
+            ->get(); // dùng get() thay vì paginate nếu cần xử lý nhiều tab
+
+        $activeTab = $status ?? 'pending';
+
+        return view('admin.refunds.index', [
+            'refunds' => $refunds,
+            'search' => $search,
+            'activeTab' => $activeTab,
+            'status' => $status,
+        ]);
     }
+
 
     public function show(RefundRequest $refund)
     {
