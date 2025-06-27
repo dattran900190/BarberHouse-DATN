@@ -24,6 +24,7 @@ return new class extends Migration
             $table->decimal('total_money', 10, 2); // Tổng tiền
             $table->enum('status', ['pending', 'processing','shipping', 'completed', 'cancelled'])->nullable(); // Trạng thái đơn
             $table->enum('payment_method', ['cash', 'momo', 'vnpay', 'card'])->nullable(); // Phương thức thanh toán
+            $table->enum('payment_status', ['unpaid', 'paid', 'failed', 'refunded'])->default('unpaid');
             $table->text('note')->nullable(); // Ghi chú
             $table->timestamp('created_at')->nullable()->useCurrent(); // Ngày tạo
             $table->timestamp('updated_at')->nullable()->useCurrent()->useCurrentOnUpdate(); // Ngày cập nhật
