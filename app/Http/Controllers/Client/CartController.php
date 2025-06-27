@@ -256,6 +256,7 @@ class CartController extends Controller
         $order->address = $request->address;
         $order->note = $request->note;
         $order->payment_method = $paymentMethod;
+        $order->shipping_method = $request->delivery_method;
         $order->shipping_fee = $shippingFee;
         $order->total_money = $expectedTotal;
         $order->status = 'pending';

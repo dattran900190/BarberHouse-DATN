@@ -25,6 +25,8 @@
         $paymentMethodMap = [
             'cash' => 'Thanh toán khi nhận hàng',
             'vnpay' => 'Thanh toán qua VNPAY',
+            'momo' => 'Thanh toán qua Momo',
+            'card' => 'Thanh toán qua thẻ tín dụng',
         ];
 
         $statusMap = [
@@ -34,7 +36,16 @@
             'completed' => 'Hoàn thành',
             'cancelled' => 'Đã hủy',
         ];
-
+        $paymentMap = [
+            'unpaid' => 'Chưa thanh toán',
+            'paid' => 'Đã thanh toán',
+            'failed' => 'Thanh toán thất bại',
+            'refunded' => 'Đã hoàn tiền',
+        ];
+        $shippingMap = [
+            'standard' => 'Giao hàng tiêu chuẩn',
+            'express' => 'Giao hàng nhanh',
+    ];
         // Thứ tự trạng thái (cancelled không tính vào thứ tự vì nó có thể chọn bất cứ lúc nào)
         $statusOrder = ['pending', 'processing', 'shipping', 'completed'];
 
@@ -62,6 +73,11 @@
                 <p><strong>Phương thức thanh toán:</strong>
                     {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</p>
                 <p><strong>Ngày đặt hàng:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
+                <p><strong>Phương thức giao hàng:</strong>
+                    {{ $shippingMap[$order->shipping_method] ?? ucfirst($order->shipping_method) }}</p>
+                <p><strong>Trạng thái thanh toán:</strong>
+                    {{ $paymentMap[$order->payment_status] ?? ucfirst($order->payment_status) }}</p>
+
                 <p><strong>Ghi chú:</strong> {{ $order->note ?: '-' }}</p>
                 <p>
                     <strong>Trạng thái:</strong>
