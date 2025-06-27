@@ -130,7 +130,7 @@
         }
 
         .status-label::before {
-            content: '●';
+            content: none;
             margin-right: 5px;
         }
 
