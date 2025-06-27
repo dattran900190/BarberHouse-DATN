@@ -74,12 +74,11 @@ class RefundRequestController extends Controller
                 return back()->withErrors(['error' => 'Không thể quay lại trạng thái trước đó.']);
             }
 
-            // Nếu là hoàn tiền, kiểm tra đơn hàng & thanh toán
+            // Nếu là hoàn tiền, kiểm tra đơn hàng & trạng thái thanh toán
             if ($newStatus === 'refunded') {
                 $order = Order::findOrFail($refund->order_id);
-                $payment = Payment::where('order_id', $refund->order_id)->firstOrFail();
 
-                if ($payment->status !== 'paid') {
+                if ($order->payment_status !== 'paid') {
                     return back()->withErrors(['error' => 'Không thể hoàn tiền cho đơn hàng chưa thanh toán.']);
                 }
 
@@ -90,6 +89,7 @@ class RefundRequestController extends Controller
                     'refunded_at' => now(),
                 ]);
             } else {
+                // Cập nhật trạng thái khác như processing hoặc rejected
                 $refund->update([
                     'refund_status' => $newStatus,
                 ]);
