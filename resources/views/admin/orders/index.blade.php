@@ -17,6 +17,13 @@
         </div>
     @endif
 
+    @php
+        $paymentMethodMap = [
+            'cash' => 'Thanh toán khi nhận hàng',
+            'vnpay' => 'Thanh toán qua VNPAY',
+        ];
+
+    @endphp
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách Đơn hàng</h3>
@@ -46,7 +53,7 @@
                         <th>Tổng tiền</th>
                         <th>Phương thức</th>
                         <th>Ghi chú</th>
-                        <th>Ngày tạo</th>
+                        <th>Ngày đặt hàng</th>
                         <th>Trạng thái</th>
                         <th class="text-center">Hành động</th>
                     </tr>
@@ -60,24 +67,29 @@
                             <td>{{ $order->phone }}</td>
                             <td>{{ Str::limit($order->address, 30) }}</td>
                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                            <td class="text-uppercase">{{ $order->payment_method ?? '-' }}</td>
+                            <td class="text-uppercase"> {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
                             <td>{{ Str::limit($order->note, 30) }}</td>
                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                             <td><span class="badge bg-warning">Chờ xác nhận</span></td>
                             <td class="text-center">
-                                <form action="{{ route('admin.orders.confirm', $order->id) }}" method="POST" style="display:inline-block;">
+                                <form action="{{ route('admin.orders.confirm', $order->id) }}" method="POST"
+                                    style="display:inline-block;">
                                     @csrf
                                     <button type="submit" class="btn btn-success btn-sm">Xác nhận</button>
                                 </form>
                                 <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-info btn-sm">Xem</a>
-                                <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
+                                <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST"
+                                    style="display:inline-block;"
+                                    onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-danger btn-sm">Hủy</button>
                                 </form>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="11" class="text-center text-muted">Không có đơn hàng chờ xác nhận.</td></tr>
+                        <tr>
+                            <td colspan="11" class="text-center text-muted">Không có đơn hàng chờ xác nhận.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -95,7 +107,7 @@
                         <th>Tổng tiền</th>
                         <th>Phương thức</th>
                         <th>Ghi chú</th>
-                        <th>Ngày tạo</th>
+                        <th>Ngày đặt hàng</th>
                         <th>Trạng thái</th>
                         <th class="text-center">Hành động</th>
                     </tr>
@@ -109,7 +121,7 @@
                             <td>{{ $order->phone }}</td>
                             <td>{{ Str::limit($order->address, 30) }}</td>
                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                            <td class="text-uppercase">{{ $order->payment_method ?? '-' }}</td>
+                            <td class="text-uppercase"> {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
                             <td>{{ Str::limit($order->note, 30) }}</td>
                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                             <td>
@@ -136,7 +148,9 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="11" class="text-center text-muted">Không có đơn hàng đã xử lý.</td></tr>
+                        <tr>
+                            <td colspan="11" class="text-center text-muted">Không có đơn hàng đã xử lý.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>

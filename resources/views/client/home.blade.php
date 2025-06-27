@@ -99,7 +99,7 @@
                     @endforeach
                 </div>
 
-                <button id="loadMore" class="btn-xem-them">Xem thêm</button>
+                <a href="{{ route('client.product')}}" style="text-decoration: none"><button id="loadMore" class="btn-xem-them">Xem thêm</button></a>
             </div>
         </section>
 

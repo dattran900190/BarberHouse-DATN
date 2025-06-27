@@ -4,7 +4,17 @@
     Lịch sử đặt hàng
 @endsection
 
+
 @section('content')
+    @php
+        $statusMap = [
+            'pending' => 'Chờ xử lý',
+            'processing' => 'Đang xử lý',
+            'shipping' => 'Đang giao hàng',
+            'completed' => 'Hoàn thành',
+            'cancelled' => 'Đã hủy',
+        ];
+    @endphp
     <main style="padding: 10%">
         <div class="container">
             <div class="card order-history mt-4 shadow-sm">
@@ -42,18 +52,20 @@
                                 </div>
                                 <div class="col-md-2 text-center">
                                     <span class="status-label status-{{ $order->status }}">
-                                        {{ ucfirst($order->status) }}
+                                        {{ $statusMap[$order->status] ?? ucfirst($order->status) }}
                                     </span>
+
                                 </div>
                                 <div class="col-md-3 text-center">
                                     <div class="d-flex justify-content-center">
                                         <a class="btn btn-outline-primary btn-sm me-1"
                                             href="{{ route('client.detailOrderHistory', $order->id) }}">Xem chi tiết</a>
                                         @if ($order->status === 'pending')
-                                            <form method="POST" action="">
+                                            <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
+                                                style="display:inline-block;"
+                                                onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
                                                 @csrf
-                                                @method('PATCH')
-                                                <button class="btn btn-outline-danger btn-sm" type="submit">Hủy đơn
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">Hủy đơn
                                                     hàng</button>
                                             </form>
                                         @endif
