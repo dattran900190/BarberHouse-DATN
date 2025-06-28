@@ -175,21 +175,27 @@
 
 
 
-           <input type="text" name="voucher_code" class="form-control" list="voucherSuggestions" placeholder="Nhập hoặc chọn mã giảm giá">
-<datalist id="voucherSuggestions">
+    <input type="hidden" id="service_price" value="{{ $service->price ?? 0 }}">
+<select name="voucher_id" id="voucher_id" class="form-control">
+    <option value="">Không sử dụng mã giảm giá</option>
     @foreach ($vouchers as $voucher)
-        <option value="{{ $voucher->promotion->code }}">
-            {{ $voucher->promotion->code }} - 
-            {{ $voucher->promotion->discount_value }}
+        <option value="{{ $voucher->id }}"
+            data-discount-type="{{ $voucher->promotion->discount_type }}"
+            data-discount-value="{{ $voucher->promotion->discount_value }}">
+            {{ $voucher->promotion->code }}
+            ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
         </option>
     @endforeach
     @foreach ($publicPromotions as $promotion)
-        <option value="{{ $promotion->code }}">
-            {{ $promotion->code }} - 
-            {{ $promotion->discount_value }}
+        <option value="public_{{ $promotion->id }}"
+            data-discount-type="{{ $promotion->discount_type }}"
+            data-discount-value="{{ $promotion->discount_value }}">
+            {{ $promotion->code }}
+            ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
         </option>
     @endforeach
-</datalist>
+</select>
+<p>Tổng tiền: <strong id="totalPrice">{{ number_format($service->price ?? 0) }} vnđ</strong></p>
 
 
             <div class="form-group mb-3">
@@ -203,6 +209,7 @@
             
             <div class="form-group mb-3">
                 <p>Tổng tiền: <strong id="totalPrice">0 vnđ</strong></p>
+                <span id="total_after_discount"></span>
                 <p>Thời lượng dự kiến: <strong id="totalDuration">0 Phút</strong></p>
             </div>
 
@@ -274,3 +281,57 @@
 @section('card-footer')
     {{-- {{ $sanPhams->links() }} --}}
 @endsection
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const serviceSelect = document.getElementById('service');
+    const voucherSelect = document.getElementById('voucher_id');
+    const priceOutput = document.querySelectorAll('#totalPrice');
+    const totalAfterDiscount = document.getElementById('total_after_discount');
+
+    function getServicePrice() {
+        const opt = serviceSelect.options[serviceSelect.selectedIndex];
+        // Nếu có data-price thì lấy, không thì lấy số trong text
+        let price = opt.dataset.price ? parseFloat(opt.dataset.price) : 0;
+        if (!price) {
+            // fallback: lấy số trong text
+            const match = opt.textContent.match(/(\d[\d\.]*)đ/);
+            if (match) price = parseInt(match[1].replace(/\./g, ''));
+        }
+        return price || 0;
+    }
+
+    function updateTotal() {
+        const price = getServicePrice();
+        let discount = 0;
+        let discountText = '';
+        const voucherOpt = voucherSelect.options[voucherSelect.selectedIndex];
+        const discountType = voucherOpt.getAttribute('data-discount-type');
+        const discountValue = parseFloat(voucherOpt.getAttribute('data-discount-value')) || 0;
+
+        if (voucherSelect.value && price > 0) {
+            if (discountType === 'fixed') {
+                discount = discountValue;
+                discountText = `- ${discount.toLocaleString('vi-VN')} vnđ`;
+            } else if (discountType === 'percent') {
+                discount = price * discountValue / 100;
+                discountText = `- ${discountValue}% (${discount.toLocaleString('vi-VN')} vnđ)`;
+            }
+        }
+
+        let total = price - discount;
+        if (total < 0) total = 0;
+
+        // Cập nhật tất cả chỗ hiển thị tổng tiền
+        priceOutput.forEach(el => el.textContent = total.toLocaleString('vi-VN') + ' vnđ');
+        totalAfterDiscount.innerHTML = discount > 0
+            ? `<span class="text-success">Đã giảm: ${discountText}</span>`
+            : '';
+    }
+
+    serviceSelect.addEventListener('change', updateTotal);
+    voucherSelect.addEventListener('change', updateTotal);
+
+    // Gọi khi load trang
+    updateTotal();
+});
+</script>
