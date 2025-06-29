@@ -1,10 +1,8 @@
 <?php
 
-use App\Http\Controllers\RefundRequestController;
-use App\Http\Controllers\Client\WalletController;
+use App\Models\Appointment;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
@@ -17,11 +15,15 @@ use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
+use App\Http\Controllers\Client\WalletController;
+use App\Http\Controllers\RefundRequestController;
 use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\ProductCategoryController;
@@ -29,9 +31,9 @@ use App\Http\Controllers\Client\ClientPostController;
 use App\Http\Controllers\Client\ClientBranchController;
 use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\Client\ClientProductController;
+use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
-use App\Http\Controllers\Client\OrderController as ClientOrderController;
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -104,19 +106,23 @@ Route::get('refunds/create', [WalletController::class, 'create'])->name('client.
 Route::post('refunds', [WalletController::class, 'store'])->name('client.wallet.store');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-        Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
-            ->name('barber_schedules.showBranch');
+    Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
+        ->name('barber_schedules.showBranch');
 
-        Route::middleware('branch.admin')->group(function () {
-            Route::resource('barber_schedules', BarberScheduleController::class)
-                ->except(['index', 'show']);
-        });
-
-        // Nếu bạn vẫn muốn index và show có thể xem được bình thường cho tất cả user đăng nhập
+    Route::middleware('branch.admin')->group(function () {
         Route::resource('barber_schedules', BarberScheduleController::class)
-            ->only(['index', 'show']);
+            ->except(['index', 'show']);
+    });
+
+    // Nếu bạn vẫn muốn index và show có thể xem được bình thường cho tất cả user đăng nhập
+    Route::resource('barber_schedules', BarberScheduleController::class)
+        ->only(['index', 'show']);
+
+    Route::get('/dashboard', function () {
+        // Lấy số lượng lịch đang chờ
+        $pendingCount = Appointment::where('status', 'pending')->count();
+
+        return view('admin.dashboard', compact('pendingCount'));
     })->name('dashboard');
 
     // Hiển thị giao diện danh sách Thợ cắt tóc
@@ -125,10 +131,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('refunds', RefundRequestController::class);
 
     // ==== Đơn hàng ====
-  Route::resource('orders', OrderController::class)->names('admin.orders');
- Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
-
-   
+    Route::resource('orders', OrderController::class)->names('admin.orders');
+    Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
 
     // ==== Lịch sử điểm ====
     Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');
@@ -140,7 +144,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Bình luận ====
     Route::resource('reviews', ReviewController::class);
 
-
+    // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
 
     // ==== Thanh toán ====
@@ -165,17 +169,17 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
+
     // ==== Banner ====
     Route::resource('banners', BannerController::class);
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
+
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);
-    Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
-        ->name('barber_schedules.showBranch');
-    Route::get('barber-schedules/create/{branchId}', [BarberScheduleController::class, 'create'])
-        ->name('barber_schedules.createForBranch');
+    Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])->name('barber_schedules.showBranch');
+    Route::get('barber-schedules/create/{branchId}', [BarberScheduleController::class, 'create'])->name('barber_schedules.createForBranch');
 
     // ==== Người dùng ====
     Route::resource('users', UserController::class);

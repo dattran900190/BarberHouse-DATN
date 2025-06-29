@@ -6,6 +6,7 @@ use App\Models\Checkin;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use App\Mail\CheckinCodeMail;
+use Illuminate\Support\Facades\Log;
 use App\Events\AppointmentConfirmed;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\AppointmentRequest;
@@ -15,55 +16,6 @@ class AppointmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // public function index(Request $request)
-    // {
-    //     $search = $request->input('search');
-    //     $activeTab = 'pending'; // Mặc định tab
-    //     $allAppointments = collect();
-    //     $statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
-    //     $appointments = [];
-
-    //     // Hàm tìm kiếm chung
-    //     $buildQuery = function ($query, $search) {
-    //         $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
-    //             ->when($search, function ($q) use ($search) {
-    //                 $q->where(function ($subQuery) use ($search) {
-    //                     $subQuery->whereHas('user', function ($q2) use ($search) {
-    //                         $q2->where('name', 'like', '%' . $search . '%');
-    //                     })->orWhereHas('barber', function ($q2) use ($search) {
-    //                         $q2->where('name', 'like', '%' . $search . '%');
-    //                     })->orWhereHas('service', function ($q2) use ($search) {
-    //                         $q2->where('name', 'like', '%' . $search . '%');
-    //                     });
-    //                 });
-    //             })
-    //             ->orderBy('id', 'DESC');
-    //     };
-
-    //     // Tìm kiếm toàn cục nếu có search không rỗng
-    //     if (trim($search)) {
-    //         $allAppointments = Appointment::query();
-    //         $buildQuery($allAppointments, $search);
-    //         $allAppointments = $allAppointments->get();
-
-    //         // Chọn tab dựa trên trạng thái của lịch hẹn đầu tiên
-    //         if ($allAppointments->count() > 0) {
-    //             $activeTab = $allAppointments->first()->status;
-    //         }
-    //     }
-
-    //     // Lấy phân trang cho từng trạng thái
-    //     foreach ($statuses as $status) {
-    //         $query = Appointment::where('status', $status);
-    //         $buildQuery($query, $search);
-    //         $appointments[$status . 'Appointments'] = $query->paginate(5, ['*'], $status . '_page');
-    //     }
-
-    //     return view('admin.appointments.index', array_merge(
-    //         compact('activeTab', 'allAppointments', 'search'),
-    //         $appointments
-    //     ));
-    // }
     public function index(Request $request)
     {
         $search = $request->input('search');
@@ -129,7 +81,16 @@ class AppointmentController extends Controller
         Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment));
 
         // Gửi sự kiện Pusher khi xác nhận lịch hẹn
-        event(new AppointmentConfirmed($appointment));
+        try {
+            Log::info('Kích hoạt sự kiện AppointmentConfirmed', [$appointment->toArray()]);
+
+            // Gửi sự kiện Pusher khi đặt lịch hẹn
+            event(new AppointmentConfirmed($appointment));
+            Log::info('Sự kiện AppointmentConfirmed đã gửi');
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi gửi sự kiện AppointmentConfirmed', ['error' => $e->getMessage()]);
+        }
+
 
         return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được xác nhận.');
     }
