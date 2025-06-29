@@ -53,9 +53,9 @@ class Appointment extends Model
     {
         return $this->belongsTo(Promotion::class);
     }
+    
     public function checkin()
-{
-    return $this->hasOne(Checkin::class);
-}
-
+    {
+        return $this->hasOne(Checkin::class);
+    }
 }
