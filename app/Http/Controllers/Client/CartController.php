@@ -20,6 +20,12 @@ class CartController extends Controller
         $request->validate([
             'product_variant_id' => 'required|exists:product_variants,id',
             'quantity' => 'required|integer|min:1',
+        ], [
+            'product_variant_id.required' => 'Vui lòng chọn sản phẩm.',
+            'product_variant_id.exists' => 'Sản phẩm không tồn tại.',
+            'quantity.required' => 'Vui lòng nhập số lượng.',
+            'quantity.integer' => 'Số lượng phải là một số nguyên.',
+            'quantity.min' => 'Số lượng phải lớn hơn hoặc bằng 1.',
         ]);
 
         $user = Auth::user();
@@ -50,6 +56,7 @@ class CartController extends Controller
             ]);
         }
 
+
         return redirect()->route('cart.show')->with('success', 'Sản phẩm đã được thêm vào giỏ hàng.');
     }
 
@@ -74,6 +81,10 @@ class CartController extends Controller
     {
         $request->validate([
             'quantity' => 'required|integer|min:1',
+        ], [
+            'quantity.required' => 'Vui lòng nhập số lượng.',
+            'quantity.integer' => 'Số lượng phải là một số nguyên.',
+            'quantity.min' => 'Số lượng phải lớn hơn hoặc bằng 1.',
         ]);
 
         $user = Auth::user();
@@ -87,7 +98,11 @@ class CartController extends Controller
             'quantity' => $request->quantity,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Số lượng sản phẩm đã được cập nhật.']);
+        return response()->json([
+            'success' => true,
+            'unit_price' => round($cartItem->price),
+            'subtotal' => round($cartItem->price * $cartItem->quantity)
+        ]);
     }
 
 
@@ -158,6 +173,7 @@ class CartController extends Controller
 
         // Chuyển thành mảng dùng cho view
         $mappedItems = $items->map(function ($item) {
+            $subtotal = $item->price * $item->quantity;  // Tính thành tiền
             return [
                 'product_variant_id' => $item->productVariant->id,
                 'id' => $item->productVariant->product->id,
@@ -166,6 +182,7 @@ class CartController extends Controller
                 'quantity' => $item->quantity,
                 'image' => $item->productVariant->image ? Storage::url($item->productVariant->image) : asset('images/no-image.png'),
                 'cart_item_id' => $item->id,
+                'subtotal' => $subtotal,  // Thêm subtotal
             ];
         })->toArray();
 
@@ -182,7 +199,7 @@ class CartController extends Controller
     {
         return match ($method) {
             'standard' => 25000,
-            'express' => 45000,
+            'express' => 100000,
             default => throw new \Exception('Phương thức vận chuyển không hợp lệ'),
         };
     }
@@ -197,55 +214,69 @@ class CartController extends Controller
             'phuong_thuc_thanh_toan_id' => 'required|in:1,2',
             'items' => 'required|array|min:1',
             'tong_tien' => 'required|numeric|min:0',
+        ], [
+            'name.required' => 'Vui lòng nhập tên.',
+            'phone.required' => 'Vui lòng nhập số điện thoại.',
+            'address.required' => 'Vui lòng nhập địa chỉ.',
+            'delivery_method.required' => 'Vui lòng chọn phương thức giao hàng.',
+            'phuong_thuc_thanh_toan_id.required' => 'Vui lòng chọn phương thức thanh toán.',
+            'items.required' => 'Giỏ hàng không được để trống.',
+            'tong_tien.required' => 'Tổng tiền không được để trống.',
         ]);
-
-        $user = Auth::user();
-        $cart = $this->getOrCreateCart($user);
-        $shippingFee = $this->getShippingFee($request->delivery_method);
 
         // Tính lại tổng tiền sản phẩm
         $productTotal = collect($request->items)->sum(function ($item) {
             return $item['price'] * $item['quantity'];
         });
+
+        // Tính phí vận chuyển
+        $shippingFee = $request->shipping_fee;
+
+        // Tính tổng tiền
         $expectedTotal = $productTotal + $shippingFee;
 
-        // So sánh chính xác với float
-        if (round((float)$request->tong_tien, 2) != round($expectedTotal, 2)) {
+        // So sánh tổng tiền
+        if (round($request->tong_tien, 2) != round($expectedTotal, 2)) {
             return back()->with('error', 'Tổng tiền không khớp. Vui lòng thử lại.');
         }
 
+        // Chọn phương thức thanh toán
         $paymentMethod = match ((int)$request->phuong_thuc_thanh_toan_id) {
             1 => 'cash',
             2 => 'vnpay',
             default => 'cash',
         };
 
-        $orderCode = 'ORD' . now()->format('Ymd') . strtoupper(Str::random(6));
+        // Tạo mã đơn hàng
+        $orderCode = 'ORD' . now()->format('Ymd') . strtoupper(Str::random(4));
 
+        // Tạo đơn hàng
         $order = new \App\Models\Order();
         $order->order_code = $orderCode;
-        $order->user_id = $user?->id;
+        $order->user_id = $request->user()->id;
         $order->name = $request->name;
-        $order->email = $request->email ?? $user?->email;
-        $order->phone = $request->phone ?? $user?->phone;
+        $order->email = $request->email ?? $request->user()->email;
+        $order->phone = $request->phone ?? $request->user()->phone;
         $order->address = $request->address;
         $order->note = $request->note;
         $order->payment_method = $paymentMethod;
+        $order->shipping_method = $request->delivery_method;
         $order->shipping_fee = $shippingFee;
         $order->total_money = $expectedTotal;
         $order->status = 'pending';
         $order->save();
 
+        // Lưu các mục giỏ hàng vào đơn hàng
         foreach ($request->items as $item) {
             $order->items()->create([
-                'product_id' => $item['id'],
-                'name' => $item['name'],
-                'price' => $item['price'],
+                'product_variant_id' => $item['product_variant_id'],
                 'quantity' => $item['quantity'],
-                'image' => $item['image'] ?? null,
+                'price_at_time' => $item['price'],
+                'total_price' => $item['price'] * $item['quantity'],
             ]);
         }
 
+        $cart = $this->getOrCreateCart($request->user());
         $cart->items()->delete();
         Session::forget('cart_id');
 

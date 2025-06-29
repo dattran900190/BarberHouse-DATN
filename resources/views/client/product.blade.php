@@ -66,6 +66,9 @@
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $product->name }}</h5>
                                         <p class="card-text text-danger fw-bold">{{ number_format($product->price) }} đ</p>
+                                          <button type="submit" class="btn-add-to-cart" title="Thêm vào giỏ hàng">
+                                        🛒
+                                    </button>
                                     </div>
                                 </a>
                             </div>

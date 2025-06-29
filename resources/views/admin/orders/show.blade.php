@@ -22,6 +22,13 @@
     @endif
 
     @php
+        $paymentMethodMap = [
+            'cash' => 'Thanh toán khi nhận hàng',
+            'vnpay' => 'Thanh toán qua VNPAY',
+            'momo' => 'Thanh toán qua Momo',
+            'card' => 'Thanh toán qua thẻ tín dụng',
+        ];
+
         $statusMap = [
             'pending' => 'Chờ xử lý',
             'processing' => 'Đang xử lý',
@@ -29,7 +36,16 @@
             'completed' => 'Hoàn thành',
             'cancelled' => 'Đã hủy',
         ];
-
+        $paymentMap = [
+            'unpaid' => 'Chưa thanh toán',
+            'paid' => 'Đã thanh toán',
+            'failed' => 'Thanh toán thất bại',
+            'refunded' => 'Đã hoàn tiền',
+        ];
+        $shippingMap = [
+            'standard' => 'Giao hàng tiêu chuẩn',
+            'express' => 'Giao hàng nhanh',
+    ];
         // Thứ tự trạng thái (cancelled không tính vào thứ tự vì nó có thể chọn bất cứ lúc nào)
         $statusOrder = ['pending', 'processing', 'shipping', 'completed'];
 
@@ -40,7 +56,8 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 flex-grow-1 text-center">Chi tiết đơn hàng: {{ $order->order_code }}</h3>
-            <a href="{{ route('orders.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary btn-icon-toggle d-flex align-items-center">
+            <a href="{{ route('admin.orders.index', ['page' => request('page', 1)]) }}"
+                class="btn btn-secondary btn-icon-toggle d-flex align-items-center">
                 <i class="fas fa-arrow-left"></i>
                 <span class="btn-text ms-2"> Quay lại danh sách</span>
             </a>
@@ -53,7 +70,14 @@
                 <p><strong>Tên người nhận:</strong> {{ $order->name }}</p>
                 <p><strong>Địa chỉ:</strong> {{ $order->address }}</p>
                 <p><strong>Số điện thoại:</strong> {{ $order->phone }}</p>
-                <p><strong>Phương thức thanh toán:</strong> {{ $order->payment_method }}</p>
+                <p><strong>Phương thức thanh toán:</strong>
+                    {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</p>
+                <p><strong>Ngày đặt hàng:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
+                <p><strong>Phương thức giao hàng:</strong>
+                    {{ $shippingMap[$order->shipping_method] ?? ucfirst($order->shipping_method) }}</p>
+                <p><strong>Trạng thái thanh toán:</strong>
+                    {{ $paymentMap[$order->payment_status] ?? ucfirst($order->payment_status) }}</p>
+
                 <p><strong>Ghi chú:</strong> {{ $order->note ?: '-' }}</p>
                 <p>
                     <strong>Trạng thái:</strong>
@@ -88,7 +112,7 @@
                 <tbody>
                     @foreach ($order->orderItems as $item)
                         <tr>
-                            <td>{{ $item->productVariant->name ?? '-' }}</td>
+                            <td>{{ $item->productVariant->product->name ?? '-' }}</td>
                             <td>{{ $item->productVariant->volume_id ?? '-' }}</td>
                             <td>{{ $item->quantity }}</td>
                             <td>{{ number_format($item->price_at_time, 0, ',', '.') }} đ</td>
@@ -98,7 +122,7 @@
                 </tbody>
             </table>
 
-            <form action="{{ route('orders.update', $order->id) }}" method="POST" class="mt-4 w-50">
+            <form action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="mt-4 w-50">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="page" value="{{ request('page', 1) }}">

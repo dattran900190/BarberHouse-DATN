@@ -8,10 +8,10 @@
     <main style="padding: 10%">
         <div class="container">
             <div class="card wallet-page mt-4 shadow-sm">
-                <div class="card-header border-0">
+                <div class="card-header border-0 d-flex justify-content-between align-items-center">
                     <h3 class="mb-0 fw-bold">Lịch sử yêu cầu hoàn tiền</h3>
+                    <a href="{{ route('client.wallet') }}" class="btn btn-success btn-sm">Yêu cầu hoàn tiền</a>
                 </div>
-
                 <div class="card-body">
                     {{-- Bộ lọc tìm kiếm --}}
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -42,10 +42,12 @@
                                 <div class="col-md-7">
                                     <span class="fw-bold">Mã đơn hàng: {{ $refund->order->order_code ?? 'N/A' }}</span><br>
                                     <span class="text-muted">Lý do: {{ $refund->reason }}</span><br>
-                                    <span class="text-muted">Số tiền hoàn: {{ number_format($refund->refund_amount) }} VNĐ</span><br>
+                                    <span class="text-muted">Số tiền hoàn: {{ number_format($refund->refund_amount) }}
+                                        VNĐ</span><br>
                                     <span class="text-muted">Ngày yêu cầu: {{ $refund->created_at->format('d/m/Y') }}</span>
                                     @if ($refund->refund_status === 'refunded')
-                                        <br><span class="text-muted">Ngày hoàn tiền: {{ $refund->updated_at->format('d/m/Y') }}</span>
+                                        <br><span class="text-muted">Ngày hoàn tiền:
+                                            {{ $refund->updated_at->format('d/m/Y') }}</span>
                                     @endif
                                 </div>
                                 <div class="col-md-2 text-center">
@@ -56,7 +58,10 @@
                                             'refunded' => ['label' => 'Đã hoàn tiền', 'class' => 'status-delivered'],
                                             'rejected' => ['label' => 'Từ chối', 'class' => 'status-canceled'],
                                         ];
-                                        $status = $statusLabels[$refund->refund_status] ?? ['label' => ucfirst($refund->refund_status), 'class' => 'text-muted'];
+                                        $status = $statusLabels[$refund->refund_status] ?? [
+                                            'label' => ucfirst($refund->refund_status),
+                                            'class' => 'text-muted',
+                                        ];
                                     @endphp
 
                                     <span class="status-label {{ $status['class'] }}">
@@ -75,13 +80,16 @@
                             {{-- Chi tiết ẩn/hiện --}}
                             <div class="collapse mt-3" id="detail-{{ $refund->id }}">
                                 <div class="card card-body bg-light">
-                                    <p><strong>Ngân hàng:</strong> {{ $refund->bank_name }} - {{ $refund->bank_account_number }} ({{ $refund->bank_account_name }})</p>
+                                    <p><strong>Ngân hàng:</strong> {{ $refund->bank_name }} -
+                                        {{ $refund->bank_account_number }} ({{ $refund->bank_account_name }})</p>
                                     <p><strong>Lý do:</strong> {{ $refund->reason }}</p>
-                                    <p><strong>Số tiền hoàn:</strong> {{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ</p>
+                                    <p><strong>Số tiền hoàn:</strong>
+                                        {{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ</p>
                                     <p><strong>Trạng thái:</strong> {{ $status['label'] }}</p>
                                     <p><strong>Ngày yêu cầu:</strong> {{ $refund->created_at->format('d/m/Y H:i') }}</p>
                                     @if ($refund->refund_status === 'refunded' && $refund->refunded_at)
-                                        <p><strong>Ngày hoàn tiền:</strong> {{ $refund->refunded_at->format('d/m/Y H:i') }}</p>
+                                        <p><strong>Ngày hoàn tiền:</strong> {{ $refund->refunded_at->format('d/m/Y H:i') }}
+                                        </p>
                                     @endif
                                 </div>
                             </div>
@@ -122,7 +130,7 @@
         }
 
         .status-label::before {
-            content: '●';
+            content: none;
             margin-right: 5px;
         }
 

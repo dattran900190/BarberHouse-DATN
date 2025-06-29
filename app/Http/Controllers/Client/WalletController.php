@@ -43,8 +43,9 @@ class WalletController extends Controller
     {
         $orders = Order::where('user_id', Auth::id())
             ->where('status', '!=', 'cancelled')
-            ->whereHas('payment', fn($query) => $query->where('status', 'paid'))
+            ->where('payment_status', 'paid')
             ->get();
+
 
         return view('client.wallet', compact('orders'));
     }
