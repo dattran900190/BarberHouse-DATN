@@ -17,26 +17,26 @@
             style="max-width: 100%;">
     </div>
 
-    {{-- Album ảnh sản phẩm --}}
-   @php
-    // Nếu gallery có dữ liệu thì lấy từ DB, nếu không thì chỉ lấy ảnh đại diện
-    $gallery = $product->gallery ? json_decode($product->gallery) : [$product->image];
+@php
+    $gallery = ($product->images && $product->images->count())
+        ? $product->images->pluck('image_url')->toArray()
+        : [$product->image];
 @endphp
-    @if (count($gallery))
-        <div class="album-wrapper d-flex align-items-center">
-            <button class="prev-btn btn btn-light">❮</button>
-            <div class="image-bottom overflow-hidden" style="flex: 1;">
-                <div class="image-track d-flex gap-2" style="transition: all 0.3s ease;">
-                    @foreach ($gallery as $img)
-                        <img src="{{ asset('storage/' . $img) }}"
-                             onclick="document.getElementById('mainImage').src = '{{ asset('storage/' . $img) }}'"
-                             style="width: 80px; cursor: pointer;" alt="Gallery">
-                    @endforeach
-                </div>
+@if (count($gallery))
+    <div class="album-wrapper d-flex align-items-center">
+        <button class="prev-btn btn btn-light">❮</button>
+        <div class="image-bottom overflow-hidden" style="flex: 1;">
+            <div class="image-track d-flex gap-2" style="transition: all 0.3s ease;">
+                @foreach ($gallery as $img)
+                    <img src="{{ asset('storage/' . $img) }}"
+                         onclick="document.getElementById('mainImage').src = '{{ asset('storage/' . $img) }}'"
+                         style="width: 80px; cursor: pointer;" alt="Gallery">
+                @endforeach
             </div>
-            <button class="next-btn btn btn-light">❯</button>
         </div>
-    @endif
+        <button class="next-btn btn btn-light">❯</button>
+    </div>
+@endif
 </div>
 
     {{-- Thông tin sản phẩm --}}
@@ -44,21 +44,36 @@
         <h3>{{ $product->name }}</h3>
         <h5 class="text-danger fw-bold">Giá: {{ number_format($product->price) }} đ</h5>
         <p>{{ $product->description }}</p>
-
-        @php $variant = $product->variants->first(); @endphp
-        @if ($variant)
-            <form action="{{ route('cart.add') }}" method="POST" class="mt-3">
-                @csrf
-                <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
-                <label for="quantity" class="me-2">Số lượng:</label>
-                <input type="number" name="quantity" id="quantity"
-                    class="form-control-sm d-inline-block w-auto" value="1" min="1" />
-                <button type="submit" class="btn btn-dark ms-3">🛒 Thêm vào giỏ hàng</button>
-            </form>
-        @else
-            <p class="text-danger">Sản phẩm hiện chưa có phiên bản để bán.</p>
-        @endif
+@php
+    $variants = $product->variants;
+@endphp
+@if ($variants->count())
+    <form action="{{ route('cart.add') }}" method="POST" class="mt-3" id="variantForm">
+        @csrf
+        <label for="variant_id" class="me-2">Chọn thể tích:</label>
+        <select name="product_variant_id" id="variant_id" class="form-select d-inline-block w-auto">
+            @foreach ($variants as $variant)
+                <option value="{{ $variant->id }}"
+                    data-price="{{ $variant->price }}"
+                    data-volume="{{ $variant->volume->name ?? '' }}"
+                    data-unit="{{ $variant->volume->unit ?? '' }}">
+                    {{ $variant->volume->name ?? 'Không rõ' }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}
+                </option>
+            @endforeach
+        </select>
+        <label for="quantity" class="me-2 ms-3">Số lượng:</label>
+        <input type="number" name="quantity" id="quantity"
+            class="form-control-sm d-inline-block w-auto" value="1" min="1" />
+        <button type="submit" class="btn btn-dark ms-3">🛒 Thêm vào giỏ hàng</button>
+    </form>
+    <div class="mt-2">
+        <span id="variantPrice" class="fw-bold text-danger"></span>
     </div>
+@else
+    <p class="text-danger">Sản phẩm hiện chưa có phiên bản để bán.</p>
+@endif
+    </div>
+    
 </div>
 
 
