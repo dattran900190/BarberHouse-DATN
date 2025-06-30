@@ -107,14 +107,18 @@ class AppointmentController extends Controller
     {
         // Kiểm tra quyền sở hữu
         if ($appointment->user_id !== Auth::id()) {
-            return redirect()->route('client.appointmentHistory')
-                ->with('error', 'Bạn không có quyền hủy lịch hẹn này.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền hủy lịch hẹn này.'
+            ], 403);
         }
 
         // Kiểm tra trạng thái hợp lệ
         if (!in_array($appointment->status, ['pending', 'confirmed'])) {
-            return redirect()->route('client.appointmentHistory')
-                ->with('error', 'Lịch hẹn này không thể hủy.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Lịch hẹn này không thể hủy.'
+            ], 400);
         }
 
         // Validate lý do hủy
@@ -129,17 +133,14 @@ class AppointmentController extends Controller
         // Cập nhật trạng thái và lý do
         $appointment->update([
             'status' => 'pending_cancellation',
-            'status_before_cancellation' => $appointment->status, // Lưu trạng thái hiện tại
+            'status_before_cancellation' => $appointment->status,
             'cancellation_reason' => $request->input('cancellation_reason'),
         ]);
 
-        // (Tùy chọn) Gửi thông báo cho admin
-        // \App\Models\Admin::all()->each(function ($admin) use ($appointment) {
-        //     $admin->notify(new CancellationRequest($appointment));
-        // });
-
-        return redirect()->route('client.appointmentHistory')
-            ->with('success', 'Yêu cầu hủy lịch hẹn ' . $appointment->appointment_code . ' đã được gửi.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Yêu cầu hủy lịch hẹn ' . $appointment->appointment_code . ' đã được gửi.'
+        ]);
     }
 
 

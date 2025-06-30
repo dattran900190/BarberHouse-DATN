@@ -112,7 +112,7 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-warning">Cập nhật</button>
+                <button type="submit" class="btn btn-warning update-appointment-btn" data-id="{{ $appointment->id }}">Cập nhật</button>
                 <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
                     lại</a>
             </form>
@@ -120,3 +120,55 @@
         </div>
     </div>
 @endsection
+
+{{-- <script>
+      // Xử lý nút "cập nhật lịch"
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.update-appointment-btn').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault(); // Ngăn chặn hành vi submit mặc định của form
+                    const appointmentId = this.getAttribute('data-id');
+                    const form = this.closest('form'); // Lấy form chứa nút
+
+                    Swal.fire({
+                        title: 'Xác nhận cập nhật lịch hẹn',
+                        text: 'Bạn có chắc chắn muốn cập nhật lịch hẹn này?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Thu thập dữ liệu từ form
+                            const formData = new FormData(form);
+
+                            fetch('{{ route('appointments.update', ':id') }}'.replace(
+                                    ':id', appointmentId), {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body: formData // Gửi dữ liệu form
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire('Thành công!', data.message,
+                                            'success').then(() => {
+                                            location.reload(); // Tải lại trang
+                                        });
+                                    } else {
+                                        Swal.fire('Lỗi!', data.message, 'error');
+                                    }
+                                })
+                                .catch(error => {
+                                    Swal.fire('Lỗi!',
+                                        'Đã có lỗi xảy ra, vui lòng thử lại.',
+                                        'error');
+                                });
+                        }
+                    });
+                });
+            });
+        });
+</script> --}}

@@ -26,7 +26,7 @@
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
-       @yield('content')
+        @yield('content')
     </div>
     <!-- /.wrapper -->
 
@@ -37,5 +37,31 @@
     <!-- Vite load app.js (chứa Laravel Echo và Pusher) -->
     @vite('resources/js/app.js')
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Kiểm tra session success
+        @if (session('success'))
+            Swal.fire({
+                title: 'Thành công!',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Tùy chọn: Reload trang nếu cần
+                // location.reload();
+            });
+        @endif
+
+        // Kiểm tra session error
+        @if (session('error'))
+            Swal.fire({
+                title: 'Lỗi!',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        @endif
+    });
+</script>
 
 </html>

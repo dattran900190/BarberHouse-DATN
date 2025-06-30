@@ -72,7 +72,7 @@ Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai
 // == Lịch sử đặt lịch ==
 Route::get('/lich-su-dat-lich', [ClientAppointmentController::class, 'appointmentHistory'])->name('client.appointmentHistory');
 Route::get('/lich-su-dat-lich/{id}', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
-Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
+Route::patch('lich-su-dat-lich/{appointment}/huy', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
 
 
 // web.php
