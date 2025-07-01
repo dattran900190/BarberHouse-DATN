@@ -56,7 +56,7 @@
                                             'pending' => ['label' => 'Chờ duyệt', 'class' => 'status-processing'],
                                             'processing' => ['label' => 'Đang xử lý', 'class' => 'status-processing'],
                                             'refunded' => ['label' => 'Đã hoàn tiền', 'class' => 'status-delivered'],
-                                            'rejected' => ['label' => 'Từ chối', 'class' => 'status-canceled'],
+                                            'rejected' => ['label' => 'Từ chối', 'class' => 'status-cancelled'],
                                         ];
                                         $status = $statusLabels[$refund->refund_status] ?? [
                                             'label' => ucfirst($refund->refund_status),
@@ -124,7 +124,7 @@
             font-weight: bold;
         }
 
-        .status-canceled {
+        .status-cancelled {
             color: red;
             font-weight: bold;
         }
@@ -142,7 +142,7 @@
             color: green;
         }
 
-        .status-canceled::before {
+        .status-cancelled::before {
             color: red;
         }
     </style>

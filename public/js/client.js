@@ -167,11 +167,11 @@ document.addEventListener('DOMContentLoaded', function () {
   //   updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, this.value);
   // });
 
-  const appointmentDate  = document.getElementById('appointment_date');
-  const appointmentTime  = document.getElementById('appointment_time');
-  const branchSelect     = document.getElementById('branch');
-  const barberSelect     = document.getElementById('barber');
-  const serviceSelect    = document.getElementById('service');
+  const appointmentDate = document.getElementById('appointment_date');
+  const appointmentTime = document.getElementById('appointment_time');
+  const branchSelect = document.getElementById('branch');
+  const barberSelect = document.getElementById('barber');
+  const serviceSelect = document.getElementById('service');
 
   let lastRequest = null; // Track last request key
 
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
           if (!added.has(b.id)) {
             const opt = document.createElement('option');
             opt.value = b.id;
-            opt.text  = b.name;
+            opt.text = b.name;
             barberSelect.appendChild(opt);
             added.add(b.id);
           }
@@ -234,10 +234,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Chỉ gắn listener vào 4 trường liên quan
-  appointmentDate .addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
-  appointmentTime .addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
-  branchSelect    .addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
-  serviceSelect   .addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
+  appointmentDate.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
+  appointmentTime.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
+  branchSelect.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
+  serviceSelect.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
 
   // tiền dịch vụ và thời gian 
   const priceOutput = document.getElementById('totalPrice');
@@ -294,4 +294,59 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  const serviceSelect = document.getElementById('service');
+  const voucherSelect = document.getElementById('voucher_id');
+  const priceOutput = document.querySelectorAll('#totalPrice');
+  const totalAfterDiscount = document.getElementById('total_after_discount');
+
+  function getServicePrice() {
+    const opt = serviceSelect.options[serviceSelect.selectedIndex];
+    // Nếu có data-price thì lấy, không thì lấy số trong text
+    let price = opt.dataset.price ? parseFloat(opt.dataset.price) : 0;
+    if (!price) {
+      // fallback: lấy số trong text
+      const match = opt.textContent.match(/(\d[\d\.]*)đ/);
+      if (match) price = parseInt(match[1].replace(/\./g, ''));
+    }
+    return price || 0;
+  }
+
+  function updateTotal() {
+    const price = getServicePrice();
+    let discount = 0;
+    let discountText = '';
+    const voucherOpt = voucherSelect.options[voucherSelect.selectedIndex];
+    const discountType = voucherOpt.getAttribute('data-discount-type');
+    const discountValue = parseFloat(voucherOpt.getAttribute('data-discount-value')) || 0;
+
+    if (voucherSelect.value && price > 0) {
+      if (discountType === 'fixed') {
+        discount = discountValue;
+        discountText = `- ${discount.toLocaleString('vi-VN')} vnđ`;
+      } else if (discountType === 'percent') {
+        discount = price * discountValue / 100;
+        discountText = `- ${discountValue}% (${discount.toLocaleString('vi-VN')} vnđ)`;
+      }
+    }
+
+    let total = price - discount;
+    if (total < 0) total = 0;
+
+    // Cập nhật tất cả chỗ hiển thị tổng tiền
+    priceOutput.forEach(el => el.textContent = total.toLocaleString('vi-VN') + ' vnđ');
+    totalAfterDiscount.innerHTML = discount > 0 ?
+      `<span class="text-success">Đã giảm: ${discountText}</span>` :
+      '';
+  }
+
+  serviceSelect.addEventListener('change', updateTotal);
+  voucherSelect.addEventListener('change', updateTotal);
+
+  // Gọi khi load trang
+  updateTotal();
 });
