@@ -22,7 +22,7 @@
                         @elseif ($appointment->status == 'confirmed')
                             <span class="status-label status-confirmed">Đã xác nhận</span>
                         @elseif ($appointment->status == 'cancelled')
-                            <span class="status-label status-canceled">Đã hủy</span>
+                            <span class="status-label status-cancelled">Đã hủy</span>
                         @elseif ($appointment->status == 'completed')
                             <span class="status-label status-completed">Đã hoàn thành</span>
                         @endif

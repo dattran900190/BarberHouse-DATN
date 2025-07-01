@@ -4,21 +4,15 @@
 
 @section('content')
     @if (session('success'))
-        {{-- <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }} --}}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>
         </button>
-        {{-- </div> --}}
     @endif
 
     @if (session('error'))
-        {{-- <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }} --}}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>
         </button>
-        {{-- </div> --}}
     @endif
 
     @php
@@ -134,34 +128,12 @@
                                             <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
                                         </td>
                                         <td class="text-center">
-                                            {{-- <form action="{{ route('appointments.confirm', $appointment->id) }}"
-                                                method="POST" style="display:inline-block;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-success btn-sm">Xác nhận</button>
-                                            </form> --}}
-                                            {{-- <form action="{{ route('appointments.confirm', $appointment->id) }}"
-                                                method="POST" style="display:inline-block;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-success btn-sm confirm-btn"
-                                                    data-id="{{ $appointment->id }}">Xác nhận</button>
-                                            </form> --}}
-
                                             <button class="btn btn-success btn-sm confirm-btn"
                                                 data-id="{{ $appointment->id }}">Xác nhận</button>
-
                                             <a href="{{ route('appointments.show', $appointment->id) }}"
                                                 class="btn btn-info btn-sm">Xem</a>
                                             <a href="{{ route('appointments.edit', $appointment->id) }}"
                                                 class="btn btn-warning btn-sm">Sửa</a>
-                                            @if (in_array($appointment->status, ['pending', 'confirmed']))
-                                                <form action="{{ route('appointments.cancel', $appointment->id) }}"
-                                                    method="POST" style="display:inline-block;"
-                                                    onsubmit="return confirm('Bạn có chắc chắn muốn hủy lịch hẹn này không?');">
-                                                    @csrf
-
-                                                    <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
-                                                </form>
-                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -235,15 +207,11 @@
                                             <a href="{{ route('appointments.edit', $appointment->id) }}"
                                                 class="btn btn-warning btn-sm">Sửa</a>
 
-                                            @if (in_array($appointment->status, ['pending', 'confirmed']))
-                                                <form action="{{ route('appointments.cancel', $appointment->id) }}"
-                                                    method="POST" style="display:inline-block;"
-                                                    onsubmit="return confirm('Bạn có chắc chắn muốn hủy lịch hẹn này không?');">
-                                                    @csrf
+                                            <button class="btn btn-primary no-show-btn btn-sm"
+                                                data-id="{{ $appointment->id }}">Không đến</button>
 
-                                                    <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
-                                                </form>
-                                            @endif
+                                            <button class="btn btn-danger btn-sm cancel-btn"
+                                                data-id="{{ $appointment->id }}">Hủy</button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -392,6 +360,7 @@
                                 <th>Thợ</th>
                                 <th>Dịch vụ</th>
                                 <th>Thời gian</th>
+                                <th>Lý do</th>
                                 <th>Trạng thái lịch hẹn</th>
                                 <th>Trạng thái thanh toán</th>
                                 <th class="text-center">Hành động</th>
@@ -408,6 +377,7 @@
                                         <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
                                         <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
                                         <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
+                                        <td>{{ $appointment->cancellation_reason ?? 'N/A' }}</td>
                                         </td>
                                         @php
                                             $statusClass = $statusMap[$appointment->status]['class'] ?? 'secondary';
@@ -419,7 +389,10 @@
                                                 $paymentMap[$appointment->payment_status]['text'] ?? 'Không rõ';
                                         @endphp
                                         <td>
-                                            <span class="badge bg-{{ $statusClass }}">{{ $statusText }}</span>
+                                            <span class="badge bg-{{ $statusClass }}">{{ $statusText }}
+                                            </span>
+                                            {{-- {{ $appointment->cancellation_type == 'no-show' ? 'Không đến' : 'Hủy' }} --}}
+
                                         </td>
                                         <td>
                                             <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
@@ -471,7 +444,6 @@
 @section('js')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.querySelectorAll('#appointmentTabs a[data-toggle="tab"]').forEach(tab => {
             tab.addEventListener('shown.bs.tab', function(event) {
@@ -582,109 +554,6 @@
             });
         });
 
-
-
-        // // Xử lý nút "Xác nhận hủy"
-        // document.querySelectorAll('.approve-cancel-btn').forEach(button => {
-        //     button.addEventListener('click', function() {
-        //         const appointmentId = this.getAttribute('data-id');
-
-        //         Swal.fire({
-        //             title: 'Xác nhận hủy lịch hẹn',
-        //             text: 'Bạn có chắc chắn muốn chấp nhận hủy lịch hẹn này?',
-        //             icon: 'warning',
-        //             showCancelButton: true,
-        //             confirmButtonText: 'Xác nhận',
-        //             cancelButtonText: 'Hủy'
-        //         }).then((result) => {
-        //             if (result.isConfirmed) {
-        //                 fetch('{{ route('appointments.approve-cancel', ':id') }}'.replace(':id',
-        //                         appointmentId), {
-        //                         method: 'POST',
-        //                         headers: {
-        //                             'Content-Type': 'application/json',
-        //                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        //                         }
-        //                     })
-        //                     .then(response => response.json())
-        //                     .then(data => {
-        //                         if (data.success) {
-        //                             Swal.fire('Thành công!', data.message, 'success').then(
-        //                                 () => {
-        //                                     location.reload();
-        //                                 });
-        //                         } else {
-        //                             Swal.fire('Lỗi!', data.message, 'error');
-        //                         }
-        //                     })
-        //                     .catch(error => {
-        //                         Swal.fire('Lỗi!', 'Đã có lỗi xảy ra, vui lòng thử lại.',
-        //                             'error');
-        //                     });
-
-        //             }
-        //         });
-        //     });
-        // });
-
-        // // Xử lý nút "Từ chối hủy"
-        // document.querySelectorAll('.reject-cancel-btn').forEach(button => {
-        //     button.addEventListener('click', function() {
-        //         const appointmentId = this.getAttribute('data-id');
-
-        //         Swal.fire({
-        //             title: 'Từ chối hủy lịch hẹn',
-        //             text: 'Vui lòng nhập lý do từ chối',
-        //             input: 'textarea',
-        //             inputPlaceholder: 'Nhập lý do từ chối (tối đa 255 ký tự)...',
-        //             inputAttributes: {
-        //                 'rows': 4,
-        //                 'required': true
-        //             },
-        //             showCancelButton: true,
-        //             confirmButtonText: 'Xác nhận',
-        //             cancelButtonText: 'Hủy',
-        //             inputValidator: (value) => {
-        //                 if (!value) {
-        //                     return 'Lý do không được để trống!';
-        //                 }
-        //                 if (value.length > 255) {
-        //                     return 'Lý do không được vượt quá 255 ký tự!';
-        //                 }
-        //             }
-        //         }).then((result) => {
-        //             if (result.isConfirmed) {
-        //                 fetch('{{ route('appointments.reject-cancel', ':id') }}'.replace(':id',
-        //                         appointmentId), {
-        //                         method: 'POST',
-        //                         headers: {
-        //                             'Content-Type': 'application/json',
-        //                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        //                         },
-        //                         body: JSON.stringify({
-        //                             rejection_reason: result.value
-        //                         })
-        //                     })
-        //                     .then(response => response.json())
-        //                     .then(data => {
-        //                         if (data.success) {
-        //                             Swal.fire('Thành công!', data.message, 'success').then(
-        //                                 () => {
-        //                                     location.reload();
-        //                                 });
-        //                         } else {
-        //                             Swal.fire('Lỗi!', data.message, 'error');
-        //                         }
-        //                     })
-        //                     .catch(error => {
-        //                         Swal.fire('Lỗi!', 'Đã có lỗi xảy ra, vui lòng thử lại.',
-        //                             'error');
-        //                     });
-        //             }
-        //         });
-        //     });
-        // });
-
         document.addEventListener('DOMContentLoaded', function() {
             // Xử lý nút "Xác nhận hủy"
             document.querySelectorAll('.approve-cancel-btn').forEach(button => {
@@ -733,7 +602,7 @@
                                     if (!response.ok) {
                                         throw new Error(
                                             `HTTP error! Status: ${response.status}`
-                                            );
+                                        );
                                     }
                                     return response.json();
                                 })
@@ -784,6 +653,7 @@
                     });
                 });
             });
+
 
             // Xử lý nút "Từ chối hủy"
             document.querySelectorAll('.reject-cancel-btn').forEach(button => {
@@ -849,7 +719,7 @@
                                     if (!response.ok) {
                                         throw new Error(
                                             `HTTP error! Status: ${response.status}`
-                                            );
+                                        );
                                     }
                                     return response.json();
                                 })
@@ -901,5 +771,361 @@
                 });
             });
         });
+
+        // Xử lý nút "Đánh dấu No-show"
+        document.querySelectorAll('.no-show-btn').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const appointmentId = this.getAttribute('data-id');
+
+                // Cửa sổ nhập lý do no-show (tùy chọn)
+                Swal.fire({
+                    title: 'Đánh dấu lịch hẹn là No-show',
+                    text: 'Vui lòng nhập lý do (tùy chọn)',
+                    input: 'textarea',
+                    inputPlaceholder: 'Nhập lý do no-show (tối đa 255 ký tự)...',
+                    inputAttributes: {
+                        'rows': 4
+                    },
+                    icon: 'warning',
+                    width: '400px',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy',
+                    inputValidator: (value) => {
+                        if (value && value.length > 255) {
+                            return 'Lý do không được vượt quá 255 ký tự!';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Cửa sổ loading
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            width: '400px',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Gửi yêu cầu AJAX
+                        fetch('{{ route('appointments.no-show', ':id') }}'.replace(':id',
+                                appointmentId), {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    no_show_reason: result.value ||
+                                        'Khách hàng không đến'
+                                })
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! Status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                // Đóng cửa sổ loading
+                                Swal.close();
+
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Thành công!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        width: '400px',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        window.location.href =
+                                            '{{ route('appointments.index') }}';
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: data.message,
+                                        icon: 'error',
+                                        width: '400px',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                // Đóng cửa sổ loading
+                                Swal.close();
+                                console.error('Lỗi AJAX:', error);
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: 'Đã có lỗi xảy ra: ' + error.message,
+                                    icon: 'error',
+                                    width: '400px',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                });
+                            });
+                    }
+                });
+            });
+        });
+
+        // Xử lý nút "Đánh dấu cancel"
+        document.querySelectorAll('.cancel-btn').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const appointmentId = this.getAttribute('data-id');
+
+                // Cửa sổ nhập lý do cancel (tùy chọn)
+                Swal.fire({
+                    title: 'Huỷ lịch hẹn',
+                    text: 'Vui lòng nhập lý do (tùy chọn)',
+                    input: 'textarea',
+                    inputPlaceholder: 'Nhập lý do cancel (tối đa 255 ký tự)...',
+                    inputAttributes: {
+                        'rows': 4
+                    },
+                    icon: 'warning',
+                    width: '400px',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy',
+                    inputValidator: (value) => {
+                        if (value && value.length > 255) {
+                            return 'Lý do không được vượt quá 255 ký tự!';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Cửa sổ loading
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            width: '400px',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Gửi yêu cầu AJAX
+                        fetch('{{ route('appointments.cancel', ':id') }}'.replace(':id',
+                                appointmentId), {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    no_show_reason: result.value ||
+                                        'Khách hàng không đến'
+                                })
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! Status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                // Đóng cửa sổ loading
+                                Swal.close();
+
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Thành công!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        width: '400px',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        window.location.href =
+                                            '{{ route('appointments.index') }}';
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: data.message,
+                                        icon: 'error',
+                                        width: '400px',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                // Đóng cửa sổ loading
+                                Swal.close();
+                                console.error('Lỗi AJAX:', error);
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: 'Đã có lỗi xảy ra: ' + error.message,
+                                    icon: 'error',
+                                    width: '400px',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                });
+                            });
+                    }
+                });
+            });
+        });
+        
     </script>
+
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hàm chung để xử lý các hành động với SweetAlert và AJAX
+            function handleAction(buttonSelector, title, inputPlaceholder, routeName, reasonKey,
+                defaultReason, isReasonRequired = false) {
+                document.querySelectorAll(buttonSelector).forEach(button => {
+                    button.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        const appointmentId = this.getAttribute('data-id');
+
+                        // Hiển thị cửa sổ SweetAlert để nhập lý do
+                        Swal.fire({
+                            title: title,
+                            text: 'Vui lòng nhập lý do' + (isReasonRequired ?
+                                '' : ' (tùy chọn)'),
+                            input: 'textarea',
+                            inputPlaceholder: inputPlaceholder,
+                            inputAttributes: {
+                                'rows': 4
+                            },
+                            icon: 'warning',
+                            width: '400px',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            showCancelButton: true,
+                            confirmButtonText: 'Xác nhận',
+                            cancelButtonText: 'Hủy',
+                            inputValidator: (value) => {
+                                if (isReasonRequired && !value) {
+                                    return 'Lý do không được để trống!';
+                                }
+                                if (value && value.length > 255) {
+                                    return 'Lý do không được vượt quá 255 ký tự!';
+                                }
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Hiển thị cửa sổ loading
+                                Swal.fire({
+                                    title: 'Đang xử lý...',
+                                    text: 'Vui lòng chờ trong giây lát.',
+                                    allowOutsideClick: false,
+                                    width: '400px',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    },
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    }
+                                });
+
+                                // Gửi yêu cầu AJAX
+                                const reason = result.value || defaultReason;
+                                fetch('{{ route("' + routeName + '", ':id') }}'
+                                        .replace(':id', appointmentId), {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                            },
+                                            body: JSON.stringify({
+                                                [reasonKey]: reason
+                                            })
+                                        })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(
+                                                `HTTP error! Status: ${response.status}`
+                                            );
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        Swal.close();
+                                        if (data.success) {
+                                            Swal.fire({
+                                                title: 'Thành công!',
+                                                text: data.message,
+                                                icon: 'success',
+                                                width: '400px',
+                                                customClass: {
+                                                    popup: 'custom-swal-popup'
+                                                }
+                                            }).then(() => {
+                                                window.location
+                                                    .href =
+                                                    '{{ route('appointments.index') }}';
+                                            });
+                                        } else {
+                                            Swal.fire({
+                                                title: 'Lỗi!',
+                                                text: data.message,
+                                                icon: 'error',
+                                                width: '400px',
+                                                customClass: {
+                                                    popup: 'custom-swal-popup'
+                                                }
+                                            });
+                                        }
+                                    })
+                                    .catch(error => {
+                                        Swal.close();
+                                        console.error('Lỗi AJAX:', error);
+                                        Swal.fire({
+                                            title: 'Lỗi!',
+                                            text: 'Đã có lỗi xảy ra: ' +
+                                                error.message,
+                                            icon: 'error',
+                                            width: '400px',
+                                            customClass: {
+                                                popup: 'custom-swal-popup'
+                                            }
+                                        });
+                                    });
+                            }
+                        });
+                    });
+                });
+            }
+
+            // Áp dụng hàm cho từng nút
+            handleAction('.reject-cancel-btn', 'Từ chối hủy lịch hẹn',
+                'Nhập lý do từ chối (tối đa 255 ký tự)...', 'appointments.reject-cancel',
+                'rejection_reason', 'Không có lý do', true);
+            handleAction('.no-show-btn', 'Đánh dấu lịch hẹn là No-show',
+                'Nhập lý do no-show (tối đa 255 ký tự)...', 'appointments.no-show',
+                'no_show_reason', 'Khách hàng không đến', false);
+            handleAction('.cancel-btn', 'Hủy lịch hẹn', 'Nhập lý do hủy (tối đa 255 ký tự)...',
+                'appointments.cancel', 'cancellation_reason', 'Hủy bởi admin', false);
+        });
+    </script> --}}
 @endsection

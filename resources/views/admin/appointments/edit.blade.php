@@ -68,12 +68,6 @@
                         @endforeach
                     </select>
 
-                    {{-- @if (in_array($currentStatus, ['completed', 'cancelled']))
-                        <small class="text-muted">
-                            Không thể thay đổi vì lịch đã {{ $currentStatus === 'completed' ? 'hoàn thành' : 'bị huỷ' }}.
-                        </small>
-                    @endif --}}
-
                     @error('status')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -112,7 +106,8 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-warning update-appointment-btn" data-id="{{ $appointment->id }}">Cập nhật</button>
+                <button type="submit" class="btn btn-warning update-appointment-btn" data-id="{{ $appointment->id }}">Cập
+                    nhật</button>
                 <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
                     lại</a>
             </form>
@@ -121,54 +116,102 @@
     </div>
 @endsection
 
-{{-- <script>
-      // Xử lý nút "cập nhật lịch"
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.update-appointment-btn').forEach(button => {
-                button.addEventListener('click', function(event) {
-                    event.preventDefault(); // Ngăn chặn hành vi submit mặc định của form
-                    const appointmentId = this.getAttribute('data-id');
-                    const form = this.closest('form'); // Lấy form chứa nút
+@section('js')
+    <script>
+        // Xử lý nút "Cập nhật"
+        document.querySelectorAll('.update-appointment-btn').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Ngăn hành vi mặc định của form
+                const appointmentId = this.getAttribute('data-id');
+                const form = this.closest('form');
 
-                    Swal.fire({
-                        title: 'Xác nhận cập nhật lịch hẹn',
-                        text: 'Bạn có chắc chắn muốn cập nhật lịch hẹn này?',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonText: 'Xác nhận',
-                        cancelButtonText: 'Hủy'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Thu thập dữ liệu từ form
-                            const formData = new FormData(form);
+                // Cửa sổ xác nhận
+                Swal.fire({
+                    title: 'Xác nhận cập nhật',
+                    text: 'Bạn có chắc chắn muốn cập nhật lịch hẹn này?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Cập nhật',
+                    cancelButtonText: 'Hủy',
+                    customClass: {
+                        popup: 'custom-swal-popup' // CSS
+                    },
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Cửa sổ loading
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            customClass: {
+                                popup: 'custom-swal-popup' // CSS
+                            },
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
 
-                            fetch('{{ route('appointments.update', ':id') }}'.replace(
-                                    ':id', appointmentId), {
-                                    method: 'POST',
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                    },
-                                    body: formData // Gửi dữ liệu form
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        Swal.fire('Thành công!', data.message,
-                                            'success').then(() => {
-                                            location.reload(); // Tải lại trang
-                                        });
-                                    } else {
-                                        Swal.fire('Lỗi!', data.message, 'error');
+                        // Thu thập dữ liệu từ form
+                        const formData = new FormData(form);
+
+                        // Gửi yêu cầu AJAX
+                        fetch(form.action, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                }
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! Status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                Swal.close(); // Đóng cửa sổ loading
+
+                                if (data.success) {
+                                    // Cửa sổ thành công
+                                    Swal.fire({
+                                        title: 'Thành công!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        customClass: {
+                                            popup: 'custom-swal-popup' // CSS
+                                        },
+                                    }).then(() => {
+                                        window.location.href =
+                                            '{{ route('appointments.index') }}?page=' +
+                                            formData.get('page');
+                                    });
+                                } else {
+                                    // Cửa sổ lỗi
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: data.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup' // CSS
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                Swal.close(); // Đóng cửa sổ loading
+                                console.error('Lỗi AJAX:', error);
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: 'Đã có lỗi xảy ra: ' + error.message,
+                                    icon: 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup' // CSS
                                     }
-                                })
-                                .catch(error => {
-                                    Swal.fire('Lỗi!',
-                                        'Đã có lỗi xảy ra, vui lòng thử lại.',
-                                        'error');
                                 });
-                        }
-                    });
+                            });
+                    }
                 });
             });
         });
-</script> --}}
+    </script>
+@endsection

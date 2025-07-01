@@ -64,22 +64,29 @@
                                     <br>
                                     <span class="text-muted">Tổng tiền:
                                         {{ number_format($appointment->total_amount) }}đ</span>
-                                    @if ($appointment->status == 'cancelled' && $appointment->cancellation_reason)
+                                    @if ($appointment->status == 'cancelled' || isset($appointment->cancellation_type))
                                         <br>
                                         <span class="text-muted">Lý do hủy: {{ $appointment->cancellation_reason }}</span>
                                     @endif
+                                    {{-- @if (isset($appointment->cancellation_type) && $appointment->cancellation_reason)
+                                        <br>
+                                        <span class="text-muted">Lý do hủy: {{ $appointment->cancellation_reason }}</span>
+                                    @endif --}}
                                 </div>
+                                
                                 <div class="col-md-2 text-center">
                                     @if ($appointment->status == 'pending')
                                         <span class="status-label status-processing">Đang chờ</span>
                                     @elseif ($appointment->status == 'confirmed')
                                         <span class="status-label status-confirmed">Đã xác nhận</span>
                                     @elseif ($appointment->status == 'cancelled')
-                                        <span class="status-label status-canceled">Đã hủy</span>
+                                        <span class="status-label status-cancelled">Đã hủy</span>
                                     @elseif ($appointment->status == 'completed')
                                         <span class="status-label status-completed">Đã hoàn thành</span>
                                     @elseif ($appointment->status == 'pending_cancellation')
                                         <span class="status-label status-warning">Chờ hủy</span>
+                                    @elseif ($appointment->cancellation_type == 'no-show' ? 'Không đến' : 'Đã hủy')
+                                        <span class="status-label status-cancelled">Đã huỷ</span>
                                     @endif
                                 </div>
                                 <div class="col-md-3 text-center">
@@ -161,65 +168,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/client.js') }}"></script>
     <script>
-        // document.addEventListener('DOMContentLoaded', function () {
-        //     document.querySelectorAll('[data-swal-toggle="modal"]').forEach(button => {
-        //         button.addEventListener('click', () => {
-        //             const appointmentId = button.getAttribute('data-id');
-        //             console.log('Button clicked for appointment ID:', appointmentId); // Debug
-        //             Swal.fire({
-        //                 title: 'Hủy lịch hẹn',
-        //                 html: `
-    //                     <p>Bạn có chắc chắn muốn hủy lịch hẹn không?</p>
-    //                     <div class="form-group">
-    //                         <label for="swal-cancellation_reason">Lý do hủy <span class="text-danger">*</span></label>
-    //                         <textarea id="swal-cancellation_reason" class="form-control" style="box-shadow: none" rows="4" required placeholder="Vui lòng nhập lý do hủy..."></textarea>
-    //                     </div>
-    //                 `,
-        //                 showCancelButton: true,
-        //                 confirmButtonText: 'Gửi yêu cầu hủy',
-        //                 cancelButtonText: 'Đóng',
-        //                 focusConfirm: false,
-        //                 preConfirm: () => {
-        //                     const reason = document.getElementById('swal-cancellation_reason').value;
-        //                     if (!reason) {
-        //                         Swal.showValidationMessage('Vui lòng nhập lý do hủy');
-        //                         return false;
-        //                     }
-        //                     return { reason: reason };
-        //                 },
-        //                 allowOutsideClick: false,
-        //                 didOpen: () => {
-        //                     const form = Swal.getHtmlContainer().querySelector('form');
-        //                     if (form) form.addEventListener('submit', (e) => e.preventDefault());
-        //                 }
-        //             }).then((result) => {
-        //                 if (result.isConfirmed) {
-        //                     const form = document.createElement('form');
-        //                     form.method = 'POST';
-        //                     form.action = `{{ route('client.appointments.cancel', ':id') }}`.replace(':id', appointmentId);
-        //                     const csrf = document.createElement('input');
-        //                     csrf.type = 'hidden';
-        //                     csrf.name = '_token';
-        //                     csrf.value = '{{ csrf_token() }}';
-        //                     const method = document.createElement('input');
-        //                     method.type = 'hidden';
-        //                     method.name = '_method';
-        //                     method.value = 'PATCH';
-        //                     const reason = document.createElement('input');
-        //                     reason.type = 'hidden';
-        //                     reason.name = 'cancellation_reason';
-        //                     reason.value = result.value.reason;
-        //                     form.appendChild(csrf);
-        //                     form.appendChild(method);
-        //                     form.appendChild(reason);
-        //                     document.body.appendChild(form);
-        //                     form.submit();
-        //                 }
-        //             });
-        //         });
-        //     });
-        // });
-
         document.querySelectorAll('.cancel-btn').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.preventDefault(); // Ngăn hành vi mặc định

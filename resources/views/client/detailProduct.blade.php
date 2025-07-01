@@ -26,7 +26,7 @@
     <div class="album-wrapper d-flex align-items-center">
         <button class="prev-btn btn btn-light">❮</button>
         <div class="image-bottom overflow-hidden" style="flex: 1;">
-            <div class="image-track d-flex gap-2" style="transition: all 0.3s ease;">
+            <div class="image-track" style="transition: all 0.3s ease;">
                 @foreach ($gallery as $img)
                     <img src="{{ asset('storage/' . $img) }}"
                          onclick="document.getElementById('mainImage').src = '{{ asset('storage/' . $img) }}'"
