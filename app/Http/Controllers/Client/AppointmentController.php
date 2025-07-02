@@ -456,7 +456,7 @@ class AppointmentController extends Controller
             $query = Barber::query()
                 ->select('barbers.id', 'barbers.name')
                 ->where('branch_id', $branch_id)
-                ->where('status', 'active')
+                ->where('status', 'idle')
                 // Loại bỏ thợ “off” trong ngày $parsedDate
                 ->whereDoesntHave('schedules', function ($q) use ($parsedDate) {
                     $q->where('schedule_date', $parsedDate)
