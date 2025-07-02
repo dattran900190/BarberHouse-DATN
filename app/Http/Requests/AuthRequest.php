@@ -25,9 +25,13 @@ class AuthRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'phone' => 'required|string|max:15|regex:/^(0|\+84)[0-9]{9}$/|unique:users,phone',
-            // 'gender' => 'required|in:male,female,other',
-            // 'address' => 'required|string|max:255',
+            'phone' => [
+                'required',
+                'string',
+                'max:15',
+                'regex:/^(0|\+84)[0-9]{9}$/',
+                'unique:users,phone'
+            ],
             'password' => 'required|string|min:8|confirmed',
         ];
     }
@@ -50,12 +54,11 @@ class AuthRequest extends FormRequest
             'phone.required' => 'Số điện thoại không được để trống',
             'phone.unique' => 'Số điện thoại đã được đăng ký',
             'phone.regex' => 'Số điện thoại không hợp lệ',
-            
+
             // 'gender.required' => 'Vui lòng chọn giới tính',
             // 'gender.in' => 'Giới tính không hợp lệ',
             // 'address.required' => 'Địa chỉ không được để trống',
             // 'address.max' => 'Địa chỉ quá dài',
-            'email.unique' => 'Email đã được đăng ký',
         ];
     }
 }
