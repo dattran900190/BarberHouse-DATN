@@ -63,19 +63,7 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <label for="status">Trạng thái</label>
-                    <select id="status" name="status" class="form-control">
-                        <option value="">-- Chọn trạng thái --</option>
-                        <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Đang hoạt động</option>
-                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Tạm ngưng</option>
-                        <option value="retired" {{ old('status') == 'retired' ? 'selected' : '' }}>Đã nghỉ</option>
-                    </select>
-                    @error('status')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
-
+                <input type="hidden" name="status" value="idle">
 
                 <div class="form-group">
                     <label for="avatar">Ảnh đại diện</label>

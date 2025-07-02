@@ -28,9 +28,9 @@ class Payment extends Model
     {
         return $this->belongsTo(Order::class);
     }
-   
-public function appointment()
-{
-    return $this->belongsTo(Appointment::class, 'appointment_id');
-}
+
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class, 'appointment_id');
+    }
 }

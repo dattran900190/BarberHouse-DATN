@@ -110,9 +110,23 @@
                                         </td>
                                         <td>{{ $refund->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="text-center">
-                                            <a href="{{ route('refunds.show', $refund->id) }}" class="btn btn-info btn-sm">
+                                            <a href="{{ route('refunds.show', $refund->id) }}"
+                                                class="btn btn-info btn-sm mb-1">
                                                 <i class="fas fa-eye"></i> Xem
                                             </a>
+
+                                            @if ($key === 'pending')
+                                                <form action="{{ route('refunds.update', $refund->id) }}" method="POST"
+                                                    class="d-inline">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="refund_status" value="processing">
+                                                    <button type="submit" class="btn btn-success btn-sm"
+                                                        onclick="return confirm('Xác nhận chuyển sang trạng thái đang xử lý?')">
+                                                        <i class="fas fa-check-circle"></i> Xác nhận
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

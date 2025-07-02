@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProcessRefundRequest;
 use App\Models\RefundRequest;
 use App\Models\Order;
-use App\Models\Payment;
+use App\Mail\RefundStatusMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+
+
 
 class RefundRequestController extends Controller
 {
@@ -50,7 +54,7 @@ class RefundRequestController extends Controller
 
     public function show(RefundRequest $refund)
     {
-        $refund->load(['user', 'order']);
+        $refund->load(['user', 'order.orderItems.productVariant.volume']);
         return view('admin.refunds.show', compact('refund'));
     }
 
@@ -59,9 +63,14 @@ class RefundRequestController extends Controller
         DB::beginTransaction();
         try {
             $newStatus = $request->input('refund_status');
-
-            // Trạng thái hiện tại
             $currentStatus = $refund->refund_status;
+
+            Log::info('Cập nhật trạng thái:', [
+                'refund_id' => $refund->id,
+                'order_id' => $refund->order_id,
+                'current' => $currentStatus,
+                'new' => $newStatus,
+            ]);
 
             // Không cho phép cập nhật nếu đã hoàn tiền hoặc từ chối
             if (in_array($currentStatus, ['refunded', 'rejected'])) {
@@ -70,6 +79,11 @@ class RefundRequestController extends Controller
 
             // Cấm quay lại trạng thái cũ
             $statusOrder = ['pending' => 1, 'processing' => 2, 'refunded' => 3, 'rejected' => 3];
+            Log::info('So sánh cấp độ:', [
+                'current_order' => $statusOrder[$currentStatus],
+                'new_order' => $statusOrder[$newStatus],
+            ]);
+
             if ($statusOrder[$newStatus] < $statusOrder[$currentStatus]) {
                 return back()->withErrors(['error' => 'Không thể quay lại trạng thái trước đó.']);
             }
@@ -77,28 +91,43 @@ class RefundRequestController extends Controller
             // Nếu là hoàn tiền, kiểm tra đơn hàng & trạng thái thanh toán
             if ($newStatus === 'refunded') {
                 $order = Order::findOrFail($refund->order_id);
+                Log::info('Đã tìm thấy đơn hàng', ['order' => $order->toArray()]);
 
                 if ($order->payment_status !== 'paid') {
-                    return back()->withErrors(['error' => 'Không thể hoàn tiền cho đơn hàng chưa thanh toán.']);
+                    Log::warning('Thanh toán không hợp lệ', ['payment_status' => $order->payment_status]);
+                    return back()->withErrors(['error' => 'Không thể hoàn tiền. Trạng thái thanh toán hiện tại: ' . $order->payment_status]);
                 }
 
                 $order->update(['status' => 'cancelled']);
-
                 $refund->update([
                     'refund_status' => 'refunded',
                     'refunded_at' => now(),
                 ]);
+
+                // Gửi email thông báo hoàn tiền thành công
+                Mail::to($refund->user->email)->send(new RefundStatusMail($refund, 'refunded'));
             } else {
                 // Cập nhật trạng thái khác như processing hoặc rejected
                 $refund->update([
                     'refund_status' => $newStatus,
                 ]);
+
+                // Gửi email thông báo từ chối (nếu trạng thái là rejected)
+                if ($newStatus === 'rejected') {
+                    Mail::to($refund->user->email)->send(new RefundStatusMail($refund, 'rejected'));
+                }
             }
 
             DB::commit();
+            Log::info('Cập nhật trạng thái hoàn tiền thành công', ['refund_id' => $refund->id]);
             return redirect()->route('refunds.index')->with('success', 'Cập nhật trạng thái hoàn tiền thành công.');
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Lỗi khi cập nhật trạng thái hoàn tiền', [
+                'refund_id' => $refund->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return back()->withErrors(['error' => 'Lỗi xảy ra: ' . $e->getMessage()]);
         }
     }
