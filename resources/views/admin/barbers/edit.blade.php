@@ -96,12 +96,11 @@
                             <label for="status">Trạng thái</label>
 
                             <select id="status" name="status" class="form-control" {{ $isRetired ? 'disabled' : '' }}>
-                                <option value="active" {{ old('status', $barber->status) == 'active' ? 'selected' : '' }}>
-                                    Đang hoạt động
+                                <option value="idle" {{ old('status', $barber->status) == 'idle' ? 'selected' : '' }}>
+                                    Rảnh (chờ khách)
                                 </option>
-                                <option value="inactive"
-                                    {{ old('status', $barber->status) == 'inactive' ? 'selected' : '' }}>
-                                    Tạm nghỉ/đang làm việc
+                                <option value="busy" {{ old('status', $barber->status) == 'busy' ? 'selected' : '' }}>
+                                    Đang làm việc
                                 </option>
                                 <option value="retired"
                                     {{ old('status', $barber->status) == 'retired' ? 'selected' : '' }}>
