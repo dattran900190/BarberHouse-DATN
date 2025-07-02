@@ -341,7 +341,7 @@ class CartController extends Controller
                 'product_variant_id' => $request->product_variant_id,
                 'quantity' => $request->quantity ?? 1,
             ]);
-            return redirect()->route('login');
+            return redirect()->route('login')->with('alert', 'Bạn cần đăng nhập để sử dụng tính năng mua ngay.');
         }
 
         // Nếu đã đăng nhập, chuyển thẳng đến trang checkout với dữ liệu buy_now

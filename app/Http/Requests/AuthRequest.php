@@ -25,7 +25,7 @@ class AuthRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            // 'phone' => 'required|string|max:15|unique:users',
+            'phone' => 'required|string|max:15|regex:/^(0|\+84)[0-9]{9}$/|unique:users,phone',
             // 'gender' => 'required|in:male,female,other',
             // 'address' => 'required|string|max:255',
             'password' => 'required|string|min:8|confirmed',
@@ -39,7 +39,7 @@ class AuthRequest extends FormRequest
             'email.required' => 'Không được để trống email',
             'email.email' => 'Email không đúng định dạng',
             'email.exists' => 'Email chưa được đăng ký',
-
+            'email.unique' => 'Email đã được đăng ký',
             'password.required' => 'Mật khẩu không được để trống',
             'password.string' => 'Mật khẩu không hợp lệ',
             'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự',
@@ -47,8 +47,10 @@ class AuthRequest extends FormRequest
 
             // Register messages
             'name.required' => 'Tên không được để trống',
-            // 'phone.required' => 'Số điện thoại không được để trống',
-            // 'phone.unique' => 'Số điện thoại đã được đăng ký',
+            'phone.required' => 'Số điện thoại không được để trống',
+            'phone.unique' => 'Số điện thoại đã được đăng ký',
+            'phone.regex' => 'Số điện thoại không hợp lệ',
+            
             // 'gender.required' => 'Vui lòng chọn giới tính',
             // 'gender.in' => 'Giới tính không hợp lệ',
             // 'address.required' => 'Địa chỉ không được để trống',

@@ -82,8 +82,15 @@
                             <input type="hidden" name="product_variant_id" id="buy_now_variant_id"
                                 value="{{ $product->variants->first()->id }}">
                             <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
-                            <button type="submit" class="btn btn-success" style="margin-top: 20px">Mua ngay</button>
+                            @guest
+                                <button type="button" class="btn btn-success btn-buy-now" style="margin-top: 20px">Mua
+                                    ngay</button>
+                            @else
+                                <button type="submit" class="btn btn-success btn-buy-now" style="margin-top: 20px">Mua
+                                    ngay</button>
+                            @endguest
                         </form>
+
 
 
                         <div class="mt-2">
@@ -128,15 +135,22 @@
                                                 <input type="hidden" name="product_variant_id"
                                                     value="{{ $variant->id }}">
                                                 <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn btn-dark ms-3" style="margin-top: 20px">🛒</button>
+                                                <button type="submit" class="btn btn-dark ms-3"
+                                                    style="margin-top: 20px">🛒</button>
                                             </form>
-                                            <form action="{{ route('cart.buyNow') }}" method="POST" class="m-0 p-0">
+                                            <form action="{{ route('cart.buyNow') }}" method="POST"
+                                                class="m-0 p-0 buy-now-form-related">
                                                 @csrf
                                                 <input type="hidden" name="product_variant_id"
                                                     value="{{ $variant->id }}">
                                                 <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn btn-success"
-                                                    style="margin-top: 20px">Mua</button>
+                                                @guest
+                                                    <button type="button" class="btn btn-success btn-buy-now"
+                                                        style="margin-top: 20px">Mua</button>
+                                                @else
+                                                    <button type="submit" class="btn btn-success btn-buy-now"
+                                                        style="margin-top: 20px">Mua</button>
+                                                @endguest
                                             </form>
                                         @endif
                                     </div>
@@ -207,6 +221,21 @@
                 });
             }
         });
+        $(function() {
+        $('.btn-buy-now[type="button"]').on('click', function() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bạn chưa đăng nhập!',
+                text: 'Vui lòng đăng nhập để sử dụng chức năng "Mua ngay".',
+                showConfirmButton: true,
+                confirmButtonText: 'Đăng nhập'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('login') }}";
+                }
+            });
+        });
+    });
     </script>
 
 @endsection
