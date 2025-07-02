@@ -29,7 +29,7 @@
         </div>
 
         @include('layouts.blocks.footer')
-        @yield('scripts')
+        @stack('scripts')
         <!-- Chat Button -->
         <div class="chat-wrapper">
             <button id="chatToggle" class="chat-button">

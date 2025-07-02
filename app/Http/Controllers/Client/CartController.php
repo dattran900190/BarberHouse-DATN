@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+
+
 class CartController extends Controller
 {
 
@@ -56,7 +58,11 @@ class CartController extends Controller
             ]);
         }
 
-
+$cart_count = $cart->items()->sum('quantity');
+Session::put('cart_count', $cart_count); 
+if ($request->ajax()) {
+    return response()->json(['success' => true, 'cart_count' => $cart_count]);
+}
         return redirect()->route('cart.show')->with('success', 'Sản phẩm đã được thêm vào giỏ hàng.');
     }
 
@@ -71,7 +77,9 @@ class CartController extends Controller
         }
 
         $cartItem->delete();
-
+ // Cập nhật lại số lượng trong session
+    $cart_count = $cart->items()->sum('quantity');
+    Session::put('cart_count', $cart_count);
         return redirect()->route('cart.show')->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng.');
     }
 
