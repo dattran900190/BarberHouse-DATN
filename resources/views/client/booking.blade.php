@@ -5,7 +5,7 @@
     Đặt lịch Baber House
 @endsection
 
-@section('slider')
+{{-- @section('slider')
     <section class="hero-slider">
         <div class="slide active">
             <img src="https://4rau.vn/upload/hinhanh/cover-fb-10th-collection-0744.png" alt="Slide 1" />
@@ -22,10 +22,10 @@
         <button class="prev">‹</button>
         <button class="next">›</button>
     </section>
-@endsection
+@endsection --}}
 
 @section('content')
-    <main class="container">
+    <main class="container" style="padding-top: 10%">
         <h2 style="text-align: center; font-family: 'Segoe UI', sans-serif">
             Đặt Lịch Cắt Tóc
         </h2>
@@ -217,10 +217,16 @@
                 </button>
             </div>
         </form>
-
-
     </main>
-    <script>
+    <style>
+        #mainNav {
+            background-color: #000;
+        }
+    </style>
+@endsection
+
+@section('scripts')
+<script>
         // $('#service').select2({
         //     width: '100%',
         //     templateResult: function(data) {
@@ -241,9 +247,7 @@
             console.log('DEBUG sel.dataset =', sel.dataset);…
         });
     </script>
-@endsection
 
-@section('scripts')
     <script>
         // Xử lý nút "Cập nhật"
         document.querySelector('.booking-btn').addEventListener('click', function(event) {

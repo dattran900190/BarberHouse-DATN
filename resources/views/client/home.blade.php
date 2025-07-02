@@ -64,7 +64,8 @@
                 @endforeach
             </div>
 
-           <a href="{{ route('client.posts')}}" style="text-decoration: none"><button id="loadMore" class="btn-xem-them">Xem thêm</button></a>
+            <a href="{{ route('client.posts') }}" style="text-decoration: none"><button id="loadMore"
+                    class="btn-xem-them">Xem thêm</button></a>
         </section>
 
         <section id="product">
@@ -85,13 +86,14 @@
 
                             @if ($variant)
                                 <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
-    @csrf
-    <input type="hidden" name="product_variant_id" value="{{ $product->default_variant_id ?? $product->id }}">
-    <input type="hidden" name="quantity" value="1">
-    <button type="submit" class="btn-add-to-cart" title="Thêm vào giỏ hàng">
-        🛒
-    </button>
-</form>
+                                    @csrf
+                                    <input type="hidden" name="product_variant_id"
+                                        value="{{ $product->default_variant_id ?? $product->id }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn-add-to-cart" title="Thêm vào giỏ hàng">
+                                        🛒
+                                    </button>
+                                </form>
                             @endif
 
 
@@ -99,7 +101,8 @@
                     @endforeach
                 </div>
 
-                <a href="{{ route('client.product')}}" style="text-decoration: none"><button id="loadMore" class="btn-xem-them">Xem thêm</button></a>
+                <a href="{{ route('client.product') }}" style="text-decoration: none"><button id="loadMore"
+                        class="btn-xem-them">Xem thêm</button></a>
             </div>
         </section>
 
@@ -128,43 +131,44 @@
     </main>
 @endsection
 
-@section('card-footer')
-@endsection
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(function() {
-    $('.add-to-cart-form').on('submit', function(e) {
-        e.preventDefault();
-        let form = $(this);
-        $.ajax({
-            url: "{{ route('cart.add') }}",
-            method: "POST",
-            data: form.serialize(),
-            headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-            success: function(res) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công!',
-                    text: 'Đã thêm vào giỏ hàng!',
-                    timer: 1500,
-                    showConfirmButton: false
+@section('scripts')
+    <script>
+        $(function() {
+            $('.add-to-cart-form').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: "{{ route('cart.add') }}",
+                    method: "POST",
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(res) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: 'Đã thêm vào giỏ hàng!',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        if (res.cart_count !== undefined) {
+                            $('#cartCount').text(res.cart_count);
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Có lỗi xảy ra, vui lòng thử lại!'
+                        });
+                    }
                 });
-                if(res.cart_count !== undefined) {
-                    $('#cartCount').text(res.cart_count);
-                }
-            },
-            error: function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi!',
-                    text: 'Có lỗi xảy ra, vui lòng thử lại!'
-                });
-            }
+                return false;
+            });
         });
-        return false;
-    });
-});
-</script>
-@endpush
+    </script>
+@endsection

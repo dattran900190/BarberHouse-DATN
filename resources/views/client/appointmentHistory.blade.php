@@ -136,23 +136,6 @@
             border-radius: 4px;
             border: 1px solid #ced4da;
         }
-
-        .custom-swal-popup {
-            width: 550px !important;
-            max-width: 550px !important;
-            max-height: 450px !important;
-            height: 450px !important;
-        }
-
-        /* Tăng kích thước vòng xoáy loading */
-        .swal2-loading {
-            font-size: 1.5rem !important;
-        }
-
-        .custom-swal-popup .swal2-title {
-            margin-top: 15px !important;
-            font-size: 1.5rem !important;
-        }
     </style>
 @endsection
 
