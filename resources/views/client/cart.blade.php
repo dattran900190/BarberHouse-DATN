@@ -179,10 +179,15 @@
                                             </div>
 
                                             <form id="checkout-form" action="{{ route('cart.checkout') }}" method="GET">
-
-                                                <button type="submit" class="btn btn-dark btn-block btn-lg">Xác
-                                                    nhận</button>
+                                                @guest
+                                                    <button type="button" class="btn btn-dark btn-block btn-lg"
+                                                        id="btn-checkout-guest">Xác nhận</button>
+                                                @else
+                                                    <button type="submit" class="btn btn-dark btn-block btn-lg">Xác
+                                                        nhận</button>
+                                                @endguest
                                             </form>
+
                                         </div>
                                     </div>
                                 </div>
@@ -253,6 +258,8 @@
 @endsection
 
 @section('scripts')
+    <!-- SweetAlert2 CDN đặt bên ngoài -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         window.onload = function() {
             const formatVND = n => {
@@ -263,8 +270,6 @@
                     maximumFractionDigits: 0
                 }).replace('₫', '') + ' ₫';
             };
-
-
 
             const updateTotal = () => {
                 const checkedBoxes = [...document.querySelectorAll('.cart-item-checkbox:checked')];
@@ -424,6 +429,25 @@
             }
 
             updateTotal();
+
+            // SWEETALERT2 CHO KHÁCH
+            const btnGuest = document.getElementById('btn-checkout-guest');
+            if (btnGuest) {
+                btnGuest.addEventListener('click', function () {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Bạn chưa đăng nhập!',
+                        text: 'Vui lòng đăng nhập để thanh toán.',
+                        showConfirmButton: true,
+                        confirmButtonText: 'Đăng nhập'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{{ route('login') }}";
+                        }
+                    });
+                });
+            }
         };
     </script>
 @endsection
+
