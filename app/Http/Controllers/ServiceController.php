@@ -14,7 +14,7 @@ class ServiceController extends Controller
         $search = $request->input('search');
         $services = Service::when($search, function ($query, $search) {
             return $query->where('name', 'like', '%' . $search . '%');
-        })->orderBy('id', 'DESC')->paginate(5);
+        })->orderBy('updated_at', 'DESC')->paginate(5);
 
         return view('admin.services.index', compact('services'));
     }

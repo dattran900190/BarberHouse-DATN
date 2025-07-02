@@ -59,7 +59,12 @@
             <div class="small-box bg-warning">
                 <div class="inner">
                     <h3>32</h3>
-                    <p>Lịch đặt hôm nay</p><span id="pending-appointment-count" class="badge badge-danger" style="display: none;">0</span>
+                    <p>Lịch đặt hôm nay</p>
+                    <!-- Badge hiển thị số lượng lịch đang chờ -->
+                    <span id="pending-appointment-count" class="badge badge-danger"
+                        style="{{ $pendingCount > 0 ? '' : 'display: none;' }}">
+                        {{ $pendingCount }}
+                    </span>
                 </div>
                 <div class="icon">
                     <i class="fas fa-calendar-check"></i>
@@ -137,77 +142,10 @@
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // function initEchoListener() {
-        //     if (typeof Echo !== 'undefined' && Echo !== null) {
-        //         console.log('Echo is defined:', Echo);
-        //         const channel = Echo.channel('appointments');
-        //         channel.subscribed(() => {
-        //                 console.log('Subscribed to appointments channel');
-        //             })
-        //             .listen('NewAppointment', (event) => {
-        //                 console.log('New appointment received (NewAppointment):', event);
-        //                 showToast(event);
-        //             })
-        //             .listen('.NewAppointment', (event) => {
-        //                 console.log('New appointment received (.NewAppointment):', event);
-        //                 showToast(event);
-        //             })
-        //             .listen('App\\Events\\NewAppointment', (event) => {
-        //                 console.log('New appointment received (App\\Events\\NewAppointment):', event);
-        //                 showToast(event);
-        //             })
-        //             .listen('.App\\Events\\NewAppointment', (event) => {
-        //                 console.log('New appointment received (.App\\Events\\NewAppointment):', event);
-        //                 showToast(event);
-        //             })
-        //             .error((error) => {
-        //                 console.error('Echo channel error:', error);
-        //             });
-        //     } else {
-        //         console.error('Echo is not defined or null, retrying...');
-        //         setTimeout(initEchoListener, 200);
-        //     }
-        // }
-
-        // function showToast(event) {
-        //     try {
-        //         const toastContainer = document.getElementById('toastContainer');
-        //         const toastTemplate = document.getElementById('appointmentToastTemplate');
-        //         if (!toastContainer || !toastTemplate) {
-        //             console.error('Toast container or template not found');
-        //             return;
-        //         }
-        //         const newToast = toastTemplate.cloneNode(true);
-        //         newToast.id = 'appointmentToast-' + Date.now();
-        //         newToast.style.display = 'block';
-
-        //         const toastMessage = newToast.querySelector('#toastMessage');
-        //         const toastDetailLink = newToast.querySelector('#toastDetailLink');
-        //         if (!toastMessage || !toastDetailLink) {
-        //             console.error('Toast elements not found');
-        //             return;
-        //         }
-        //         toastMessage.textContent = event?.message || 'Không có thông tin chi tiết';
-        //         toastDetailLink.href = `/admin/appointments/${event?.appointment_id || ''}`;
-
-        //         toastContainer.appendChild(newToast);
-
-        //         const toast = new bootstrap.Toast(newToast, {
-        //             delay: 180000 // 3 phút
-        //         });
-        //         toast.show();
-        //         console.log('Toast shown successfully');
-
-        //         newToast.addEventListener('hidden.bs.toast', () => {
-        //             newToast.remove();
-        //         });
-        //     } catch (error) {
-        //         console.error('Error showing toast:', error);
-        //     }
-        // }
-
         function initEchoListener() {
             if (typeof Echo !== 'undefined' && Echo !== null) {
                 // console.log('Echo is defined:', Echo);
@@ -243,16 +181,31 @@
             }
         }
 
-        // Hàm cập nhật số lượng badge
         function updatePendingCount(change) {
-            const countElement = document.getElementById('pending-appointment-count');
-            if (countElement) {
-                let currentCount = parseInt(countElement.textContent) || 0;
-                currentCount = Math.max(0, currentCount + change); // Đảm bảo số không âm
-                countElement.textContent = currentCount;
-                countElement.style.display = currentCount > 0 ? 'inline' : 'none'; // Hiển thị/ẩn badge
+            // Cập nhật badge trên dashboard
+            const dashboardBadge = document.getElementById('pending-appointment-count');
+            if (dashboardBadge) {
+                let currentCount = parseInt(dashboardBadge.textContent) || 0;
+                currentCount = Math.max(0, currentCount + change);
+                dashboardBadge.textContent = currentCount;
+                dashboardBadge.style.display = currentCount > 0 ? 'inline' : 'none';
+                console.log('Updated dashboard badge to:', currentCount);
             } else {
-                console.error('Pending appointment count element not found');
+                console.error('Dashboard badge element not found');
+            }
+
+            // Cập nhật badge trong sidebar menu
+            const sidebarBadges = document.getElementsByClassName('pending-appointment-count');
+            if (sidebarBadges.length === 0) {
+                console.error('Sidebar badge element not found. Check HTML for class "pending-appointment-count"');
+            } else {
+                Array.from(sidebarBadges).forEach(badge => {
+                    let currentCount = parseInt(badge.textContent) || 0;
+                    currentCount = Math.max(0, currentCount + change);
+                    badge.textContent = currentCount;
+                    badge.classList.toggle('hidden', currentCount === 0);
+                    console.log('Updated sidebar badge to:', currentCount);
+                });
             }
         }
 
@@ -260,14 +213,14 @@
             try {
                 const toastContainer = document.getElementById('toastContainer');
                 const toastTemplate = document.getElementById('appointmentToastTemplate');
-               
+
                 const newToast = toastTemplate.cloneNode(true);
                 newToast.id = 'appointmentToast-' + Date.now();
                 newToast.style.display = 'block';
 
                 const toastMessage = newToast.querySelector('#toastMessage');
                 const toastDetailLink = newToast.querySelector('#toastDetailLink');
-                
+
                 toastMessage.textContent = event?.message || 'Không có thông tin chi tiết';
                 toastDetailLink.href = `/admin/appointments/${event?.appointment_id || ''}`;
 

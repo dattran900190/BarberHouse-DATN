@@ -9,12 +9,14 @@
             'confirmed' => 'primary',
             'completed' => 'success',
             'cancelled' => 'danger',
+            'pending_cancellation' => 'warning',
         ];
         $statusTexts = [
             'pending' => 'Chờ xác nhận',
             'confirmed' => 'Đã xác nhận',
             'completed' => 'Hoàn thành',
             'cancelled' => 'Đã hủy',
+            'pending_cancellation' => 'Chờ huỷ',
         ];
 
         $paymentColors = [

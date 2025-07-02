@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b5d088b0206755fcd96da7ffa4dc12c5",
+    "content-hash": "9d207c746690d9e1cf53dc6eaf42e24f",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -1099,26 +1099,26 @@
         },
         {
             "name": "jeroennoten/laravel-adminlte",
-            "version": "v3.15.0",
+            "version": "v3.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jeroennoten/Laravel-AdminLTE.git",
-                "reference": "0269331f55fa8385413895225d6d89b85babe3de"
+                "reference": "5ba9fcebbdd889e4d05fdcfba927ffe1335f91ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jeroennoten/Laravel-AdminLTE/zipball/0269331f55fa8385413895225d6d89b85babe3de",
-                "reference": "0269331f55fa8385413895225d6d89b85babe3de",
+                "url": "https://api.github.com/repos/jeroennoten/Laravel-AdminLTE/zipball/5ba9fcebbdd889e4d05fdcfba927ffe1335f91ee",
+                "reference": "5ba9fcebbdd889e4d05fdcfba927ffe1335f91ee",
                 "shasum": ""
             },
             "require": {
                 "almasaeed2010/adminlte": "3.2.*",
-                "laravel/framework": ">=8.0",
-                "php": ">=7.3"
+                "laravel/framework": ">=6.0",
+                "php": ">=7.2.0"
             },
             "require-dev": {
-                "orchestra/testbench": ">=6.0",
-                "phpunit/phpunit": ">=9.1"
+                "orchestra/testbench": ">=4.0",
+                "phpunit/phpunit": "^8.3"
             },
             "type": "library",
             "extra": {
@@ -1152,9 +1152,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jeroennoten/Laravel-AdminLTE/issues",
-                "source": "https://github.com/jeroennoten/Laravel-AdminLTE/tree/v3.15.0"
+                "source": "https://github.com/jeroennoten/Laravel-AdminLTE/tree/v3.8.0"
             },
-            "time": "2025-02-24T22:20:15+00:00"
+            "time": "2022-02-10T17:50:18+00:00"
         },
         {
             "name": "kitloong/laravel-migrations-generator",

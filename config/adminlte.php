@@ -301,7 +301,7 @@ return [
     */
 
     'menu' => [
-        
+
         // Navbar items
         [
             'type'         => 'navbar-search',
@@ -423,6 +423,7 @@ return [
             'url'  => 'admin/refunds',
             'icon' => 'fas fa-undo',
         ],
+        
 
     ],
 

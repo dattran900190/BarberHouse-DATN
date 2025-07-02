@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+
+
 class CartController extends Controller
 {
 
@@ -20,7 +22,7 @@ class CartController extends Controller
         $request->validate([
             'product_variant_id' => 'required|exists:product_variants,id',
             'quantity' => 'required|integer|min:1',
-        ],[
+        ], [
             'product_variant_id.required' => 'Vui lòng chọn sản phẩm.',
             'product_variant_id.exists' => 'Sản phẩm không tồn tại.',
             'quantity.required' => 'Vui lòng nhập số lượng.',
@@ -56,7 +58,11 @@ class CartController extends Controller
             ]);
         }
 
-
+$cart_count = $cart->items()->sum('quantity');
+Session::put('cart_count', $cart_count); 
+if ($request->ajax()) {
+    return response()->json(['success' => true, 'cart_count' => $cart_count]);
+}
         return redirect()->route('cart.show')->with('success', 'Sản phẩm đã được thêm vào giỏ hàng.');
     }
 
@@ -71,7 +77,9 @@ class CartController extends Controller
         }
 
         $cartItem->delete();
-
+ // Cập nhật lại số lượng trong session
+    $cart_count = $cart->items()->sum('quantity');
+    Session::put('cart_count', $cart_count);
         return redirect()->route('cart.show')->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng.');
     }
 
@@ -81,7 +89,7 @@ class CartController extends Controller
     {
         $request->validate([
             'quantity' => 'required|integer|min:1',
-        ],[
+        ], [
             'quantity.required' => 'Vui lòng nhập số lượng.',
             'quantity.integer' => 'Số lượng phải là một số nguyên.',
             'quantity.min' => 'Số lượng phải lớn hơn hoặc bằng 1.',
@@ -98,7 +106,11 @@ class CartController extends Controller
             'quantity' => $request->quantity,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Số lượng sản phẩm đã được cập nhật.']);
+        return response()->json([
+            'success' => true,
+            'unit_price' => round($cartItem->price),
+            'subtotal' => round($cartItem->price * $cartItem->quantity)
+        ]);
     }
 
 
