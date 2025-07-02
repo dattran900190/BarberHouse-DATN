@@ -30,11 +30,6 @@ class Order extends Model
         return $this->hasMany(\App\Models\OrderItem::class);
     }
 
-    public function payment()
-    {
-        return $this->hasOne(Payment::class);
-    }
-
     public function refundRequests()
     {
         return $this->hasMany(RefundRequest::class);

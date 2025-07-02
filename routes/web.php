@@ -128,7 +128,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
 
+    // Hoàn tiền
     Route::resource('refunds', RefundRequestController::class);
+    // Route::put('/refunds/{refund}', [RefundRequestController::class, 'update'])->name('refunds.update');
 
     // ==== Đơn hàng ====
     Route::resource('orders', OrderController::class)->names('admin.orders');
