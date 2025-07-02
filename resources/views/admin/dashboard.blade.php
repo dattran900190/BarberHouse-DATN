@@ -142,6 +142,8 @@
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         function initEchoListener() {
@@ -178,19 +180,6 @@
                 setTimeout(initEchoListener, 200);
             }
         }
-
-        // Hàm cập nhật số lượng badge
-        // function updatePendingCount(change) {
-        //     const countElement = document.getElementById('pending-appointment-count');
-        //     if (countElement) {
-        //         let currentCount = parseInt(countElement.textContent) || 0;
-        //         currentCount = Math.max(0, currentCount + change); // Đảm bảo số không âm
-        //         countElement.textContent = currentCount;
-        //         countElement.style.display = currentCount > 0 ? 'inline' : 'none'; // Hiển thị/ẩn badge
-        //     } else {
-        //         console.error('Pending appointment count element not found');
-        //     }
-        // }
 
         function updatePendingCount(change) {
             // Cập nhật badge trên dashboard

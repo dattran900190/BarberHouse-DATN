@@ -30,7 +30,7 @@
     <div class="album-wrapper d-flex align-items-center">
           <button class="prev-btn">❮</button>
         <div class="image-bottom overflow-hidden" style="flex: 1;">
-            <div class="image-track d-flex gap-2" style="transition: all 0.3s ease;">
+            <div class="image-track" style="transition: all 0.3s ease;">
                 @foreach ($gallery as $img)
     <a href="{{ asset('storage/' . $img) }}" data-lightbox="gallery">
         <img src="{{ asset('storage/' . $img) }}" style="width: 150px; cursor: zoom-in;" alt="Gallery">

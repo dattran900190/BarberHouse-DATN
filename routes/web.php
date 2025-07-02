@@ -72,7 +72,7 @@ Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai
 // == Lịch sử đặt lịch ==
 Route::get('/lich-su-dat-lich', [ClientAppointmentController::class, 'appointmentHistory'])->name('client.appointmentHistory');
 Route::get('/lich-su-dat-lich/{id}', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
-Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
+Route::patch('lich-su-dat-lich/{appointment}/huy', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
 
 
 // web.php
@@ -158,6 +158,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
     Route::post('/appointments/{appointment}/approve-cancel', [AppointmentController::class, 'approveCancel'])->name('appointments.approve-cancel');
     Route::post('/appointments/{appointment}/reject-cancel', [AppointmentController::class, 'rejectCancel'])->name('appointments.reject-cancel');
+    Route::post('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow'])->name('appointments.no-show');
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);
