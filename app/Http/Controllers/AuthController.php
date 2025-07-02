@@ -20,6 +20,13 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $req->email, 'password' => $req->password], $req->filled('remember'))) {
             $req->session()->regenerate();
             $user = Auth::user();
+
+            // Nếu có mua ngay, redirect checkout mua ngay
+            if ($req->session()->has('buy_now_product')) {
+                return redirect()->route('cart.buyNow.checkout');
+            }
+
+            // Bình thường
             return $user->role === 'admin'
                 ? redirect()->route('dashboard')
                 : redirect()->route('home');
@@ -29,6 +36,7 @@ class AuthController extends Controller
             'messageError' => 'Email hoặc mật khẩu không chính xác'
         ]);
     }
+
 
     public function register()
     {
@@ -50,6 +58,9 @@ class AuthController extends Controller
 
         Auth::login($user);
 
+        if (session()->has('buy_now_product')) {
+            return redirect()->route('cart.buyNow.checkout');
+        }
         return redirect()->route('home')->with('success', 'Đăng ký thành công!');
     }
 

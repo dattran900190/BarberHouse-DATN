@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -34,17 +35,35 @@ class OrderController extends Controller
             'items' => $order->items, // Truyền order items vào view
         ]);
     }
+
     public function cancel(Order $order)
     {
-        // Kiểm tra quyền truy cập
         if ($order->user_id !== auth()->id()) {
             abort(403, 'Không có quyền truy cập đơn hàng này.');
         }
+        if ($order->status === 'cancelled') {
+            return redirect()->route('client.orderHistory')->with('error', 'Đơn hàng đã được hủy trước đó!');
+        }
 
-        // Cập nhật trạng thái đơn hàng thành 'cancelled'
-        $order->status = 'cancelled';
-        $order->save();
+        DB::transaction(function () use ($order) {
+            // Cập nhật trạng thái đơn hàng thành 'cancelled'
+            $order->status = 'cancelled';
+            $order->save();
 
-        return redirect()->route('client.orderHistory')->with('success', 'Đơn hàng đã được hủy.');
+            foreach ($order->items as $item) {
+                $variant = \App\Models\ProductVariant::find($item->product_variant_id);
+                if ($variant) {
+                    $variant->increment('stock', $item->quantity);
+
+                    // Cập nhật lại tồn kho tổng sản phẩm cha
+                    $product = $variant->product;
+                    if ($product) {
+                        $product->updateStockFromVariants();
+                    }
+                }
+            }
+        });
+
+        return redirect()->route('client.orderHistory')->with('success', 'Đơn hàng đã được hủy và hàng đã trả về kho.');
     }
 }
