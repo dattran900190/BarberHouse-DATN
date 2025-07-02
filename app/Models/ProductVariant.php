@@ -18,7 +18,6 @@ class ProductVariant extends Model
         return $this->belongsTo(Product::class);
     }
 
-
     // Quan hệ với dung tích
     public function volume()
     {

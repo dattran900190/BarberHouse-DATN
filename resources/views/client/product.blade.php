@@ -10,10 +10,12 @@
             <img src="https://4rau.vn/upload/hinhanh/cover-fb-10th-collection-0744.png" alt="Slide 1" />
         </div>
         <div class="slide">
-            <img src="https://4rau.vn/upload/hinhanh/z4459651440290_1e4a90c27fc15cc175132ecd94872e98-2870.jpg" alt="Slide 2" />
+            <img src="https://4rau.vn/upload/hinhanh/z4459651440290_1e4a90c27fc15cc175132ecd94872e98-2870.jpg"
+                alt="Slide 2" />
         </div>
         <div class="slide">
-            <img src="https://4rau.vn/upload/hinhanh/z6220937549697_8ae15d51c35246081cf6bc8d60780126-1254.jpg" alt="Slide 3" />
+            <img src="https://4rau.vn/upload/hinhanh/z6220937549697_8ae15d51c35246081cf6bc8d60780126-1254.jpg"
+                alt="Slide 3" />
         </div>
         <button class="prev">‹</button>
         <button class="next">›</button>
@@ -34,7 +36,8 @@
                         <select id="filter-category" name="category" onchange="this.form.submit()" class="form-select">
                             <option value="">Tất cả danh mục</option>
                             @foreach ($globalCategories as $cate)
-                                <option value="{{ $cate->id }}" {{ request('category') == $cate->id ? 'selected' : '' }}>
+                                <option value="{{ $cate->id }}"
+                                    {{ request('category') == $cate->id ? 'selected' : '' }}>
                                     {{ $cate->name }}
                                 </option>
                             @endforeach
@@ -46,37 +49,55 @@
                         <label for="filter-price" class="form-label">Khoảng giá</label>
                         <select id="filter-price" name="price_range" onchange="this.form.submit()" class="form-select">
                             <option value="">Tất cả giá</option>
-                            <option value="0-100" {{ request('price_range') == '0-100' ? 'selected' : '' }}>Dưới 100k</option>
-                            <option value="100-200" {{ request('price_range') == '100-200' ? 'selected' : '' }}>100k–200k</option>
-                            <option value="200-500" {{ request('price_range') == '200-500' ? 'selected' : '' }}>200k–500k</option>
-                            <option value="500-9999" {{ request('price_range') == '500-9999' ? 'selected' : '' }}>Trên 500k</option>
+                            <option value="0-100" {{ request('price_range') == '0-100' ? 'selected' : '' }}>Dưới 100k
+                            </option>
+                            <option value="100-200" {{ request('price_range') == '100-200' ? 'selected' : '' }}>100k–200k
+                            </option>
+                            <option value="200-500" {{ request('price_range') == '200-500' ? 'selected' : '' }}>200k–500k
+                            </option>
+                            <option value="500-9999" {{ request('price_range') == '500-9999' ? 'selected' : '' }}>Trên 500k
+                            </option>
                         </select>
                     </div>
                 </form>
 
                 {{-- DANH SÁCH SẢN PHẨM --}}
                 <div class="row">
+
                     @forelse ($products as $product)
                         <div class="col-6 col-md-3 mb-4">
                             <div class="card h-100 text-center">
-                             <a href="{{ route('client.product.detail', $product->id) }}" class="text-decoration-none text-dark">
+                                <a href="{{ route('client.product.detail', $product->id) }}"
+                                    class="text-decoration-none text-dark">
 
                                     <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}"
                                         class="card-img-top" style="height: 200px; object-fit: cover;">
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $product->name }}</h5>
                                         <p class="card-text text-danger fw-bold">{{ number_format($product->price) }} đ</p>
-                                     
+
                                     </div>
                                 </a>
-<form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
-    @csrf
-    <input type="hidden" name="product_variant_id" value="{{ $product->default_variant_id ?? $product->id }}">
-    <input type="hidden" name="quantity" value="1">
-    <button type="submit" class="btn-add-to-cart" title="Thêm vào giỏ hàng">
-        🛒
-    </button>
-</form>
+                                @php
+                                    $variant = $product->variants->first();
+                                @endphp
+                                <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                    @csrf
+                                    <input type="hidden" name="product_variant_id"
+                                        value="{{ $variant->id ?? $product->id }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn-add-to-cart" title="Thêm vào giỏ hàng">
+                                        🛒
+                                    </button>
+                                </form>
+                                <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form"
+                                    style="display:inline-block; margin-left:5px;">
+                                    @csrf
+                                    <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn btn-success btn-buy-now" title="Mua ngay">Mua
+                                        ngay</button>
+                                </form>
                             </div>
                         </div>
                     @empty
@@ -96,40 +117,42 @@
 @section('card-footer')
 @endsection
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(function() {
-    $('.add-to-cart-form').on('submit', function(e) {
-        e.preventDefault();
-        let form = $(this);
-        $.ajax({
-            url: "{{ route('cart.add') }}",
-            method: "POST",
-            data: form.serialize(),
-            headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-            success: function(res) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công!',
-                    text: 'Đã thêm vào giỏ hàng!',
-                    timer: 1500,
-                    showConfirmButton: false
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+            $('.add-to-cart-form').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: "{{ route('cart.add') }}",
+                    method: "POST",
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(res) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: 'Đã thêm vào giỏ hàng!',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        if (res.cart_count !== undefined) {
+                            $('#cartCount').text(res.cart_count);
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Có lỗi xảy ra, vui lòng thử lại!'
+                        });
+                    }
                 });
-                if(res.cart_count !== undefined) {
-                    $('#cartCount').text(res.cart_count);
-                }
-            },
-            error: function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi!',
-                    text: 'Có lỗi xảy ra, vui lòng thử lại!'
-                });
-            }
+                return false;
+            });
         });
-        return false;
-    });
-});
-</script>
+    </script>
 @endpush
