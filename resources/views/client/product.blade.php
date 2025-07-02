@@ -63,6 +63,7 @@
 
                 {{-- DANH SÁCH SẢN PHẨM --}}
                 <div class="row">
+
                     @forelse ($products as $product)
                         <div class="col-6 col-md-3 mb-4">
                             <div class="card h-100 text-center">
@@ -82,8 +83,8 @@
                                     <input type="hidden" name="product_variant_id"
                                         value="{{ $product->default_variant_id ?? $product->id }}">
                                     <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn-add-to-cart" title="Thêm vào giỏ hàng">
-                                        🛒
+                                    <button type="submit" class="btn-add-to-cart icon-button" title="Thêm vào giỏ hàng">
+                                        <i class="fa-solid fa-cart-plus"></i>
                                     </button>
                                 </form>
                             </div>

@@ -1,7 +1,6 @@
 @extends('layouts.ClientLayout')
 
 @section('title-page')
-    {{-- {{ $titlePage }} --}}
     Chi tiết tin tức Baber House
 @endsection
 

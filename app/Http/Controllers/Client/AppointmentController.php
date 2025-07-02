@@ -287,9 +287,9 @@ class AppointmentController extends Controller
         }
 
         try {
-            // Log::info('Kích hoạt sự kiện NewAppointment', [$appointment->toArray()]);
+            Log::info('Kích hoạt sự kiện NewAppointment', [$appointment->toArray()]);
             event(new NewAppointment($appointment));
-            // Log::info('Sự kiện NewAppointment đã gửi');
+            Log::info('Sự kiện NewAppointment đã gửi');
         } catch (\Exception $e) {
             Log::error('Lỗi khi gửi sự kiện NewAppointment', ['error' => $e->getMessage()]);
         }

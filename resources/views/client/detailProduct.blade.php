@@ -72,8 +72,7 @@
                             <input type="number" name="quantity" id="quantity"
                                 class="form-control-sm d-inline-block w-auto" value="1" min="1" />
 
-                            <button type="submit" class="btn btn-dark ms-3" style="margin-top: 20px">🛒 Thêm vào giỏ
-                                hàng</button>
+                            <button type="submit" class="btn btn-dark ms-3" class="icon-button" style="margin-top: 20px"><i class="fa-solid fa-cart-plus"></i></button>
                         </form>
                         <div class="mt-2">
                             <span id="variantPrice" class="fw-bold text-danger"></span>
@@ -107,8 +106,8 @@
                                             <h6 class="card-title">{{ $item->name }}</h6>
                                             <p class="card-text text-danger fw-bold">{{ number_format($item->price) }} đ
                                             </p>
-                                            <button type="submit" class="btn-add-to-cart"
-                                                title="Thêm vào giỏ hàng">🛒</button>
+                                            <button type="submit" class="btn-add-to-cart icon-button"
+                                                title="Thêm vào giỏ hàng"><i class="fa-solid fa-cart-plus"></i></button>
                                         </div>
                                     </a>
                                 </div>

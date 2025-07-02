@@ -1,7 +1,6 @@
 @extends('layouts.ClientLayout')
 
 @section('title-page')
-    {{-- {{ $titlePage }} --}}
     Trang chủ Baber House
 @endsection
 
@@ -75,12 +74,16 @@
                     @foreach ($products as $product)
                         <div class="product">
                             <div class="image-product">
-                                <a href="">
+                                <a href="{{ route('client.product.detail', $product->id) }}">
                                     <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" />
                                 </a>
                             </div>
-                            <h4><a href="">{{ $product->name }}</a></h4>
-                            <p><a href="">{{ number_format($product->price) }} đ</a></p>
+                            <h4>
+                                <a href="{{ route('client.product.detail', $product->id) }}" class="product-link">
+                                    {{ $product->name }}
+                                </a>
+                            </h4>
+                            <p>{{ number_format($product->price) }} đ</p>
 
                             @php $variant = $product->variants->first(); @endphp
 
@@ -90,13 +93,11 @@
                                     <input type="hidden" name="product_variant_id"
                                         value="{{ $product->default_variant_id ?? $product->id }}">
                                     <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn-add-to-cart" title="Thêm vào giỏ hàng">
-                                        🛒
+                                    <button type="submit" class="btn-add-to-cart icon-button" title="Thêm vào giỏ hàng">
+                                        <i class="fa-solid fa-cart-plus"></i>
                                     </button>
                                 </form>
                             @endif
-
-
                         </div>
                     @endforeach
                 </div>
@@ -129,6 +130,8 @@
             </div>
         </section>
     </main>
+@endsection
+@section('css')
 @endsection
 
 @section('scripts')
