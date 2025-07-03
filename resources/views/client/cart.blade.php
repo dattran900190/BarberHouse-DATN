@@ -121,7 +121,9 @@
                                                                     </td>
                                                                     <td class="subtotal">
                                                                         {{ number_format($item->price * $item->quantity, 0, ',', '.') }}
-                                                                        ₫</td>
+                                                                        ₫
+                                                                    </td>
+
                                                                     <td class="text-end">
                                                                         <form
                                                                             action="{{ route('cart.remove', $item->id) }}"
@@ -165,22 +167,27 @@
 
 
 
-                                          
+
 
                                             <hr class="my-4">
 
                                             <div class="d-flex justify-content-between mb-5">
                                                 <h5 class="text-uppercase">Tổng tiền</h5>
                                                 <h5 id="cart-total">
-                                                    {{ number_format($cart->items->sum(fn($item) => $item->price * $item->quantity) , 0, ',', '.') }}
+                                                    {{ number_format($cart->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', '.') }}
                                                     ₫</h5>
                                             </div>
 
                                             <form id="checkout-form" action="{{ route('cart.checkout') }}" method="GET">
-
-                                                <button type="submit" class="btn btn-dark btn-block btn-lg">Xác
-                                                    nhận</button>
+                                                @guest
+                                                    <button type="button" class="btn btn-dark btn-block btn-lg"
+                                                        id="btn-checkout-guest">Xác nhận</button>
+                                                @else
+                                                    <button type="submit" class="btn btn-dark btn-block btn-lg">Xác
+                                                        nhận</button>
+                                                @endguest
                                             </form>
+
                                         </div>
                                     </div>
                                 </div>
@@ -251,17 +258,23 @@
 @endsection
 
 @section('scripts')
-    @section('scripts')
+    <!-- SweetAlert2 CDN đặt bên ngoài -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        window.onload = function () {
-            const formatVND = n => n.toLocaleString('vi-VN', {
-                style: 'currency',
-                currency: 'VND'
-            }).replace('₫', '') + ' ₫';
+        window.onload = function() {
+            const formatVND = n => {
+                return Number(n).toLocaleString('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).replace('₫', '') + ' ₫';
+            };
 
             const updateTotal = () => {
                 const checkedBoxes = [...document.querySelectorAll('.cart-item-checkbox:checked')];
-                let s = 0, totalQuantity = 0;
+                let s = 0,
+                    totalQuantity = 0;
 
                 checkedBoxes.forEach(box => {
                     const id = box.dataset.itemId;
@@ -297,24 +310,27 @@
             const ajax = (u, m, d, b, s) => {
                 if (b) b.disabled = true;
                 fetch(u, {
-                    method: m,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': b?.dataset.csrf || document.querySelector(`[data-item-id="${u.split('/').pop()}"]`)?.dataset.csrf,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(d)
-                })
-                .then(r => r.ok ? r.json() : r.text().then(t => { throw Error(`HTTP ${r.status}: ${t}`); }))
-                .then(data => {
-                    s(data);
-                    if (b) b.disabled = false;
-                })
-                .catch(e => {
-                    console.error(e);
-                    showMsg(`Lỗi ${m === 'PUT' ? 'cập nhật số lượng' : 'xóa sản phẩm'}.`);
-                    if (b) b.disabled = false;
-                });
+                        method: m,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': b?.dataset.csrf || document.querySelector(
+                                `[data-item-id="${u.split('/').pop()}"]`)?.dataset.csrf,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(d)
+                    })
+                    .then(r => r.ok ? r.json() : r.text().then(t => {
+                        throw Error(`HTTP ${r.status}: ${t}`);
+                    }))
+                    .then(data => {
+                        s(data);
+                        if (b) b.disabled = false;
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        showMsg(`Lỗi ${m === 'PUT' ? 'cập nhật số lượng' : 'xóa sản phẩm'}.`);
+                        if (b) b.disabled = false;
+                    });
             };
 
             document.querySelectorAll('.quantity-plus').forEach(btn => {
@@ -353,20 +369,27 @@
                 box.addEventListener('change', updateTotal);
             });
 
-            document.getElementById('check-all-cart').addEventListener('change', function () {
-                const checked = this.checked;
-                document.querySelectorAll('.cart-item-checkbox').forEach(box => box.checked = checked);
-                updateTotal();
-            });
+            const checkAllBox = document.getElementById('check-all-cart');
+            if (checkAllBox) {
+                checkAllBox.addEventListener('change', function() {
+                    const checked = this.checked;
+                    document.querySelectorAll('.cart-item-checkbox').forEach(box => box.checked = checked);
+                    updateTotal();
+                });
+            }
 
             function updateQuantity(id, quantity, btn = null) {
                 const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
-                const price = parseFloat(input.dataset.price);
-                const subtotal = document.querySelector(`#cart-item-${id} .subtotal`);
+                const subtotalEl = document.querySelector(`#cart-item-${id} .subtotal`);
+                const priceEl = document.querySelector(`#cart-item-${id} .unit-price`);
 
-                ajax(`/cart/update/${id}`, 'PUT', { quantity }, btn, d => {
+                ajax(`/gio-hang/update/${id}`, 'PUT', {
+                    quantity
+                }, btn, d => {
                     if (d.success) {
-                        subtotal.textContent = formatVND(price * quantity);
+                        input.dataset.price = d.unit_price;
+                        priceEl.textContent = formatVND(d.unit_price);
+                        subtotalEl.textContent = formatVND(d.subtotal);
                         updateTotal();
                     } else {
                         showMsg(d.message || 'Cập nhật thất bại.');
@@ -374,24 +397,57 @@
                 });
             }
 
-            document.getElementById('checkout-form').addEventListener('submit', function (e) {
-                const checkedBoxes = [...document.querySelectorAll('.cart-item-checkbox:checked')];
-                const items = checkedBoxes.map(box => {
-                    const id = box.dataset.itemId;
-                    const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
-                    return { id, quantity: input.value };
+            const checkoutForm = document.getElementById('checkout-form');
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', function(e) {
+                    const checkedBoxes = [...document.querySelectorAll('.cart-item-checkbox:checked')];
+                    const items = checkedBoxes.map(box => {
+                        const id = box.dataset.itemId;
+                        const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
+                        return {
+                            id,
+                            quantity: input.value
+                        };
+                    });
+
+                    if (items.length === 0) {
+                        alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                        e.preventDefault();
+                        return false;
+                    }
+
+                    let hiddenInput = document.getElementById('checkout-items');
+                    if (!hiddenInput) {
+                        hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'checkout_items';
+                        hiddenInput.id = 'checkout-items';
+                        checkoutForm.appendChild(hiddenInput);
+                    }
+                    hiddenInput.value = JSON.stringify(items);
                 });
-
-                if (items.length === 0) {
-                    alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
-                    e.preventDefault();
-                    return false;
-                }
-
-                document.getElementById('checkout-items').value = JSON.stringify(items);
-            });
+            }
 
             updateTotal();
+
+            // SWEETALERT2 CHO KHÁCH
+            const btnGuest = document.getElementById('btn-checkout-guest');
+            if (btnGuest) {
+                btnGuest.addEventListener('click', function () {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Bạn chưa đăng nhập!',
+                        text: 'Vui lòng đăng nhập để thanh toán.',
+                        showConfirmButton: true,
+                        confirmButtonText: 'Đăng nhập'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{{ route('login') }}";
+                        }
+                    });
+                });
+            }
         };
     </script>
 @endsection
+

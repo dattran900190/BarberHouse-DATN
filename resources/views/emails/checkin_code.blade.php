@@ -40,9 +40,10 @@
             Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email hoặc hotline được cung cấp trên trang web.
         </p>
 
-        <p style="margin-top: 40px;">
+        <p style="margin-top: 30px;">
             Trân trọng,<br>
-            <strong>Đội ngũ hỗ trợ BarberHouse</strong>
+            <strong>Đội ngũ Barber House</strong><br>
+            <em>Chất lượng – Tận tâm – Chuyên nghiệp</em>
         </p>
     </div>
 </body>

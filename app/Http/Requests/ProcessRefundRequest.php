@@ -15,10 +15,7 @@ class ProcessRefundRequest extends FormRequest
     public function rules()
     {
         return [
-            'refund_status' => [
-                'required',
-                Rule::in(['pending', 'processing', 'refunded', 'rejected']),
-            ],
+            'refund_status' => 'required|in:pending,processing,refunded,rejected',
         ];
     }
 }

@@ -22,7 +22,7 @@
                         @elseif ($appointment->status == 'confirmed')
                             <span class="status-label status-confirmed">Đã xác nhận</span>
                         @elseif ($appointment->status == 'cancelled')
-                            <span class="status-label status-canceled">Đã hủy</span>
+                            <span class="status-label status-cancelled">Đã hủy</span>
                         @elseif ($appointment->status == 'completed')
                             <span class="status-label status-completed">Đã hoàn thành</span>
                         @endif
@@ -88,7 +88,7 @@
                 <div class="card-footer d-flex justify-content-between align-items-center border-0">
                     <h5 class="fw-bold">Tổng tiền: {{ number_format($appointment->total_amount) }}đ</h5>
                     <div>
-                        @if ($appointment->status != 'completed')
+                        @if ($appointment->status != 'completed' && $appointment->status != 'pending_cancellation')
                             <a href="#" class="btn btn-outline-danger btn-sm me-2">Hủy đặt lịch</a>
                         @endif
                         <a href="{{ route('client.appointmentHistory') }}" class="btn btn-outline-secondary btn-sm">Quay

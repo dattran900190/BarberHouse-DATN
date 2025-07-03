@@ -1,5 +1,9 @@
 <?php
 
+<<<<<<< HEAD
+=======
+use App\Models\Appointment;
+>>>>>>> 09ac3566ad5fe46636ebf0c8378ad6006fa17b80
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
@@ -14,6 +18,7 @@ use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Client\CartController;
@@ -32,10 +37,13 @@ use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+<<<<<<< HEAD
 
 
 
 use App\Models\Cart;
+=======
+>>>>>>> 09ac3566ad5fe46636ebf0c8378ad6006fa17b80
 
 
 // ==== Auth ====
@@ -55,6 +63,8 @@ Route::put('/gio-hang/update/{cartItem}', [CartController::class, 'updateQuantit
 Route::delete('/gio-hang/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
 Route::put('/gio-hang/update-variant/{cartItem}', [CartController::class, 'updateVariant'])->name('cart.update.variant');
 
+Route::get('/mua-ngay/checkout', [CartController::class, 'showBuyNowCheckout'])->name('cart.buyNow.checkout')->middleware('auth');
+Route::post('/mua-ngay', [CartController::class, 'buyNow'])->name('cart.buyNow');
 //checkout
 
 Route::get('/thanh-toan', [CartController::class, 'checkout'])->name('cart.checkout');
@@ -75,11 +85,15 @@ Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai
 // == Lịch sử đặt lịch ==
 Route::get('/lich-su-dat-lich', [ClientAppointmentController::class, 'appointmentHistory'])->name('client.appointmentHistory');
 Route::get('/lich-su-dat-lich/{id}', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
+<<<<<<< HEAD
 Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
 Route::post('/danh-gia/{appointment}', [ClientAppointmentController::class, 'submitReview'])->name('client.appointments.review');
 Route::get('/lich-hen-hoan-thanh', [ClientAppointmentController::class, 'completed'])->name('client.appointments.completed');
 
 
+=======
+Route::patch('lich-su-dat-lich/{appointment}/huy', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
+>>>>>>> 09ac3566ad5fe46636ebf0c8378ad6006fa17b80
 
 
 // web.php
@@ -113,25 +127,31 @@ Route::get('hoan-tien/create', [WalletController::class, 'create'])->name('clien
 Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.wallet.store');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-        Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
-            ->name('barber_schedules.showBranch');
+    Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
+        ->name('barber_schedules.showBranch');
 
-        Route::middleware('branch.admin')->group(function () {
-            Route::resource('barber_schedules', BarberScheduleController::class)
-                ->except(['index', 'show']);
-        });
-
-        // Nếu bạn vẫn muốn index và show có thể xem được bình thường cho tất cả user đăng nhập
+    Route::middleware('branch.admin')->group(function () {
         Route::resource('barber_schedules', BarberScheduleController::class)
-            ->only(['index', 'show']);
+            ->except(['index', 'show']);
+    });
+
+    // Nếu bạn vẫn muốn index và show có thể xem được bình thường cho tất cả user đăng nhập
+    Route::resource('barber_schedules', BarberScheduleController::class)
+        ->only(['index', 'show']);
+
+    Route::get('/dashboard', function () {
+        // Lấy số lượng lịch đang chờ
+        $pendingCount = Appointment::where('status', 'pending')->count();
+
+        return view('admin.dashboard', compact('pendingCount'));
     })->name('dashboard');
 
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
 
+    // Hoàn tiền
     Route::resource('refunds', RefundRequestController::class);
+    // Route::put('/refunds/{refund}', [RefundRequestController::class, 'update'])->name('refunds.update');
 
     // ==== Đơn hàng ====
     Route::resource('orders', OrderController::class)->names('admin.orders');
@@ -148,7 +168,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Bình luận ====
     Route::resource('reviews', ReviewController::class);
 
-
+    // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
 
     // ==== Thanh toán ====
@@ -161,6 +181,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
     Route::post('/appointments/{appointment}/approve-cancel', [AppointmentController::class, 'approveCancel'])->name('appointments.approve-cancel');
     Route::post('/appointments/{appointment}/reject-cancel', [AppointmentController::class, 'rejectCancel'])->name('appointments.reject-cancel');
+    Route::post('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow'])->name('appointments.no-show');
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);
@@ -173,17 +194,17 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
+
     // ==== Banner ====
     Route::resource('banners', BannerController::class);
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
+
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);
-    Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
-        ->name('barber_schedules.showBranch');
-    Route::get('barber-schedules/create/{branchId}', [BarberScheduleController::class, 'create'])
-        ->name('barber_schedules.createForBranch');
+    Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])->name('barber_schedules.showBranch');
+    Route::get('barber-schedules/create/{branchId}', [BarberScheduleController::class, 'create'])->name('barber_schedules.createForBranch');
 
     // ==== Người dùng ====
     Route::resource('users', UserController::class);

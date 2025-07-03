@@ -64,7 +64,8 @@
                 @endforeach
             </div>
 
-           <a href="{{ route('client.posts')}}" style="text-decoration: none"><button id="loadMore" class="btn-xem-them">Xem thêm</button></a>
+            <a href="{{ route('client.posts') }}" style="text-decoration: none"><button id="loadMore"
+                    class="btn-xem-them">Xem thêm</button></a>
         </section>
 
         <section id="product">
@@ -74,32 +75,46 @@
                     @foreach ($products as $product)
                         <div class="product">
                             <div class="image-product">
-                                <a href="">
+                                <a href="{{ route('client.product.detail', $product->id) }}">
                                     <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" />
                                 </a>
                             </div>
-                            <h4><a href="">{{ $product->name }}</a></h4>
-                            <p><a href="">{{ number_format($product->price) }} đ</a></p>
+                            <h4>
+                                <a href="{{ route('client.product.detail', $product->id) }}" class="product-link">
+                                    {{ $product->name }}
+                                </a>
+                            </h4>
+                            <p>{{ number_format($product->price) }} đ</p>
 
                             @php $variant = $product->variants->first(); @endphp
 
                             @if ($variant)
-                                <form action="{{ route('cart.add') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn-add-to-cart" title="Thêm vào giỏ hàng">
-                                        🛒
-                                    </button>
-                                </form>
+                                <div class="d-flex gap-2 mt-2">
+                                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-dark">🛒</button>
+                                    </form>
+                                    <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        @guest
+                                            <button type="button" class="btn btn-success btn-buy-now">Mua ngay</button>
+                                        @else
+                                            <button type="submit" class="btn btn-success btn-buy-now">Mua ngay</button>
+                                        @endguest
+                                    </form>
+
+                                </div>
                             @endif
-
-
                         </div>
                     @endforeach
                 </div>
 
-                <a href="{{ route('client.product')}}" style="text-decoration: none"><button id="loadMore" class="btn-xem-them">Xem thêm</button></a>
+                <a href="{{ route('client.product') }}" style="text-decoration: none"><button id="loadMore"
+                        class="btn-xem-them">Xem thêm</button></a>
             </div>
         </section>
 
@@ -127,6 +142,63 @@
         </section>
     </main>
 @endsection
+@section('css')
+@endsection
 
 @section('card-footer')
 @endsection
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+            $('.add-to-cart-form').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: "{{ route('cart.add') }}",
+                    method: "POST",
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(res) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: 'Đã thêm vào giỏ hàng!',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        if (res.cart_count !== undefined) {
+                            $('#cartCount').text(res.cart_count);
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Có lỗi xảy ra, vui lòng thử lại!'
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+        $(function() {
+            $('.btn-buy-now[type="button"]').on('click', function() {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Bạn chưa đăng nhập!',
+                    text: 'Vui lòng đăng nhập để sử dụng chức năng "Mua ngay".',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Đăng nhập'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('login') }}";
+                    }
+                });
+            });
+        });
+    </script>
+@endpush

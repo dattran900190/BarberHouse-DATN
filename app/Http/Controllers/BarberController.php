@@ -38,6 +38,8 @@ class BarberController extends Controller
         if ($request->hasFile('avatar')) {
             $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
+
+        $data['status'] = 'idle';
         Barber::create($data);
 
         return redirect()->route('barbers.index')->with('success', 'Thêm thợ thành công');

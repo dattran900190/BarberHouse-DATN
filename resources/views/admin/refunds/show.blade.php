@@ -7,6 +7,7 @@
         <div class="card-header bg-info text-white">
             <h3 class="card-title mb-0">Chi tiết yêu cầu hoàn tiền</h3>
         </div>
+
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
@@ -47,12 +48,45 @@
                 @endphp
                 <span class="badge bg-{{ $info['class'] }}">{{ $info['label'] }}</span>
             </p>
+
             @if ($refund->refund_status === 'refunded' && $refund->refunded_at)
                 <p><strong>Ngày hoàn tiền:</strong> {{ $refund->refunded_at->format('d/m/Y H:i') }}</p>
             @endif
-            <hr>
 
-            @if (!in_array($refund->refund_status, ['refunded', 'rejected']))
+            @if ($refund->order && $refund->order->orderItems->count())
+                <h5 class="mt-4"><strong>Danh sách sản phẩm trong đơn hàng</strong></h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Tên sản phẩm</th>
+                            <th>Dung tích</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($refund->order->orderItems as $item)
+                            <tr>
+                                <td>{{ $item->productVariant->product->name ?? 'Không có tên' }}</td>
+                                <td>{{ $item->productVariant->volume->name ?? '-' }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ number_format($item->price_at_time, 0, ',', '.') }} đ</td>
+                                <td>{{ number_format($item->total_price, 0, ',', '.') }} đ</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+
+            <hr>
+            @php
+                $statusOrder = ['pending' => 1, 'processing' => 2, 'refunded' => 3, 'rejected' => 3];
+                $currentStatus = $refund->refund_status;
+                $currentOrder = $statusOrder[$currentStatus];
+            @endphp
+
+            @if (!in_array($currentStatus, ['refunded', 'rejected']))
                 <form action="{{ route('refunds.update', $refund->id) }}" method="POST"
                     onsubmit="return confirm('Bạn chắc chắn muốn cập nhật trạng thái?');">
                     @csrf
@@ -61,14 +95,12 @@
                     <div class="form-group">
                         <label for="refund_status"><strong>Cập nhật trạng thái hoàn tiền:</strong></label>
                         <select name="refund_status" id="refund_status" class="form-control" required>
-                            <option value="pending" {{ $refund->refund_status === 'pending' ? 'selected' : '' }}>Chờ duyệt
-                            </option>
-                            <option value="processing" {{ $refund->refund_status === 'processing' ? 'selected' : '' }}>Đang
-                                xử lý</option>
-                            <option value="refunded" {{ $refund->refund_status === 'refunded' ? 'selected' : '' }}>Đã hoàn
-                                tiền</option>
-                            <option value="rejected" {{ $refund->refund_status === 'rejected' ? 'selected' : '' }}>Từ chối
-                            </option>
+                            @foreach ($statusOrder as $value => $order)
+                                <option value="{{ $value }}" {{ $currentStatus === $value ? 'selected' : '' }}
+                                    {{ $order < $currentOrder ? 'disabled' : '' }}>
+                                    {{ $statusMap[$value]['label'] ?? ucfirst($value) }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -78,11 +110,10 @@
                 </form>
             @else
                 <div class="alert alert-secondary mt-3">
-                    Yêu cầu đã {{ $refund->refund_status === 'refunded' ? 'hoàn tiền' : 'bị từ chối' }}, không thể thay đổi
-                    trạng thái.
+                    Yêu cầu đã {{ $currentStatus === 'refunded' ? 'hoàn tiền' : 'bị từ chối' }}, không thể thay đổi trạng
+                    thái.
                 </div>
             @endif
-
         </div>
     </div>
 @endsection

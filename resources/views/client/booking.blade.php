@@ -25,31 +25,21 @@
 @endsection
 
 @section('content')
-    {{-- Thông báo thành công / lỗi --}}
-    {{-- @if (session('success'))
-        <div class="alert alert-success mt-2">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger mt-2">
-            {{ session('error') }}
-        </div>
-    @endif --}}
-
     <main class="container">
         <h2 style="text-align: center; font-family: 'Segoe UI', sans-serif">
             Đặt Lịch Cắt Tóc
         </h2>
 
         @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        @endif
+
+        @if (session('error'))
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
         @endif
 
         @if (session('mustLogin'))
@@ -185,25 +175,25 @@
                 @enderror
             </div>
 
-
-
-
-            <input type="text" name="voucher_code" class="form-control" list="voucherSuggestions"
-                placeholder="Nhập hoặc chọn mã giảm giá">
-            <datalist id="voucherSuggestions">
+            <input type="hidden" id="service_price" value="{{ $service->price ?? 0 }}">
+            <select name="voucher_id" id="voucher_id" class="form-control">
+                <option value="">Không sử dụng mã giảm giá</option>
                 @foreach ($vouchers as $voucher)
-                    <option value="{{ $voucher->promotion->code }}">
-                        {{ $voucher->promotion->code }} -
-                        {{ $voucher->promotion->discount_value }}
+                    <option value="{{ $voucher->id }}" data-discount-type="{{ $voucher->promotion->discount_type }}"
+                        data-discount-value="{{ $voucher->promotion->discount_value }}">
+                        {{ $voucher->promotion->code }}
+                        ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
                     </option>
                 @endforeach
                 @foreach ($publicPromotions as $promotion)
-                    <option value="{{ $promotion->code }}">
-                        {{ $promotion->code }} -
-                        {{ $promotion->discount_value }}
+                    <option value="public_{{ $promotion->id }}" data-discount-type="{{ $promotion->discount_type }}"
+                        data-discount-value="{{ $promotion->discount_value }}">
+                        {{ $promotion->code }}
+                        ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
                     </option>
                 @endforeach
-            </datalist>
+            </select>
+            <p>Tổng tiền: <strong id="totalPrice">{{ number_format($service->price ?? 0) }} vnđ</strong></p>
 
 
             <div class="form-group mb-3">
@@ -217,11 +207,12 @@
 
             <div class="form-group mb-3">
                 <p>Tổng tiền: <strong id="totalPrice">0 vnđ</strong></p>
+                <span id="total_after_discount"></span>
                 <p>Thời lượng dự kiến: <strong id="totalDuration">0 Phút</strong></p>
             </div>
 
             <div class="form-btn mt-3">
-                <button type="submit" class="submit-btn btn btn-primary">
+                <button type="submit" class="submit-btn btn btn-primary booking-btn" data-id="{{ $service->id }}">
                     Đặt lịch
                 </button>
             </div>
@@ -230,39 +221,6 @@
 
     </main>
     <script>
-        // const checkbox = document.getElementById('other_person');
-        // const otherInfo = document.getElementById('other-info');
-        // checkbox.addEventListener('change', function() {
-        //     otherInfo.style.display = this.checked ? 'block' : 'none';
-        // });
-
-        // document.addEventListener('DOMContentLoaded', function() {
-        //     const checkbox = document.getElementById('other_person');
-        //     const otherInfo = document.getElementById('other-info');
-
-        //     checkbox.addEventListener('change', function() {
-        //         otherInfo.style.display = this.checked ? 'block' : 'none';
-        //     });
-        // });
-
-        // const icon = document.getElementById("search-icon");
-        // const overlay = document.getElementById("search-overlay");
-        // const closeBtn = document.querySelector(".close-btn");
-        // if (icon && overlay) {
-        //     icon.addEventListener("click", e => {
-        //         e.preventDefault();
-        //         overlay.style.display = "flex";
-        //     });
-        //     // đóng
-        //     closeBtn?.addEventListener("click", () => overlay.style.display = "none");
-        //     overlay.addEventListener("click", e => {
-        //         if (!e.target.closest(".search-content")) overlay.style.display = "none";
-        //     });
-        //     document.addEventListener("keydown", e => {
-        //         if (e.key === "Escape") overlay.style.display = "none";
-        //     });
-        // }
-
         // $('#service').select2({
         //     width: '100%',
         //     templateResult: function(data) {
@@ -285,6 +243,98 @@
     </script>
 @endsection
 
-@section('card-footer')
-    {{-- {{ $sanPhams->links() }} --}}
+@section('scripts')
+    <script>
+        // Xử lý nút "Cập nhật"
+        document.querySelector('.booking-btn').addEventListener('click', function(event) {
+            event.preventDefault(); // Ngăn hành vi mặc định của form
+            const form = document.getElementById('bookingForm');
+
+            // Cửa sổ xác nhận
+            Swal.fire({
+                title: 'Xác nhận đặt lịch',
+                text: 'Bạn có chắc chắn muốn đặt lịch hẹn này?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Đặt lịch',
+                cancelButtonText: 'Hủy',
+                customClass: {
+                    popup: 'custom-swal-popup' // CSS
+                },
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Cửa sổ loading
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        text: 'Vui lòng chờ trong giây lát.',
+                        allowOutsideClick: false,
+                        customClass: {
+                            popup: 'custom-swal-popup' // CSS
+                        },
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Thu thập dữ liệu từ form
+                    const formData = new FormData(form);
+
+                    // Gửi yêu cầu AJAX
+                    fetch('{{ route('dat-lich.store') }}', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            Swal.close(); // Đóng cửa sổ loading
+
+                            if (data.success) {
+                                // Cửa sổ thành công
+                                Swal.fire({
+                                    title: 'Thành công!',
+                                    text: data.message,
+                                    icon: 'success',
+                                    customClass: {
+                                        popup: 'custom-swal-popup' // CSS
+                                    },
+                                }).then(() => {
+                                    // Chuyển hướng sau khi đặt lịch thành công
+                                    window.location.href = '{{ route('appointments.index') }}';
+                                });
+                            } else {
+                                // Cửa sổ lỗi
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: data.message,
+                                    icon: 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup' // CSS
+                                    },
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.close(); // Đóng cửa sổ loading
+                            console.error('Lỗi AJAX:', error);
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Đã có lỗi xảy ra: ' + error.message,
+                                icon: 'error',
+                                customClass: {
+                                    popup: 'custom-swal-popup' // CSS
+                                },
+                            });
+                        });
+                }
+            });
+        });
+    </script>
 @endsection

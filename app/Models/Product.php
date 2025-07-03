@@ -18,6 +18,11 @@ class Product extends Model
         'image',
     ];
 
+    public function updateStockFromVariants()
+    {
+        $this->stock = $this->variants()->sum('stock');
+        $this->save();
+    }
     public function category()
     {
         return $this->belongsTo(ProductCategory::class, 'product_category_id');

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Appointment extends Model
+class CancelledAppointment extends Model
 {
     /** @use HasFactory<\Database\Factories\AppointmentFactory> */
     use HasFactory;
@@ -24,10 +24,9 @@ class Appointment extends Model
         'payment_status',
         'note',
         'cancellation_reason',
+        'cancellation_type',
         'rejection_reason',
         'status_before_cancellation',
-        'promotion_id',
-        'discount_amount',
         'total_amount'
     ];
 
@@ -55,7 +54,7 @@ class Appointment extends Model
     {
         return $this->belongsTo(Promotion::class);
     }
-
+    
     public function checkin()
     {
         return $this->hasOne(Checkin::class);

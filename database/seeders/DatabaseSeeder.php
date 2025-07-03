@@ -41,7 +41,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\Service::factory(10)->create();
         \App\Models\Branch::factory(10)->create();
         \App\Models\Appointment::factory(10)->create();
-        \App\Models\Payment::factory(10)->create();
 
         Order::factory()
             ->count(10)

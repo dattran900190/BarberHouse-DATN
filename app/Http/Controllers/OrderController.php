@@ -70,6 +70,7 @@ class OrderController extends Controller
 
         $newStatus = $request->status;
         $currentStatus = $order->status;
+        $paymentStatus = $order->payment_status;
 
         // Nếu đơn hàng đã bị hủy
         if ($currentStatus === 'cancelled') {
@@ -111,7 +112,7 @@ class OrderController extends Controller
         // Lấy số trang từ request
         $currentPage = $request->input('page', 1);
 
-        return redirect()->route('orders.index', ['page' => $currentPage])
+        return redirect()->route('admin.orders.index', ['page' => $currentPage])
             ->with('success', 'Cập nhật trạng thái đơn hàng thành công.');
     }
 
