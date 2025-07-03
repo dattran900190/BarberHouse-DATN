@@ -59,5 +59,10 @@ class Appointment extends Model
     {
         return $this->hasOne(Checkin::class);
     }
+    public function review()
+{
+    return $this->hasOne(\App\Models\Review::class);
+}
+
 
 }

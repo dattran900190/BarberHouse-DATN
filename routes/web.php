@@ -32,11 +32,11 @@ use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
-<<<<<<< HEAD
-=======
-use App\Http\Controllers\Client\OrderController as ClientOrderController;
+
+
+
 use App\Models\Cart;
->>>>>>> a70dbdb35d529a6677a0ea96814e85050751ff31
+
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -137,11 +137,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
 
-
-<<<<<<< HEAD
-
-=======
->>>>>>> a70dbdb35d529a6677a0ea96814e85050751ff31
 
     // ==== Lịch sử điểm ====
     Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');
