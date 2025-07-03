@@ -15,8 +15,7 @@
                 {{-- Tiêu đề --}}
                 <div class="form-group">
                     <label>Tiêu đề</label>
-                    <input type="text" name="title"
-                        class="form-control @error('title') is-invalid @enderror"
+                    <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
                         value="{{ old('title') }}">
                     @error('title')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -26,14 +25,13 @@
                 {{-- Slug --}}
                 <div class="form-group">
                     <label>Slug (nếu để trống sẽ tạo tự động)</label>
-                    <input type="text" name="slug"
-                        class="form-control @error('slug') is-invalid @enderror"
+                    <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror"
                         value="{{ old('slug') }}">
                     @error('slug')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-               {{-- mô tả ngắn --}}
+                {{-- mô tả ngắn --}}
                 <div class="form-group">
                     <label>Mô tả</label>
                     <input type="text" name="short_description"
@@ -45,12 +43,10 @@
                 </div>
 
 
-               {{-- Nội dung --}}
+                {{-- Nội dung --}}
                 <div class="form-group">
                     <label>Nội dung</label>
-                    <textarea id="content" name="content"
-                        class="form-control @error('content') is-invalid @enderror"
-                        rows="10">{{ old('content') }}</textarea>
+                    <textarea id="content" name="content" class="form-control @error('content') is-invalid @enderror" rows="10">{{ old('content') }}</textarea>
                     @error('content')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -60,19 +56,20 @@
                 {{-- Ảnh --}}
                 <div class="form-group">
                     <label>Hình ảnh (tùy chọn)</label>
-                    <input type="file" name="image"
-                        class="form-control-file @error('image') is-invalid @enderror">
+                    <input type="file" name="image" class="form-control-file @error('image') is-invalid @enderror">
                     @error('image')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
                 </div>
 
+                
                 {{-- Tác giả --}}
                 <div class="form-group">
                     <label>Tác giả</label>
                     <select name="author_id" class="form-control @error('author_id') is-invalid @enderror">
                         @foreach ($authors as $author)
-                            <option value="{{ $author->id }}" {{ old('author_id') == $author->id ? 'selected' : '' }}>
+                            <option value="{{ $author->id }}"
+                                {{ old('author_id', Auth::id()) == $author->id ? 'selected' : '' }}>
                                 {{ $author->name }}
                             </option>
                         @endforeach
@@ -81,6 +78,7 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+
 
                 {{-- Trạng thái --}}
                 <div class="form-group">
@@ -98,8 +96,7 @@
                 <div class="form-group">
                     <label>Ngày xuất bản</label>
                     <input type="date" name="published_at"
-                        class="form-control @error('published_at') is-invalid @enderror"
-                        value="{{ old('published_at') }}">
+                        class="form-control @error('published_at') is-invalid @enderror" value="{{ old('published_at') }}">
                     @error('published_at')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -129,4 +126,3 @@
         });
     </script>
 @endsection
-
