@@ -136,23 +136,6 @@
             border-radius: 4px;
             border: 1px solid #ced4da;
         }
-
-        .custom-swal-popup {
-            width: 550px !important;
-            max-width: 550px !important;
-            max-height: 450px !important;
-            height: 450px !important;
-        }
-
-        /* Tăng kích thước vòng xoáy loading */
-        .swal2-loading {
-            font-size: 1.5rem !important;
-        }
-
-        .custom-swal-popup .swal2-title {
-            margin-top: 15px !important;
-            font-size: 1.5rem !important;
-        }
     </style>
 @endsection
 
@@ -160,12 +143,12 @@
 @endsection
 
 @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </script> --}}
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+    {{-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
+    {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
     <script src="{{ asset('js/client.js') }}"></script>
     <script>
         document.querySelectorAll('.cancel-btn').forEach(button => {

@@ -78,16 +78,13 @@
 
                                     </div>
                                 </a>
-                                @php
-                                    $variant = $product->variants->first();
-                                @endphp
                                 <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
                                     @csrf
                                     <input type="hidden" name="product_variant_id"
-                                        value="{{ $variant->id ?? $product->id }}">
+                                        value="{{ $product->default_variant_id ?? $product->id }}">
                                     <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn-add-to-cart" title="Thêm vào giỏ hàng">
-                                        🛒
+                                    <button type="submit" class="btn-add-to-cart icon-button" title="Thêm vào giỏ hàng">
+                                        <i class="fa-solid fa-cart-plus"></i>
                                     </button>
                                 </form>
                                 <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form"
@@ -120,11 +117,8 @@
     </main>
 @endsection
 
-@section('card-footer')
-@endsection
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@section('scripts')
     <script>
         $(function() {
             $('.btn-buy-now[type="button"]').on('click', function() {
@@ -158,6 +152,9 @@
                             title: 'Thành công!',
                             text: 'Đã thêm vào giỏ hàng!',
                             timer: 1500,
+                            customClass: {
+                                popup: 'custom-swal-popup' // CSS
+                            },
                             showConfirmButton: false
                         });
                         if (res.cart_count !== undefined) {
@@ -176,4 +173,4 @@
             });
         });
     </script>
-@endpush
+@endsection

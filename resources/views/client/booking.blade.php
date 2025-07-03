@@ -1,31 +1,12 @@
 @extends('layouts.ClientLayout')
 
 @section('title-page')
-    {{-- {{ $titlePage }} --}}
     Đặt lịch Baber House
 @endsection
 
-@section('slider')
-    <section class="hero-slider">
-        <div class="slide active">
-            <img src="https://4rau.vn/upload/hinhanh/cover-fb-10th-collection-0744.png" alt="Slide 1" />
-        </div>
-        <div class="slide">
-            <img src="https://4rau.vn/upload/hinhanh/z4459651440290_1e4a90c27fc15cc175132ecd94872e98-2870.jpg"
-                alt="Slide 2" />
-        </div>
-        <div class="slide">
-            <img src="https://4rau.vn/upload/hinhanh/z6220937549697_8ae15d51c35246081cf6bc8d60780126-1254.jpg"
-                alt="Slide 3" />
-        </div>
-        <!-- optional prev/next buttons -->
-        <button class="prev">‹</button>
-        <button class="next">›</button>
-    </section>
-@endsection
 
 @section('content')
-    <main class="container">
+    <main class="container" style="padding-top: 10%">
         <h2 style="text-align: center; font-family: 'Segoe UI', sans-serif">
             Đặt Lịch Cắt Tóc
         </h2>
@@ -40,16 +21,6 @@
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">×</span>
             </button>
-        @endif
-
-        @if (session('mustLogin'))
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>Bạn cần đăng nhập để đặt lịch.</strong>
-                <div class="mt-2">
-                    <a href="{{ route('login') }}" class="btn btn-sm btn-primary">Đăng nhập</a>
-                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="alert">Huỷ</button>
-                </div>
-            </div>
         @endif
 
 
@@ -217,9 +188,29 @@
                 </button>
             </div>
         </form>
+        {{-- @if (session('mustLogin'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Bạn cần đăng nhập để đặt lịch.</strong>
+                <div class="mt-2">
+                    <a href="{{ route('login') }}" class="btn btn-sm btn-primary">Đăng nhập</a>
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="alert">Huỷ</button>
+                </div>
+            </div>
+        @endif --}}
 
+        
 
     </main>
+
+    <style>
+        #mainNav {
+            background-color: #000;
+        }
+    </style>
+@endsection
+
+
+@section('scripts')
     <script>
         // $('#service').select2({
         //     width: '100%',
@@ -241,10 +232,8 @@
             console.log('DEBUG sel.dataset =', sel.dataset);…
         });
     </script>
-@endsection
 
-@section('scripts')
-    <script>
+    {{-- <script>
         // Xử lý nút "Cập nhật"
         document.querySelector('.booking-btn').addEventListener('click', function(event) {
             event.preventDefault(); // Ngăn hành vi mặc định của form
@@ -305,10 +294,7 @@
                                     customClass: {
                                         popup: 'custom-swal-popup' // CSS
                                     },
-                                }).then(() => {
-                                    // Chuyển hướng sau khi đặt lịch thành công
-                                    window.location.href = '{{ route('appointments.index') }}';
-                                });
+                                })
                             } else {
                                 // Cửa sổ lỗi
                                 Swal.fire({
@@ -335,6 +321,339 @@
                         });
                 }
             });
+        });
+    </script> --}}
+    {{-- <script>
+        window.userLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
+
+        // document.querySelector('.booking-btn').addEventListener('click', function(event) {
+        //     event.preventDefault();
+        //     const form = document.getElementById('bookingForm');
+
+        //     if (!window.userLoggedIn) {
+        //         // Gửi yêu cầu AJAX để lưu session mustLogin
+        //         fetch('{{ route('dat-lich.store') }}', {
+        //             method: 'POST',
+        //             body: new FormData(form),
+        //             headers: {
+        //                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        //                 'Accept': 'application/json'
+        //             }
+        //         }).then(() => {
+        //             window.location.reload(); // Reload để hiển thị cảnh báo mustLogin
+        //         });
+        //         return;
+        //     }
+
+        //     // Kiểm tra form trước khi gửi
+        //     if (!form.checkValidity()) {
+        //         form.reportValidity(); // Hiển thị lỗi HTML5 mặc định
+        //         return;
+        //     }
+
+        //     // Gửi yêu cầu AJAX
+        //     const formData = new FormData(form);
+        //     fetch('{{ route('dat-lich.store') }}', {
+        //         method: 'POST',
+        //         body: formData,
+        //         headers: {
+        //             'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        //             'Accept': 'application/json'
+        //         }
+        //     })
+        //     .then(response => {
+        //         if (!response.ok) {
+        //             return response.json().then(data => {
+        //                 throw new Error(JSON.stringify(data));
+        //             }).catch(() => {
+        //                 throw new Error(`HTTP error! Status: ${response.status}`);
+        //             });
+        //         }
+        //         return response.json();
+        //     })
+        //     .then(data => {
+        //         if (data.success) {
+        //             // Chuyển hướng khi thành công
+        //             window.location.href = '{{ route('appointments.index') }}';
+        //         } else {
+        //             // Lưu lỗi vào session và reload trang
+        //             fetch('{{ route('store.errors') }}', {
+        //                 method: 'POST',
+        //                 headers: {
+        //                     'Content-Type': 'application/json',
+        //                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        //                 },
+        //                 body: JSON.stringify({ errors: data.errors ? Object.values(data.errors).flat() : [data.message] })
+        //             }).then(() => {
+        //                 window.location.reload();
+        //             });
+        //         }
+        //     })
+        //     .catch(error => {
+        //         console.error('Lỗi AJAX:', error);
+        //         let errorMessage = 'Đã có lỗi xảy ra.';
+        //         try {
+        //             const errorData = JSON.parse(error.message);
+        //             errorMessage = errorData.message || 'Đã có lỗi xảy ra.';
+        //             if (errorData.errors) {
+        //                 errorMessage = Object.values(errorData.errors).flat();
+        //             }
+        //         } catch (e) {
+        //             errorMessage = [error.message];
+        //         }
+
+        //         // Lưu lỗi vào session và reload trang
+        //         fetch('{{ route('store.errors') }}', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        //             },
+        //             body: JSON.stringify({ errors: errorMessage })
+        //         }).then(() => {
+        //             window.location.reload();
+        //         });
+        //     });
+        // });
+
+
+        document.querySelector('.booking-btn').addEventListener('click', function(event) {
+            event.preventDefault();
+            const form = document.getElementById('bookingForm');
+
+            // Kiểm tra form trước khi gửi
+            if (!form.checkValidity()) {
+                form.reportValidity(); // Hiển thị lỗi HTML5 mặc định
+                return;
+            }
+
+            if (window.userLoggedIn) {
+                // Hiển thị SweetAlert2 để xác nhận khi đã đăng nhập
+                Swal.fire({
+                    title: 'Xác nhận đặt lịch',
+                    text: 'Bạn có chắc chắn muốn đặt lịch hẹn này?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Đặt lịch',
+                    cancelButtonText: 'Hủy',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Cửa sổ loading
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Thu thập dữ liệu từ form
+                        const formData = new FormData(form);
+
+                        // Gửi yêu cầu AJAX
+                        fetch('{{ route('dat-lich.store') }}', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(data => {
+                                    throw new Error(JSON.stringify(data));
+                                }).catch(() => {
+                                    throw new Error(`HTTP error! Status: ${response.status}`);
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            Swal.close(); // Đóng cửa sổ loading
+                            if (data.success) {
+                                // Cửa sổ thành công
+                                Swal.fire({
+                                    title: 'Thành công!',
+                                    text: data.message,
+                                    icon: 'success',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                })
+                            } else {
+                                // Cửa sổ lỗi
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    html: data.errors ? Object.values(data.errors).flat().join('<br>') : data.message,
+                                    icon: 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.close(); // Đóng cửa sổ loading
+                            console.error('Lỗi AJAX:', error);
+                            let errorMessage = 'Đã có lỗi xảy ra.';
+                            try {
+                                const errorData = JSON.parse(error.message);
+                                errorMessage = errorData.errors ? Object.values(errorData.errors).flat().join('<br>') : errorData.message;
+                            } catch (e) {
+                                errorMessage = error.message;
+                            }
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                html: errorMessage,
+                                icon: 'error',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                            });
+                        });
+                    }
+                });
+            } else {
+                // Gửi form trực tiếp để controller xử lý chuyển hướng
+                form.submit();
+            }
+        });
+    </script> --}}
+    <script>
+        window.userLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
+
+        document.querySelector('.booking-btn').addEventListener('click', function(event) {
+            event.preventDefault();
+            const form = document.getElementById('bookingForm');
+
+            // Kiểm tra form trước khi gửi
+            if (!form.checkValidity()) {
+                form.reportValidity(); // Hiển thị lỗi HTML5 mặc định
+                return;
+            }
+
+            if (window.userLoggedIn) {
+                // Hiển thị SweetAlert2 để xác nhận khi đã đăng nhập
+                Swal.fire({
+                    title: 'Xác nhận đặt lịch',
+                    text: 'Bạn có chắc chắn muốn đặt lịch hẹn này?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Đặt lịch',
+                    cancelButtonText: 'Hủy',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Cửa sổ loading
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Thu thập dữ liệu từ form
+                        const formData = new FormData(form);
+
+                        // Gửi yêu cầu AJAX
+                        fetch('{{ route('dat-lich.store') }}', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(data => {
+                                    throw new Error(JSON.stringify(data));
+                                }).catch(() => {
+                                    throw new Error(`HTTP error! Status: ${response.status}`);
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            Swal.close(); // Đóng cửa sổ loading
+                            if (data.success) {
+                                // Cửa sổ thành công
+                                Swal.fire({
+                                    title: 'Thành công!',
+                                    text: data.message,
+                                    icon: 'success',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                }).then(() => {
+                                    window.location.href = '{{ route('appointments.index') }}';
+                                });
+                            } else {
+                                // Cửa sổ lỗi
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    html: data.errors ? Object.values(data.errors).flat().join('<br>') : data.message,
+                                    icon: 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.close(); // Đóng cửa sổ loading
+                            console.error('Lỗi AJAX:', error);
+                            let errorMessage = 'Đã có lỗi xảy ra.';
+                            try {
+                                const errorData = JSON.parse(error.message);
+                                errorMessage = errorData.errors ? Object.values(errorData.errors).flat().join('<br>') : errorData.message;
+                            } catch (e) {
+                                errorMessage = error.message;
+                            }
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                html: errorMessage,
+                                icon: 'error',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                            });
+                        });
+                    }
+                });
+            } else {
+                // Hiển thị SweetAlert2 khi chưa đăng nhập
+                Swal.fire({
+                    title: 'Cần đăng nhập',
+                    text: 'Bạn cần đăng nhập để đặt lịch.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Đăng nhập',
+                    cancelButtonText: 'Hủy',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '{{ route('login') }}';
+                    }
+                });
+            }
         });
     </script>
 @endsection
