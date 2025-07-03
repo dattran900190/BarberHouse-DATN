@@ -87,6 +87,20 @@
                                         <i class="fa-solid fa-cart-plus"></i>
                                     </button>
                                 </form>
+                                <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form"
+                                    style="display:inline-block; margin-left:5px;">
+                                    @csrf
+                                    <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    @guest
+                                        <button type="button" class="btn btn-success btn-buy-now" title="Mua ngay">Mua
+                                            ngay</button>
+                                    @else
+                                        <button type="submit" class="btn btn-success btn-buy-now" title="Mua ngay">Mua
+                                            ngay</button>
+                                    @endguest
+                                </form>
+
                             </div>
                         </div>
                     @empty
@@ -107,6 +121,21 @@
 @section('scripts')
     <script>
         $(function() {
+            $('.btn-buy-now[type="button"]').on('click', function() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bạn chưa đăng nhập!',
+                text: 'Vui lòng đăng nhập để sử dụng chức năng "Mua ngay".',
+                showConfirmButton: true,
+                confirmButtonText: 'Đăng nhập'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('login') }}";
+                }
+            });
+        });
+
+
             $('.add-to-cart-form').on('submit', function(e) {
                 e.preventDefault();
                 let form = $(this);

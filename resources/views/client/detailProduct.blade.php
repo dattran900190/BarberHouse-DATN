@@ -74,6 +74,24 @@
 
                             <button type="submit" class="btn btn-dark ms-3" class="icon-button" style="margin-top: 20px"><i class="fa-solid fa-cart-plus"></i></button>
                         </form>
+
+                        <form action="{{ route('cart.buyNow') }}" method="POST" class="d-inline" id="buyNowForm"
+                            style="margin-left:10px;">
+                            @csrf
+                            <input type="hidden" name="product_variant_id" id="buy_now_variant_id"
+                                value="{{ $product->variants->first()->id }}">
+                            <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
+                            @guest
+                                <button type="button" class="btn btn-success btn-buy-now" style="margin-top: 20px">Mua
+                                    ngay</button>
+                            @else
+                                <button type="submit" class="btn btn-success btn-buy-now" style="margin-top: 20px">Mua
+                                    ngay</button>
+                            @endguest
+                        </form>
+
+
+
                         <div class="mt-2">
                             <span id="variantPrice" class="fw-bold text-danger"></span>
                         </div>
@@ -110,6 +128,33 @@
                                                 title="Thêm vào giỏ hàng"><i class="fa-solid fa-cart-plus"></i></button>
                                         </div>
                                     </a>
+                                    <div class="action-buttons mt-auto mb-3 d-flex justify-content-center gap-2">
+                                        @php $variant = $item->variants->first(); @endphp
+                                        @if ($variant)
+                                            <form action="{{ route('cart.add') }}" method="POST" class="m-0 p-0">
+                                                @csrf
+                                                <input type="hidden" name="product_variant_id"
+                                                    value="{{ $variant->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn btn-dark ms-3"
+                                                    style="margin-top: 20px">🛒</button>
+                                            </form>
+                                            <form action="{{ route('cart.buyNow') }}" method="POST"
+                                                class="m-0 p-0 buy-now-form-related">
+                                                @csrf
+                                                <input type="hidden" name="product_variant_id"
+                                                    value="{{ $variant->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                @guest
+                                                    <button type="button" class="btn btn-success btn-buy-now"
+                                                        style="margin-top: 20px">Mua</button>
+                                                @else
+                                                    <button type="submit" class="btn btn-success btn-buy-now"
+                                                        style="margin-top: 20px">Mua</button>
+                                                @endguest
+                                            </form>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         @empty
@@ -157,4 +202,40 @@
             }
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Khi chọn variant, cập nhật cho "Mua ngay"
+            const variantSelect = document.getElementById('variant_id');
+            const buyNowVariantId = document.getElementById('buy_now_variant_id');
+            if (variantSelect && buyNowVariantId) {
+                variantSelect.addEventListener('change', function() {
+                    buyNowVariantId.value = this.value;
+                });
+            }
+            // Khi chọn số lượng, cập nhật cho "Mua ngay"
+            const quantityInput = document.getElementById('quantity');
+            const buyNowQuantity = document.getElementById('buy_now_quantity');
+            if (quantityInput && buyNowQuantity) {
+                quantityInput.addEventListener('input', function() {
+                    buyNowQuantity.value = this.value;
+                });
+            }
+        });
+        $(function() {
+        $('.btn-buy-now[type="button"]').on('click', function() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bạn chưa đăng nhập!',
+                text: 'Vui lòng đăng nhập để sử dụng chức năng "Mua ngay".',
+                showConfirmButton: true,
+                confirmButtonText: 'Đăng nhập'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('login') }}";
+                }
+            });
+        });
+    });
+    </script>
+
 @endsection
