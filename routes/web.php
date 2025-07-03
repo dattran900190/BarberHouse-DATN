@@ -1,9 +1,6 @@
 <?php
 
-<<<<<<< HEAD
-=======
 use App\Models\Appointment;
->>>>>>> 09ac3566ad5fe46636ebf0c8378ad6006fa17b80
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
@@ -37,14 +34,6 @@ use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
-<<<<<<< HEAD
-
-
-
-use App\Models\Cart;
-=======
->>>>>>> 09ac3566ad5fe46636ebf0c8378ad6006fa17b80
-
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -85,15 +74,7 @@ Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai
 // == Lịch sử đặt lịch ==
 Route::get('/lich-su-dat-lich', [ClientAppointmentController::class, 'appointmentHistory'])->name('client.appointmentHistory');
 Route::get('/lich-su-dat-lich/{id}', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
-<<<<<<< HEAD
-Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
-Route::post('/danh-gia/{appointment}', [ClientAppointmentController::class, 'submitReview'])->name('client.appointments.review');
-Route::get('/lich-hen-hoan-thanh', [ClientAppointmentController::class, 'completed'])->name('client.appointments.completed');
-
-
-=======
 Route::patch('lich-su-dat-lich/{appointment}/huy', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
->>>>>>> 09ac3566ad5fe46636ebf0c8378ad6006fa17b80
 
 
 // web.php
