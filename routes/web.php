@@ -12,7 +12,6 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\VolumeController;
 use App\Http\Controllers\CheckinController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DashboardController;
@@ -152,8 +151,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
 
-    // ==== Thanh toán ====
-    Route::resource('payments', PaymentController::class);
 
     // ==== Đặt lịch ====
     Route::resource('appointments', AppointmentController::class);
