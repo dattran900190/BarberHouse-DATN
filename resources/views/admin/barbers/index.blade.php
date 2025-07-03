@@ -75,13 +75,14 @@
                             <td>{{ $barber['profile'] }}</td>
                             <td>{{ $barber->branch?->name ?? 'Chưa có chi nhánh' }}</td>
                             <td>
-                                @if ($barber->status === 'active')
-                                    <span class="badge bg-success">Đang làm</span>
-                                @elseif ($barber->status === 'inactive')
-                                    <span class="badge bg-warning">Tạm nghỉ</span>
+                                @if ($barber->status === 'idle')
+                                    <span class="badge bg-success">Đang rảnh</span>
+                                @elseif ($barber->status === 'busy')
+                                    <span class="badge bg-warning">Đang làm việc</span>
                                 @else
                                     <span class="badge bg-secondary">Nghỉ việc</span>
                                 @endif
+
                             </td>
                             <td class="text-center">
                                 <div class="d-flex flex-column align-items-center">

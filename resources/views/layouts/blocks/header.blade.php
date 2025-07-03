@@ -20,12 +20,19 @@
             <ul class="navbar-nav d-flex flex-row flex-nowrap ms-4">
                 <li class="nav-item mx-2"><a class="nav-link" href="{{ route('dat-lich') }}">Đặt lịch</a></li>
                 <li class="nav-item mx-2"><a class="nav-link" href="{{ url('chi-nhanh') }}">Chi nhánh</a></li>
-                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('gio-hang') }}"><i
-                            class="fa-solid fa-cart-shopping"></i></a></li>
+                <li class="nav-item mx-2 position-relative">
+                    <a class="nav-link" href="{{ url('gio-hang') }}">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span id="cartCount"
+                            class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.7rem;">
+                            {{ session('cart_count', 0) }}
+                        </span>
+                    </a>
+                </li>
+
 
                 {{-- ICON ADMIN CHO BRANCH ADMIN --}}
-
-
                 <li class="nav-item mx-2"><a class="nav-link" href="#"><i class="fa-brands fa-facebook"></i></a>
                 </li>
                 <li class="nav-item mx-2"><a class="nav-link" href="#"><i class="fa-brands fa-instagram"></i></a>
@@ -48,8 +55,10 @@
                             <li><a class="dropdown-item" href="{{ route('client.profile') }}">Quản lý tài khoản</a></li>
                             <li><a class="dropdown-item" href="{{ route('client.detailWallet') }}">Hoàn tiền</a></li>
                             <li><a class="dropdown-item" href="{{ route('client.redeem') }}">Đổi mã giảm giá</a></li>
-                            <li><a class="dropdown-item" href="{{ route('client.orderHistory') }}">Lịch sử đặt hàng</a></li>
-                            <li><a class="dropdown-item" href="{{ route('client.appointmentHistory') }}">Lịch sử đặt lịch</a></li>
+                            <li><a class="dropdown-item" href="{{ route('client.orderHistory') }}">Lịch sử đặt hàng</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('client.appointmentHistory') }}">Lịch sử đặt
+                                    lịch</a></li>
 
                             {{-- THÊM LINK ADMIN VÀO DROPDOWN CHO BRANCH ADMIN --}}
                             @if (Auth::user()->role === 'branch_admin')
