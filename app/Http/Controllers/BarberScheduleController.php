@@ -55,6 +55,41 @@ class BarberScheduleController extends Controller
     public function store(BarberSchedulesRequest $request)
     {
         $data = $request->validated();
+        //  Xử lý nghỉ lễ — áp dụng cho toàn bộ nhân viên, chi nhánh
+        if ($data['status'] === 'holiday') {
+            $start = $request->input('holiday_start_date');
+            $end = $request->input('holiday_end_date');
+            $note = $request->input('note');
+
+            if (!$start || !$end || !$note) {
+                return back()->withErrors(['msg' => 'Vui lòng nhập đầy đủ thông tin kỳ nghỉ lễ.'])->withInput();
+            }
+
+            $period = \Carbon\CarbonPeriod::create($start, $end);
+            $branches = Branch::with('barbers')->get();
+            foreach ($branches as $branch) {
+                foreach ($branch->barbers as $barber) {
+                    $period = \Carbon\CarbonPeriod::create($start, $end);
+                    foreach ($period as $date) {
+                        BarberSchedule::create([
+                            'barber_id' => $barber->id,
+                            'branch_id' => $branch->id, // THÊM DÒNG NÀY
+                            'schedule_date' => $date->format('Y-m-d'),
+                            'holiday_start_date' => $start,
+                            'holiday_end_date' => $end,
+                            'status' => 'holiday',
+                            'is_available' => false,
+                            'note' => $note,
+                        ]);
+                    }
+                }
+            }
+
+            return redirect()->route('barber_schedules.showBranch', $branches->first()->id)
+                ->with('success', 'Tạo lịch nghỉ lễ thành công!');
+        }
+
+
 
         // Nếu là nghỉ cả ngày thì xóa giờ
         if ($data['status'] === 'off') {

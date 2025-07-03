@@ -13,6 +13,33 @@
         </div>
 
         <div class="card-body">
+
+            {{-- Hiển thị các kỳ nghỉ lễ --}}
+            @php
+                $holidays = \App\Models\BarberSchedule::where('status', 'holiday')
+                    ->select('holiday_start_date', 'holiday_end_date', 'note')
+                    ->groupBy('holiday_start_date', 'holiday_end_date', 'note')
+                    ->orderBy('holiday_start_date')
+                    ->get();
+            @endphp
+
+            @if ($holidays->count())
+                <div class="alert alert-warning">
+                    <ul class="mb-0">
+                        @foreach ($holidays as $holiday)
+                            <li>
+                                <strong>📅{{ $holiday->note }}</strong>:
+                                từ
+                                <strong>{{ \Carbon\Carbon::parse($holiday->holiday_start_date)->format('d/m/Y') }}</strong>
+                                đến
+                                <strong>{{ \Carbon\Carbon::parse($holiday->holiday_end_date)->format('d/m/Y') }}</strong>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Bộ lọc --}}
             <form method="GET" class="mb-3 d-flex align-items-end gap-3">
                 <div class="form-group mb-0">
                     <label for="filter">Lọc loại lịch</label>
@@ -30,6 +57,7 @@
                 @foreach ($barbers as $barber)
                     @php
                         $schedules = $barber->schedules
+                            ->filter(fn($s) => $s->status !== 'holiday')
                             ->when(request('filter'), function ($query) {
                                 return $query->where('status', request('filter'));
                             })
@@ -61,7 +89,7 @@
 
                                                     @if ($schedule->status === 'off')
                                                         <td colspan="2" class="text-center text-danger">Nghỉ cả ngày</td>
-                                                        <td class="text-danger">Nghỉ phép / Lễ</td>
+                                                        <td class="text-danger">Nghỉ Lễ</td>
                                                     @else
                                                         <td>{{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }}
                                                         </td>

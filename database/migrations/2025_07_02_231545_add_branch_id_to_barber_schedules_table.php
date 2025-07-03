@@ -6,20 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('barber_schedules', function (Blueprint $table) {
-            $table->enum('status', ['off', 'custom'])->default('custom')->after('schedule_date');
+            $table->bigInteger('branch_id')->nullable()->after('barber_id');
+
+            $table->foreign('branch_id')
+                ->references('id')
+                ->on('branches')
+                ->onDelete('cascade');
         });
     }
 
     public function down(): void
     {
         Schema::table('barber_schedules', function (Blueprint $table) {
-            $table->dropColumn('status');
+            $table->dropForeign(['branch_id']);
+            $table->dropColumn('branch_id');
         });
     }
 };
