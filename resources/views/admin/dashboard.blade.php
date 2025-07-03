@@ -162,7 +162,7 @@
                         updatePendingCount(1); // Tăng badge khi có lịch mới
                     })
                     .listen('AppointmentConfirmed', (event) => {
-                        console.log('Appointment confirmed:', event);
+                        // console.log('Appointment confirmed:', event);
                         updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
                     })
                     .listen('App\\Events\\NewAppointment', (event) => {

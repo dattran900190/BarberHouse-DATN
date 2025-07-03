@@ -10,11 +10,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class BookingRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return Auth::check();
-    }
+    // public function authorize(): bool
+    // {
+    //     return Auth::check();
+    // }
 
+    public function authorize()
+    {
+        // Cho phép tất cả yêu cầu, kiểm tra đăng nhập sẽ được xử lý trong controller
+        return true;
+    }
+    
     public function rules(): array
     {
         return [

@@ -56,7 +56,7 @@
                         $variants = $product->variants;
                     @endphp
                     @if ($variants->count())
-                        <form action="{{ route('cart.add') }}" method="POST" class="mt-3 d-inline" id="variantForm">
+                        <form action="{{ route('cart.add') }}" method="POST" class="mt-3" id="variantForm">
                             @csrf
                             <label for="variant_id" class="me-2">Chọn thể tích:</label>
                             <select name="product_variant_id" id="variant_id" class="form-select d-inline-block w-auto">
@@ -72,8 +72,7 @@
                             <input type="number" name="quantity" id="quantity"
                                 class="form-control-sm d-inline-block w-auto" value="1" min="1" />
 
-                            <button type="submit" class="btn btn-dark ms-3" style="margin-top: 20px">🛒 Thêm vào giỏ
-                                hàng</button>
+                            <button type="submit" class="btn btn-dark ms-3" class="icon-button" style="margin-top: 20px"><i class="fa-solid fa-cart-plus"></i></button>
                         </form>
 
                         <form action="{{ route('cart.buyNow') }}" method="POST" class="d-inline" id="buyNowForm"
@@ -116,7 +115,7 @@
                     <div class="row justify-content-center">
                         @forelse ($relatedProducts as $item)
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
-                                <div class="card text-center h-100 d-flex flex-column">
+                                <div class="card text-center h-100">
                                     <a href="{{ route('client.product.detail', $item->id) }}"
                                         class="text-decoration-none text-dark">
                                         <img src="{{ asset('storage/' . $item->image) }}" class="card-img-top"
@@ -125,6 +124,8 @@
                                             <h6 class="card-title">{{ $item->name }}</h6>
                                             <p class="card-text text-danger fw-bold">{{ number_format($item->price) }} đ
                                             </p>
+                                            <button type="submit" class="btn-add-to-cart icon-button"
+                                                title="Thêm vào giỏ hàng"><i class="fa-solid fa-cart-plus"></i></button>
                                         </div>
                                     </a>
                                     <div class="action-buttons mt-auto mb-3 d-flex justify-content-center gap-2">
@@ -156,7 +157,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         @empty
                             <p class="text-center">Không có sản phẩm liên quan.</p>
                         @endforelse

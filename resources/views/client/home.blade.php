@@ -1,7 +1,6 @@
 @extends('layouts.ClientLayout')
 
 @section('title-page')
-    {{-- {{ $titlePage }} --}}
     Trang chủ Baber House
 @endsection
 
@@ -145,11 +144,7 @@
 @section('css')
 @endsection
 
-@section('card-footer')
-@endsection
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@section('scripts')
     <script>
         $(function() {
             $('.add-to-cart-form').on('submit', function(e) {
@@ -167,6 +162,9 @@
                             icon: 'success',
                             title: 'Thành công!',
                             text: 'Đã thêm vào giỏ hàng!',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
                             timer: 1500,
                             showConfirmButton: false
                         });
@@ -201,4 +199,4 @@
             });
         });
     </script>
-@endpush
+@endsection
