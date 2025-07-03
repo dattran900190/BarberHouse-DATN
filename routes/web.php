@@ -2,6 +2,7 @@
 
 use App\Models\Appointment;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -12,7 +13,6 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\VolumeController;
 use App\Http\Controllers\CheckinController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DashboardController;
@@ -70,7 +70,10 @@ Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('d
 Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::class, 'getBarbersByBranch'])->name('getBarbersByBranch');
 Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}', [ClientAppointmentController::class, 'getAvailableBarbersByDate']);
 Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
-
+Route::post('/store-errors', function (Request $request) {
+    session()->flash('errors', $request->input('errors'));
+    return response()->json(['success' => true]);
+})->name('store.errors');
 // == Lịch sử đặt lịch ==
 Route::get('/lich-su-dat-lich', [ClientAppointmentController::class, 'appointmentHistory'])->name('client.appointmentHistory');
 Route::get('/lich-su-dat-lich/{id}', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
@@ -152,8 +155,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
 
-    // ==== Thanh toán ====
-    Route::resource('payments', PaymentController::class);
 
     // ==== Đặt lịch ====
     Route::resource('appointments', AppointmentController::class);
