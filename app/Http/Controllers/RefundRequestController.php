@@ -58,6 +58,8 @@ class RefundRequestController extends Controller
         return view('admin.refunds.show', compact('refund'));
     }
 
+
+    
     public function update(ProcessRefundRequest $request, RefundRequest $refund)
     {
         DB::beginTransaction();
