@@ -564,15 +564,15 @@
                     @enderror
                 </div> --}}
                 <div class="form-group">
-    <label class="form-label">Ngày đặt lịch <span class="required">*</span></label>
-    <div class="date-input">
-        <input type="text" class="form-control" id="appointment_date" name="appointment_date"
-               placeholder="Chọn thời điểm" readonly>
-    </div>
-    @error('appointment_date')
-        <small class="text-danger">{{ $message }}</small>
-    @enderror
-</div>
+                    <label class="form-label">Ngày đặt lịch <span class="required">*</span></label>
+                    <div class="date-input">
+                        <input type="text" class="form-control" id="appointment_date" name="appointment_date"
+                            placeholder="Chọn thời điểm" readonly>
+                    </div>
+                    @error('appointment_date')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
 
                 <div class="form-group">
                     <label class="form-label">Chọn chi nhánh <span class="required">*</span></label>
@@ -581,7 +581,7 @@
                         @foreach ($branches as $branch)
                             <div class="branch-item {{ old('branch_id') == $branch->id ? 'active' : '' }}"
                                 data-id="{{ $branch->id }}">
-                                <i class="fas fa-map-marker-alt branch-icon"></i>
+                                <i class="fas fa-map-marker-alt branch-icon" data-value="{{ $branch->google_map_url }}"></i>
                                 <span class="branch-name">{{ $branch->name }}</span>
                                 <div class="branch-radio"></div>
                             </div>
@@ -742,7 +742,15 @@
             setMinDate();
         });
 
-   
+document.querySelectorAll('.branch-icon').forEach(icon => {
+    icon.addEventListener('click', function(event) {
+        event.stopPropagation(); // Ngăn sự kiện lan ra .branch-item
+        const googleMapUrl = this.getAttribute('data-value');
+        if (googleMapUrl) {
+            window.open(googleMapUrl, '_blank'); // Mở Google Maps trong tab mới
+        }
+    });
+});
 
         // // Enhanced service management
         // function setupServiceManagement() {
@@ -1094,7 +1102,7 @@
                                     }
                                 });
                             });
-                        
+
                     }
                 });
             } else {
