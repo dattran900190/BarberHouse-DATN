@@ -372,11 +372,6 @@ return [
             'icon' => 'fas fa-receipt',
         ],
         [
-            'text' => 'Quản lý thanh toán',
-            'url'  => 'admin/payments',
-            'icon' => 'fas fa-file-invoice-dollar',
-        ],
-        [
             'text' => 'Quản lý đặt lịch',
             'url'  => 'admin/appointments',
             'icon' => 'fas fa-calendar-alt',
@@ -449,6 +444,7 @@ return [
         JeroenNoten\LaravelAdminLte\Menu\Filters\LangFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\DataFilter::class,
         App\Filters\AppointmentCountFilter::class,
+        App\Filters\RefundRequestCountFilter::class,
     ],
 
     /*
