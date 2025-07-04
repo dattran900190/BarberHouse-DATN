@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
@@ -7,38 +8,37 @@ use App\Models\Product;
 
 class ClientProductController extends Controller
 {
-public function index(Request $request)
-{
-    $query = Product::query();
+    public function index(Request $request)
+    {
+        $query = Product::query();
 
-    // ---- LỌC DANH MỤC ----
-    if ($request->filled('category')) {      // <‑‑ key trên URL: ?category=1
-        $query->where('product_category_id', $request->category);
+        // ---- LỌC DANH MỤC ----
+        if ($request->filled('category')) {      // <‑‑ key trên URL: ?category=1
+            $query->where('product_category_id', $request->category);
+        }
+
+        // ---- LỌC KHOẢNG GIÁ ----
+        if ($request->filled('price_range')) {   // vd: 100‑200
+            [$min, $max] = explode('-', $request->price_range);
+            $query->whereBetween('price', [(int)$min * 1000, (int)$max * 1000]);
+        }
+
+        $products = $query->with('variants')->latest()->paginate(8);
+
+
+        return view('client.product', compact('products'));
     }
+    public function show($id)
+    {
+        $product = Product::findOrFail($id);
 
-    // ---- LỌC KHOẢNG GIÁ ----
-    if ($request->filled('price_range')) {   // vd: 100‑200
-        [$min, $max] = explode('-', $request->price_range);
-        $query->whereBetween('price', [ (int)$min * 1000, (int)$max * 1000 ]);
+        $relatedProducts = Product::where('product_category_id', $product->product_category_id)
+            ->where('id', '!=', $product->id)
+            ->latest()
+            ->take(8)
+            ->get();
+
+
+        return view('client.detailProduct', compact('product', 'relatedProducts'));
     }
-
-    $products = $query->latest()->paginate(8);
-
-    return view('client.product', compact('products'));
-}
-public function show($id)
-{
-    $product = Product::findOrFail($id);
-
-$relatedProducts = Product::where('product_category_id', $product->product_category_id)
-    ->where('id', '!=', $product->id)
-    ->latest()
-    ->take(8)
-    ->get();
-
-
-    return view('client.detailProduct', compact('product', 'relatedProducts'));
-}
-
-
 }
