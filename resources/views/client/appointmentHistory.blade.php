@@ -349,32 +349,42 @@
                     }
                 }).then(result => {
                     if (result.isConfirmed) {
-                        fetch(`/appointments/${appointmentId}/review`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                },
-                                body: JSON.stringify({
-                                    rating: result.value.rating,
-                                    comment: result.value.comment
+                        fetch("{{ route('client.submitReview', ['appointment' => '__ID__']) }}"
+                                .replace('__ID__', appointmentId), {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    },
+                                    body: JSON.stringify({
+                                        rating: result.value.rating,
+                                        comment: result.value.comment
+                                    })
                                 })
+
+
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Gửi đánh giá thất bại');
+                                }
+                                return response.json();
                             })
-                            .then(res => res.json())
                             .then(data => {
                                 if (data.success) {
-                                    Swal.fire('Thành công', data.message, 'success').then(
-                                () => {
-                                        location.reload();
-                                    });
+                                    Swal.fire({
+                                        title: 'Thành công!',
+                                        text: data.message,
+                                        icon: 'success'
+                                    }).then(() => location.reload());
                                 } else {
-                                    Swal.fire('Lỗi', data.message || 'Không thể gửi đánh giá.',
-                                        'error');
+                                    Swal.fire('Lỗi', data.message, 'error');
                                 }
-                            }).catch(error => {
-                                Swal.fire('Lỗi', 'Đã xảy ra lỗi khi gửi đánh giá.', 'error');
-                                console.error(error);
+                            })
+                            .catch(error => {
+                                Swal.fire('Lỗi!', error.message || 'Có lỗi khi gửi đánh giá.',
+                                    'error');
                             });
+
                     }
                 });
             });

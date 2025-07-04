@@ -63,6 +63,6 @@ class Appointment extends Model
     }
     public function review()
 {
-    return $this->hasOne(Review::class);
+    return $this->hasOne(Review::class, 'appointment_id');
 }
 }

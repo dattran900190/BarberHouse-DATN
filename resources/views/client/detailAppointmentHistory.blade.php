@@ -56,12 +56,15 @@
                     </div>
                 </div>
                 @if ($appointment->review)
-                    <div class="card mt-4">
-                        <div class="card-body">
-                            <h5 class="card-title">Đánh giá của bạn</h5>
-                            <p>Số sao: {{ $appointment->review->rating }} / 5</p>
-                            <p>Nhận xét: {{ $appointment->review->comment ?? '(Không có nhận xét)' }}</p>
+                    <div class="review mt-4">
+                        <h5>Đánh giá của bạn:</h5>
+                        <div>
+                            @for ($i = 1; $i <= 5; $i++)
+                                <i class="fa fa-star"
+                                    style="color: {{ $i <= $appointment->review->rating ? '#f1c40f' : '#ccc' }}"></i>
+                            @endfor
                         </div>
+                        <p class="mt-2">{{ $appointment->review->comment }}</p>
                     </div>
                 @endif
 

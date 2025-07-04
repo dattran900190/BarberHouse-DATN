@@ -90,8 +90,9 @@ Route::get('/bai-viet', [ClientPostController::class, 'index'])->name('client.po
 Route::get('/bai-viet-chi-tiet/{id}', [ClientPostController::class, 'detail'])->name('client.detailPost');
 
 // Đánh giá
-Route::post('/appointments/{appointment}/review', [ReviewController::class, 'store'])
-    ->name('client.reviews.store');
+// Route::post('/appointments/{appointment}/review', [ReviewController::class, 'submitReview'])->name('client.appointments.submitReview');
+Route::post('/appointments/{appointment}/review', [ClientReviewController::class, 'submitReview'])
+    ->name('client.submitReview');
 
 
 // == Sản phẩm ==
