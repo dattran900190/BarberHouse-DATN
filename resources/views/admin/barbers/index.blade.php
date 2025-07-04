@@ -76,11 +76,11 @@
                             <td>{{ $barber->branch?->name ?? 'Chưa có chi nhánh' }}</td>
                             <td>
                                 @if ($barber->status === 'idle')
-                                    <span class="badge bg-success">Đang rảnh</span>
+                                    <span class="badge bg-success">Đang hoạt động</span>
                                 @elseif ($barber->status === 'busy')
-                                    <span class="badge bg-warning">Đang làm việc</span>
+                                    <span class="badge bg-warning">Không nhận lịch</span>
                                 @else
-                                    <span class="badge bg-secondary">Nghỉ việc</span>
+                                    <span class="badge bg-secondary">Đã Nghỉ việc</span>
                                 @endif
 
                             </td>
