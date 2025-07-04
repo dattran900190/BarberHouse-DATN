@@ -1,7 +1,6 @@
 @extends('layouts.ClientLayout')
 
 @section('title-page')
-    {{-- {{ $titlePage }} --}}
     Trang chủ Baber House
 @endsection
 
@@ -100,8 +99,13 @@
                                         @csrf
                                         <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
                                         <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-success btn-buy-now">Mua ngay</button>
+                                        @guest
+                                            <button type="button" class="btn btn-success btn-buy-now">Mua ngay</button>
+                                        @else
+                                            <button type="submit" class="btn btn-success btn-buy-now">Mua ngay</button>
+                                        @endguest
                                     </form>
+
                                 </div>
                             @endif
                         </div>
@@ -140,11 +144,7 @@
 @section('css')
 @endsection
 
-@section('card-footer')
-@endsection
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@section('scripts')
     <script>
         $(function() {
             $('.add-to-cart-form').on('submit', function(e) {
@@ -162,6 +162,9 @@
                             icon: 'success',
                             title: 'Thành công!',
                             text: 'Đã thêm vào giỏ hàng!',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
                             timer: 1500,
                             showConfirmButton: false
                         });
@@ -180,5 +183,20 @@
                 return false;
             });
         });
+        $(function() {
+            $('.btn-buy-now[type="button"]').on('click', function() {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Bạn chưa đăng nhập!',
+                    text: 'Vui lòng đăng nhập để sử dụng chức năng "Mua ngay".',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Đăng nhập'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('login') }}";
+                    }
+                });
+            });
+        });
     </script>
-@endpush
+@endsection

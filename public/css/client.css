@@ -19,8 +19,6 @@ body a:hover {
   max-width: 550px !important;
   max-height: 450px !important;
   height: 450px !important;
-
-
 }
 
 /* Tăng kích thước vòng xoáy loading */
@@ -33,6 +31,16 @@ body a:hover {
   font-size: 1.5rem !important;
 
 }
+
+.icon-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  font-size: 1.5rem;
+}
+
 
 /* Cho navbar xuyên suốt, màu trắng khi scroll */
 /* Cho phép dropdown tràn ra khỏi navbar */

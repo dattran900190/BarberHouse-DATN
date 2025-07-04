@@ -59,11 +59,11 @@
                         <label>Trạng thái</label>
                         <p>
                             @if ($barber->status === 'idle')
-                                <span class="text-success font-weight-bold">Đang rảnh</span>
+                                <span class="text-success font-weight-bold">Đang hoạt động</span>
                             @elseif ($barber->status === 'busy')
-                                <span class="text-warning font-weight-bold">Đang làm việc</span>
+                                <span class="text-warning font-weight-bold">Không nhận lịch</span>
                             @elseif ($barber->status === 'retired')
-                                <span class="text-danger font-weight-bold">Đã nghỉ việc</span>
+                                <span class="text-danger font-weight-bold">Đã Nghỉ việc</span>
                             @else
                                 <span>Không rõ trạng thái</span>
                             @endif
@@ -71,8 +71,8 @@
                     </div>
                     <a href="{{ route('barbers.edit', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
                         class="btn btn-warning">Sửa</a>
-                    <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
-                        lại</a>
+                    <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">
+                        Quay lại</a>
                 </div>
             </div>
         </div>

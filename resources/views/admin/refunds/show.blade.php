@@ -53,7 +53,7 @@
                 <p><strong>Ngày hoàn tiền:</strong> {{ $refund->refunded_at->format('d/m/Y H:i') }}</p>
             @endif
 
-            @if ($refund->order && $refund->order->orderItems->count())
+            @if ($refund->order && $refund->order->items->count())
                 <h5 class="mt-4"><strong>Danh sách sản phẩm trong đơn hàng</strong></h5>
                 <table class="table table-bordered">
                     <thead>
@@ -66,7 +66,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($refund->order->orderItems as $item)
+                        @foreach ($refund->order->items as $item)
                             <tr>
                                 <td>{{ $item->productVariant->product->name ?? 'Không có tên' }}</td>
                                 <td>{{ $item->productVariant->volume->name ?? '-' }}</td>
@@ -78,6 +78,7 @@
                     </tbody>
                 </table>
             @endif
+
 
             <hr>
             @php

@@ -78,16 +78,13 @@
 
                                     </div>
                                 </a>
-                                @php
-                                    $variant = $product->variants->first();
-                                @endphp
                                 <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
                                     @csrf
                                     <input type="hidden" name="product_variant_id"
-                                        value="{{ $variant->id ?? $product->id }}">
+                                        value="{{ $product->default_variant_id ?? $product->id }}">
                                     <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn-add-to-cart" title="Thêm vào giỏ hàng">
-                                        🛒
+                                    <button type="submit" class="btn-add-to-cart icon-button" title="Thêm vào giỏ hàng">
+                                        <i class="fa-solid fa-cart-plus"></i>
                                     </button>
                                 </form>
                                 <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form"
@@ -95,9 +92,15 @@
                                     @csrf
                                     <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
                                     <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn btn-success btn-buy-now" title="Mua ngay">Mua
-                                        ngay</button>
+                                    @guest
+                                        <button type="button" class="btn btn-success btn-buy-now" title="Mua ngay">Mua
+                                            ngay</button>
+                                    @else
+                                        <button type="submit" class="btn btn-success btn-buy-now" title="Mua ngay">Mua
+                                            ngay</button>
+                                    @endguest
                                 </form>
+
                             </div>
                         </div>
                     @empty
@@ -114,13 +117,25 @@
     </main>
 @endsection
 
-@section('card-footer')
-@endsection
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@section('scripts')
     <script>
         $(function() {
+            $('.btn-buy-now[type="button"]').on('click', function() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bạn chưa đăng nhập!',
+                text: 'Vui lòng đăng nhập để sử dụng chức năng "Mua ngay".',
+                showConfirmButton: true,
+                confirmButtonText: 'Đăng nhập'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('login') }}";
+                }
+            });
+        });
+
+
             $('.add-to-cart-form').on('submit', function(e) {
                 e.preventDefault();
                 let form = $(this);
@@ -137,6 +152,9 @@
                             title: 'Thành công!',
                             text: 'Đã thêm vào giỏ hàng!',
                             timer: 1500,
+                            customClass: {
+                                popup: 'custom-swal-popup' // CSS
+                            },
                             showConfirmButton: false
                         });
                         if (res.cart_count !== undefined) {
@@ -155,4 +173,4 @@
             });
         });
     </script>
-@endpush
+@endsection
