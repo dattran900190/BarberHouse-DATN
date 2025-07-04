@@ -54,10 +54,12 @@ class RefundRequestController extends Controller
 
     public function show(RefundRequest $refund)
     {
-        $refund->load(['user', 'order.orderItems.productVariant.volume']);
+        $refund->load(['user', 'order.items.productVariant.volume']);
         return view('admin.refunds.show', compact('refund'));
     }
 
+
+    
     public function update(ProcessRefundRequest $request, RefundRequest $refund)
     {
         DB::beginTransaction();

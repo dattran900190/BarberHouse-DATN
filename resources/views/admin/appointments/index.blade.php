@@ -196,12 +196,8 @@
                                             <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
                                         </td>
                                         <td class="text-center">
-                                            <form action="{{ route('appointments.completed', $appointment->id) }}"
-                                                method="POST" style="display:inline-block;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-success btn-sm">Hoàn
-                                                    thành</button>
-                                            </form>
+                                            <button class="btn btn-success btn-sm complete-btn"
+                                                data-id="{{ $appointment->id }}">Hoàn thành</button>
                                             <a href="{{ route('appointments.show', $appointment->id) }}"
                                                 class="btn btn-info btn-sm">Xem</a>
                                             <a href="{{ route('appointments.edit', $appointment->id) }}"
@@ -546,6 +542,87 @@
                                     icon: 'error',
                                     customClass: {
                                         popup: 'custom-swal-popup' // CSS
+                                    }
+                                });
+                            });
+                    }
+                });
+            });
+        });
+
+        // Xử lý nút "Hoàn thành"
+        document.querySelectorAll('.complete-btn').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Ngăn hành vi mặc định
+                const appointmentId = this.getAttribute('data-id');
+
+                Swal.fire({
+                    title: 'Hoàn thành lịch hẹn',
+                    text: 'Bạn có chắc chắn muốn đánh dấu lịch hẹn này là HOÀN THÀNH?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Hoàn thành',
+                    cancelButtonText: 'Hủy',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        fetch('{{ route('appointments.completed', ':id') }}'.replace(':id',
+                                appointmentId), {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                }
+                            })
+                            .then(response => {
+                                if (!response.ok) throw new Error(
+                                    `HTTP error! Status: ${response.status}`);
+                                return response.json();
+                            })
+                            .then(data => {
+                                Swal.close();
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Thành công!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => location.reload());
+                                } else {
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: data.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                Swal.close();
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: 'Đã có lỗi xảy ra: ' + error.message,
+                                    icon: 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
                                     }
                                 });
                             });
@@ -993,7 +1070,6 @@
                 });
             });
         });
-        
     </script>
 
     {{-- <script>
