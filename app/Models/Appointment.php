@@ -51,6 +51,7 @@ class Appointment extends Model
         return $this->belongsTo(Branch::class);
     }
 
+
     public function promotion()
     {
         return $this->belongsTo(Promotion::class);
@@ -60,4 +61,8 @@ class Appointment extends Model
     {
         return $this->hasOne(Checkin::class);
     }
+    public function review()
+{
+    return $this->hasOne(Review::class);
+}
 }

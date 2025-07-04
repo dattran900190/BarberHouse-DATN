@@ -95,6 +95,14 @@
                                             href="{{ route('client.detailAppointmentHistory', $appointment->id) }}">
                                             Xem chi tiết
                                         </a>
+                                        @if ($appointment->status == 'completed')
+                                            <button type="button" class="btn btn-warning btn-sm review-btn"
+                                                data-id="{{ $appointment->id }}">
+                                                Đánh giá
+                                            </button>
+                                        @endif
+
+
                                         @if (in_array($appointment->status, ['pending', 'confirmed']))
                                             {{-- <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#cancelModal{{ $appointment->id }}">Hủy</button> --}}
@@ -267,6 +275,112 @@
             });
         });
     </script>
+    <script>
+        document.querySelectorAll('.review-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const appointmentId = this.dataset.id;
+
+                Swal.fire({
+                    title: 'Đánh giá dịch vụ',
+                    html: `
+                    <div class="mb-2">Chọn số sao:</div>
+                    <div id="star-rating" class="mb-3" style="font-size: 28px;">
+                        ${[1, 2, 3, 4, 5].map(i =>
+                            `<i class="fa fa-star star" data-value="${i}" style="cursor:pointer;color:#ccc;margin:0 2px;"></i>`
+                        ).join('')}
+                    </div>
+                    <div id="feedback-text" class="mb-3" style="font-weight: 500; min-height: 24px;"></div>
+                    <textarea id="reviewComment" class="swal2-textarea" placeholder="Nhận xét của bạn (tuỳ chọn)"></textarea>
+                `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Gửi đánh giá',
+                    focusConfirm: false,
+                    preConfirm: () => {
+                        const selected = document.querySelectorAll(
+                            '#star-rating .star.selected');
+                        if (selected.length === 0) {
+                            Swal.showValidationMessage('Vui lòng chọn số sao!');
+                            return false;
+                        }
+                        return {
+                            rating: selected.length,
+                            comment: document.getElementById('reviewComment').value
+                        };
+                    },
+                    didOpen: () => {
+                        const stars = document.querySelectorAll('#star-rating .star');
+                        const feedback = document.getElementById('feedback-text');
+
+                        stars.forEach((star, index) => {
+                            star.addEventListener('click', () => {
+                                // Highlight sao
+                                stars.forEach((s, i) => {
+                                    s.classList.toggle('selected', i <=
+                                        index);
+                                    s.style.color = i <= index ?
+                                        '#f1c40f' : '#ccc';
+                                });
+
+                                // Gợi ý trạng thái cảm xúc
+                                const rating = index + 1;
+                                let text = '';
+                                switch (rating) {
+                                    case 1:
+                                        text = 'Rất không hài lòng';
+                                        break;
+                                    case 2:
+                                        text = 'Không hài lòng';
+                                        break;
+                                    case 3:
+                                        text = 'Bình thường';
+                                        break;
+                                    case 4:
+                                        text = 'Hài lòng';
+                                        break;
+                                    case 5:
+                                        text = 'Rất hài lòng';
+                                        break;
+                                }
+                                feedback.textContent = text;
+                                feedback.style.color = rating <= 2 ? 'red' : (
+                                    rating == 3 ? '#666' : 'green');
+                            });
+                        });
+                    }
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        fetch(`/appointments/${appointmentId}/review`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                },
+                                body: JSON.stringify({
+                                    rating: result.value.rating,
+                                    comment: result.value.comment
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire('Thành công', data.message, 'success').then(
+                                () => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('Lỗi', data.message || 'Không thể gửi đánh giá.',
+                                        'error');
+                                }
+                            }).catch(error => {
+                                Swal.fire('Lỗi', 'Đã xảy ra lỗi khi gửi đánh giá.', 'error');
+                                console.error(error);
+                            });
+                    }
+                });
+            });
+        });
+    </script>
+
 
     <script>
         const swiper = new Swiper(".mySwiper", {

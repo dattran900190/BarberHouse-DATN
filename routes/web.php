@@ -34,6 +34,7 @@ use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+use App\Http\Controllers\Client\ReviewController as ClientReviewController;
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -87,6 +88,11 @@ Route::get('/chi-nhanh/{id}', [ClientBranchController::class, 'detail'])->name('
 // Đặt route danh sách
 Route::get('/bai-viet', [ClientPostController::class, 'index'])->name('client.posts');
 Route::get('/bai-viet-chi-tiet/{id}', [ClientPostController::class, 'detail'])->name('client.detailPost');
+
+// Đánh giá
+Route::post('/appointments/{appointment}/review', [ReviewController::class, 'store'])
+    ->name('client.reviews.store');
+
 
 // == Sản phẩm ==
 Route::get('/san-pham', [ClientProductController::class, 'index'])->name('client.product');

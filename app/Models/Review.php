@@ -12,7 +12,7 @@ class Review extends Model
     protected $fillable = [
         'user_id',
         'barber_id',
-        // 'appointment_id', // sau dùng mở lại
+        'appointment_id', 
         'rating',
         'comment',
         'is_visible'
@@ -28,8 +28,8 @@ class Review extends Model
         return $this->belongsTo(Barber::class);
     }
 
-    // public function appointment()
-    // {
-    //     return $this->belongsTo(Appointment::class);
-    // }
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
+    }
 }

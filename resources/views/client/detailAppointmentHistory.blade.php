@@ -55,32 +55,13 @@
                         </div>
                     </div>
                 </div>
-                @if ($appointment->status === 'completed')
-                    <div class="card mt-4 shadow-sm">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">Đánh giá của bạn</h5>
-                        </div>
+                @if ($appointment->review)
+                    <div class="card mt-4">
                         <div class="card-body">
-                            @if (!is_null($appointment->rating))
-                                <div class="mb-2">
-                                    <strong>Số sao:</strong>
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        @if ($i <= $appointment->rating)
-                                            <i class="fa fa-star text-warning"></i>
-                                        @else
-                                            <i class="fa fa-star text-secondary"></i>
-                                        @endif
-                                    @endfor
-                                </div>
-                                <div>
-                                    <strong>Nhận xét:</strong>
-                                    <p>{{ $appointment->review_content ?? 'Không có nhận xét.' }}</p>
-                                </div>
-                            @else
-                                <p class="text-muted">Bạn chưa đánh giá lịch hẹn này.</p>
-                            @endif
+                            <h5 class="card-title">Đánh giá của bạn</h5>
+                            <p>Số sao: {{ $appointment->review->rating }} / 5</p>
+                            <p>Nhận xét: {{ $appointment->review->comment ?? '(Không có nhận xét)' }}</p>
                         </div>
-
                     </div>
                 @endif
 
