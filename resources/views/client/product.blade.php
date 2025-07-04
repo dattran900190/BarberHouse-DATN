@@ -63,34 +63,35 @@
 
                 {{-- DANH SÁCH SẢN PHẨM --}}
                 <div class="row">
-
                     @forelse ($products as $product)
+                        @php $variant = $product->variants->first(); @endphp
                         <div class="col-6 col-md-3 mb-4">
                             <div class="card h-100 text-center">
                                 <a href="{{ route('client.product.detail', $product->id) }}"
                                     class="text-decoration-none text-dark">
-
                                     <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}"
                                         class="card-img-top" style="height: 200px; object-fit: cover;">
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $product->name }}</h5>
                                         <p class="card-text text-danger fw-bold">{{ number_format($product->price) }} đ</p>
-
                                     </div>
                                 </a>
+
                                 <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
                                     @csrf
                                     <input type="hidden" name="product_variant_id"
-                                        value="{{ $product->default_variant_id ?? $product->id }}">
+                                        value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
                                     <input type="hidden" name="quantity" value="1">
                                     <button type="submit" class="btn-add-to-cart icon-button" title="Thêm vào giỏ hàng">
                                         <i class="fa-solid fa-cart-plus"></i>
                                     </button>
                                 </form>
+
                                 <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form"
                                     style="display:inline-block; margin-left:5px;">
                                     @csrf
-                                    <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                    <input type="hidden" name="product_variant_id"
+                                        value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
                                     <input type="hidden" name="quantity" value="1">
                                     @guest
                                         <button type="button" class="btn btn-success btn-buy-now" title="Mua ngay">Mua
@@ -100,13 +101,13 @@
                                             ngay</button>
                                     @endguest
                                 </form>
-
                             </div>
                         </div>
                     @empty
                         <p class="text-center">Không có sản phẩm nào.</p>
                     @endforelse
                 </div>
+
 
                 {{-- PHÂN TRANG --}}
                 <div class="mt-4 d-flex justify-content-center">
@@ -122,18 +123,18 @@
     <script>
         $(function() {
             $('.btn-buy-now[type="button"]').on('click', function() {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Bạn chưa đăng nhập!',
-                text: 'Vui lòng đăng nhập để sử dụng chức năng "Mua ngay".',
-                showConfirmButton: true,
-                confirmButtonText: 'Đăng nhập'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "{{ route('login') }}";
-                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Bạn chưa đăng nhập!',
+                    text: 'Vui lòng đăng nhập để sử dụng chức năng "Mua ngay".',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Đăng nhập'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('login') }}";
+                    }
+                });
             });
-        });
 
 
             $('.add-to-cart-form').on('submit', function(e) {
