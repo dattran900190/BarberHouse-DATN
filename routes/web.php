@@ -163,6 +163,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
     Route::post('/appointments/{appointment}/approve-cancel', [AppointmentController::class, 'approveCancel'])->name('appointments.approve-cancel');
     Route::post('/appointments/{appointment}/reject-cancel', [AppointmentController::class, 'rejectCancel'])->name('appointments.reject-cancel');
+    Route::post('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow'])->name('appointments.no-show');
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);
@@ -186,6 +187,13 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('barber_schedules', BarberScheduleController::class);
     Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])->name('barber_schedules.showBranch');
     Route::get('barber-schedules/create/{branchId}', [BarberScheduleController::class, 'create'])->name('barber_schedules.createForBranch');
+    // Xử lý lưu
+    Route::post('/barber-schedules', [BarberScheduleController::class, 'store'])->name('barber_schedules.store');
+    // Đúng: KHÔNG cần lặp lại 'admin/' vì đã có prefix
+    // routes/web.php
+    Route::get('barber-schedules/holiday/edit/{id}', [BarberScheduleController::class, 'editHoliday'])->name('barber_schedules.editHoliday');
+    Route::put('barber-schedules/holiday/update/{id}', [BarberScheduleController::class, 'updateHoliday'])->name('barber_schedules.updateHoliday');
+    Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
 
     // ==== Người dùng ====
     Route::resource('users', UserController::class);
@@ -209,3 +217,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 Route::get('/profile', [ProfileController::class, 'index'])->name('client.profile');
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('client.update');
 Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('client.password');
+
+// Form tạo nghỉ lễ
+Route::get('/barber-schedules/holiday/create', [BarberScheduleController::class, 'createHoliday'])->name('barber_schedules.createHoliday');
