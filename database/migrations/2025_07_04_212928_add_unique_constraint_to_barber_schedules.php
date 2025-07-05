@@ -9,17 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::table('barber_schedules', function (Blueprint $table) {
-            $table->enum('status', ['off', 'custom'])->default('custom')->after('schedule_date');
+            $table->unique(['barber_id', 'schedule_date', 'status', 'note'], 'unique_barber_schedule');
         });
     }
 
-    public function down(): void
+    public function down()
     {
         Schema::table('barber_schedules', function (Blueprint $table) {
-            $table->dropColumn('status');
+            $table->dropUnique('unique_barber_schedule');
         });
     }
 };

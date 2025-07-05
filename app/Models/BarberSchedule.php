@@ -14,8 +14,11 @@ class BarberSchedule extends Model
         'schedule_date',
         'start_time',
         'end_time',
+        'holiday_start_date',
+        'holiday_end_date', // Thêm trường này nếu bạn cần lưu ngày nghỉ
         'status',         // Thêm để lưu loại lịch
         'is_available',   // Nếu bạn dùng field này
+        'note',          // Ghi chú cho lịch
     ];
 
     /**
