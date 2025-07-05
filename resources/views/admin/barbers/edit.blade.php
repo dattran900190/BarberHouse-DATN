@@ -97,14 +97,14 @@
 
                             <select id="status" name="status" class="form-control" {{ $isRetired ? 'disabled' : '' }}>
                                 <option value="idle" {{ old('status', $barber->status) == 'idle' ? 'selected' : '' }}>
-                                    Rảnh (chờ khách)
+                                    Đang hoạt động
                                 </option>
                                 <option value="busy" {{ old('status', $barber->status) == 'busy' ? 'selected' : '' }}>
-                                    Đang làm việc
+                                    Không nhận lịch
                                 </option>
                                 <option value="retired"
                                     {{ old('status', $barber->status) == 'retired' ? 'selected' : '' }}>
-                                    Nghỉ việc
+                                    Đã Nghỉ việc
                                 </option>
                             </select>
 

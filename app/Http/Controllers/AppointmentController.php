@@ -201,14 +201,37 @@ class AppointmentController extends Controller
     }
 
 
-    public function completed($id)
+    public function completed(Request $request, Appointment $appointment)
     {
-        $appointment = Appointment::findOrFail($id);
-        $appointment->status = 'completed';
-        $appointment->payment_status = 'paid';
-        $appointment->save();
+        try {
+            // Kiểm tra trạng thái hợp lệ
+            if ($appointment->status !== 'confirmed') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Chỉ có thể hoàn thành lịch hẹn đã được xác nhận.'
+                ], 400);
+            }
 
-        return redirect()->route('appointments.index')->with('success', 'Lịch hẹn đã được hoàn thành.');
+            // Cập nhật trạng thái lịch hẹn và thanh toán
+            $appointment->status = 'completed';
+            $appointment->payment_status = 'paid'; // hoặc kiểm tra đã thanh toán trước
+            $appointment->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lịch hẹn đã được hoàn thành và thợ đã chuyển sang trạng thái rảnh.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Complete: Failed', [
+                'appointment_id' => $appointment->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi hoàn thành lịch hẹn: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function cancel(Request $request, Appointment $appointment)

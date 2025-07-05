@@ -167,40 +167,228 @@ document.addEventListener('DOMContentLoaded', function () {
   //   updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, this.value);
   // });
 
+  // const appointmentDate = document.getElementById('appointment_date');
+  // const appointmentTime = document.getElementById('appointment_time');
+  // const branchSelect = document.getElementById('branch');
+  // const barberSelect = document.getElementById('barber');
+  // const serviceSelect = document.getElementById('service');
+
+  // let lastRequest = null; // Track last request key
+
+  // function updateBarbers(branchId, date, time = null, serviceId = null) {
+  //   // Chỉ gọi fetch khi combo branch-date-time-service thay đổi
+  //   const requestKey = `${branchId}|${date}|${time}|${serviceId}`;
+  //   if (lastRequest === requestKey) return;
+  //   lastRequest = requestKey;
+
+  //   // Giữ lại barber đã chọn (nếu có)
+  //   const prevBarber = barberSelect.value;
+
+  //   // Reset UI
+  //   barberSelect.innerHTML = '<option value="">-- Chọn thợ --</option>';
+
+  //   if (!branchId || !date) {
+  //     barberSelect.innerHTML = '<option value="">Vui lòng chọn chi nhánh và ngày</option>';
+  //     return;
+  //   }
+
+  //   // Build URL
+  //   let url = `/get-available-barbers-by-date/${branchId}/${date}/${time ? encodeURIComponent(time) : 'null'}`;
+  //   if (serviceId) url += `/${serviceId}`;
+
+  //   fetch(url)
+  //     .then(r => {
+  //       if (!r.ok) throw new Error(`Status ${r.status}`);
+  //       return r.json();
+  //     })
+  //     .then(data => {
+  //       if (data.error) {
+  //         barberSelect.innerHTML = `<option value="">${data.error}</option>`;
+  //         return;
+  //       }
+  //       if (!data.length) {
+  //         barberSelect.innerHTML = '<option value="">Không có thợ khả dụng</option>';
+  //         return;
+  //       }
+
+  //       const added = new Set();
+  //       data.forEach(b => {
+  //         if (!added.has(b.id)) {
+  //           const opt = document.createElement('option');
+  //           opt.value = b.id;
+  //           opt.text = b.name;
+  //           barberSelect.appendChild(opt);
+  //           added.add(b.id);
+  //         }
+  //       });
+
+  //       // Nếu prevBarber vẫn có trong added, chọn lại
+  //       if (prevBarber && added.has(prevBarber)) {
+  //         barberSelect.value = prevBarber;
+  //       }
+  //     })
+  //     .catch(err => {
+  //       console.error(err);
+  //       barberSelect.innerHTML = '<option value="">Lỗi khi tải danh sách thợ</option>';
+  //     });
+  // }
+
+  // // Chỉ gắn listener vào 4 trường liên quan
+  // appointmentDate.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
+  // appointmentTime.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
+  // branchSelect.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
+  // serviceSelect.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
+
+  // tiền dịch vụ và thời gian 
+
+
+  // document.addEventListener('DOMContentLoaded', function () {
+  // const appointmentDate = document.getElementById('appointment_date');
+  // const appointmentTime = document.getElementById('appointment_time');
+  // const branchContainer = document.getElementById('branch');
+  // const branchInput = document.getElementById('branch_input');
+  // const appointmentTimeInput     = document.getElementById('appointment_time_input');
+  // const barberSelect = document.getElementById('barber');
+  // const serviceSelect = document.getElementById('service');
+
+  // let lastRequest = null;
+
+  // function updateBarbers(branchId, date, time = null, serviceId = null) {
+  //   const requestKey = `${branchId}|${date}|${time}|${serviceId}`;
+  //   if (lastRequest === requestKey) return;
+  //   lastRequest = requestKey;
+
+  //   const prevBarber = barberSelect.value;
+  //   barberSelect.innerHTML = '<option value="">Chọn kĩ thuật viên</option>';
+
+  //   if (!branchId || !date) {
+  //     barberSelect.innerHTML = '<option value="">Vui lòng chọn chi nhánh và ngày</option>';
+  //     return;
+  //   }
+
+  //   let url = `/get-available-barbers-by-date/${branchId}/${date}/${time ? encodeURIComponent(time) : 'null'}`;
+  //   if (serviceId) url += `/${serviceId}`;
+
+  //   fetch(url)
+  //     .then(r => { if (!r.ok) throw new Error(`Status ${r.status}`); return r.json(); })
+  //     .then(data => {
+  //       if (data.error) {
+  //         barberSelect.innerHTML = `<option value="">${data.error}</option>`;
+  //         return;
+  //       }
+  //       if (!data.length) {
+  //         barberSelect.innerHTML = '<option value="">Không có thợ khả dụng</option>';
+  //         return;
+  //       }
+  //       const added = new Set();
+  //       data.forEach(b => {
+  //         if (!added.has(b.id)) {
+  //           const opt = document.createElement('option');
+  //           opt.value = b.id;
+  //           opt.text = b.name;
+  //           barberSelect.appendChild(opt);
+  //           added.add(b.id);
+  //         }
+  //       });
+  //       if (prevBarber && added.has(prevBarber)) {
+  //         barberSelect.value = prevBarber;
+  //       }
+  //     })
+  //     .catch(err => {
+  //       console.error(err);
+  //       barberSelect.innerHTML = '<option value="">Lỗi khi tải danh sách thợ</option>';
+  //     });
+  // }
+
+  // // Bắt sự kiện khi click vào chi nhánh
+  // branchContainer.querySelectorAll('.branch-item').forEach(item => {
+  //   item.addEventListener('click', () => {
+  //     // Reset tất cả active
+  //     branchContainer.querySelectorAll('.branch-item')
+  //       .forEach(el => el.classList.remove('active'));
+
+  //     // Active item này
+  //     item.classList.add('active');
+
+  //     // Lấy id và gán vào input ẩn
+  //     const branchId = item.getAttribute('data-id');
+  //     branchInput.value = branchId;
+
+  //     // Thêm branchContainer.value cho compatibility với code cũ
+  //     branchContainer.value = branchId;
+
+  //     // Gọi updateBarbers ngay sau khi chọn chi nhánh
+  //     updateBarbers(
+  //       branchId,
+  //       appointmentDate.value,
+  //       appointmentTime.value,
+  //       serviceSelect.value
+  //     );
+  //   });
+  // });
+
+  // // Các listener khác giữ nguyên
+  // appointmentDate.addEventListener('change', () =>
+  //   updateBarbers(branchContainer.value, appointmentDate.value, appointmentTime.value, serviceSelect.value)
+  // );
+  // appointmentTime.addEventListener('change', () =>
+  //   updateBarbers(branchContainer.value, appointmentDate.value, appointmentTime.value, serviceSelect.value)
+  // );
+  // serviceSelect.addEventListener('change', () =>
+  //   updateBarbers(branchContainer.value, appointmentDate.value, appointmentTime.value, serviceSelect.value)
+  // );
+
+
   const appointmentDate = document.getElementById('appointment_date');
   const appointmentTime = document.getElementById('appointment_time');
-  const branchSelect = document.getElementById('branch');
+  const branchContainer = document.getElementById('branch');
+  const branchInput = document.getElementById('branch_input');
   const barberSelect = document.getElementById('barber');
   const serviceSelect = document.getElementById('service');
 
-  let lastRequest = null; // Track last request key
+
+  const timeGrid = document.getElementById('timeGrid');
+
+  // Xử lý sự kiện nhấp chuột trên các ô giờ
+  timeGrid.querySelectorAll('.time-slot').forEach(slot => {
+    slot.addEventListener('click', function () {
+      // Xóa lớp 'selected' khỏi tất cả các ô giờ
+      timeGrid.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+      // Thêm lớp 'selected' cho ô giờ được nhấp
+      this.classList.add('selected');
+      // Cập nhật giá trị input ẩn
+      appointmentTime.value = this.getAttribute('data-value');
+      updateBarbers(branchContainer.value, appointmentDate.value, appointmentTime.value, serviceSelect.value);
+    });
+  });
+
+  // Đánh dấu ô giờ nếu có giá trị cũ (từ {{ old('appointment_time') }})
+  const oldTime = appointmentTime.value;
+  if (oldTime) {
+    const slot = timeGrid.querySelector(`.time-slot[data-value="${oldTime}"]`);
+    if (slot) slot.classList.add('selected');
+  }
+
+  let lastRequest = null;
 
   function updateBarbers(branchId, date, time = null, serviceId = null) {
-    // Chỉ gọi fetch khi combo branch-date-time-service thay đổi
     const requestKey = `${branchId}|${date}|${time}|${serviceId}`;
     if (lastRequest === requestKey) return;
     lastRequest = requestKey;
 
-    // Giữ lại barber đã chọn (nếu có)
     const prevBarber = barberSelect.value;
-
-    // Reset UI
-    barberSelect.innerHTML = '<option value="">-- Chọn thợ --</option>';
+    barberSelect.innerHTML = '<option value="">Chọn kĩ thuật viên</option>';
 
     if (!branchId || !date) {
       barberSelect.innerHTML = '<option value="">Vui lòng chọn chi nhánh và ngày</option>';
       return;
     }
 
-    // Build URL
     let url = `/get-available-barbers-by-date/${branchId}/${date}/${time ? encodeURIComponent(time) : 'null'}`;
     if (serviceId) url += `/${serviceId}`;
 
     fetch(url)
-      .then(r => {
-        if (!r.ok) throw new Error(`Status ${r.status}`);
-        return r.json();
-      })
+      .then(r => { if (!r.ok) throw new Error(`Status ${r.status}`); return r.json(); })
       .then(data => {
         if (data.error) {
           barberSelect.innerHTML = `<option value="">${data.error}</option>`;
@@ -210,7 +398,6 @@ document.addEventListener('DOMContentLoaded', function () {
           barberSelect.innerHTML = '<option value="">Không có thợ khả dụng</option>';
           return;
         }
-
         const added = new Set();
         data.forEach(b => {
           if (!added.has(b.id)) {
@@ -221,8 +408,6 @@ document.addEventListener('DOMContentLoaded', function () {
             added.add(b.id);
           }
         });
-
-        // Nếu prevBarber vẫn có trong added, chọn lại
         if (prevBarber && added.has(prevBarber)) {
           barberSelect.value = prevBarber;
         }
@@ -233,13 +418,55 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
-  // Chỉ gắn listener vào 4 trường liên quan
-  appointmentDate.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
-  appointmentTime.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
-  branchSelect.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
-  serviceSelect.addEventListener('change', () => updateBarbers(branchSelect.value, appointmentDate.value, appointmentTime.value, serviceSelect.value));
+  // Bắt sự kiện khi click vào chi nhánh
+  branchContainer.querySelectorAll('.branch-item').forEach(item => {
+    item.addEventListener('click', () => {
+      // Reset tất cả active
+      branchContainer.querySelectorAll('.branch-item')
+        .forEach(el => el.classList.remove('active'));
 
-  // tiền dịch vụ và thời gian 
+      // Active item này
+      item.classList.add('active');
+
+      // Lấy id và gán vào input ẩn
+      const branchId = item.getAttribute('data-id');
+      branchInput.value = branchId;
+
+      // Thêm branchContainer.value cho compatibility với code cũ
+      branchContainer.value = branchId;
+
+      // Gọi updateBarbers ngay sau khi chọn chi nhánh
+      updateBarbers(
+        branchId,
+        appointmentDate.value,
+        appointmentTime.value,
+        serviceSelect.value
+      );
+    });
+  });
+
+  // Các listener khác giữ nguyên
+  appointmentDate.addEventListener('change', () =>
+    updateBarbers(branchContainer.value, appointmentDate.value, appointmentTime.value, serviceSelect.value)
+  );
+
+  serviceSelect.addEventListener('change', () =>
+    updateBarbers(branchContainer.value, appointmentDate.value, appointmentTime.value, serviceSelect.value)
+  );
+
+  flatpickr(appointmentDate, {
+    // defaultDate: "today",
+    minDate: "today",
+    maxDate: new Date().fp_incr(90),
+    dateFormat: "Y-m-d", // Thay đổi sang định dạng Laravel chấp nhận
+    disableMobile: true,
+    onChange: function (selectedDates, dateStr, instance) {
+      appointmentDate.value = dateStr; // Cập nhật trực tiếp
+      updateBarbers(branchContainer.value, dateStr, appointmentTime.value, serviceSelect.value);
+    }
+  });
+
+  // tính tổng tiền và thời gian dịch vụ 
   const priceOutput = document.getElementById('totalPrice');
   const durationOutput = document.getElementById('totalDuration');
 
