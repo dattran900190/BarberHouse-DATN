@@ -30,7 +30,7 @@
             <div class="posts-wrapper">
                 <button class="prev-posts">‹</button>
                 <div class="posts">
-                    @foreach ($posts as $post)
+                    @foreach ($featuredPosts as $post)
                         <div class="post">
                             <div class="image-container">
                                 <a href="{{ route('client.detailPost', $post->slug) }}">
@@ -48,7 +48,7 @@
             </div>
 
             <div class="posts-nomal">
-                @foreach ($posts as $post)
+                @foreach ($normalPosts as $post)
                     <div class="post-nomal">
                         <div class="image-nomal">
                             <a href="{{ route('client.detailPost', $post->slug) }}">

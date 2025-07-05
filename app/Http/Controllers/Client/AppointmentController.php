@@ -23,6 +23,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\BookingRequest;
+use App\Models\Review;
 use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends Controller
@@ -68,6 +69,8 @@ class AppointmentController extends Controller
 
         return view('client.booking', compact('barbers', 'services', 'branches', 'vouchers', 'publicPromotions'));
     }
+ 
+
 
     public function appointmentHistory(Request $request)
     {
@@ -151,10 +154,14 @@ class AppointmentController extends Controller
     public function detailAppointmentHistory($id)
     {
         $appointment = Appointment::where('user_id', Auth::id())
-            ->with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name'])
+            ->with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name', 'review'])
             ->findOrFail($id);
 
         return view('client.detailAppointmentHistory', compact('appointment'));
+    }
+    public function completed(Request $request)
+    {
+        return $this->appointmentHistory($request->merge(['status' => 'completed']));
     }
 
     public function cancel(Request $request, Appointment $appointment)
@@ -695,13 +702,15 @@ class AppointmentController extends Controller
                 // Chuẩn hoá SA/CH -> 24h
                 $rawTime = $time;
                 if (preg_match('/^(\d{1,2}):([0-5]\d)\s*(SA|CH)$/iu', $rawTime, $m)) {
-                    $hour = (int)$m[1];
+                    $hour = (int) $m[1];
                     $minute = $m[2];
                     $suf = strtoupper($m[3]);
                     if ($suf === 'SA') {
-                        if ($hour === 12) $hour = 0;
+                        if ($hour === 12)
+                            $hour = 0;
                     } else {
-                        if ($hour < 12) $hour += 12;
+                        if ($hour < 12)
+                            $hour += 12;
                     }
                     $time = sprintf('%02d:%02d', $hour, $minute);
                 }

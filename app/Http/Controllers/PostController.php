@@ -14,100 +14,111 @@ use Illuminate\Support\Facades\Storage;
 class PostController extends Controller
 {
 
-   public function index(Request $request)
+    public function index(Request $request)
+    {
+        $query = Post::query();
+        // Bài viết nổi bật (hiển thị trước)
+        $featuredPosts = Post::where('is_featured', true)
+            ->where('status', 'published')
+            ->latest('published_at')
+            ->get();
 
+        // Bài viết không nổi bật
+        $normalPosts = Post::where('is_featured', false)
+            ->where('status', 'published')
+            ->latest('published_at')
+            ->get();
 
-   {
-    $query = Post::query();
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('title', 'like', '%' . $search . '%');
+        }
 
+        $posts = $query->orderBy('created_at', 'desc')->paginate(5); // Phân trang 10 bài mỗi trang
 
-    if ($request->filled('search')) {
-        $search = $request->input('search');
-        $query->where('title', 'like', '%' . $search . '%');
+        return view('admin.posts.index', compact('posts', 'featuredPosts', 'normalPosts'));
     }
-
-    $posts = $query->orderBy('created_at', 'desc')->paginate(5); // Phân trang 10 bài mỗi trang
-
-    return view('admin.posts.index', compact('posts'));
-}
 
 
 
     public function show(Post $post)
-{
-    return view('admin.posts.show', compact('post'));
-}
-
-   public function create()
-{
-    $authors = User::all(); // hoặc Author::all() nếu bạn dùng model riêng
-    return view('admin.posts.create', compact('authors'));
-}
-
-public function store(PostRequest $request)
-{
-    $data = $request->validated();
-
-    $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
-    $originalSlug = $data['slug'];
-    $counter = 1;
-
-    while (Post::where('slug', $data['slug'])->exists()) {
-        $data['slug'] = $originalSlug . '-' . $counter;
-        $counter++;
+    {
+        return view('admin.posts.show', compact('post'));
     }
 
-    if ($request->hasFile('image')) {
-        $data['image'] = $request->file('image')->store('posts', 'public');
+    public function create()
+    {
+        $authors = User::all(); // hoặc Author::all() nếu bạn dùng model riêng
+        return view('admin.posts.create', compact('authors'));
     }
 
-    Post::create($data);
+    public function store(PostRequest $request)
+    {
+        $data = $request->validated();
+        $data['is_featured'] = $request->input('is_featured') == 1 ? 1 : 0;
 
-    return redirect()->route('posts.index')->with('success', 'Bài viết đã được thêm thành công!');
-}
 
+        $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
+        $originalSlug = $data['slug'];
+        $counter = 1;
 
-public function edit(Post $post)
-{
-    return view('admin.posts.edit', compact('post'));
-}
-
-public function update(PostRequest $request, Post $post)
-{
-    $data = $request->validated();
-
-    $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
-    $originalSlug = $data['slug'];
-    $counter = 1;
-
-    while (Post::where('slug', $data['slug'])->where('id', '!=', $post->id)->exists()) {
-        $data['slug'] = $originalSlug . '-' . $counter;
-        $counter++;
-    }
-
-    if ($request->hasFile('image')) {
-        if ($post->image && Storage::disk('public')->exists($post->image)) {
-            Storage::disk('public')->delete($post->image);
+        while (Post::where('slug', $data['slug'])->exists()) {
+            $data['slug'] = $originalSlug . '-' . $counter;
+            $counter++;
         }
-        $data['image'] = $request->file('image')->store('posts', 'public');
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('posts', 'public');
+        }
+
+        Post::create($data);
+
+        return redirect()->route('posts.index')->with('success', 'Bài viết đã được thêm thành công!');
     }
 
-    $post->update($data);
 
-    return redirect()->route('posts.index')->with('success', 'Bài viết đã được cập nhật thành công!');
-}
-
-public function destroy(Post $post)
-{
-    // Xóa hình ảnh nếu có
-    if ($post->image && \Storage::disk('public')->exists($post->image)) {
-        \Storage::disk('public')->delete($post->image);
+    public function edit(Post $post)
+    {
+        return view('admin.posts.edit', compact('post'));
     }
 
-    // Xóa bài viết
-    $post->delete();
+    public function update(PostRequest $request, Post $post)
+    {
+        $data = $request->validated();
+        $data['is_featured'] = $request->input('is_featured') == 1 ? 1 : 0;
 
-    return redirect()->route('posts.index')->with('success', 'Xóa bài viết thành công!');
-}
+        $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
+        $originalSlug = $data['slug'];
+        $counter = 1;
+
+        while (Post::where('slug', $data['slug'])->where('id', '!=', $post->id)->exists()) {
+            $data['slug'] = $originalSlug . '-' . $counter;
+            $counter++;
+        }
+
+        if ($request->hasFile('image')) {
+            if ($post->image && Storage::disk('public')->exists($post->image)) {
+                Storage::disk('public')->delete($post->image);
+            }
+            $data['image'] = $request->file('image')->store('posts', 'public');
+        }
+
+        $post->update($data);
+
+        return redirect()->route('posts.index')->with('success', 'Bài viết đã được cập nhật thành công!');
+    }
+
+    public function destroy(Post $post)
+    {
+        // Xóa hình ảnh nếu có
+        if ($post->image && \Storage::disk('public')->exists($post->image)) {
+            \Storage::disk('public')->delete($post->image);
+        }
+
+        // Xóa bài viết
+        $post->delete();
+
+        return redirect()->route('posts.index')->with('success', 'Xóa bài viết thành công!');
+    }
 
 }
