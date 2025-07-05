@@ -2,12 +2,13 @@
 
 namespace App\Providers;
 
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\ServiceProvider;
 use App\Models\Appointment;
 use App\Models\ProductCategory;
-use App\Observers\AppointmentObserver;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
+use App\Observers\AppointmentObserver;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

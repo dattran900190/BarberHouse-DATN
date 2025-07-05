@@ -95,8 +95,8 @@
                                             href="{{ route('client.detailAppointmentHistory', $appointment->id) }}">
                                             Xem chi tiết
                                         </a>
-                                        @if ($appointment->status == 'completed')
-                                            <button type="button" class="btn btn-warning btn-sm review-btn"
+                                        @if ($appointment->status === 'completed' && !$appointment->review)
+                                            <button class="btn btn-sm btn-warning review-btn"
                                                 data-id="{{ $appointment->id }}">
                                                 Đánh giá
                                             </button>
@@ -349,6 +349,19 @@
                     }
                 }).then(result => {
                     if (result.isConfirmed) {
+                         Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            width: '400px',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        
+                        });
                         fetch("{{ route('client.submitReview', ['appointment' => '__ID__']) }}"
                                 .replace('__ID__', appointmentId), {
                                     method: 'POST',
@@ -370,19 +383,48 @@
                                 return response.json();
                             })
                             .then(data => {
+                                // Đóng cửa sổ loading
+                                Swal.close();
+
                                 if (data.success) {
+                                    button.style.display = 'none';
                                     Swal.fire({
                                         title: 'Thành công!',
                                         text: data.message,
-                                        icon: 'success'
-                                    }).then(() => location.reload());
+                                        icon: 'success',
+                                        width: '400px',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        location.reload();
+                                    });
                                 } else {
-                                    Swal.fire('Lỗi', data.message, 'error');
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: data.message,
+                                        icon: 'error',
+                                        width: '400px',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
                                 }
                             })
                             .catch(error => {
-                                Swal.fire('Lỗi!', error.message || 'Có lỗi khi gửi đánh giá.',
-                                    'error');
+                                // Đóng cửa sổ loading
+                                Swal.close();
+                                console.error('Lỗi AJAX:', error);
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: 'Đã có lỗi xảy ra: ' + error
+                                        .message,
+                                    icon: 'error',
+                                    width: '400px',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                });
                             });
 
                     }

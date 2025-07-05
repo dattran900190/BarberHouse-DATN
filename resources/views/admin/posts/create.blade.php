@@ -62,22 +62,24 @@
                     @enderror
                 </div>
 
-                
+
                 {{-- Tác giả --}}
                 <div class="form-group">
                     <label>Tác giả</label>
-                    <select name="author_id" class="form-control @error('author_id') is-invalid @enderror">
-                        @foreach ($authors as $author)
-                            <option value="{{ $author->id }}"
-                                {{ old('author_id', Auth::id()) == $author->id ? 'selected' : '' }}>
-                                {{ $author->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('author_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <input type="text" class="form-control" value="{{ Auth::user()->name }}" disabled>
+                    <input type="hidden" name="author_id" value="{{ Auth::id() }}">
                 </div>
+                {{-- Tin noi bat --}}
+                <div class="form-group">
+                    <label class="form-label d-block mb-2 fw-bold">Nổi bật</label>
+                    <select class="form-control" name="is_featured" id="is_featured">
+                        <option value="0" {{ old('is_featured', $post->is_featured ?? 0) == 0 ? 'selected' : '' }}>
+                            Không nổi bật</option>
+                        <option value="1" {{ old('is_featured', $post->is_featured ?? 0) == 1 ? 'selected' : '' }}>Nổi
+                            bật</option>
+                    </select>
+                </div>
+
 
 
                 {{-- Trạng thái --}}

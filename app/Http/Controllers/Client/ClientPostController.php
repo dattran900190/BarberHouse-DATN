@@ -5,10 +5,26 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 
 class ClientPostController extends Controller {
-  public function index() {
-    $posts = Post::where('status',1)->latest()->get();
-    return view('client.posts', compact('posts'));
-  }
+  public function index()
+{
+    // Bài viết nổi bật (is_featured = true)
+    $featuredPosts = Post::where('status', 1)->latest()->get();
+    $featuredPosts = Post::where('status', 1)
+                         ->where('is_featured', true)
+                         ->latest('published_at')
+                         ->take(5)
+                         ->get();
+
+    // Bài viết bình thường (is_featured = false)
+    $normalPosts = Post::where('status', 1)->latest()->get();
+    $normalPosts = Post::where('status', 1)
+                       ->where('is_featured', false)
+                       ->latest('published_at')
+                       ->paginate(10); // thêm phân trang nếu cần
+
+    return view('client.posts', compact('featuredPosts', 'normalPosts'));
+}
+
 
 public function detail($slug)
 {
