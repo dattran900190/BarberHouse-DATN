@@ -18,10 +18,9 @@
                 @csrf
 
                 {{-- Chọn thợ --}}
-                <div class="form-group">
+                <div class="form-group" id="barberField">
                     <label for="barber_id">Chọn thợ</label>
-                    <select name="barber_id" id="barber_id" class="form-control @error('barber_id') is-invalid @enderror"
-                        required>
+                    <select name="barber_id" id="barber_id" class="form-control @error('barber_id') is-invalid @enderror">
                         <option value="">-- Chọn thợ --</option>
                         @foreach ($barbers as $barber)
                             <option value="{{ $barber->id }}" {{ old('barber_id') == $barber->id ? 'selected' : '' }}>
@@ -38,11 +37,11 @@
                 </div>
 
                 {{-- Ngày làm việc --}}
-                <div class="form-group">
+                <div class="form-group" id="scheduleDateField">
                     <label for="schedule_date">Ngày làm việc</label>
                     <input type="date" name="schedule_date" id="schedule_date"
-                        class="form-control @error('schedule_date') is-invalid @enderror" value="{{ old('schedule_date') }}"
-                        required>
+                        class="form-control @error('schedule_date') is-invalid @enderror"
+                        value="{{ old('schedule_date') }}">
                     @error('schedule_date')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -53,8 +52,11 @@
                     <label for="status">Loại lịch</label>
                     <select name="status" id="status" class="form-control @error('status') is-invalid @enderror"
                         required>
+                        <option value="">-- Chọn loại lịch --</option>
                         <option value="off" {{ old('status') == 'off' ? 'selected' : '' }}>Nghỉ cả ngày</option>
                         <option value="custom" {{ old('status') == 'custom' ? 'selected' : '' }}>Thay đổi giờ làm</option>
+                        <option value="holiday" {{ old('status') == 'holiday' ? 'selected' : '' }}>Nghỉ lễ (toàn hệ thống)
+                        </option>
                     </select>
                     @error('status')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -82,6 +84,38 @@
                     </div>
                 </div>
 
+                {{-- Thông tin nghỉ lễ --}}
+                <div id="holidayFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="holiday_start_date">Ngày bắt đầu nghỉ lễ</label>
+                        <input type="date" name="holiday_start_date" id="holiday_start_date"
+                            class="form-control @error('holiday_start_date') is-invalid @enderror"
+                            value="{{ old('holiday_start_date') }}">
+                        @error('holiday_start_date')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="holiday_end_date">Ngày kết thúc nghỉ lễ</label>
+                        <input type="date" name="holiday_end_date" id="holiday_end_date"
+                            class="form-control @error('holiday_end_date') is-invalid @enderror"
+                            value="{{ old('holiday_end_date') }}">
+                        @error('holiday_end_date')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="note">Tên kỳ nghỉ lễ</label>
+                        <input type="text" name="note" id="note"
+                            class="form-control @error('note') is-invalid @enderror" value="{{ old('note') }}">
+                        @error('note')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
                 {{-- Nút submit --}}
                 <div class="form-group mt-3">
                     <button type="submit" class="btn btn-success">Tạo lịch</button>
@@ -99,28 +133,21 @@
 
 @push('js')
     <script>
-        function toggleTimeFields() {
+        function toggleFields() {
             const status = document.getElementById('status').value;
-            const timeFields = document.getElementById('timeFields');
-            const startInput = document.getElementById('start_time');
-            const endInput = document.getElementById('end_time');
 
-            if (status === 'custom') {
-                timeFields.style.display = 'block';
-                startInput.disabled = false;
-                endInput.disabled = false;
-            } else {
-                timeFields.style.display = 'none';
-                startInput.disabled = true;
-                endInput.disabled = true;
-                startInput.value = '';
-                endInput.value = '';
-            }
+            document.getElementById('timeFields').style.display = status === 'custom' ? 'block' : 'none';
+            document.getElementById('holidayFields').style.display = status === 'holiday' ? 'block' : 'none';
+
+            // Ẩn barber và ngày thường khi nghỉ lễ
+            const hideOnHoliday = (status === 'holiday');
+            document.getElementById('barberField').style.display = hideOnHoliday ? 'none' : 'block';
+            document.getElementById('scheduleDateField').style.display = hideOnHoliday ? 'none' : 'block';
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            toggleTimeFields();
-            document.getElementById('status').addEventListener('change', toggleTimeFields);
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleFields();
+            document.getElementById('status').addEventListener('change', toggleFields);
         });
     </script>
 @endpush

@@ -55,6 +55,20 @@
                         </div>
                     </div>
                 </div>
+                @if ($appointment->review)
+                    <div class="review mt-4">
+                        <h5>Đánh giá của bạn:</h5>
+                        <div>
+                            @for ($i = 1; $i <= 5; $i++)
+                                <i class="fa fa-star"
+                                    style="color: {{ $i <= $appointment->review->rating ? '#f1c40f' : '#ccc' }}"></i>
+                            @endfor
+                        </div>
+                        <p class="mt-2">{{ $appointment->review->comment }}</p>
+                    </div>
+                @endif
+
+
                 <div class="card-footer d-flex justify-content-between align-items-center border-0">
                     <h5 class="fw-bold">Tổng tiền: {{ number_format($appointment->total_amount) }}đ</h5>
                     <div>

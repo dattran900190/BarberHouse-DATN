@@ -71,7 +71,7 @@
                                         <span class="text-muted">Lý do hủy: {{ $appointment->cancellation_reason }}</span>
                                     @endif --}}
                                 </div>
-                                
+
                                 <div class="col-md-2 text-center">
                                     @if ($appointment->status == 'pending')
                                         <span class="status-label status-processing">Đang chờ</span>
@@ -91,6 +91,14 @@
                                             href="{{ route('client.detailAppointmentHistory', $appointment->id) }}">
                                             Xem chi tiết
                                         </a>
+                                        @if ($appointment->status === 'completed' && !$appointment->review)
+                                            <button class="btn btn-sm btn-warning review-btn"
+                                                data-id="{{ $appointment->id }}">
+                                                Đánh giá
+                                            </button>
+                                        @endif
+
+
                                         @if (in_array($appointment->status, ['pending', 'confirmed']))
                                             {{-- <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#cancelModal{{ $appointment->id }}">Hủy</button> --}}
@@ -257,6 +265,164 @@
             });
         });
     </script>
+    <script>
+        document.querySelectorAll('.review-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const appointmentId = this.dataset.id;
+
+                Swal.fire({
+                    title: 'Đánh giá dịch vụ',
+                    html: `
+                    <div class="mb-2">Chọn số sao:</div>
+                    <div id="star-rating" class="mb-3" style="font-size: 28px;">
+                        ${[1, 2, 3, 4, 5].map(i =>
+                            `<i class="fa fa-star star" data-value="${i}" style="cursor:pointer;color:#ccc;margin:0 2px;"></i>`
+                        ).join('')}
+                    </div>
+                    <div id="feedback-text" class="mb-3" style="font-weight: 500; min-height: 24px;"></div>
+                    <textarea id="reviewComment" class="swal2-textarea" placeholder="Nhận xét của bạn (tuỳ chọn)"></textarea>
+                `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Gửi đánh giá',
+                    focusConfirm: false,
+                    preConfirm: () => {
+                        const selected = document.querySelectorAll(
+                            '#star-rating .star.selected');
+                        if (selected.length === 0) {
+                            Swal.showValidationMessage('Vui lòng chọn số sao!');
+                            return false;
+                        }
+                        return {
+                            rating: selected.length,
+                            comment: document.getElementById('reviewComment').value
+                        };
+                    },
+                    didOpen: () => {
+                        const stars = document.querySelectorAll('#star-rating .star');
+                        const feedback = document.getElementById('feedback-text');
+
+                        stars.forEach((star, index) => {
+                            star.addEventListener('click', () => {
+                                // Highlight sao
+                                stars.forEach((s, i) => {
+                                    s.classList.toggle('selected', i <=
+                                        index);
+                                    s.style.color = i <= index ?
+                                        '#f1c40f' : '#ccc';
+                                });
+
+                                // Gợi ý trạng thái cảm xúc
+                                const rating = index + 1;
+                                let text = '';
+                                switch (rating) {
+                                    case 1:
+                                        text = 'Rất không hài lòng';
+                                        break;
+                                    case 2:
+                                        text = 'Không hài lòng';
+                                        break;
+                                    case 3:
+                                        text = 'Bình thường';
+                                        break;
+                                    case 4:
+                                        text = 'Hài lòng';
+                                        break;
+                                    case 5:
+                                        text = 'Rất hài lòng';
+                                        break;
+                                }
+                                feedback.textContent = text;
+                                feedback.style.color = rating <= 2 ? 'red' : (
+                                    rating == 3 ? '#666' : 'green');
+                            });
+                        });
+                    }
+                }).then(result => {
+                    if (result.isConfirmed) {
+                         Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            width: '400px',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        
+                        });
+                        fetch("{{ route('client.submitReview', ['appointment' => '__ID__']) }}"
+                                .replace('__ID__', appointmentId), {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    },
+                                    body: JSON.stringify({
+                                        rating: result.value.rating,
+                                        comment: result.value.comment
+                                    })
+                                })
+
+
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Gửi đánh giá thất bại');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                // Đóng cửa sổ loading
+                                Swal.close();
+
+                                if (data.success) {
+                                    button.style.display = 'none';
+                                    Swal.fire({
+                                        title: 'Thành công!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        width: '400px',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: data.message,
+                                        icon: 'error',
+                                        width: '400px',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                // Đóng cửa sổ loading
+                                Swal.close();
+                                console.error('Lỗi AJAX:', error);
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: 'Đã có lỗi xảy ra: ' + error
+                                        .message,
+                                    icon: 'error',
+                                    width: '400px',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                });
+                            });
+
+                    }
+                });
+            });
+        });
+    </script>
+
 
     <script>
         const swiper = new Swiper(".mySwiper", {

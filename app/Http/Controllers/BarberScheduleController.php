@@ -2,27 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Branch;
-use App\Models\Barber;
-use App\Models\BarberSchedule;
+use App\Models\{Branch, Barber, BarberSchedule};
 use App\Http\Requests\BarberSchedulesRequest;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class BarberScheduleController extends Controller
 {
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $branches = Branch::when($search, function ($query) use ($search) {
+            return $query->where('name', 'like', "%{$search}%");
+        })->get();
 
-        $branchesQuery = Branch::query();
+        $holidays = BarberSchedule::where('status', 'holiday')
+            ->select('holiday_start_date', 'holiday_end_date', 'note')
+            ->groupBy('holiday_start_date', 'holiday_end_date', 'note')
+            ->orderBy('holiday_start_date')
+            ->get();
 
-        if ($search) {
-            $branchesQuery->where('name', 'like', '%' . $search . '%');
-        }
-
-        $branches = $branchesQuery->get();
-
-        return view('admin.barber_schedules.index', compact('branches', 'search'));
+        return view('admin.barber_schedules.index', compact('branches', 'search', 'holidays'));
     }
 
     public function show($id)
@@ -41,28 +42,139 @@ class BarberScheduleController extends Controller
 
     public function create($branchId = null)
     {
-        if ($branchId) {
-            $branch = Branch::findOrFail($branchId);
-            $barbers = $branch->barbers()->whereNotNull('branch_id')->get();
-        } else {
-            $barbers = Barber::whereNotNull('branch_id')->get();
-            $branch = null;
-        }
+        $branch = $branchId ? Branch::findOrFail($branchId) : null;
+        $barbers = $branch ? $branch->barbers()->whereNotNull('branch_id')->get() : Barber::whereNotNull('branch_id')->get();
 
         return view('admin.barber_schedules.create', compact('barbers', 'branch'));
     }
+
+    public function createHoliday()
+    {
+        return view('admin.barber_schedules.create_holiday');
+    }
+
+    public function storeHoliday(BarberSchedulesRequest $request)
+    {
+        $data = $request->validated();
+
+        $start = $data['holiday_start_date'];
+        $end = $data['holiday_end_date'];
+        $note = $data['note'];
+
+        $period = CarbonPeriod::create($start, $end);
+
+        $branches = Branch::with('barbers')->get();
+
+        foreach ($branches as $branch) {
+            foreach ($branch->barbers as $barber) {
+                foreach ($period as $date) {
+                    $scheduleDate = $date->format('Y-m-d');
+
+                    // ❗ Chỉ tạo nếu chưa tồn tại
+                    $exists = BarberSchedule::where('barber_id', $barber->id)
+                        ->where('schedule_date', $scheduleDate)
+                        ->where('status', 'holiday')
+                        ->where('note', $note)
+                        ->exists();
+
+                    if (!$exists) {
+                        BarberSchedule::create([
+                            'barber_id' => $barber->id,
+                            'branch_id' => $barber->branch_id,
+                            'schedule_date' => $scheduleDate,
+                            'holiday_start_date' => $start,
+                            'holiday_end_date' => $end,
+                            'status' => 'holiday',
+                            'is_available' => false,
+                            'note' => $note,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return redirect()->route('barber_schedules.index')->with('success', 'Tạo lịch nghỉ lễ thành công!');
+    }
+
+
+
+    public function editHoliday($id)
+    {
+        $schedule = BarberSchedule::findOrFail($id);
+
+        $holiday = [
+            'holiday_start_date' => $schedule->holiday_start_date,
+            'holiday_end_date' => $schedule->holiday_end_date,
+            'note' => $schedule->note,
+        ];
+
+        return view('admin.barber_schedules.edit_holiday', compact('holiday', 'id'));
+    }
+
+    public function updateHoliday(BarberSchedulesRequest $request, $id)
+    {
+        $data = $request->validated();
+
+        $schedule = BarberSchedule::findOrFail($id);
+
+        // Xoá toàn bộ lịch nghỉ theo start, end, note cũ
+        BarberSchedule::where('status', 'holiday')
+            ->where('holiday_start_date', $schedule->holiday_start_date)
+            ->where('holiday_end_date', $schedule->holiday_end_date)
+            ->where('note', $schedule->note)
+            ->delete();
+
+        // Tạo lại toàn bộ lịch mới
+        $period = CarbonPeriod::create($data['holiday_start_date'], $data['holiday_end_date']);
+        $barbers = Barber::all();
+
+        foreach ($barbers as $barber) {
+            foreach ($period as $date) {
+                BarberSchedule::create([
+                    'barber_id' => $barber->id,
+                    'branch_id' => $barber->branch_id,
+                    'schedule_date' => $date->format('Y-m-d'),
+                    'holiday_start_date' => $data['holiday_start_date'],
+                    'holiday_end_date' => $data['holiday_end_date'],
+                    'status' => 'holiday',
+                    'is_available' => false,
+                    'note' => $data['note'],
+                ]);
+            }
+        }
+
+        return redirect()->route('barber_schedules.index')->with('success', 'Cập nhật lịch nghỉ lễ thành công!');
+    }
+
+
+    public function deleteHoliday($id)
+    {
+        $schedule = BarberSchedule::findOrFail($id);
+
+        BarberSchedule::where('status', 'holiday')
+            ->where('holiday_start_date', $schedule->holiday_start_date)
+            ->where('holiday_end_date', $schedule->holiday_end_date)
+            ->where('note', $schedule->note)
+            ->delete();
+
+        return redirect()->route('barber_schedules.index')->with('success', 'Đã xoá lịch nghỉ lễ thành công!');
+    }
+
+
 
     public function store(BarberSchedulesRequest $request)
     {
         $data = $request->validated();
 
-        // Nếu là nghỉ cả ngày thì xóa giờ
+        if ($data['status'] === 'holiday') {
+            return $this->storeHoliday($request);
+        }
+
         if ($data['status'] === 'off') {
             $data['start_time'] = null;
             $data['end_time'] = null;
         }
 
-        // Kiểm tra trùng lịch — chỉ khi có giờ
         if ($data['status'] === 'custom') {
             $exists = BarberSchedule::where('barber_id', $data['barber_id'])
                 ->where('schedule_date', $data['schedule_date'])
@@ -84,9 +196,11 @@ class BarberScheduleController extends Controller
             }
         }
 
+        $barber = Barber::findOrFail($data['barber_id']);
+        $data['branch_id'] = $barber->branch_id;
+
         BarberSchedule::create($data);
 
-        $barber = Barber::find($data['barber_id']);
         return redirect()->route('barber_schedules.showBranch', $barber->branch_id)
             ->with('success', 'Thêm lịch thành công!');
     }
@@ -97,10 +211,7 @@ class BarberScheduleController extends Controller
         $branch = $schedule->barber->branch;
         $barbers = $branch->barbers;
 
-        // Format ngày về Y-m-d cho input date
-        if ($schedule->schedule_date) {
-            $schedule->schedule_date = \Carbon\Carbon::parse($schedule->schedule_date)->format('Y-m-d');
-        }
+        $schedule->schedule_date = optional($schedule->schedule_date)->format('Y-m-d');
 
         return view('admin.barber_schedules.edit', compact('schedule', 'branch', 'barbers'));
     }

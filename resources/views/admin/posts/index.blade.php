@@ -29,6 +29,7 @@
                         <th>STT</th>
                         <th>Tiêu đề</th>
                         <th>Mô tả</th>
+                        <th>Nổi bật</th>
                         <th>Ảnh</th>
                         <th>Trạng thái</th>
                         <th>Ngày xuất bản</th>
@@ -42,14 +43,22 @@
                             <td>{{ $post->title }}</td>
                             <td>{{ Str::limit($post->short_description, 100) }}</td>
                             <td class="text-center">
-                                @if($post->image)
-                                    <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh" width="80" class="img-thumbnail">
+                                @if ($post->is_featured)
+                                    <span class="badge bg-warning text-dark">Nổi bật</span>
+                                @else
+                                    <span class="badge bg-secondary">Không nổi bật</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if ($post->image)
+                                    <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh" width="80"
+                                        class="img-thumbnail">
                                 @else
                                     <span class="text-muted">Không có ảnh</span>
                                 @endif
                             </td>
                             <td class="text-center">
-                                @if($post->status)
+                                @if ($post->status)
                                     <span class="badge bg-success">Đã xuất bản</span>
                                 @else
                                     <span class="badge bg-secondary">Bản nháp</span>
@@ -61,19 +70,19 @@
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
                                     <a href="{{ route('posts.show', $post->id) }}"
-                                       class="btn btn-info btn-sm d-inline-flex align-items-center">
+                                        class="btn btn-info btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
                                     <a href="{{ route('posts.edit', $post->id) }}"
-                                       class="btn btn-warning btn-sm d-inline-flex align-items-center">
+                                        class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>
-                                    <form action="{{ route('posts.destroy', $post->id) }}"
-                                          method="POST" class="d-inline m-0"
-                                          onsubmit="return confirm('Xác nhận xoá bài viết?');">
+                                    <form action="{{ route('posts.destroy', $post->id) }}" method="POST"
+                                        class="d-inline m-0" onsubmit="return confirm('Xác nhận xoá bài viết?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm d-inline-flex align-items-center">
+                                        <button type="submit"
+                                            class="btn btn-danger btn-sm d-inline-flex align-items-center">
                                             <i class="fas fa-trash"></i> <span>Xoá</span>
                                         </button>
                                     </form>
@@ -88,8 +97,8 @@
                 </tbody>
             </table>
             <div class="d-flex justify-content-center mt-3">
-    {{ $posts->links() }}
-</div>
+                {{ $posts->links() }}
+            </div>
 
         </div>
     </div>

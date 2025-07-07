@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Product;
@@ -15,21 +14,25 @@ class HomeController extends Controller
         return view('layouts.AdminLayout');
     }
     public function index()
-    {
+{
+    // Bài viết nổi bật (status = published, is_featured = true)
+    $featuredPosts = Post::where('status', 'draft')
+        ->where('is_featured', true)
+        ->latest('published_at')
+        ->take(5)
+        ->get();
 
-        // Lấy 5 tin tức mới nhất, chỉ lấy các bài đã được publish
-        $posts = Post::where('status',1)->latest()->get();
-            
+    // Bài viết không nổi bật
+    $normalPosts = Post::where('status', 'draft')
+        ->where('is_featured', false)
+        ->latest('published_at')
+        ->take(8)
+        ->get();
 
-        // Lấy thêm các bài còn lại (loại trừ 5 bài đầu)
-        $normalPosts = Post::where('status', 'published')
-            ->orderBy('published_at', 'desc')
-            ->skip(5)
-            ->take(8)
-            ->get();
+    // Sản phẩm
+    $products = Product::with('variants')->latest()->take(8)->get();
 
-        // Lấy 8 sản phẩm mới nhất
-        $products = Product::with('variants')->latest()->take(8)->get();
-        return view('client.home', compact('posts', 'normalPosts', 'products'));
-    }
+    return view('client.home', compact('featuredPosts', 'normalPosts', 'products'));
+}
+
 }

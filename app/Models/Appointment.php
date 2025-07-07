@@ -50,13 +50,18 @@ class Appointment extends Model
         return $this->belongsTo(Branch::class);
     }
 
+
     public function promotion()
     {
         return $this->belongsTo(Promotion::class);
     }
-    
+
     public function checkin()
     {
         return $this->hasOne(Checkin::class);
     }
+    public function review()
+{
+    return $this->hasOne(Review::class, 'appointment_id');
+}
 }

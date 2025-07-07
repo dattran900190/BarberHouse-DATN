@@ -13,6 +13,7 @@
         </div>
 
         <div class="card-body">
+
             <form method="GET" class="mb-3 d-flex align-items-end gap-3">
                 <div class="form-group mb-0">
                     <label for="filter">Lọc loại lịch</label>
@@ -30,6 +31,7 @@
                 @foreach ($barbers as $barber)
                     @php
                         $schedules = $barber->schedules
+                            ->filter(fn($s) => $s->status !== 'holiday')
                             ->when(request('filter'), function ($query) {
                                 return $query->where('status', request('filter'));
                             })
@@ -61,7 +63,7 @@
 
                                                     @if ($schedule->status === 'off')
                                                         <td colspan="2" class="text-center text-danger">Nghỉ cả ngày</td>
-                                                        <td class="text-danger">Nghỉ phép / Lễ</td>
+                                                        <td class="text-danger">Nghỉ Lễ</td>
                                                     @else
                                                         <td>{{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }}
                                                         </td>
