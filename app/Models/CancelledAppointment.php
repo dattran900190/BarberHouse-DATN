@@ -25,7 +25,6 @@ class CancelledAppointment extends Model
         'note',
         'cancellation_reason',
         'cancellation_type',
-        'rejection_reason',
         'status_before_cancellation',
         'total_amount'
     ];

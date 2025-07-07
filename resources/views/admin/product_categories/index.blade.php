@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+@extends('layouts.AdminLayout')
 
 @section('title', 'Quản lý Danh mục sản phẩm')
 

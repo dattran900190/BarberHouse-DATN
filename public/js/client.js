@@ -456,6 +456,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   flatpickr(appointmentDate, {
     // defaultDate: "today",
+    locale: 'vn',
     minDate: "today",
     maxDate: new Date().fp_incr(90),
     dateFormat: "Y-m-d", // Thay đổi sang định dạng Laravel chấp nhận

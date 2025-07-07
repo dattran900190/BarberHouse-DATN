@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+@extends('layouts.AdminLayout')
 
 @section('title', 'Lịch sử điểm - ' . $user->name)
 

@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+@extends('layouts.AdminLayout')
 @section('title', 'Danh sách lịch theo chi nhánh')
 
 @section('content')

@@ -24,7 +24,6 @@ class Appointment extends Model
         'payment_status',
         'note',
         'cancellation_reason',
-        'rejection_reason',
         'status_before_cancellation',
         'promotion_id',
         'discount_amount',

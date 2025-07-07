@@ -31,9 +31,7 @@
                             <li><a class="dropdown-item"
                                     href="{{ route('client.appointmentHistory', array_merge(request()->except('status'), ['status' => 'cancelled'])) }}">Đã
                                     hủy</a></li>
-                            <li><a class="dropdown-item"
-                                    href="{{ route('client.appointmentHistory', array_merge(request()->except('status'), ['status' => 'pending_cancellation'])) }}">Chờ
-                                    hủy</a></li>
+                           
                         </ul>
                     </div>
                 </div>
@@ -83,8 +81,6 @@
                                         <span class="status-label status-cancelled">Đã hủy</span>
                                     @elseif ($appointment->status == 'completed')
                                         <span class="status-label status-completed">Đã hoàn thành</span>
-                                    @elseif ($appointment->status == 'pending_cancellation')
-                                        <span class="status-label status-warning">Chờ hủy</span>
                                     @elseif ($appointment->cancellation_type == 'no-show' ? 'Không đến' : 'Đã hủy')
                                         <span class="status-label status-cancelled">Đã huỷ</span>
                                     @endif
@@ -143,12 +139,6 @@
 @endsection
 
 @section('scripts')
-    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script> --}}
-    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
-    {{-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
-    {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
     <script src="{{ asset('js/client.js') }}"></script>
     <script>
         document.querySelectorAll('.cancel-btn').forEach(button => {
@@ -170,7 +160,7 @@
                         popup: 'custom-swal-popup'
                     },
                     showCancelButton: true,
-                    confirmButtonText: 'Gửi yêu cầu hủy',
+                    confirmButtonText: 'Hủy lịch',
                     cancelButtonText: 'Đóng',
                     inputValidator: (value) => {
                         if (!value) {

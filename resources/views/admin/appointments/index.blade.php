@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+@extends('layouts.AdminLayout')
 
 @section('title', 'Quản lý lịch hẹn')
 
@@ -21,7 +21,6 @@
             'pending' => ['class' => 'warning', 'text' => 'Chờ xác nhận'],
             'cancelled' => ['class' => 'danger', 'text' => 'Đã huỷ'],
             'confirmed' => ['class' => 'primary', 'text' => 'Đã xác nhận'],
-            'pending_cancellation' => ['class' => 'warning', 'text' => 'Chờ huỷ'],
         ];
 
         $paymentMap = [
@@ -32,28 +31,44 @@
         ];
     @endphp
 
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Đặt lịch cắt tóc</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Quản lý đặt lịch</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/appointments') }}">Đặt lịch</a>
+            </li>
+        </ul>
+    </div>
+
     <div class="card">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách lịch hẹn</h3>
+        <div class="card-header text-white d-flex justify-content-between align-items-center">
+            <div class="card-title">Danh sách đặt lịch</div>
         </div>
+
         <div class="card-body">
-            <!-- Form tìm kiếm -->
             <form method="GET" action="{{ route('appointments.index') }}" id="searchForm" class="mb-3">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm lịch đặt..."
-                        value="{{ request()->get('search') }}">
-                    <div class="input-group-append">
-                        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-                    </div>
+                <div class="position-relative">
+                    <input type="text" name="search" placeholder="Tìm kiếm theo tên dịch vụ..."
+                        class="form-control pe-5" value="{{ request()->get('search') }}">
+                    <button type="submit" class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
+                        <i class="fa fa-search"></i>
+                    </button>
                 </div>
             </form>
-
-            <!-- Thông báo nếu không có kết quả -->
-            @if ($search && trim($search) && $allAppointments->isEmpty())
-                <div class="alert alert-warning">
-                    Không tìm thấy lịch hẹn nào khớp với "{{ $search }}".
-                </div>
-            @endif
 
             <!-- Tabs -->
             <ul class="nav nav-tabs" id="appointmentTabs" role="tablist">
@@ -69,11 +84,6 @@
                     <a class="nav-link {{ $activeTab == 'completed' ? 'active' : '' }}" id="completed-tab" data-toggle="tab"
                         href="#completed" role="tab">Đã hoàn thành</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ $activeTab == 'pending_cancellation' ? 'active' : '' }}"
-                        id="pending-cancellation-tab" data-toggle="tab" href="#pending-cancellation" role="tab">Chờ
-                        hủy</a>
-                </li>
 
                 <li class="nav-item">
                     <a class="nav-link {{ $activeTab == 'cancelled' ? 'active' : '' }}" id="cancelled-tab" data-toggle="tab"
@@ -85,66 +95,95 @@
                 <!-- Tab Chưa xác nhận -->
                 <div class="tab-pane fade {{ $activeTab == 'pending' ? 'show active' : '' }}" id="pending"
                     role="tabpanel">
-                    <table class="table table-bordered table-hover">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Stt</th>
-                                <th>Mã lịch hẹn</th>
-                                <th>Khách hàng</th>
-                                <th>Số điện thoại</th>
-                                <th>Thợ</th>
-                                <th>Dịch vụ</th>
-                                <th>Thời gian</th>
-                                <th>Trạng thái lịch hẹn</th>
-                                <th>Trạng thái thanh toán</th>
-                                <th class="text-center">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if ($pendingAppointments->count())
-                                @foreach ($pendingAppointments as $index => $appointment)
-                                    <tr>
-                                        <td>{{ $pendingAppointments->firstItem() + $index }}</td>
-                                        <td>{{ $appointment->appointment_code }}</td>
-                                        <td>{{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}</td>
-                                        <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
-                                        <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
-                                        <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
-                                        </td>
-                                        @php
-                                            $statusClass = $statusMap[$appointment->status]['class'] ?? 'secondary';
-                                            $statusText = $statusMap[$appointment->status]['text'] ?? 'Không rõ';
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Stt</th>
+                                    <th>Mã lịch hẹn</th>
+                                    <th>Khách hàng</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Thợ</th>
+                                    <th>Dịch vụ</th>
+                                    <th>Thời gian</th>
+                                    <th>Trạng thái lịch hẹn</th>
+                                    <th>Trạng thái thanh toán</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($pendingAppointments->count())
+                                    @foreach ($pendingAppointments as $index => $appointment)
+                                        <tr>
+                                            <td>{{ $pendingAppointments->firstItem() + $index }}</td>
+                                            <td>{{ $appointment->appointment_code }}</td>
+                                            <td>{{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}</td>
+                                            <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
+                                            <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
+                                            <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
+                                            </td>
+                                            @php
+                                                $statusClass = $statusMap[$appointment->status]['class'] ?? 'secondary';
+                                                $statusText = $statusMap[$appointment->status]['text'] ?? 'Không rõ';
 
-                                            $paymentClass =
-                                                $paymentMap[$appointment->payment_status]['class'] ?? 'secondary';
-                                            $paymentText =
-                                                $paymentMap[$appointment->payment_status]['text'] ?? 'Không rõ';
-                                        @endphp
-                                        <td>
-                                            <span class="badge bg-{{ $statusClass }}">{{ $statusText }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <button class="btn btn-success btn-sm confirm-btn"
-                                                data-id="{{ $appointment->id }}">Xác nhận</button>
-                                            <a href="{{ route('appointments.show', $appointment->id) }}"
-                                                class="btn btn-info btn-sm">Xem</a>
-                                            <a href="{{ route('appointments.edit', $appointment->id) }}"
-                                                class="btn btn-warning btn-sm">Sửa</a>
+                                                $paymentClass =
+                                                    $paymentMap[$appointment->payment_status]['class'] ?? 'secondary';
+                                                $paymentText =
+                                                    $paymentMap[$appointment->payment_status]['text'] ?? 'Không rõ';
+                                            @endphp
+                                            <td>
+                                                <span class="badge bg-{{ $statusClass }}">{{ $statusText }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                        id="actionMenu{{ $appointment->id }}" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+
+                                                    <ul class="dropdown-menu dropdown-menu-end"
+                                                        aria-labelledby="actionMenu{{ $appointment->id }}">
+                                                        <li>
+                                                            <a href="{{ route('appointments.show', $appointment->id) }}"
+                                                                class="dropdown-item">
+                                                                <i class="fas fa-eye me-2"></i> Xem
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="{{ route('appointments.edit', $appointment->id) }}"
+                                                                class="dropdown-item">
+                                                                <i class="fas fa-edit me-2"></i> Sửa
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <hr class="dropdown-divider">
+                                                        </li>
+                                                        <li>
+                                                            <button type="button"
+                                                                class="dropdown-item text-success confirm-btn"
+                                                                data-id="{{ $appointment->id }}">
+                                                                <i class="fas fa-check me-2"></i> Xác nhận
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="11" class="text-center text-muted">Không có lịch hẹn nào phù hợp.
                                         </td>
                                     </tr>
-                                @endforeach
-                            @else
-                                <tr>
-                                    <td colspan="11" class="text-center text-muted">Không có lịch hẹn chưa xác nhận.
-                                    </td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="d-flex justify-content-center mt-3">
                         {{ $pendingAppointments->appends(['search' => request('search')])->links() }}
                     </div>
@@ -153,71 +192,110 @@
                 <!-- Tab Đã xác nhận -->
                 <div class="tab-pane fade {{ $activeTab == 'confirmed' ? 'show active' : '' }}" id="confirmed"
                     role="tabpanel">
-                    <table class="table table-bordered table-hover">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Stt</th>
-                                <th>Mã lịch hẹn</th>
-                                <th>Khách hàng</th>
-                                <th>Số điện thoại</th>
-                                <th>Thợ</th>
-                                <th>Dịch vụ</th>
-                                <th>Thời gian</th>
-                                <th>Trạng thái lịch hẹn</th>
-                                <th>Trạng thái thanh toán</th>
-                                <th class="text-center">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if ($confirmedAppointments->count())
-                                @foreach ($confirmedAppointments as $index => $appointment)
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Stt</th>
+                                    <th>Mã lịch hẹn</th>
+                                    <th>Khách hàng</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Thợ</th>
+                                    <th>Dịch vụ</th>
+                                    <th>Thời gian</th>
+                                    <th>Trạng thái lịch hẹn</th>
+                                    <th>Trạng thái thanh toán</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($confirmedAppointments->count())
+                                    @foreach ($confirmedAppointments as $index => $appointment)
+                                        <tr>
+                                            <td>{{ $confirmedAppointments->firstItem() + $index }}</td>
+                                            <td>{{ $appointment->appointment_code }}</td>
+                                            <td>{{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}</td>
+                                            <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
+                                            <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
+                                            <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
+                                            </td>
+                                            @php
+                                                $statusClass = $statusMap[$appointment->status]['class'] ?? 'secondary';
+                                                $statusText = $statusMap[$appointment->status]['text'] ?? 'Không rõ';
+
+                                                $paymentClass =
+                                                    $paymentMap[$appointment->payment_status]['class'] ?? 'secondary';
+                                                $paymentText =
+                                                    $paymentMap[$appointment->payment_status]['text'] ?? 'Không rõ';
+                                            @endphp
+                                            <td>
+                                                <span class="badge bg-{{ $statusClass }}">{{ $statusText }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                        id="actionMenuConfirmed{{ $appointment->id }}"
+                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+
+                                                    <ul class="dropdown-menu dropdown-menu-end"
+                                                        aria-labelledby="actionMenuConfirmed{{ $appointment->id }}">
+
+                                                        <li>
+                                                            <a href="{{ route('appointments.show', $appointment->id) }}"
+                                                                class="dropdown-item">
+                                                                <i class="fas fa-eye me-2"></i> Xem
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="{{ route('appointments.edit', $appointment->id) }}"
+                                                                class="dropdown-item">
+                                                                <i class="fas fa-edit me-2"></i> Sửa
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <hr class="dropdown-divider">
+                                                        </li>
+                                                        <li>
+                                                            <button type="button"
+                                                                class="dropdown-item text-success complete-btn"
+                                                                data-id="{{ $appointment->id }}">
+                                                                <i class="fas fa-check-circle me-2"></i> Hoàn thành
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button type="button"
+                                                                class="dropdown-item text-primary no-show-btn"
+                                                                data-id="{{ $appointment->id }}">
+                                                                <i class="fas fa-user-times me-2"></i> Không đến
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button type="button"
+                                                                class="dropdown-item text-danger cancel-btn"
+                                                                data-id="{{ $appointment->id }}">
+                                                                <i class="fas fa-times-circle me-2"></i> Hủy
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
                                     <tr>
-                                        <td>{{ $confirmedAppointments->firstItem() + $index }}</td>
-                                        <td>{{ $appointment->appointment_code }}</td>
-                                        <td>{{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}</td>
-                                        <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
-                                        <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
-                                        <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
-                                        </td>
-                                        @php
-                                            $statusClass = $statusMap[$appointment->status]['class'] ?? 'secondary';
-                                            $statusText = $statusMap[$appointment->status]['text'] ?? 'Không rõ';
-
-                                            $paymentClass =
-                                                $paymentMap[$appointment->payment_status]['class'] ?? 'secondary';
-                                            $paymentText =
-                                                $paymentMap[$appointment->payment_status]['text'] ?? 'Không rõ';
-                                        @endphp
-                                        <td>
-                                            <span class="badge bg-{{ $statusClass }}">{{ $statusText }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <button class="btn btn-success btn-sm complete-btn"
-                                                data-id="{{ $appointment->id }}">Hoàn thành</button>
-                                            <a href="{{ route('appointments.show', $appointment->id) }}"
-                                                class="btn btn-info btn-sm">Xem</a>
-                                            <a href="{{ route('appointments.edit', $appointment->id) }}"
-                                                class="btn btn-warning btn-sm">Sửa</a>
-
-                                            <button class="btn btn-primary no-show-btn btn-sm"
-                                                data-id="{{ $appointment->id }}">Không đến</button>
-
-                                            <button class="btn btn-danger btn-sm cancel-btn"
-                                                data-id="{{ $appointment->id }}">Hủy</button>
+                                        <td colspan="11" class="text-center text-muted">Không có lịch hẹn nào phù hợp.
                                         </td>
                                     </tr>
-                                @endforeach
-                            @else
-                                <tr>
-                                    <td colspan="11" class="text-center text-muted">Không có lịch hẹn đã xác nhận.</td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="d-flex justify-content-center mt-3">
                         {{ $confirmedAppointments->appends(['search' => request('search')])->links() }}
                     </div>
@@ -226,186 +304,167 @@
                 <!-- Tab Đã hoàn thành -->
                 <div class="tab-pane fade {{ $activeTab == 'completed' ? 'show active' : '' }}" id="completed"
                     role="tabpanel">
-                    <table class="table table-bordered table-hover">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Stt</th>
-                                <th>Mã lịch hẹn</th>
-                                <th>Khách hàng</th>
-                                <th>Số điện thoại</th>
-                                <th>Thợ</th>
-                                <th>Dịch vụ</th>
-                                <th>Thời gian</th>
-                                <th>Trạng thái lịch hẹn</th>
-                                <th>Trạng thái thanh toán</th>
-                                <th class="text-center">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if ($completedAppointments->count())
-                                @foreach ($completedAppointments as $index => $appointment)
-                                    <tr>
-                                        <td>{{ $completedAppointments->firstItem() + $index }}</td>
-                                        <td>{{ $appointment->appointment_code }}</td>
-                                        <td>{{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}</td>
-                                        <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
-                                        <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
-                                        <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
-                                        </td>
-                                        @php
-                                            $statusClass = $statusMap[$appointment->status]['class'] ?? 'secondary';
-                                            $statusText = $statusMap[$appointment->status]['text'] ?? 'Không rõ';
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Stt</th>
+                                    <th>Mã lịch hẹn</th>
+                                    <th>Khách hàng</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Thợ</th>
+                                    <th>Dịch vụ</th>
+                                    <th>Thời gian</th>
+                                    <th>Trạng thái lịch hẹn</th>
+                                    <th>Trạng thái thanh toán</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($completedAppointments->count())
+                                    @foreach ($completedAppointments as $index => $appointment)
+                                        <tr>
+                                            <td>{{ $completedAppointments->firstItem() + $index }}</td>
+                                            <td>{{ $appointment->appointment_code }}</td>
+                                            <td>{{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}</td>
+                                            <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
+                                            <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
+                                            <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
+                                            </td>
+                                            @php
+                                                $statusClass = $statusMap[$appointment->status]['class'] ?? 'secondary';
+                                                $statusText = $statusMap[$appointment->status]['text'] ?? 'Không rõ';
 
-                                            $paymentClass =
-                                                $paymentMap[$appointment->payment_status]['class'] ?? 'secondary';
-                                            $paymentText =
-                                                $paymentMap[$appointment->payment_status]['text'] ?? 'Không rõ';
-                                        @endphp
-                                        <td>
-                                            <span class="badge bg-{{ $statusClass }}">{{ $statusText }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="{{ route('appointments.show', $appointment->id) }}"
-                                                class="btn btn-info btn-sm">Xem</a>
+                                                $paymentClass =
+                                                    $paymentMap[$appointment->payment_status]['class'] ?? 'secondary';
+                                                $paymentText =
+                                                    $paymentMap[$appointment->payment_status]['text'] ?? 'Không rõ';
+                                            @endphp
+                                            <td>
+                                                <span class="badge bg-{{ $statusClass }}">{{ $statusText }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                        id="actionMenuConfirmed{{ $appointment->id }}"
+                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+
+                                                    <ul class="dropdown-menu dropdown-menu-end"
+                                                        aria-labelledby="actionMenuConfirmed{{ $appointment->id }}">
+
+                                                        <li>
+                                                            <a href="{{ route('appointments.show', $appointment->id) }}"
+                                                                class="dropdown-item">
+                                                                <i class="fas fa-eye me-2"></i> Xem
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="11" class="text-center text-muted">Không có lịch hẹn nào phù hợp.
                                         </td>
                                     </tr>
-                                @endforeach
-                            @else
-                                <tr>
-                                    <td colspan="11" class="text-center text-muted">Không có lịch hẹn đã hoàn thành.
-                                    </td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="d-flex justify-content-center mt-3">
                         {{ $completedAppointments->appends(['search' => request('search')])->links() }}
-                    </div>
-                </div>
-
-                <!-- Tab chờ huỷ -->
-                <div class="tab-pane fade {{ $activeTab == 'pending_cancellation' ? 'show active' : '' }}"
-                    id="pending-cancellation" role="tabpanel">
-                    <table class="table table-bordered table-hover">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Stt</th>
-                                <th>Mã lịch hẹn</th>
-                                <th>Khách hàng</th>
-                                <th>Số điện thoại</th>
-                                <th>Email</th>
-                                <th>Thợ</th>
-                                <th>Dịch vụ</th>
-                                <th>Thời gian</th>
-                                <th>Lý do hủy</th>
-                                <th class="text-center">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if ($pending_cancellationAppointments->count())
-                                @foreach ($pending_cancellationAppointments as $index => $appointment)
-                                    <tr>
-                                        <td>{{ $pending_cancellationAppointments->firstItem() + $index }}</td>
-                                        <td>{{ $appointment->appointment_code }}</td>
-                                        <td>{{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}</td>
-                                        <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
-                                        <td>{{ $appointment->email ?? ($appointment->user?->email ?? 'N/A') }}</td>
-                                        <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
-                                        <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
-                                        </td>
-                                        <td>{{ $appointment->cancellation_reason ?? 'N/A' }}</td>
-                                        <td class="text-center">
-                                            <button class="btn btn-success btn-sm approve-cancel-btn"
-                                                data-id="{{ $appointment->id }}">Xác nhận hủy</button>
-                                            <button class="btn btn-danger btn-sm reject-cancel-btn"
-                                                data-id="{{ $appointment->id }}">Từ chối hủy</button>
-
-                                            <a href="{{ route('appointments.show', $appointment->id) }}"
-                                                class="btn btn-info btn-sm">Xem
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
-                                <tr>
-                                    <td colspan="10" class="text-center text-muted">Không có yêu cầu hủy nào.</td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
-                    <div class="d-flex justify-content-center mt-3">
-                        {{ $pending_cancellationAppointments->appends(['search' => request('search')])->links() }}
                     </div>
                 </div>
 
                 <!-- Tab Đã hủy -->
                 <div class="tab-pane fade {{ $activeTab == 'cancelled' ? 'show active' : '' }}" id="cancelled"
                     role="tabpanel">
-                    <table class="table table-bordered table-hover">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Stt</th>
-                                <th>Mã lịch hẹn</th>
-                                <th>Khách hàng</th>
-                                <th>Số điện thoại</th>
-                                <th>Thợ</th>
-                                <th>Dịch vụ</th>
-                                <th>Thời gian</th>
-                                <th>Lý do</th>
-                                <th>Trạng thái lịch hẹn</th>
-                                <th>Trạng thái thanh toán</th>
-                                <th class="text-center">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if ($cancelledAppointments->count())
-                                @foreach ($cancelledAppointments as $index => $appointment)
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Stt</th>
+                                    <th>Mã lịch hẹn</th>
+                                    <th>Khách hàng</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Thợ</th>
+                                    <th>Dịch vụ</th>
+                                    <th>Thời gian</th>
+                                    <th>Lý do</th>
+                                    <th>Trạng thái lịch hẹn</th>
+                                    <th>Trạng thái thanh toán</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($cancelledAppointments->count())
+                                    @foreach ($cancelledAppointments as $index => $appointment)
+                                        <tr>
+                                            <td>{{ $cancelledAppointments->firstItem() + $index }}</td>
+                                            <td>{{ $appointment->appointment_code }}</td>
+                                            <td>{{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}</td>
+                                            <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
+                                            <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
+                                            <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
+                                            <td>{{ $appointment->cancellation_reason ?? 'N/A' }}</td>
+                                            </td>
+                                            @php
+                                                $statusClass = $statusMap[$appointment->status]['class'] ?? 'secondary';
+                                                $statusText = $statusMap[$appointment->status]['text'] ?? 'Không rõ';
+
+                                                $paymentClass =
+                                                    $paymentMap[$appointment->payment_status]['class'] ?? 'secondary';
+                                                $paymentText =
+                                                    $paymentMap[$appointment->payment_status]['text'] ?? 'Không rõ';
+                                            @endphp
+                                            <td>
+                                                <span class="badge bg-{{ $statusClass }}">{{ $statusText }}
+                                                </span>
+                                                {{-- {{ $appointment->cancellation_type == 'no-show' ? 'Không đến' : 'Hủy' }} --}}
+
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                        id="actionMenuConfirmed{{ $appointment->id }}"
+                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+
+                                                    <ul class="dropdown-menu dropdown-menu-end"
+                                                        aria-labelledby="actionMenuConfirmed{{ $appointment->id }}">
+
+                                                        <li>
+                                                            <a href="{{ route('appointments.show_cancelled', $appointment->id) }}"
+                                                                class="dropdown-item">
+                                                                <i class="fas fa-eye me-2"></i> Xem
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
                                     <tr>
-                                        <td>{{ $cancelledAppointments->firstItem() + $index }}</td>
-                                        <td>{{ $appointment->appointment_code }}</td>
-                                        <td>{{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}</td>
-                                        <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
-                                        <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
-                                        <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
-                                        <td>{{ $appointment->cancellation_reason ?? 'N/A' }}</td>
-                                        </td>
-                                        @php
-                                            $statusClass = $statusMap[$appointment->status]['class'] ?? 'secondary';
-                                            $statusText = $statusMap[$appointment->status]['text'] ?? 'Không rõ';
-
-                                            $paymentClass =
-                                                $paymentMap[$appointment->payment_status]['class'] ?? 'secondary';
-                                            $paymentText =
-                                                $paymentMap[$appointment->payment_status]['text'] ?? 'Không rõ';
-                                        @endphp
-                                        <td>
-                                            <span class="badge bg-{{ $statusClass }}">{{ $statusText }}
-                                            </span>
-                                            {{-- {{ $appointment->cancellation_type == 'no-show' ? 'Không đến' : 'Hủy' }} --}}
-
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="{{ route('appointments.show', $appointment->id) }}"
-                                                class="btn btn-info btn-sm">Xem</a>
+                                        <td colspan="11" class="text-center text-muted">Không có lịch hẹn nào phù hợp.
                                         </td>
                                     </tr>
-                                @endforeach
-                            @else
-                                <tr>
-                                    <td colspan="11" class="text-center text-muted">Không có lịch hẹn đã hủy.</td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="d-flex justify-content-center mt-3">
                         {{ $cancelledAppointments->appends(['search' => request('search')])->links() }}
                     </div>
@@ -438,8 +497,6 @@
 
 @endsection
 @section('js')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         document.querySelectorAll('#appointmentTabs a[data-toggle="tab"]').forEach(tab => {
             tab.addEventListener('shown.bs.tab', function(event) {
@@ -627,224 +684,6 @@
                                 });
                             });
                     }
-                });
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Xử lý nút "Xác nhận hủy"
-            document.querySelectorAll('.approve-cancel-btn').forEach(button => {
-                button.addEventListener('click', function(event) {
-                    event.preventDefault(); // Ngăn hành vi mặc định
-                    const appointmentId = this.getAttribute('data-id');
-
-                    // Cửa sổ xác nhận
-                    Swal.fire({
-                        title: 'Xác nhận hủy lịch hẹn',
-                        text: 'Bạn có chắc chắn muốn chấp nhận hủy lịch hẹn này?',
-                        icon: 'warning',
-                        width: '400px',
-                        customClass: {
-                            popup: 'custom-swal-popup'
-                        },
-                        showCancelButton: true,
-                        confirmButtonText: 'Xác nhận',
-                        cancelButtonText: 'Hủy'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Cửa sổ loading
-                            Swal.fire({
-                                title: 'Đang xử lý...',
-                                text: 'Vui lòng chờ trong giây lát.',
-                                allowOutsideClick: false,
-                                width: '400px',
-                                customClass: {
-                                    popup: 'custom-swal-popup'
-                                },
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                }
-                            });
-
-                            // Gửi yêu cầu AJAX
-                            fetch('{{ route('appointments.approve-cancel', ':id') }}'
-                                    .replace(':id', appointmentId), {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                        }
-                                    })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error(
-                                            `HTTP error! Status: ${response.status}`
-                                        );
-                                    }
-                                    return response.json();
-                                })
-                                .then(data => {
-                                    // Đóng cửa sổ loading
-                                    Swal.close();
-
-                                    if (data.success) {
-                                        Swal.fire({
-                                            title: 'Thành công!',
-                                            text: data.message,
-                                            icon: 'success',
-                                            width: '400px',
-                                            customClass: {
-                                                popup: 'custom-swal-popup'
-                                            }
-                                        }).then(() => {
-                                            location.reload();
-                                        });
-                                    } else {
-                                        Swal.fire({
-                                            title: 'Lỗi!',
-                                            text: data.message,
-                                            icon: 'error',
-                                            width: '400px',
-                                            customClass: {
-                                                popup: 'custom-swal-popup'
-                                            }
-                                        });
-                                    }
-                                })
-                                .catch(error => {
-                                    // Đóng cửa sổ loading
-                                    Swal.close();
-                                    console.error('Lỗi AJAX:', error);
-                                    Swal.fire({
-                                        title: 'Lỗi!',
-                                        text: 'Đã có lỗi xảy ra: ' + error
-                                            .message,
-                                        icon: 'error',
-                                        width: '400px',
-                                        customClass: {
-                                            popup: 'custom-swal-popup'
-                                        }
-                                    });
-                                });
-                        }
-                    });
-                });
-            });
-
-
-            // Xử lý nút "Từ chối hủy"
-            document.querySelectorAll('.reject-cancel-btn').forEach(button => {
-                button.addEventListener('click', function(event) {
-                    event.preventDefault(); // Ngăn hành vi mặc định
-                    const appointmentId = this.getAttribute('data-id');
-
-                    // Cửa sổ từ chối với textarea
-                    Swal.fire({
-                        title: 'Từ chối hủy lịch hẹn',
-                        text: 'Vui lòng nhập lý do từ chối',
-                        input: 'textarea',
-                        inputPlaceholder: 'Nhập lý do từ chối (tối đa 255 ký tự)...',
-                        inputAttributes: {
-                            'rows': 4,
-                            'required': true
-                        },
-                        icon: 'warning',
-                        width: '400px',
-                        customClass: {
-                            popup: 'custom-swal-popup'
-                        },
-                        showCancelButton: true,
-                        confirmButtonText: 'Xác nhận',
-                        cancelButtonText: 'Hủy',
-                        inputValidator: (value) => {
-                            if (!value) {
-                                return 'Lý do không được để trống!';
-                            }
-                            if (value.length > 255) {
-                                return 'Lý do không được vượt quá 255 ký tự!';
-                            }
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Cửa sổ loading
-                            Swal.fire({
-                                title: 'Đang xử lý...',
-                                text: 'Vui lòng chờ trong giây lát.',
-                                allowOutsideClick: false,
-                                width: '400px',
-                                customClass: {
-                                    popup: 'custom-swal-popup'
-                                },
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                }
-                            });
-
-                            // Gửi yêu cầu AJAX
-                            fetch('{{ route('appointments.reject-cancel', ':id') }}'
-                                    .replace(':id', appointmentId), {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                        },
-                                        body: JSON.stringify({
-                                            rejection_reason: result.value
-                                        })
-                                    })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error(
-                                            `HTTP error! Status: ${response.status}`
-                                        );
-                                    }
-                                    return response.json();
-                                })
-                                .then(data => {
-                                    // Đóng cửa sổ loading
-                                    Swal.close();
-
-                                    if (data.success) {
-                                        Swal.fire({
-                                            title: 'Thành công!',
-                                            text: data.message,
-                                            icon: 'success',
-                                            width: '400px',
-                                            customClass: {
-                                                popup: 'custom-swal-popup'
-                                            }
-                                        }).then(() => {
-                                            location.reload();
-                                        });
-                                    } else {
-                                        Swal.fire({
-                                            title: 'Lỗi!',
-                                            text: data.message,
-                                            icon: 'error',
-                                            width: '400px',
-                                            customClass: {
-                                                popup: 'custom-swal-popup'
-                                            }
-                                        });
-                                    }
-                                })
-                                .catch(error => {
-                                    // Đóng cửa sổ loading
-                                    Swal.close();
-                                    console.error('Lỗi AJAX:', error);
-                                    Swal.fire({
-                                        title: 'Lỗi!',
-                                        text: 'Đã có lỗi xảy ra: ' + error
-                                            .message,
-                                        icon: 'error',
-                                        width: '400px',
-                                        customClass: {
-                                            popup: 'custom-swal-popup'
-                                        }
-                                    });
-                                });
-                        }
-                    });
                 });
             });
         });
@@ -1194,9 +1033,6 @@
             }
 
             // Áp dụng hàm cho từng nút
-            handleAction('.reject-cancel-btn', 'Từ chối hủy lịch hẹn',
-                'Nhập lý do từ chối (tối đa 255 ký tự)...', 'appointments.reject-cancel',
-                'rejection_reason', 'Không có lý do', true);
             handleAction('.no-show-btn', 'Đánh dấu lịch hẹn là No-show',
                 'Nhập lý do no-show (tối đa 255 ký tự)...', 'appointments.no-show',
                 'no_show_reason', 'Khách hàng không đến', false);
