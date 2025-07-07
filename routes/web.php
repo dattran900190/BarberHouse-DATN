@@ -45,6 +45,7 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // ==== Trang chủ ====
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/test', [HomeController::class, 'test'])->name('test');
 
 // Giỏ hàng
 Route::get('/gio-hang', [CartController::class, 'show'])->name('cart.show');
@@ -171,6 +172,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/appointments/{appointment}/approve-cancel', [AppointmentController::class, 'approveCancel'])->name('appointments.approve-cancel');
     Route::post('/appointments/{appointment}/reject-cancel', [AppointmentController::class, 'rejectCancel'])->name('appointments.reject-cancel');
     Route::post('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow'])->name('appointments.no-show');
+    Route::get('/appointments/cancelled/{cancelledAppointment}', [AppointmentController::class, 'showCancelled'])->name('appointments.show_cancelled');
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);

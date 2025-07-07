@@ -27,7 +27,6 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->text('cancellation_reason')->nullable();
             $table->string('cancellation_type')->nullable(); // Thêm trường này: 'cancelled' hoặc 'no-show'
-            $table->text('rejection_reason')->nullable();
             $table->string('status_before_cancellation')->nullable();
             $table->decimal('total_amount', 10, 2)->nullable();
             $table->timestamps();

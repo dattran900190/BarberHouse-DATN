@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+@extends('layouts.AdminLayout')
 
 @section('title', 'Lịch làm việc của thợ - Chi nhánh: ' . $branch->name)
 

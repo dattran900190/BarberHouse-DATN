@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+@extends('layouts.AdminLayout')
 
 @section('title', isset($schedule) ? 'Sửa lịch thợ' : 'Tạo lịch thợ')
 

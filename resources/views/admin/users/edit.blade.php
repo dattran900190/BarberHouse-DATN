@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+@extends('layouts.AdminLayout')
 
 @section('title', 'Chỉnh sửa ' . ($role == 'user' ? 'Người dùng' : 'Quản trị viên'))
 

@@ -9,6 +9,10 @@ use App\Models\Product;
 
 class HomeController extends Controller
 {
+    public function test()
+    {
+        return view('layouts.AdminLayout');
+    }
     public function index()
 {
     // Bài viết nổi bật (status = published, is_featured = true)
