@@ -44,6 +44,7 @@ class BookingRequest extends FormRequest
                 'required_if:other_person,1',
                 'email:rfc,dns'
             ],
+            'payment_method' => 'required|in:cash,vnpay',
         ];
     }
 

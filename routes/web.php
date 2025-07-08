@@ -34,6 +34,7 @@ use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ReviewController as ClientReviewController;
 
 // ==== Auth ====
@@ -113,10 +114,13 @@ Route::get('/lich-su-don-hang', [ClientOrderController::class, 'index'])->name('
 Route::get('/chi-tiet-don-hang/{order}', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory');
 
 
-// == ví tài khoản ==
+// == hoàn tiền ==
 Route::get('hoan-tien', [WalletController::class, 'index'])->name('client.detailWallet');
 Route::get('hoan-tien/create', [WalletController::class, 'create'])->name('client.wallet');
 Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.wallet.store');
+
+Route::post('/payment/vnpay', [PaymentController::class, 'vnpayPayment'])->name('client.payment.vnpay');
+Route::get('/payment/vnpay/callback', [PaymentController::class, 'vnpayCallback'])->name('client.payment.vnpay.callback');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])

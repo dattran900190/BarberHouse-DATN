@@ -705,6 +705,18 @@
                     <p>Thời lượng dự kiến: <strong id="totalDuration">0 Phút</strong></p>
                 </div>
 
+                <div class="form-group">
+                    <label class="form-label">Phương thức thanh toán <span class="required">*</span></label>
+                    <select name="payment_method" id="payment_method" class="form-control" required>
+                        <option value="">-- Chọn phương thức thanh toán --</option>
+                        <option value="cash">Tiền mặt</option>
+                        <option value="vnpay">VNPay</option>
+                    </select>
+                    @error('payment_method')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
                 <div class="form-btn mt-3">
                     <button type="submit" class="submit-btn book-btn booking-btn" data-id="{{ $service->id }}">
                         Đặt lịch
@@ -726,6 +738,40 @@
 
 
 @section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: '{{ session('success') }}',
+                confirmButtonText: 'OK',
+                customClass: {
+                    popup: 'custom-swal-popup',
+                    title: 'custom-swal-title',
+                    confirmButton: 'custom-swal-confirm'
+                }
+            });
+        @endif
+
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: '{{ session('error') }}',
+                confirmButtonText: 'Thử lại',
+                customClass: {
+                    popup: 'custom-swal-popup',
+                    title: 'custom-swal-title',
+                    confirmButton: 'custom-swal-confirm'
+                }
+            });
+        @endif
+    });
+</script>
+
+
     <script>
         // // Initialize booking system
         let selectedBranch = null;
@@ -1055,42 +1101,51 @@
                                     'Accept': 'application/json'
                                 }
                             })
-                            .then(response => {
-                                // In phản hồi để debug
-                                console.log('Response Status:', response.status);
-                                return response.json().then(data => {
-                                    if (!response.ok) {
-                                        // Ném dữ liệu JSON trực tiếp thay vì stringify
-                                        throw data;
-                                    }
-                                    return data;
-                                });
-                            })
-                            .then(data => {
-                                Swal.close(); // Đóng cửa sổ loading
+                            .then(response => response.json().then(data => ({
+                                status: response.status,
+                                data
+                            })))
+                            .then(({
+                                status,
+                                data
+                            }) => {
+                                Swal.close();
+                                if (status !== 200) {
+                                    throw data;
+                                }
                                 if (data.success) {
-                                    Swal.fire({
-                                        title: 'Thành công!',
-                                        text: data.message,
-                                        icon: 'success',
-                                        customClass: {
-                                            popup: 'custom-swal-popup'
-                                        }
-                                    }).then(() => {
-                                        location.reload();
-                                    });
+                                    if (formData.get('payment_method') === 'vnpay') {
+                                        // Chuyển hướng đến thanh toán VNPay
+                                        const vnpayForm = document.createElement('form');
+                                        vnpayForm.method = 'POST';
+                                        vnpayForm.action = '{{ route('client.payment.vnpay') }}';
+                                        vnpayForm.innerHTML = `
+                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="appointment_id" value="${data.appointment_id}">
+                                    `;
+                                        document.body.appendChild(vnpayForm);
+                                        vnpayForm.submit();
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Thành công!',
+                                            text: data.message,
+                                            icon: 'success',
+                                            customClass: {
+                                                popup: 'custom-swal-popup'
+                                            }
+                                        }).then(() => {
+                                            window.location.href =
+                                                '{{ route('appointments.index') }}';
+                                        });
+                                    }
                                 }
                             })
                             .catch(error => {
-                                Swal.close(); // Đóng cửa sổ loading
-                                console.error('Lỗi:', error); // Debug lỗi
-
+                                Swal.close();
                                 let errorMessage = 'Đã có lỗi xảy ra.';
                                 if (error.errors) {
-                                    // Lấy tất cả lỗi từ object errors và nối thành chuỗi
                                     errorMessage = Object.values(error.errors).flat().join('<br>');
                                 } else if (error.message) {
-                                    // Nếu không có errors, sử dụng message từ phản hồi
                                     errorMessage = error.message;
                                 }
 
@@ -1103,11 +1158,13 @@
                                     }
                                 });
                             });
+<<<<<<< HEAD
+=======
 
+>>>>>>> 51ec286452ffce7e0a408e1292eb65f0e7032359
                     }
                 });
             } else {
-                // Hiển thị SweetAlert2 khi chưa đăng nhập
                 Swal.fire({
                     title: 'Cần đăng nhập',
                     text: 'Bạn cần đăng nhập để đặt lịch.',
