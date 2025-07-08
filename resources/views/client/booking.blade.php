@@ -69,7 +69,7 @@
                 </div>
                 <div class="form-group mb-3">
                     <span class="form-label">Email</span>
-                    <input id="email" name="email" value="{{ old('email') }}"class="form-control"
+<input id="email" name="email" value="{{ old('email') }}"class="form-control"
                         placeholder="Nhập email" type="text">
                     @error('email')
                         <small class="text-danger">{{ $message }}</small>
@@ -128,7 +128,7 @@
                     @endforeach
                 </select>
                 @error('service_id')
-                    <small class="text-danger">{{ $message }}</small>
+<small class="text-danger">{{ $message }}</small>
                 @enderror
             </div>
 
@@ -182,7 +182,7 @@
             </div>
 
             <div class="form-btn mt-3">
-                <button type="submit" class="submit-btn btn btn-primary booking-btn" data-id="{{ $service->id }}">
+<button type="submit" class="submit-btn btn btn-primary booking-btn" data-id="{{ $service->id }}">
                     Đặt lịch
                 </button>
             </div>
@@ -241,7 +241,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group mb-3">
+<div class="form-group mb-3">
                         <span class="form-label">Email</span>
                         <input id="email" name="email" value="{{ old('email') }}"class="form-control"
                             placeholder="Nhập email" type="text">
@@ -301,7 +301,7 @@
                 </div>
 
                 <label class="form-label">Chọn chi nhánh <span class="required">*</span></label>
-                <div class="branch-list">
+<div class="branch-list">
                     @foreach ($branches as $branch)
                     <div class="branch-item" data-branch="quan1-yersin">
                             <div class="branch-content">
@@ -350,7 +350,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('service_id')
+@error('service_id')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
@@ -386,7 +386,7 @@
                         <button class="time-slot" name="appointment_time" data-time="15:30">15:30</button>
                         <button class="time-slot" name="appointment_time" data-time="16:00">16:00</button>
                         <button class="time-slot" name="appointment_time" data-time="16:30">16:30</button>
-                        <button class="time-slot" name="appointment_time" data-time="17:00">17:00</button>
+<button class="time-slot" name="appointment_time" data-time="17:00">17:00</button>
                         <button class="time-slot" name="appointment_time" data-time="17:30">17:30</button>
                         <button class="time-slot" name="appointment_time" data-time="18:00">18:00</button>
                         <button class="time-slot" name="appointment_time" data-time="18:30">18:30</button>
@@ -430,7 +430,7 @@
 
                 <div class="form-group mb-3">
                     <span class="form-label">Dịch vụ</span>
-                    <select id="service" name="service_id" class="form-control">
+<select id="service" name="service_id" class="form-control">
                         <option value="">-- Chọn dịch vụ --</option>
                         @foreach ($services as $service)
                             <option value="{{ $service->id }}" data-name="{{ $service->name }}"
@@ -476,7 +476,7 @@
                             ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
                         </option>
                     @endforeach
-                </select>
+</select>
                 <p>Tổng tiền: <strong id="totalPrice">{{ number_format($service->price ?? 0) }} vnđ</strong></p>
 
 
@@ -1049,6 +1049,7 @@
             console.log('DEBUG sel.dataset =', sel.dataset);…
         });
     </script>
+
     <script>
         window.userLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
 
@@ -1101,42 +1102,51 @@
                                     'Accept': 'application/json'
                                 }
                             })
-                            .then(response => {
-                                // In phản hồi để debug
-                                console.log('Response Status:', response.status);
-                                return response.json().then(data => {
-                                    if (!response.ok) {
-                                        // Ném dữ liệu JSON trực tiếp thay vì stringify
-                                        throw data;
-                                    }
-                                    return data;
-                                });
-                            })
-                            .then(data => {
-                                Swal.close(); // Đóng cửa sổ loading
+                            .then(response => response.json().then(data => ({
+                                status: response.status,
+                                data
+                            })))
+                            .then(({
+                                status,
+                                data
+                            }) => {
+                                Swal.close();
+                                if (status !== 200) {
+                                    throw data;
+                                }
                                 if (data.success) {
-                                    Swal.fire({
-                                        title: 'Thành công!',
-                                        text: data.message,
-                                        icon: 'success',
-                                        customClass: {
-                                            popup: 'custom-swal-popup'
-                                        }
-                                    }).then(() => {
-                                        location.reload();
-                                    });
+                                    if (formData.get('payment_method') === 'vnpay') {
+                                        // Chuyển hướng đến thanh toán VNPay
+                                        const vnpayForm = document.createElement('form');
+                                        vnpayForm.method = 'POST';
+                                        vnpayForm.action = '{{ route('client.payment.vnpay') }}';
+                                        vnpayForm.innerHTML = `
+                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="appointment_id" value="${data.appointment_id}">
+                                    `;
+                                        document.body.appendChild(vnpayForm);
+                                        vnpayForm.submit();
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Thành công!',
+                                            text: data.message,
+                                            icon: 'success',
+                                            customClass: {
+                                                popup: 'custom-swal-popup'
+                                            }
+                                        }).then(() => {
+                                            window.location.href =
+                                                '{{ route('appointments.index') }}';
+                                        });
+                                    }
                                 }
                             })
                             .catch(error => {
-                                Swal.close(); // Đóng cửa sổ loading
-                                console.error('Lỗi:', error); // Debug lỗi
-
+                                Swal.close();
                                 let errorMessage = 'Đã có lỗi xảy ra.';
                                 if (error.errors) {
-                                    // Lấy tất cả lỗi từ object errors và nối thành chuỗi
                                     errorMessage = Object.values(error.errors).flat().join('<br>');
                                 } else if (error.message) {
-                                    // Nếu không có errors, sử dụng message từ phản hồi
                                     errorMessage = error.message;
                                 }
 
@@ -1149,11 +1159,9 @@
                                     }
                                 });
                             });
-
                     }
                 });
             } else {
-                // Hiển thị SweetAlert2 khi chưa đăng nhập
                 Swal.fire({
                     title: 'Cần đăng nhập',
                     text: 'Bạn cần đăng nhập để đặt lịch.',
