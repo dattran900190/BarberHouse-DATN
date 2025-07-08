@@ -21,6 +21,7 @@ class Appointment extends Model
         'branch_id',
         'appointment_time',
         'status',
+        'payment_method',
         'payment_status',
         'note',
         'cancellation_reason',

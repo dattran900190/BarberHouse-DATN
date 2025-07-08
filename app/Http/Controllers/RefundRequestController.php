@@ -59,7 +59,6 @@ class RefundRequestController extends Controller
     }
 
 
-    
     public function update(ProcessRefundRequest $request, RefundRequest $refund)
     {
         DB::beginTransaction();

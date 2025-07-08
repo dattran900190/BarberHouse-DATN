@@ -540,16 +540,15 @@ class AppointmentController extends Controller
         try {
             // Kiểm tra đăng nhập
             if (!Auth::check()) {
-                // Nếu yêu cầu là AJAX, trả về JSON
                 if ($request->ajax() || $request->wantsJson()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Bạn cần đăng nhập để đặt lịch.'
                     ], 401);
                 }
-                // Nếu không phải AJAX, chuyển hướng
                 return redirect()->route('dat-lich')->with('mustLogin', true);
             }
+
             // Parse appointment datetime
             $datetime = Carbon::parse($request->appointment_date . ' ' . $request->appointment_time . ':00');
 
@@ -591,32 +590,17 @@ class AppointmentController extends Controller
                 ], 422);
             }
 
-            // Get name and phone (for self or other person)
+            // Get name, phone, and email (for self or other person)
             $name = $request->other_person ? $request->name : Auth::user()->name;
             $phone = $request->other_person ? $request->phone : Auth::user()->phone;
             $email = $request->other_person ? $request->email : Auth::user()->email;
 
-            // Create appointment
-            $appointment = Appointment::create([
-                'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
-                'user_id' => Auth::id(),
-                'barber_id' => $request->barber_id,
-                'branch_id' => $request->branch_id,
-                'service_id' => $request->service_id,
-                'appointment_time' => $datetime,
-                'status' => 'pending',
-                'payment_status' => 'unpaid',
-                'note' => $request->note,
-                'name' => $name,
-                'phone' => $phone,
-                'email' => $email,
-                'cancellation_reason' => null,
-                'rejection_reason' => null,
-                'status_before_cancellation' => null,
-                'total_amount' => $service->price ?? 0,
-            ]);
+            // Calculate total amount and discount
+            $totalAmount = $service->price ?? 0;
+            $discountAmount = 0;
+            $promotion = null;
 
-            // Xử lý voucher và gửi thông báo
+            // Xử lý voucher
             if ($request->voucher_code) {
                 $code = trim($request->voucher_code);
                 $redeemedVoucher = UserRedeemedVoucher::whereHas('promotion', function ($q) use ($code) {
@@ -627,7 +611,7 @@ class AppointmentController extends Controller
                     ->first();
 
                 if ($redeemedVoucher) {
-                    $this->appointmentService->applyPromotion($appointment, $redeemedVoucher);
+                    $promotion = $redeemedVoucher->promotion;
                 } else {
                     $promotion = Promotion::where('code', $code)
                         ->where(function ($q) {
@@ -638,13 +622,48 @@ class AppointmentController extends Controller
                         ->where('start_date', '<=', now())
                         ->where('end_date', '>=', now())
                         ->first();
+                }
 
-                    if ($promotion) {
-                        $this->appointmentService->applyPromotion($appointment, null, $promotion);
+                if ($promotion) {
+                    if ($promotion->discount_type === 'fixed') {
+                        $discountAmount = $promotion->discount_value;
+                    } else {
+                        $discountAmount = $totalAmount * $promotion->discount_value / 100;
                     }
+                    $totalAmount -= $discountAmount;
                 }
             }
 
+            $appointment = Appointment::create([
+                'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
+                'user_id' => Auth::id(),
+                'barber_id' => $request->barber_id,
+                'branch_id' => $request->branch_id,
+                'service_id' => $request->service_id,
+                'appointment_time' => $datetime,
+                'status' => 'pending',
+                'payment_method' => $request->payment_method,
+                'payment_status' => 'unpaid',
+                'note' => $request->note,
+                'name' => $name,
+                'phone' => $phone,
+                'email' => $email,
+                'cancellation_reason' => null,
+                'rejection_reason' => null,
+                'status_before_cancellation' => null,
+                'promotion_id' => $promotion ? $promotion->id : null,
+                'discount_amount' => $discountAmount,
+                'total_amount' => $totalAmount,
+            ]);
+
+            // Xử lý voucher
+            if ($promotion && $redeemedVoucher) {
+                $this->appointmentService->applyPromotion($appointment, $redeemedVoucher);
+            } elseif ($promotion) {
+                $this->appointmentService->applyPromotion($appointment, null, $promotion);
+            }
+
+            // Gửi thông báo
             try {
                 event(new NewAppointment($appointment));
                 Mail::to($appointment->email)->send(new PendingBookingMail($appointment));
@@ -652,6 +671,18 @@ class AppointmentController extends Controller
                 Log::error('Lỗi khi gửi sự kiện NewAppointment hoặc email', ['error' => $e->getMessage()]);
             }
 
+            // Nếu chọn VNPay, trả về appointment_id để chuyển hướng
+            if ($request->payment_method === 'vnpay') {
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Lịch hẹn đã được tạo, đang chuyển hướng đến thanh toán VNPay.',
+                        'appointment_id' => $appointment->id,
+                    ]);
+                }
+            }
+
+            // Nếu không phải VNPay, trả về thông báo thành công
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,

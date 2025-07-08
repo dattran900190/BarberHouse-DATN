@@ -17,7 +17,7 @@
                     <td style="padding: 8px; border: 1px solid #ddd;">{{ $order->order_code ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <td style="padding: 8px; border: 1px solid #ddd;"><strong>Số tiền compleet:</strong></td>
+                    <td style="padding: 8px; border: 1px solid #ddd;"><strong>Số tiền hoàn:</strong></td>
                     <td style="padding: 8px; border: 1px solid #ddd;">{{ number_format($refund->refund_amount, 0, ',', '.') }} đ</td>
                 </tr>
                 <tr>

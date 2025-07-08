@@ -23,6 +23,7 @@ return new class extends Migration
             $table->bigInteger('branch_id')->nullable()->index('branch_id');
             $table->dateTime('appointment_time')->nullable();
             $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed', 'pending_cancellation'])->nullable();
+            $table->enum('payment_method', ['cash', 'vnpay', 'momo'])->nullable();
             $table->enum('payment_status', ['unpaid', 'paid' , 'failed', 'refunded'])->nullable();
             $table->text('note')->nullable();
             $table->text('cancellation_reason')->nullable();
