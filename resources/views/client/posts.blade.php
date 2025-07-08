@@ -12,64 +12,88 @@
             <div class="post-left">
 
                 {{-- Bài viết nổi bật --}}
-                @php
-                    $topPost = $posts->first();
-                @endphp
-                @if ($topPost)
-                <div class="post-top">
-                    <div class="image-top">
-                        <a href="{{ route('client.detailPost', $topPost->slug) }}">
-                            <img src="{{ asset('storage/' . $topPost->image) }}" alt="" />
-                        </a>
-                    </div>
-                    <h4>
-                        <a href="{{ route('client.detailPost', $topPost->slug) }}">
-                            {{ $topPost->title }}
-                        </a>
-                    </h4>
-                    <p>{{ Str::limit(strip_tags($topPost->content), 100) }}</p>
-                </div>
-                @endif
-
-                {{-- Các bài viết còn lại --}}
-                <div class="post-mid">
-                    @foreach ($posts->skip(1) as $post)
-                    <div class="post">
-                        <div class="image-mid">
-                            <a href="{{ route('client.detailPost', $post->slug) }}">
-                                <img src="{{ asset('storage/' . $post->image) }}" alt="" />
+                @if ($featuredPosts->isNotEmpty())
+                    @php $topPost = $featuredPosts->first(); @endphp
+                    <div class="post-top">
+                        <div class="image-top">
+                            <a href="{{ route('client.detailPost', $topPost->slug) }}">
+                                <img src="{{ asset('storage/' . $topPost->image) }}" alt="{{ $topPost->title }}" />
                             </a>
                         </div>
                         <h4>
-                            <a href="{{ route('client.detailPost', $post->slug) }}">
-                                {{ $post->title }}
+                            <a href="{{ route('client.detailPost', $topPost->slug) }}">
+                                {{ $topPost->title }}
                             </a>
                         </h4>
+                        <p>{{ Str::limit(strip_tags($topPost->content), 100) }}</p>
                     </div>
+
+                    {{-- Các bài nổi bật còn lại --}}
+                    <div class="post-mid">
+                        @foreach ($featuredPosts->skip(1) as $post)
+                            <div class="post">
+                                <div class="image-mid">
+                                    <a href="{{ route('client.detailPost', $post->slug) }}">
+                                        <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" />
+                                    </a>
+                                </div>
+                                <h4>
+                                    <a href="{{ route('client.detailPost', $post->slug) }}">
+                                        {{ $post->title }}
+                                    </a>
+                                </h4>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                {{-- Các bài viết thường --}}
+                <h3 class="mt-4">Bài viết khác</h3>
+                <div class="post-mid">
+                    @foreach ($normalPosts as $post)
+                        <div class="post">
+                            <div class="image-mid">
+                                <a href="{{ route('client.detailPost', $post->slug) }}">
+                                    <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" />
+                                </a>
+                            </div>
+                            <h4>
+                                <a href="{{ route('client.detailPost', $post->slug) }}">
+                                    {{ $post->title }}
+                                </a>
+                            </h4>
+                        </div>
                     @endforeach
+                </div>
+
+                {{-- Phân trang nếu có --}}
+                <div class="mt-3">
+                    {{ $normalPosts->links() }}
                 </div>
             </div>
 
-            {{-- Sidebar bài viết --}}
+            {{-- Sidebar: 5 bài viết mới nhất --}}
             <div class="post-right">
-                @foreach ($posts->take(5) as $post)
-                <div class="post">
-                    <div class="image-right">
-                        <a href="{{ route('client.detailPost', $post->id) }}">
-                            <img src="{{ asset('storage/' . $post->image) }}" alt="" />
-                        </a>
+                {{-- <h5>Bài viết mới</h5> --}}
+                @foreach ($normalPosts->take(5) as $post)
+                    <div class="post">
+                        <div class="image-right">
+                            <a href="{{ route('client.detailPost', $post->slug) }}">
+                                <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" />
+                            </a>
+                        </div>
+                        <h5>
+                            <a href="{{ route('client.detailPost', $post->slug) }}">
+                                {{ Str::limit($post->title, 50) }}
+                            </a>
+                        </h5>
                     </div>
-                    <h5>
-                        <a href="{{ route('client.detailPost', $post->id) }}">
-                           
-                        </a>
-                    </h5>
-                </div>
                 @endforeach
             </div>
         </div>
     </div>
 </main>
+
 
 <style>
     #mainNav {

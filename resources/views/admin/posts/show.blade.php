@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+@extends('layouts.AdminLayout')
 
 @section('title', 'Chi tiết bài viết')
 
@@ -14,7 +14,7 @@
             <p><strong>Slug:</strong> {{ $post->slug }}</p>
 
             <p><strong>Mô tả:</strong> {{ $post->short_description }}</p>
-
+            <p><strong>Nổi bật:</strong></strong> {{ $post->is_featured? 'Nổi bật' : 'Không nổi bật' }}</p>
             <p><strong>Nội dung:</strong></p>
             <div>{!! $post->content !!}</div>
 

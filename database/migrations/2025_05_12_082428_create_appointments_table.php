@@ -27,7 +27,6 @@ return new class extends Migration
             $table->enum('payment_status', ['unpaid', 'paid' , 'failed', 'refunded'])->nullable();
             $table->text('note')->nullable();
             $table->text('cancellation_reason')->nullable();
-            $table->text('rejection_reason')->nullable();
             $table->string('status_before_cancellation')->nullable();
             $table->bigInteger('promotion_id')->nullable()->index('promotion_id');
             $table->decimal('discount_amount', 10)->nullable()->default(0);

@@ -581,7 +581,8 @@
                         @foreach ($branches as $branch)
                             <div class="branch-item {{ old('branch_id') == $branch->id ? 'active' : '' }}"
                                 data-id="{{ $branch->id }}">
-                                <i class="fas fa-map-marker-alt branch-icon"></i>
+                                <i class="fas fa-map-marker-alt branch-icon"
+                                    data-value="{{ $branch->google_map_url }}"></i>
                                 <span class="branch-name">{{ $branch->name }}</span>
                                 <div class="branch-radio"></div>
                             </div>
@@ -788,7 +789,15 @@
             setMinDate();
         });
 
-
+        document.querySelectorAll('.branch-icon').forEach(icon => {
+            icon.addEventListener('click', function(event) {
+                event.stopPropagation(); // Ngăn sự kiện lan ra .branch-item
+                const googleMapUrl = this.getAttribute('data-value');
+                if (googleMapUrl) {
+                    window.open(googleMapUrl, '_blank'); // Mở Google Maps trong tab mới
+                }
+            });
+        });
 
         // // Enhanced service management
         // function setupServiceManagement() {
@@ -1149,6 +1158,10 @@
                                     }
                                 });
                             });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 51ec286452ffce7e0a408e1292eb65f0e7032359
                     }
                 });
             } else {

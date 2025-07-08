@@ -1,10 +1,10 @@
-@extends('adminlte::page')
+@extends('layouts.AdminLayout')
 
 @section('title', 'Dashboard')
 
-@section('content_header')
+{{-- @section('content_header')
     <h1>Dashboard quản lý salon</h1>
-@stop
+@stop --}}
 
 @section('content')
     <div aria-live="polite" aria-atomic="true" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"
@@ -21,118 +21,309 @@
             </div>
         </div>
     </div>
+
+    <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+        <div>
+            <h3 class="fw-bold mb-3">Bảng điều khiển</h3>
+            <h6 class="op-7 mb-2">Trang quản trị hệ thống tiệm & bán hàng</h6>
+        </div>
+        <div class="ms-md-auto py-2 py-md-0">
+            <a href="#" class="btn btn-label-info btn-round me-2">Quản lý</a>
+            <a href="#" class="btn btn-primary btn-round">Thêm khách hàng</a>
+        </div>
+    </div>
+
+
     <div class="row">
-        <!-- Box 1 -->
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>24</h3>
-                    <p>Dịch vụ hiện có</p>
+        {{-- Visitors --}}
+        <div class="col-sm-6 col-md-3 mb-3">
+            <div class="card card-stats card-round">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-icon">
+                            <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="col col-stats ms-3 ms-sm-0">
+                            <div class="numbers">
+                                <p class="card-category">Khách truy cập</p>
+                                <h4 class="card-title">1.294</h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-concierge-bell"></i>
-                </div>
-                <a href="{{ url('admin/services') }}" class="small-box-footer">
-                    Xem chi tiết <i class="fas fa-arrow-circle-right"></i>
-                </a>
             </div>
         </div>
-
-        <!-- Box 2 -->
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3>15</h3>
-                    <p>Thợ đang làm việc</p>
+        {{-- Subscribers --}}
+        <div class="col-sm-6 col-md-3 mb-3">
+            <div class="card card-stats card-round">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-icon">
+                            <div class="icon-big text-center icon-info bubble-shadow-small">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                        </div>
+                        <div class="col col-stats ms-3 ms-sm-0">
+                            <div class="numbers">
+                                <p class="card-category">Đăng ký</p>
+                                <h4 class="card-title">1.303</h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-user-scissors"></i>
-                </div>
-                <a href="{{ url('admin/barbers') }}" class="small-box-footer">
-                    Xem chi tiết <i class="fas fa-arrow-circle-right"></i>
-                </a>
             </div>
         </div>
-
-        <!-- Box 3 -->
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3>32</h3>
-                    <p>Lịch đặt hôm nay</p>
-                    <!-- Badge hiển thị số lượng lịch đang chờ -->
-                    <span id="pending-appointment-count" class="badge badge-danger"
-                        style="{{ $pendingCount > 0 ? '' : 'display: none;' }}">
-                        {{ $pendingCount }}
-                    </span>
+        {{-- Đơn hàng (dịch vụ) --}}
+        <div class="col-sm-6 col-md-3 mb-3">
+            <div class="card card-stats card-round">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-icon">
+                            <div class="icon-big text-center icon-success bubble-shadow-small">
+                                <i class="fas fa-luggage-cart"></i>
+                            </div>
+                        </div>
+                        <div class="col col-stats ms-3 ms-sm-0">
+                            <div class="numbers">
+                                <p class="card-category">Doanh thu dịch vụ</p>
+                                <h4 class="card-title">₫1.345.000</h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
-                <a href="#" class="small-box-footer">
-                    Xem lịch <i class="fas fa-arrow-circle-right"></i>
-                </a>
             </div>
         </div>
-
-        <!-- Box 4 -->
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-danger">
-                <div class="inner">
-                    <h3>7.200.000đ</h3>
-                    <p>Doanh thu hôm nay</p>
+        {{-- Đơn hàng (sản phẩm) --}}
+        <div class="col-sm-6 col-md-3 mb-3">
+            <div class="card card-stats card-round">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-icon">
+                            <div class="icon-big text-center icon-secondary bubble-shadow-small">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                        </div>
+                        <div class="col col-stats ms-3 ms-sm-0">
+                            <div class="numbers">
+                                <p class="card-category">Doanh thu sản phẩm</p>
+                                <h4 class="card-title">₫576.000</h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-money-bill-wave"></i>
-                </div>
-                <a href="#" class="small-box-footer">
-                    Xem báo cáo <i class="fas fa-arrow-circle-right"></i>
-                </a>
             </div>
         </div>
     </div>
 
-    <!-- Biểu đồ doanh thu -->
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Doanh thu 7 ngày gần nhất</h3>
+    <!-- Row 2: Biểu đồ thống kê -->
+    <div class="row align-items-stretch">
+        <div class="col-md-8 mb-3">
+            <div class="card card-round h-100 d-flex flex-column">
+                <div class="card-header">
+                    <div class="card-head-row">
+                        <div class="card-title">Thống kê người dùng</div>
+                        <div class="card-tools">
+                            <a href="#" class="btn btn-label-success btn-round btn-sm me-2">
+                                <i class="fa fa-file-export btn-label"></i> Export
+                            </a>
+                            <a href="#" class="btn btn-label-info btn-round btn-sm">
+                                <i class="fa fa-print btn-label"></i> Print
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 375px;">
+                        <canvas id="statisticsChart"></canvas>
+                        
+                    </div>
+                    <div id="myChartLegend" class="mt-2 text-center">[Chart Legend]</div>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <canvas id="revenueChart" height="100"></canvas>
+
+        <div class="col-md-4 mb-3">
+            <div class="card card-round h-100 d-flex flex-column">
+                <div class="card-header">
+                    <div class="card-head-row">
+                        <div class="card-title">Hiệu suất nhân viên (tuần này)</div>
+                    </div>
+                    <div class="card-category">Từ 01/07 đến 06/07</div>
+                </div>
+                <div class="card-body pb-0">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Nhân viên</th>
+                                <th class="text-center">Lượt cắt</th>
+                                <th class="text-center">Đánh giá</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Trịnh Văn Nam</td>
+                                <td class="text-center">27</td>
+                                <td class="text-center">4.8 ⭐</td>
+                            </tr>
+                            <tr>
+                                <td>Ngô Thị Mai</td>
+                                <td class="text-center">22</td>
+                                <td class="text-center">4.6 ⭐</td>
+                            </tr>
+                            <tr>
+                                <td>Vũ Thành Công</td>
+                                <td class="text-center">19</td>
+                                <td class="text-center">4.9 ⭐</td>
+                            </tr>
+                            <tr>
+                                <td>Vũ Thành Công</td>
+                                <td class="text-center">19</td>
+                                <td class="text-center">4.9 ⭐</td>
+                            </tr>
+                            <tr>
+                                <td>Vũ Thành Công</td>
+                                <td class="text-center">19</td>
+                                <td class="text-center">4.9 ⭐</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Dịch vụ mới nhất -->
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Dịch vụ mới nhất</h3>
+    <div class="col-md-12">
+        <div class="card card-primary card-round">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Doanh thu hôm nay</div>
+                    <div class="card-tools">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-label-light dropdown-toggle" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                Lọc
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#">Hôm nay</a>
+                                <a class="dropdown-item" href="#">7 ngày gần nhất</a>
+                                <a class="dropdown-item" href="#">30 ngày gần nhất</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-category">06/07/2025</div>
+            </div>
+            <div class="card-body pb-0">
+                <div class="mb-4 mt-2">
+                    <h1>$4,578.58</h1>
+                    <p class="text-muted">Tổng doanh thu hôm nay</p>
+                </div>
+                <div class="pull-in">
+                    <canvas id="dailySalesChart" height="120"></canvas>
+                </div>
+            </div>
         </div>
-        <div class="card-body table-responsive p-0" style="max-height: 300px;">
-            <table class="table table-head-fixed text-nowrap">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Tên dịch vụ</th>
-                        <th>Giá</th>
-                        <th>Ngày tạo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Cắt tóc nam</td>
-                        <td>80.000đ</td>
-                        <td>2025-05-05</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Gội đầu + massage</td>
-                        <td>100.000đ</td>
-                        <td>2025-05-04</td>
-                    </tr>
-                    <!-- Thêm các dòng khác nếu muốn -->
-                </tbody>
-            </table>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card card-round">
+                <div class="card-header">
+                    <div class="card-title">Lịch hẹn sắp tới</div>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Nguyễn Văn A - 10:00 AM
+                            <span class="badge bg-success">06/07</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Trần Thị B - 11:30 AM
+                            <span class="badge bg-success">06/07</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Phạm Văn C - 01:00 PM
+                            <span class="badge bg-success">06/07</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card card-round">
+                <div class="card-header">
+                    <div class="card-title">Top sản phẩm bán chạy</div>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Sáp vuốt tóc Volcanic Clay
+                            <span class="badge bg-primary rounded-pill">52 sp</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Dầu gội đầu Herbal
+                            <span class="badge bg-primary rounded-pill">39 sp</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Gel tạo kiểu Gatsby
+                            <span class="badge bg-primary rounded-pill">35 sp</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 3: Bảng giao dịch -->
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <div class="card card-round">
+                <div class="card-header">
+                    <div class="card-head-row card-tools-still-right">
+                        <h4 class="card-title">Lịch sử giao dịch</h4>
+                        <div class="card-tools">
+                            <button class="btn btn-icon btn-link btn-primary btn-xs">
+                                <i class="fa fa-sync-alt btn-refresh-card"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-items-center mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Thanh toán #</th>
+                                    <th class="text-end">Ngày giờ</th>
+                                    <th class="text-end">Số tiền</th>
+                                    <th class="text-end">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for ($i = 0; $i < 5; $i++)
+                                    <tr>
+                                        <th scope="row">
+                                            <button class="btn btn-icon btn-round btn-success btn-sm me-2">
+                                                <i class="fa fa-check"></i>
+                                            </button>
+                                            Giao dịch #1023{{ $i }}
+                                        </th>
+                                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
+                                        <td class="text-end">₫250.000</td>
+                                        <td class="text-end">
+                                            <span class="badge badge-success">Hoàn thành</span>
+                                        </td>
+                                    </tr>
+                                @endfor
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -141,9 +332,6 @@
 @vite('resources/js/app.js')
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         function initEchoListener() {
@@ -242,35 +430,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', initEchoListener);
-    </script>
-
-    <script>
-        const ctx = document.getElementById('revenueChart').getContext('2d');
-        const revenueChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['30/4', '1/5', '2/5', '3/5', '4/5', '5/5'],
-                datasets: [{
-                    label: 'Doanh thu (VND)',
-                    data: [500000, 800000, 1200000, 750000, 950000, 720000],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        ticks: {
-                            callback: function(value) {
-                                return value.toLocaleString('vi-VN') + 'đ';
-                            }
-                        }
-                    }
-                }
-            }
-        });
     </script>
 @stop
 

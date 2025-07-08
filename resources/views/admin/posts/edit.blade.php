@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+@extends('layouts.AdminLayout')
 
 @section('title', 'Chỉnh sửa Bài viết')
 
@@ -16,7 +16,7 @@
                 <div class="mb-3">
                     <label for="title" class="form-label">Tiêu đề</label>
                     <input type="text" class="form-control" id="title" name="title"
-                           value="{{ old('title', $post->title) }}">
+                        value="{{ old('title', $post->title) }}">
                     @error('title')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -25,7 +25,7 @@
                 <div class="mb-3">
                     <label for="short_description" class="form-label">Mô tả</label>
                     <input type="text" class="form-control" id="short_description" name="short_description"
-                           value="{{ old('short_description', $post->short_description) }}">
+                        value="{{ old('short_description', $post->short_description) }}">
                     @error('short_description')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -38,6 +38,20 @@
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
+
+                <div class="mb-3">
+                    <label for="is_featured" class="form-label fw-bold">Nổi bật</label>
+                    <select class="form-control" id="is_featured" name="is_featured">
+                        <option value="0" {{ old('is_featured', $post->is_featured) == 0 ? 'selected' : '' }}>Không nổi
+                            bật</option>
+                        <option value="1" {{ old('is_featured', $post->is_featured) == 1 ? 'selected' : '' }}>Nổi bật
+                        </option>
+                    </select>
+                    @error('is_featured')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
 
                 <div class="mb-3">
                     <label for="status" class="form-label">Trạng thái</label>
@@ -53,7 +67,7 @@
                 <div class="mb-3">
                     <label for="published_at" class="form-label">Ngày xuất bản</label>
                     <input type="date" class="form-control" id="published_at" name="published_at"
-                           value="{{ old('published_at', $post->published_at ? \Carbon\Carbon::parse($post->published_at)->format('Y-m-d') : '') }}">
+                        value="{{ old('published_at', $post->published_at ? \Carbon\Carbon::parse($post->published_at)->format('Y-m-d') : '') }}">
                     @error('published_at')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror

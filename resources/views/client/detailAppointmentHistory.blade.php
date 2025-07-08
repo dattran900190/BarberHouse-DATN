@@ -55,10 +55,24 @@
                         </div>
                     </div>
                 </div>
+                @if ($appointment->review)
+                    <div class="review mt-4">
+                        <h5>Đánh giá của bạn:</h5>
+                        <div>
+                            @for ($i = 1; $i <= 5; $i++)
+                                <i class="fa fa-star"
+                                    style="color: {{ $i <= $appointment->review->rating ? '#f1c40f' : '#ccc' }}"></i>
+                            @endfor
+                        </div>
+                        <p class="mt-2">{{ $appointment->review->comment }}</p>
+                    </div>
+                @endif
+
+
                 <div class="card-footer d-flex justify-content-between align-items-center border-0">
                     <h5 class="fw-bold">Tổng tiền: {{ number_format($appointment->total_amount) }}đ</h5>
                     <div>
-                        @if ($appointment->status != 'completed' && $appointment->status != 'pending_cancellation')
+                        @if ($appointment->status != 'completed')
                             <a href="#" class="btn btn-outline-danger btn-sm me-2">Hủy đặt lịch</a>
                         @endif
                         <a href="{{ route('client.appointmentHistory') }}" class="btn btn-outline-secondary btn-sm">Quay

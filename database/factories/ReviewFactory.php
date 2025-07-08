@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Appointment;
 use App\Models\User;
 use App\Models\Barber;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -24,7 +25,7 @@ class ReviewFactory extends Factory
             'rating' => $this->faker->numberBetween(1, 5),
             'comment' => $this->faker->sentence(),
             'is_visible' => 1, // true = hiển thị, false = ẩn
-            // 'appointment_id' => null, // nếu có sau này thì thêm vào
+            'appointment_id' => Appointment::inRandomOrder()->first()?->id ?? null, // nếu có sau này thì thêm vào
         ];
     }
 }
