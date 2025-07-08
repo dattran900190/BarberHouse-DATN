@@ -69,7 +69,7 @@ class AppointmentController extends Controller
 
         return view('client.booking', compact('barbers', 'services', 'branches', 'vouchers', 'publicPromotions'));
     }
- 
+
 
 
     public function appointmentHistory(Request $request)
@@ -202,7 +202,6 @@ class AppointmentController extends Controller
             'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.'
         ]);
     }
-
     public function store(BookingRequest $request)
     {
         try {
@@ -228,7 +227,7 @@ class AppointmentController extends Controller
             $exactMatch = Appointment::where('barber_id', $request->barber_id)
                 ->where('branch_id', $request->branch_id)
                 ->where('appointment_time', $datetime)
-                ->whereIn('status', ['pending', 'confirmed'])
+                ->whereIn('status', ['pending', 'confirmed', 'pending_cancellation'])
                 ->exists();
 
             if ($exactMatch) {
@@ -243,7 +242,7 @@ class AppointmentController extends Controller
             $existingAppointment = Appointment::where('barber_id', $request->barber_id)
                 ->where('branch_id', $request->branch_id)
                 ->where('appointment_time', '!=', $datetime)
-                ->whereIn('status', ['pending', 'confirmed'])
+                ->whereIn('status', ['pending', 'confirmed', 'pending_cancellation'])
                 ->whereHas('service', function ($query) use ($datetime, $duration) {
                     $query->whereRaw('? BETWEEN appointment_time AND DATE_ADD(appointment_time, INTERVAL services.duration MINUTE)', [$datetime])
                         ->orWhereRaw('DATE_ADD(?, INTERVAL ? MINUTE) BETWEEN appointment_time AND DATE_ADD(appointment_time, INTERVAL services.duration MINUTE)', [$datetime, $duration]);
@@ -267,25 +266,6 @@ class AppointmentController extends Controller
             $totalAmount = $service->price ?? 0;
             $discountAmount = 0;
             $promotion = null;
-            
-            // Create appointment
-            $appointment = Appointment::create([
-                'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
-                'user_id' => Auth::id(),
-                'barber_id' => $request->barber_id,
-                'branch_id' => $request->branch_id,
-                'service_id' => $request->service_id,
-                'appointment_time' => $datetime,
-                'status' => 'pending',
-                'payment_status' => 'unpaid',
-                'note' => $request->note,
-                'name' => $name,
-                'phone' => $phone,
-                'email' => $email,
-                'cancellation_reason' => null,
-                'status_before_cancellation' => null,
-                'total_amount' => $service->price ?? 0,
-            ]);
 
             // Xử lý voucher
             if ($request->voucher_code) {
@@ -321,6 +301,7 @@ class AppointmentController extends Controller
                 }
             }
 
+            // Create appointment
             $appointment = Appointment::create([
                 'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
                 'user_id' => Auth::id(),

@@ -673,20 +673,21 @@
                 <div class="form-group">
                     <label class="form-label">Khuyến mãi</label>
                     <input type="hidden" id="service_price" value="{{ $service->price ?? 0 }}">
-                    <select name="voucher_id" id="voucher_id" class="form-control">
+                    <select name="voucher_code" id="voucher_id" class="form-control">
                         <option value="">Không sử dụng mã giảm giá</option>
                         @foreach ($vouchers as $voucher)
-                            <option value="{{ $voucher->id }}"
+                            <option value="{{ $voucher->promotion->code }}"
                                 data-discount-type="{{ $voucher->promotion->discount_type }}"
-                                data-discount-value="{{ $voucher->promotion->discount_value }}">
+                                data-discount-value="{{ $voucher->promotion->discount_value }}"
+                                data-voucher-id="{{ $voucher->id }}">
                                 {{ $voucher->promotion->code }}
                                 ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
                             </option>
                         @endforeach
                         @foreach ($publicPromotions as $promotion)
-                            <option value="public_{{ $promotion->id }}"
-                                data-discount-type="{{ $promotion->discount_type }}"
-                                data-discount-value="{{ $promotion->discount_value }}">
+                            <option value="{{ $promotion->code }}" data-discount-type="{{ $promotion->discount_type }}"
+                                data-discount-value="{{ $promotion->discount_value }}"
+                                data-promotion-id="public_{{ $promotion->id }}">
                                 {{ $promotion->code }}
                                 ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
                             </option>
@@ -740,36 +741,36 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công!',
-                text: '{{ session('success') }}',
-                confirmButtonText: 'OK',
-                customClass: {
-                    popup: 'custom-swal-popup',
-                    title: 'custom-swal-title',
-                    confirmButton: 'custom-swal-confirm'
-                }
-            });
-        @endif
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: '{{ session('success') }}',
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title',
+                        confirmButton: 'custom-swal-confirm'
+                    }
+                });
+            @endif
 
-        @if (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
-                text: '{{ session('error') }}',
-                confirmButtonText: 'Thử lại',
-                customClass: {
-                    popup: 'custom-swal-popup',
-                    title: 'custom-swal-title',
-                    confirmButton: 'custom-swal-confirm'
-                }
-            });
-        @endif
-    });
-</script>
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: '{{ session('error') }}',
+                    confirmButtonText: 'Thử lại',
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title',
+                        confirmButton: 'custom-swal-confirm'
+                    }
+                });
+            @endif
+        });
+    </script>
 
 
     <script>
@@ -1048,7 +1049,6 @@
             console.log('DEBUG sel.dataset =', sel.dataset);…
         });
     </script>
-
     <script>
         window.userLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
 
@@ -1101,51 +1101,42 @@
                                     'Accept': 'application/json'
                                 }
                             })
-                            .then(response => response.json().then(data => ({
-                                status: response.status,
-                                data
-                            })))
-                            .then(({
-                                status,
-                                data
-                            }) => {
-                                Swal.close();
-                                if (status !== 200) {
-                                    throw data;
-                                }
-                                if (data.success) {
-                                    if (formData.get('payment_method') === 'vnpay') {
-                                        // Chuyển hướng đến thanh toán VNPay
-                                        const vnpayForm = document.createElement('form');
-                                        vnpayForm.method = 'POST';
-                                        vnpayForm.action = '{{ route('client.payment.vnpay') }}';
-                                        vnpayForm.innerHTML = `
-                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <input type="hidden" name="appointment_id" value="${data.appointment_id}">
-                                    `;
-                                        document.body.appendChild(vnpayForm);
-                                        vnpayForm.submit();
-                                    } else {
-                                        Swal.fire({
-                                            title: 'Thành công!',
-                                            text: data.message,
-                                            icon: 'success',
-                                            customClass: {
-                                                popup: 'custom-swal-popup'
-                                            }
-                                        }).then(() => {
-                                            window.location.href =
-                                                '{{ route('appointments.index') }}';
-                                        });
+                            .then(response => {
+                                // In phản hồi để debug
+                                console.log('Response Status:', response.status);
+                                return response.json().then(data => {
+                                    if (!response.ok) {
+                                        // Ném dữ liệu JSON trực tiếp thay vì stringify
+                                        throw data;
                                     }
+                                    return data;
+                                });
+                            })
+                            .then(data => {
+                                Swal.close(); // Đóng cửa sổ loading
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Thành công!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        location.reload();
+                                    });
                                 }
                             })
                             .catch(error => {
-                                Swal.close();
+                                Swal.close(); // Đóng cửa sổ loading
+                                console.error('Lỗi:', error); // Debug lỗi
+
                                 let errorMessage = 'Đã có lỗi xảy ra.';
                                 if (error.errors) {
+                                    // Lấy tất cả lỗi từ object errors và nối thành chuỗi
                                     errorMessage = Object.values(error.errors).flat().join('<br>');
                                 } else if (error.message) {
+                                    // Nếu không có errors, sử dụng message từ phản hồi
                                     errorMessage = error.message;
                                 }
 
@@ -1158,13 +1149,11 @@
                                     }
                                 });
                             });
-<<<<<<< HEAD
-=======
 
->>>>>>> 51ec286452ffce7e0a408e1292eb65f0e7032359
                     }
                 });
             } else {
+                // Hiển thị SweetAlert2 khi chưa đăng nhập
                 Swal.fire({
                     title: 'Cần đăng nhập',
                     text: 'Bạn cần đăng nhập để đặt lịch.',
