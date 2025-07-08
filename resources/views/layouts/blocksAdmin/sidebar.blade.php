@@ -164,7 +164,7 @@
                             </li>
                             <li>
                                 <a href="{{ asset('admin/users') }}">
-                                    <span class="sub-item">Nười dùng</span>
+                                    <span class="sub-item">Người dùng</span>
                                 </a>
                             </li>
                             <li>

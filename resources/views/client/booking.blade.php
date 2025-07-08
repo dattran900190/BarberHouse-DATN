@@ -69,7 +69,7 @@
                 </div>
                 <div class="form-group mb-3">
                     <span class="form-label">Email</span>
-                    <input id="email" name="email" value="{{ old('email') }}"class="form-control"
+<input id="email" name="email" value="{{ old('email') }}"class="form-control"
                         placeholder="Nhập email" type="text">
                     @error('email')
                         <small class="text-danger">{{ $message }}</small>
@@ -128,7 +128,7 @@
                     @endforeach
                 </select>
                 @error('service_id')
-                    <small class="text-danger">{{ $message }}</small>
+<small class="text-danger">{{ $message }}</small>
                 @enderror
             </div>
 
@@ -182,7 +182,7 @@
             </div>
 
             <div class="form-btn mt-3">
-                <button type="submit" class="submit-btn btn btn-primary booking-btn" data-id="{{ $service->id }}">
+<button type="submit" class="submit-btn btn btn-primary booking-btn" data-id="{{ $service->id }}">
                     Đặt lịch
                 </button>
             </div>
@@ -241,7 +241,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group mb-3">
+<div class="form-group mb-3">
                         <span class="form-label">Email</span>
                         <input id="email" name="email" value="{{ old('email') }}"class="form-control"
                             placeholder="Nhập email" type="text">
@@ -301,7 +301,7 @@
                 </div>
 
                 <label class="form-label">Chọn chi nhánh <span class="required">*</span></label>
-                <div class="branch-list">
+<div class="branch-list">
                     @foreach ($branches as $branch)
                     <div class="branch-item" data-branch="quan1-yersin">
                             <div class="branch-content">
@@ -350,7 +350,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('service_id')
+@error('service_id')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
@@ -386,7 +386,7 @@
                         <button class="time-slot" name="appointment_time" data-time="15:30">15:30</button>
                         <button class="time-slot" name="appointment_time" data-time="16:00">16:00</button>
                         <button class="time-slot" name="appointment_time" data-time="16:30">16:30</button>
-                        <button class="time-slot" name="appointment_time" data-time="17:00">17:00</button>
+<button class="time-slot" name="appointment_time" data-time="17:00">17:00</button>
                         <button class="time-slot" name="appointment_time" data-time="17:30">17:30</button>
                         <button class="time-slot" name="appointment_time" data-time="18:00">18:00</button>
                         <button class="time-slot" name="appointment_time" data-time="18:30">18:30</button>
@@ -430,7 +430,7 @@
 
                 <div class="form-group mb-3">
                     <span class="form-label">Dịch vụ</span>
-                    <select id="service" name="service_id" class="form-control">
+<select id="service" name="service_id" class="form-control">
                         <option value="">-- Chọn dịch vụ --</option>
                         @foreach ($services as $service)
                             <option value="{{ $service->id }}" data-name="{{ $service->name }}"
@@ -476,7 +476,7 @@
                             ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
                         </option>
                     @endforeach
-                </select>
+</select>
                 <p>Tổng tiền: <strong id="totalPrice">{{ number_format($service->price ?? 0) }} vnđ</strong></p>
 
 
@@ -673,20 +673,21 @@
                 <div class="form-group">
                     <label class="form-label">Khuyến mãi</label>
                     <input type="hidden" id="service_price" value="{{ $service->price ?? 0 }}">
-                    <select name="voucher_id" id="voucher_id" class="form-control">
+                    <select name="voucher_code" id="voucher_id" class="form-control">
                         <option value="">Không sử dụng mã giảm giá</option>
                         @foreach ($vouchers as $voucher)
-                            <option value="{{ $voucher->id }}"
+                            <option value="{{ $voucher->promotion->code }}"
                                 data-discount-type="{{ $voucher->promotion->discount_type }}"
-                                data-discount-value="{{ $voucher->promotion->discount_value }}">
+                                data-discount-value="{{ $voucher->promotion->discount_value }}"
+                                data-voucher-id="{{ $voucher->id }}">
                                 {{ $voucher->promotion->code }}
                                 ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
                             </option>
                         @endforeach
                         @foreach ($publicPromotions as $promotion)
-                            <option value="public_{{ $promotion->id }}"
-                                data-discount-type="{{ $promotion->discount_type }}"
-                                data-discount-value="{{ $promotion->discount_value }}">
+                            <option value="{{ $promotion->code }}" data-discount-type="{{ $promotion->discount_type }}"
+                                data-discount-value="{{ $promotion->discount_value }}"
+                                data-promotion-id="public_{{ $promotion->id }}">
                                 {{ $promotion->code }}
                                 ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
                             </option>
@@ -740,36 +741,36 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công!',
-                text: '{{ session('success') }}',
-                confirmButtonText: 'OK',
-                customClass: {
-                    popup: 'custom-swal-popup',
-                    title: 'custom-swal-title',
-                    confirmButton: 'custom-swal-confirm'
-                }
-            });
-        @endif
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: '{{ session('success') }}',
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title',
+                        confirmButton: 'custom-swal-confirm'
+                    }
+                });
+            @endif
 
-        @if (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
-                text: '{{ session('error') }}',
-                confirmButtonText: 'Thử lại',
-                customClass: {
-                    popup: 'custom-swal-popup',
-                    title: 'custom-swal-title',
-                    confirmButton: 'custom-swal-confirm'
-                }
-            });
-        @endif
-    });
-</script>
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: '{{ session('error') }}',
+                    confirmButtonText: 'Thử lại',
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title',
+                        confirmButton: 'custom-swal-confirm'
+                    }
+                });
+            @endif
+        });
+    </script>
 
 
     <script>
@@ -1158,10 +1159,6 @@
                                     }
                                 });
                             });
-<<<<<<< HEAD
-=======
-
->>>>>>> 51ec286452ffce7e0a408e1292eb65f0e7032359
                     }
                 });
             } else {
