@@ -110,7 +110,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($order->orderItems as $item)
+                    @foreach ($order->items as $item)
                         <tr>
                             <td>{{ $item->productVariant->product->name ?? '-' }}</td>
                             <td>{{ $item->productVariant->volume_id ?? '-' }}</td>
