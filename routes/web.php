@@ -136,7 +136,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
         ->only(['index', 'show']);
 
     Route::get('/dashboard', function () {
-        return view('admin.dashboard', compact('pendingCount'));
+        return view('admin.dashboard');
     })->name('dashboard');
 
     // Hiển thị giao diện danh sách Thợ cắt tóc
