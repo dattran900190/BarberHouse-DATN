@@ -1,128 +1,137 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Thêm ' . ($role == 'user' ? 'Người dùng' : 'Quản trị viên'))
+@section('title', 'Thêm ' . ($role == 'user' ? 'Người dùng' : 'Quản trị viên') . ' mới') 
 
 @section('content')
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('users.index')}}">Quản lý người dùng</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('users.index', ['role' => $role]) }}">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">Thêm mới</a>
+            </li>
+        </ul>
+    </div>
+
     <div class="card">
-        <div class="card-header bg-success text-white">
-            <h3 class="card-title mb-0">Thêm {{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
+        <div class="card-header text-white align-items-center">
+            <div class="card-title">Thêm {{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</div>
         </div>
 
         <div class="card-body">
             <form action="{{ route('users.store', ['role' => $role]) }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
-                <div class="row equal-height-columns">
-                    <div class="col-md-6 col-12 d-flex flex-column">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Họ tên</label>
-                            <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}">
-                            @error('name')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}">
-                            @error('email')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Mật khẩu</label>
-                            <input type="password" class="form-control" id="password" name="password">
-                            @error('password')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}">
-                            @error('phone')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3 flex-fill">
-                            <label for="gender" class="form-label">Giới tính</label>
-                            <select class="form-control" id="gender" name="gender">
-                                <option value="">Chọn giới tính</option>
-                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Nam</option>
-                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Nữ</option>
-                                <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Khác</option>
-                            </select>
-                            @error('gender')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Họ và tên</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}">
+                        @error('name') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-6 col-12 d-flex flex-column">
-                        <div class="mb-3">
-                            <label for="avatar" class="form-label">Ảnh đại diện</label>
-                            <div class="d-flex align-items-center gap-3 flex-wrap">
-                                <input type="file" class="form-control flex-grow-1" id="avatar" name="avatar" accept="image/*">
-                                <div class="avatar-container">
-                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center avatar-placeholder" id="avatar-preview">
-                                        <span class="text-white">N/A</span>
-                                    </div>
-                                </div>
-                            </div>
-                            @error('avatar')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3 flex-fill">
-                            <label for="address" class="form-label">Địa chỉ</label>
-                            <textarea class="form-control" id="address" name="address">{{ old('address') }}</textarea>
-                            @error('address')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="role" class="form-label">Vai trò</label>
-                            <select class="form-control" id="role" name="role">
-                                <option value="">Chọn vai trò</option>
-                                @if ($role == 'user')
-                                    <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
-                                @else
-                                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                    <option value="super_admin" {{ old('role') == 'super_admin' ? 'selected' : '' }}>Super admin</option>
-                                    <option value="admin_branch" {{ old('role') == 'admin_branch' ? 'selected' : '' }}>Admin branch</option>
-                                @endif
-                            </select>
-                            @error('role')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Trạng thái</label>
-                            <select class="form-control" id="status" name="status">
-                                <option value="">Chọn trạng thái</option>
-                                <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                            </select>
-                            @error('status')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}">
+                        @error('email') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
                 </div>
 
-                <div class="d-flex gap-2 mt-3">
-                    <button type="submit" class="btn btn-success">Thêm</button>
-                    <a href="{{ route('users.index', ['role' => $role]) }}" class="btn btn-secondary">Quay lại</a>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="password" class="form-label">Mật khẩu</label>
+                        <input type="password" class="form-control" id="password" name="password">
+                        @error('password') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}">
+                        @error('phone') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="gender" class="form-label">Giới tính</label>
+                        <select class="form-control" id="gender" name="gender">
+                            <option value="">Chọn giới tính</option>
+                            <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Nam</option>
+                            <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Nữ</option>
+                            <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Khác</option>
+                        </select>
+                        @error('gender') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="avatar" class="form-label">Ảnh đại diện</label>
+                        <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
+                        @error('avatar') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="address" class="form-label">Địa chỉ</label>
+                    <textarea class="form-control" id="address" name="address">{{ old('address') }}</textarea>
+                    @error('address') <div class="text-danger">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="role" class="form-label">Vai trò</label>
+                        <select class="form-control" id="role" name="role">
+                            <option value="">Chọn vai trò</option>
+                            @if ($role == 'user')
+                                <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                            @else
+                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="super_admin" {{ old('role') == 'super_admin' ? 'selected' : '' }}>Super Admin</option>
+                                <option value="admin_branch" {{ old('role') == 'admin_branch' ? 'selected' : '' }}>Admin chi nhánh</option>
+                            @endif
+                        </select>
+                        @error('role') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="status" class="form-label">Trạng thái</label>
+                        <select class="form-control" id="status" name="status">
+                            <option value="">Chọn trạng thái</option>
+                            <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Hoạt động</option>
+                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Tạm khóa</option>
+                        </select>
+                        @error('status') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-sm btn-outline-success">
+                    <i class="fas fa-plus"></i> <span class="ms-2">Thêm</span>
+                </button>
+                <a href="{{ route('users.index', ['role' => $role]) }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa fa-arrow-left me-1"></i> Quay lại
+                </a>
             </form>
         </div>
     </div>
 @endsection
+
 
 @section('css')
     <style>

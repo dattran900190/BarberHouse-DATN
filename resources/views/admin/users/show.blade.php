@@ -3,51 +3,84 @@
 @section('title', 'Chi tiết ' . ($role == 'user' ? 'Người dùng' : 'Quản trị viên'))
 
 @section('content')
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('users.index') }}">Quản lý người dùng</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/users?role=' . $role) }}">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">Chi tiết người dùng</a>
+            </li>
+        </ul>
+    </div>
     <div class="card">
-        <div class="card-header bg-info text-white">
+        <div class="card-header text-white align-items-center">
             <h3 class="card-title mb-0">Chi tiết {{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
         </div>
 
         <div class="card-body">
             <div class="row">
-                <div class="col-md-4 text-center">
+                {{-- <div class="col-md-4 text-center">
                     @if ($user->avatar)
                         <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar"
                             class="rounded-circle mb-3 img-fluid avatar-img">
                     @else
-                        <div
-                            class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mb-3 avatar-placeholder">
-                            <span class="text-white">N/A</span>
+                        <div class="rounded-circle avatar-placeholder mb-3">
+                            <span>{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                         </div>
                     @endif
                     <h5>{{ $user->name }}</h5>
-                    <p class="text-muted">{{ $user->role }}</p>
-                </div>
-
-                <div class="col-md-8">
-                    <p><strong>ID:</strong> {{ $user->id }}</p>
-                    <p><strong>Họ tên:</strong> {{ $user->name }}</p>
-                    <p><strong>Email:</strong> {{ $user->email }}</p>
-                    <p><strong>Số điện thoại:</strong> {{ $user->phone ?? 'Không có' }}</p>
-                    <p><strong>Giới tính:</strong> {{ $user->gender ?? 'Không xác định' }}</p>
-                    <p><strong>Địa chỉ:</strong> {{ $user->address ?? 'Không có' }}</p>
-                    <p><strong>Vai trò:</strong> {{ $user->role }}</p>
-                    <p><strong>Trạng thái:</strong>
-                        <span
-                            class="badge 
-                            {{ $user->status == 'active'
-                                ? 'badge-success'
-                                : ($user->status == 'inactive'
-                                    ? 'badge-warning'
-                                    : 'badge-danger') }}">
-                            {{ $user->status }}
-                        </span>
-                    </p>
-                    <p><strong>Số điểm:</strong> {{ $user->points_balance }}</p>
-                    <p><strong>Ngày tạo:</strong> {{ $user->created_at->format('d/m/Y H:i') }}</p>
-                    <p><strong>Ngày cập nhật:</strong> {{ $user->updated_at->format('d/m/Y H:i') }}</p>
-                    <a href="{{ route('users.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
-                        lại</a>
+                    <p class="text-muted">{{ $user->role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</p>
+                </div> --}}
+                <h4>Thông tin người dùng</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>ID:</strong> {{ $user->id }}</p>
+                        <p><strong>Họ tên:</strong> {{ $user->name }}</p>
+                        <p><strong>Email:</strong> {{ $user->email }}</p>
+                        <p><strong>Số điện thoại:</strong> {{ $user->phone ?? 'Không có' }}</p>
+                        <p><strong>Giới tính:</strong> {{ $user->gender ?? 'Không xác định' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Địa chỉ:</strong> {{ $user->address ?? 'Không có' }}</p>
+                        <p><strong>Vai trò:</strong> {{ $user->role }}</p>
+                        <p><strong>Trạng thái:</strong>
+                            <span
+                                class="badge 
+                                {{ $user->status == 'active'
+                                 ? 'badge-success'
+                    : ($user->status == 'inactive'
+                        ? 'badge-warning'
+                        : 'badge-danger') }}">
+                                {{ $user->status == 'active' ? 'Hoạt động' : ($user->status == 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
+                            </span>
+                        </p>
+                        <p><strong>Số điểm:</strong> {{ $user->points_balance }}</p>
+                        <p><strong>Ngày tạo:</strong> {{ $user->created_at->format('d/m/Y H:i') }}</p>
+                        <p><strong>Ngày cập nhật:</strong> {{ $user->updated_at->format('d/m/Y H:i') }}</p>
+                        <div class="text-left mt-auto" style="position: absolute; bottom: 15px; left: 15px;">
+                            <a href="{{ route('users.index', ['page' => request('page', 1)]) }}"
+                                class="btn btn-outline-secondary btn-sm"><i class="fa fa-arrow-left me-1"></i> Quay lại</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,63 +101,51 @@
             background-color: #dc3545;
         }
 
+        .avatar-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .avatar-img:hover {
+            transform: scale(1.05);
+        }
+
         .avatar-placeholder {
-            width: 150px;
-            height: 150px;
-            font-size: 1rem;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            font-size: 1.8rem;
             text-align: center;
-            margin: 0 auto;
-            overflow: hidden;
-            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #6c757d;
+            background-color: #6c63ff;
+            margin: 0 auto;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .avatar-placeholder span {
-            padding: 0 10px;
-            white-space: normal;
-            line-height: 1.5;
+            color: white;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
 
-        .avatar-img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            display: block;
-            margin: 0 auto;
-        }
-
-        .card {
-            width: 100%;
-            max-width: 100%;
-            overflow: hidden;
-        }
-
+        /* Responsive: thu nhỏ avatar trên mobile */
         @media (max-width: 768px) {
 
-            .avatar-placeholder,
-            .avatar-img {
-                width: 100px;
-                height: 100px;
-                font-size: 0.9rem;
+            .avatar-img,
+            .avatar-placeholder {
+                width: 80px;
+                height: 80px;
+                font-size: 1.5rem;
             }
-
-            .avatar-placeholder span {
-                line-height: 1.5;
-            }
-
-            .col-md-4,
-            .col-md-8 {
-                margin-bottom: 1rem;
-            }
-        }
-
-        .col-md-4 {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
     </style>
 @endsection
