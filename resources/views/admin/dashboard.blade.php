@@ -2,10 +2,6 @@
 
 @section('title', 'Dashboard')
 
-{{-- @section('content_header')
-    <h1>Dashboard quản lý salon</h1>
-@stop --}}
-
 @section('content')
     <div aria-live="polite" aria-atomic="true" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"
         id="toastContainer">
