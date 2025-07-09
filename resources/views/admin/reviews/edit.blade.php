@@ -3,9 +3,38 @@
 @section('title', 'Chỉnh sửa trạng thái bình luận')
 
 @section('content')
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Bình luận</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">Quản lý đặt lịch</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/reviews') }}">Bình luận</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/reviews/' . $review->id . '/edit') }}">Sửa bình luận</a>
+            </li>
+        </ul>
+    </div>
+
     <div class="card">
-        <div class="card-header bg-warning text-dark">
-            <h3 class="card-title mb-0">Chỉnh sửa trạng thái bình luận</h3>
+        <div class="card-header text-white align-items-center">
+            <div class="card-title">Sửa trạng thái bình luận</div>
         </div>
 
         <div class="card-body">
@@ -27,9 +56,13 @@
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
-
-                <button type="submit" class="btn btn-warning">Cập nhật</button>
-                <a href="{{ route('reviews.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay lại</a>
+                
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                    <i class="fa fa-edit me-1"></i> Cập nhật
+                </button>
+                <a href="{{ route('reviews.index', ['page' => request('page', 1)]) }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa fa-arrow-left me-1"></i> Quay lại
+                </a>
             </form>
         </div>
     </div>

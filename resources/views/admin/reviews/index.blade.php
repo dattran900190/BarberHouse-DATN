@@ -21,18 +21,41 @@
         </div>
     @endif
 
-    <div class="card">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách bình luận</h3>
-        </div>
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Bình luận</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Quản lý đặt lịch</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/reviews') }}">Bình luận</a>
+            </li>
+        </ul>
+    </div>
 
+    <div class="card">
+        <div class="card-header text-white d-flex justify-content-between align-items-center">
+            <div class="card-title">Danh sách bình luận</div>
+        </div>
         <div class="card-body">
             <form action="#" method="GET" class="mb-3">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên bình luận...">
-                    <div class="input-group-append">
-                        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-                    </div>
+                <div class="position-relative">
+                    <input type="text" name="search" class="form-control pe-5"
+                        placeholder="Tìm kiếm theo tên bình luận...">
+                    <button type="submit" class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
+                        <i class="fa fa-search"></i>
+                    </button>
                 </div>
             </form>
 
@@ -66,23 +89,44 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('reviews.show', ['review' => $review->id, 'page' => request('page', 1)]) }}"
-                                        class="btn btn-info btn-sm action-btn">
-                                        <i class="fas fa-eye"></i> <span>Xem</span>
-                                    </a>
-                                    <a href="{{ route('reviews.edit', ['review' => $review->id, 'page' => request('page', 1)]) }}"
-                                        class="btn btn-warning btn-sm action-btn">
-                                        <i class="fas fa-edit"></i> <span>Sửa</span>
-                                    </a>
-                                    <form action="{{ route('reviews.destroy', $review->id) }}" method="POST"
-                                        style="display:inline-block;"
-                                        onsubmit="return confirm('Bạn có chắc chắn muốn xoá bình luận này không?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm action-btn">
-                                            <i class="fas fa-trash"></i> <span>Xoá</span>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                            id="actionMenu{{ $review->id }}" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
                                         </button>
-                                    </form>
+                                        <ul class="dropdown-menu dropdown-menu-end"
+                                            aria-labelledby="actionMenu{{ $review->id }}">
+                                            <li>
+                                                <a href="{{ route('reviews.show', ['review' => $review->id, 'page' => request('page', 1)]) }}"
+                                                    class="dropdown-item">
+                                                    <i class="fas fa-eye me-2"></i> Xem
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('reviews.edit', ['review' => $review->id, 'page' => request('page', 1)]) }}"
+                                                    class="dropdown-item">
+                                                    <i class="fas fa-edit me-2"></i> Sửa
+                                                </a>
+
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('reviews.destroy', $review->id) }}" method="POST"
+                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xoá bình luận này không?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="dropdown-item text-danger">
+                                                        <i class="fas fa-trash me-2"></i> Xoá
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+
                                 </td>
                             </tr>
                         @endforeach
@@ -94,9 +138,11 @@
                 </tbody>
 
             </table>
+            <div class="d-flex justify-content-center mt-3">
+                {{ $reviews->links() }}
+            </div>
         </div>
     </div>
-    {{ $reviews->links() }}
 @endsection
 
 @section('css')
