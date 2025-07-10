@@ -10,44 +10,52 @@
             <div class="card wallet-page mt-4 shadow-sm">
                 <div class="card-header border-0 d-flex justify-content-between align-items-center">
                     <h3 class="mb-0 fw-bold">Lịch sử yêu cầu hoàn tiền</h3>
-                    <a href="{{ route('client.wallet') }}" class="btn btn-success btn-sm">Yêu cầu hoàn tiền</a>
                 </div>
                 <div class="card-body">
                     {{-- Bộ lọc tìm kiếm --}}
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <form action="" method="GET" class="d-flex w-50">
+                        <form action="{{ route('client.detailWallet') }}" method="GET" class="d-flex w-50">
                             <input type="text" name="search" class="form-control me-2"
-                                placeholder="Tìm kiếm theo mã đơn hàng" value="{{ request('search') }}">
+                                placeholder="Tìm kiếm theo mã đơn hàng hoặc mã đặt lịch" value="{{ request('search') }}">
                             <button type="submit" class="btn btn-primary">Tìm</button>
                         </form>
 
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
                                 id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                Lọc theo trạng thái
+                                {{ request('status', 'Lọc theo trạng thái') ?: 'Lọc theo trạng thái' }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
-                                <li><a class="dropdown-item" href="?status=pending">Chờ duyệt</a></li>
-                                <li><a class="dropdown-item" href="?status=processing">Đang xử lý</a></li>
-                                <li><a class="dropdown-item" href="?status=refunded">Đã hoàn tiền</a></li>
-                                <li><a class="dropdown-item" href="?status=rejected">Từ chối</a></li>
+                                <li><a class="dropdown-item" href="{{ route('client.detailWallet', array_merge(request()->except('status'), ['status' => ''])) }}">Tất cả</a></li>
+                                <li><a class="dropdown-item" href="{{ route('client.detailWallet', array_merge(request()->except('status'), ['status' => 'pending'])) }}">Chờ duyệt</a></li>
+                                <li><a class="dropdown-item" href="{{ route('client.detailWallet', array_merge(request()->except('status'), ['status' => 'processing'])) }}">Đang xử lý</a></li>
+                                <li><a class="dropdown-item" href="{{ route('client.detailWallet', array_merge(request()->except('status'), ['status' => 'refunded'])) }}">Đã hoàn tiền</a></li>
+                                <li><a class="dropdown-item" href="{{ route('client.detailWallet', array_merge(request()->except('status'), ['status' => 'rejected'])) }}">Từ chối</a></li>
                             </ul>
                         </div>
                     </div>
 
-                    {{-- Danh sách yêu cầu hoàn tiền --}}
+                    {{-- Danh sách yêu cầu --}}
                     @forelse ($refunds as $refund)
                         <div class="refund-item mb-3 p-3 rounded-3 border">
                             <div class="row align-items-center">
                                 <div class="col-md-7">
-                                    <span class="fw-bold">Mã đơn hàng: {{ $refund->order->order_code ?? 'N/A' }}</span><br>
+                                    @if ($refund->order_id)
+                                        <span class="fw-bold">Mã đơn hàng: {{ $refund->order->order_code ?? 'N/A' }}</span><br>
+                                        <span class="text-muted">Tổng tiền: {{ number_format($refund->order->total_money ?? 0, 0, ',', '.') }} VNĐ</span><br>
+                                    @elseif ($refund->appointment_id)
+                                        <span class="fw-bold">Mã đặt lịch: {{ $refund->appointment->appointment_code ?? 'N/A' }}</span><br>
+                                        <span class="text-muted">Tổng tiền: {{ number_format($refund->appointment->total_amount ?? 0, 0, ',', '.') }} VNĐ</span><br>
+                                    @endif
+                                    
                                     <span class="text-muted">Lý do: {{ $refund->reason }}</span><br>
-                                    <span class="text-muted">Số tiền hoàn: {{ number_format($refund->refund_amount) }}
-                                        VNĐ</span><br>
+                                    <span class="text-muted">Số tiền hoàn: {{ number_format($refund->refund_amount) }} VNĐ</span><br>
                                     <span class="text-muted">Ngày yêu cầu: {{ $refund->created_at->format('d/m/Y') }}</span>
-                                    @if ($refund->refund_status === 'refunded')
-                                        <br><span class="text-muted">Ngày hoàn tiền:
-                                            {{ $refund->updated_at->format('d/m/Y') }}</span>
+                                    @if ($refund->refund_status === 'refunded' && $refund->refunded_at)
+                                        <br><span class="text-muted">Ngày hoàn tiền: {{ $refund->refunded_at->format('d/m/Y') }}</span>
+                                    @endif
+                                    @if ($refund->refund_status === 'rejected' && $refund->rejection_reason)
+                                        <br><span class="text-muted">Lý do từ chối: {{ $refund->rejection_reason }}</span>
                                     @endif
                                 </div>
                                 <div class="col-md-2 text-center">
@@ -63,41 +71,44 @@
                                             'class' => 'text-muted',
                                         ];
                                     @endphp
-
                                     <span class="status-label {{ $status['class'] }}">
                                         {{ $status['label'] }}
                                     </span>
                                 </div>
                                 <div class="col-md-3 text-center">
-                                    <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#detail-{{ $refund->id }}" aria-expanded="false"
+                                    <button class="btn btn-outline-dark btn-sm" type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#detail-{{ $refund->id }}"
+                                        aria-expanded="false"
                                         aria-controls="detail-{{ $refund->id }}">
                                         Xem chi tiết
                                     </button>
                                 </div>
                             </div>
 
-                            {{-- Chi tiết ẩn/hiện --}}
+                            {{-- Chi tiết --}}
                             <div class="collapse mt-3" id="detail-{{ $refund->id }}">
                                 <div class="card card-body bg-light">
-                                    <p><strong>Ngân hàng:</strong> {{ $refund->bank_name }} -
-                                        {{ $refund->bank_account_number }} ({{ $refund->bank_account_name }})</p>
-                                    <p><strong>Lý do:</strong> {{ $refund->reason }}</p>
+                                    <p><strong>Thông tin ngân hàng:</strong>
+                                        {{ $refund->bank_name }} - {{ $refund->bank_account_number }} ({{ $refund->bank_account_name }})
+                                    </p>
+                                    <p><strong>Lý do yêu cầu:</strong> {{ $refund->reason }}</p>
+                                    @if ($refund->refund_status === 'rejected' && $refund->rejection_reason)
+                                        <p><strong>Lý do từ chối:</strong> {{ $refund->rejection_reason }}</p>
+                                    @endif
                                     <p><strong>Số tiền hoàn:</strong>
-                                        {{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ</p>
+                                        {{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ
+                                    </p>
                                     <p><strong>Trạng thái:</strong> {{ $status['label'] }}</p>
                                     <p><strong>Ngày yêu cầu:</strong> {{ $refund->created_at->format('d/m/Y H:i') }}</p>
                                     @if ($refund->refund_status === 'refunded' && $refund->refunded_at)
-                                        <p><strong>Ngày hoàn tiền:</strong> {{ $refund->refunded_at->format('d/m/Y H:i') }}
-                                        </p>
+                                        <p><strong>Ngày hoàn tiền:</strong> {{ $refund->refunded_at->format('d/m/Y H:i') }}</p>
                                     @endif
                                 </div>
                             </div>
                         </div>
                     @empty
-                        <div class="alert alert-info">
-                            Không có yêu cầu hoàn tiền nào.
-                        </div>
+                        <div class="alert alert-info">Không có yêu cầu hoàn tiền nào.</div>
                     @endforelse
 
                     {{-- Phân trang --}}
@@ -113,37 +124,21 @@
         #mainNav {
             background-color: #000;
         }
-
         .status-processing {
             color: orange;
             font-weight: bold;
         }
-
         .status-delivered {
             color: green;
             font-weight: bold;
         }
-
         .status-cancelled {
             color: red;
             font-weight: bold;
         }
-
         .status-label::before {
             content: none;
             margin-right: 5px;
-        }
-
-        .status-processing::before {
-            color: orange;
-        }
-
-        .status-delivered::before {
-            color: green;
-        }
-
-        .status-cancelled::before {
-            color: red;
         }
     </style>
 @endsection
