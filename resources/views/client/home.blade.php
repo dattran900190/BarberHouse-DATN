@@ -39,7 +39,7 @@
                             </div>
                             <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
                             <p><a
-                                    href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->content), 50) }}</a>
+                                    href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->short_description), 50) }}</a>
                             </p>
                         </div>
                     @endforeach
@@ -57,7 +57,7 @@
                         </div>
                         <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
                         <p><a
-                                href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->content), 50) }}</a>
+                                href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->short_description), 50) }}</a>
                         </p>
                     </div>
                 @endforeach
