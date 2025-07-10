@@ -3,8 +3,6 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    
-
     <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
         <div>
             <h3 class="fw-bold mb-3">Bảng điều khiển</h3>
@@ -16,9 +14,7 @@
         </div>
     </div>
 
-
     <div class="row">
-        {{-- Visitors --}}
         <div class="col-sm-6 col-md-3 mb-3">
             <div class="card card-stats card-round">
                 <div class="card-body">
@@ -31,14 +27,13 @@
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
                                 <p class="card-category">Khách truy cập</p>
-                                <h4 class="card-title">1.294</h4>
+                                <h4 class="card-title">{{ number_format($totalVisitors) }}</h4>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {{-- Subscribers --}}
         <div class="col-sm-6 col-md-3 mb-3">
             <div class="card card-stats card-round">
                 <div class="card-body">
@@ -51,14 +46,13 @@
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
                                 <p class="card-category">Đăng ký</p>
-                                <h4 class="card-title">1.303</h4>
+                                <h4 class="card-title">{{ number_format($totalRegistrations) }}</h4>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {{-- Đơn hàng (dịch vụ) --}}
         <div class="col-sm-6 col-md-3 mb-3">
             <div class="card card-stats card-round">
                 <div class="card-body">
@@ -71,14 +65,13 @@
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
                                 <p class="card-category">Doanh thu dịch vụ</p>
-                                <h4 class="card-title">₫1.345.000</h4>
+                                <h4 class="card-title">₫{{ number_format($serviceRevenue) }}</h4>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {{-- Đơn hàng (sản phẩm) --}}
         <div class="col-sm-6 col-md-3 mb-3">
             <div class="card card-stats card-round">
                 <div class="card-body">
@@ -91,7 +84,7 @@
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
                                 <p class="card-category">Doanh thu sản phẩm</p>
-                                <h4 class="card-title">₫576.000</h4>
+                                <h4 class="card-title">₫{{ number_format($productRevenue) }}</h4>
                             </div>
                         </div>
                     </div>
@@ -100,7 +93,6 @@
         </div>
     </div>
 
-    <!-- Row 2: Biểu đồ thống kê -->
     <div class="row align-items-stretch">
         <div class="col-md-8 mb-3">
             <div class="card card-round h-100 d-flex flex-column">
@@ -120,7 +112,6 @@
                 <div class="card-body">
                     <div class="chart-container" style="min-height: 375px;">
                         <canvas id="statisticsChart"></canvas>
-                        
                     </div>
                     <div id="myChartLegend" class="mt-2 text-center">[Chart Legend]</div>
                 </div>
@@ -145,31 +136,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Trịnh Văn Nam</td>
-                                <td class="text-center">27</td>
-                                <td class="text-center">4.8 ⭐</td>
-                            </tr>
-                            <tr>
-                                <td>Ngô Thị Mai</td>
-                                <td class="text-center">22</td>
-                                <td class="text-center">4.6 ⭐</td>
-                            </tr>
-                            <tr>
-                                <td>Vũ Thành Công</td>
-                                <td class="text-center">19</td>
-                                <td class="text-center">4.9 ⭐</td>
-                            </tr>
-                            <tr>
-                                <td>Vũ Thành Công</td>
-                                <td class="text-center">19</td>
-                                <td class="text-center">4.9 ⭐</td>
-                            </tr>
-                            <tr>
-                                <td>Vũ Thành Công</td>
-                                <td class="text-center">19</td>
-                                <td class="text-center">4.9 ⭐</td>
-                            </tr>
+                            @foreach ($barberStats as $barber)
+                                <tr>
+                                    <td>{{ $barber['name'] }}</td>
+                                    <td class="text-center">{{ $barber['cut_count'] }}</td>
+                                    <td class="text-center">{{ $barber['avg_rating'] }} ⭐</td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -197,11 +170,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-category">06/07/2025</div>
+                <div class="card-category">{{ now()->format('d/m/Y') }}</div>
             </div>
             <div class="card-body pb-0">
                 <div class="mb-4 mt-2">
-                    <h1>$4,578.58</h1>
+                    <h1>₫{{ number_format($todayRevenue, 2) }}</h1>
                     <p class="text-muted">Tổng doanh thu hôm nay</p>
                 </div>
                 <div class="pull-in">
@@ -219,18 +192,14 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Nguyễn Văn A - 10:00 AM
-                            <span class="badge bg-success">06/07</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Trần Thị B - 11:30 AM
-                            <span class="badge bg-success">06/07</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Phạm Văn C - 01:00 PM
-                            <span class="badge bg-success">06/07</span>
-                        </li>
+                        @foreach ($upcomingAppointments as $appointment)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ $appointment->name }} -
+                                {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i') }}
+                                <span
+                                    class="badge bg-success">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m') }}</span>
+                            </li>
+                        @endforeach
                     </ul>
                 </div>
             </div>
@@ -243,25 +212,20 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Sáp vuốt tóc Volcanic Clay
-                            <span class="badge bg-primary rounded-pill">52 sp</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Dầu gội đầu Herbal
-                            <span class="badge bg-primary rounded-pill">39 sp</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Gel tạo kiểu Gatsby
-                            <span class="badge bg-primary rounded-pill">35 sp</span>
-                        </li>
+                        @foreach ($topProducts as $item)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ $item->productVariant->product->name ?? 'Không xác định' }}
+                                <span class="badge bg-primary rounded-pill">{{ $item->total_sold }} sp</span>
+                            </li>
+                        @endforeach
+
+
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Row 3: Bảng giao dịch -->
     <div class="row">
         <div class="col-md-12 mb-3">
             <div class="card card-round">
@@ -287,21 +251,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @for ($i = 0; $i < 5; $i++)
+                                @foreach ($latestTransactions as $order)
                                     <tr>
                                         <th scope="row">
                                             <button class="btn btn-icon btn-round btn-success btn-sm me-2">
                                                 <i class="fa fa-check"></i>
                                             </button>
-                                            Giao dịch #1023{{ $i }}
+                                            Giao dịch #{{ $order->order_code ?? $order->id }}
                                         </th>
-                                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                        <td class="text-end">₫250.000</td>
                                         <td class="text-end">
-                                            <span class="badge badge-success">Hoàn thành</span>
+                                            {{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y, H:i') }}</td>
+                                        <td class="text-end">₫{{ number_format($order->total_money) }}</td>
+                                        <td class="text-end">
+                                            <span class="badge badge-success">{{ ucfirst($order->status) }}</span>
                                         </td>
                                     </tr>
-                                @endfor
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -309,14 +274,10 @@
             </div>
         </div>
     </div>
-
-@stop
+@endsection
 
 @section('js')
-    {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
-
-@stop
+@endsection
 
 @section('css')
-   
 @endsection
