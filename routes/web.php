@@ -55,8 +55,9 @@ Route::put('/gio-hang/update/{cartItem}', [CartController::class, 'updateQuantit
 Route::delete('/gio-hang/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
 Route::put('/gio-hang/update-variant/{cartItem}', [CartController::class, 'updateVariant'])->name('cart.update.variant');
 
-Route::get('/mua-ngay/checkout', [CartController::class, 'showBuyNowCheckout'])->name('cart.buyNow.checkout')->middleware('auth');
-Route::post('/mua-ngay', [CartController::class, 'buyNow'])->name('cart.buyNow');
+
+Route::match(['get', 'post'], '/mua-ngay', [CartController::class, 'buyNow'])->name('cart.buyNow');
+
 //checkout
 
 Route::get('/thanh-toan', [CartController::class, 'checkout'])->name('cart.checkout');

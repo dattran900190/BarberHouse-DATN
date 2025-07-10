@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PromotionRequest;
 use App\Models\Promotion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PromotionController extends Controller
 {
@@ -27,11 +28,19 @@ class PromotionController extends Controller
 
     public function create()
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('promotions.index')->with('error', 'Bạn không có quyền tạo mã giảm giá.');
+        }
+
         return view('admin.promotions.create');
     }
 
     public function store(PromotionRequest $request)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('promotions.index')->with('error', 'Bạn không có quyền thêm mã giảm giá.');
+        }
+
         $data = $request->validated();
         $data['is_active'] = $request->has('is_active') ? (bool) $request->is_active : false;
 
@@ -42,11 +51,18 @@ class PromotionController extends Controller
 
     public function edit(Promotion $promotion)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('promotions.index')->with('error', 'Bạn không có quyền chỉnh sửa mã giảm giá.');
+        }
         return view('admin.promotions.edit', compact('promotion'));
     }
 
     public function update(PromotionRequest $request, Promotion $promotion)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('promotions.index')->with('error', 'Bạn không có quyền cập nhật mã giảm giá.');
+        }
+
         $currentPage = $request->input('page', 1);
         $data = $request->validated();
         $data['is_active'] = $request->has('is_active') ? (bool) $request->is_active : false;
@@ -58,6 +74,10 @@ class PromotionController extends Controller
 
     public function destroy(Promotion $promotion)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('promotions.index')->with('error', 'Bạn không có quyền xóa mã giảm giá.');
+        }
+
         $promotion->delete();
         return redirect()->route('promotions.index')->with('success', 'Mã giảm giá đã được xóa.');
     }
