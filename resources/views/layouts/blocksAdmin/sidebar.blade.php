@@ -51,7 +51,11 @@
                         <ul class="nav nav-collapse">
                             <li>
                                 <a href="{{ asset('admin/appointments') }}">
-                                    <span class="sub-item">Đặt lịch</span>
+                                    <span class="sub-item">Đặt lịch</span> <span id="pending-appointment-count"
+                                        class="badge badge-danger"
+                                        style="{{ $pendingCount > 0 ? '' : 'display: none;' }}">
+                                        {{ $pendingCount }}
+                                    </span>
                                 </a>
                             </li>
                             <li>
@@ -164,7 +168,7 @@
                             </li>
                             <li>
                                 <a href="{{ asset('admin/users') }}">
-                                    <span class="sub-item">Nười dùng</span>
+                                    <span class="sub-item">Người dùng</span>
                                 </a>
                             </li>
                             <li>

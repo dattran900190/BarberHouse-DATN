@@ -65,77 +65,78 @@
                 </div>
             </form>
 
- <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="thead-light">
-                    <tr>
-                        <th>Stt</th>
-                        <th>Tên dịch vụ</th>
-                        <th>Mô tả</th>
-                        <th>Giá</th>
-                        <th>Thời gian</th>
-                        <th>Combo?</th>
-                        <th class="text-center">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if ($services->count())
-                        @foreach ($services as $index => $service)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $service->name }}</td>
-                                <td>{{ $service->description ? $service->description : 'Không có mô tả' }}</td>
-                                <td>{{ number_format($service->price, 0, ',', '.') }}đ</td>
-                                <td>{{ $service->duration }} phút</td>
-                                <td>{{ $service->is_combo ? 'Có' : 'Không' }}</td>
-                                <td class="text-center">
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-secondary" type="button"
-                                            id="actionMenu{{ $service->id }}" data-bs-toggle="dropdown"
-                                            aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end"
-                                            aria-labelledby="actionMenu{{ $service->id }}">
-                                            <li>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('services.show', ['service' => $service->id, 'page' => request('page', 1)]) }}">
-                                                    <i class="fas fa-eye me-2"></i> Xem
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('services.edit', ['service' => $service->id, 'page' => request('page', 1)]) }}">
-                                                    <i class="fas fa-edit me-2"></i> Sửa
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                            <li>
-                                                <form action="{{ route('services.destroy', $service->id) }}" method="POST"
-                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xoá dịch vụ này không?');">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" class="dropdown-item text-danger">
-                                                        <i class="fas fa-trash me-2"></i> Xoá
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-
-                            </tr>
-                        @endforeach
-                    @else
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-light">
                         <tr>
-                            <td colspan="7" class="text-center text-muted">Không tìm thấy dịch vụ nào phù hợp.</td>
+                            <th>Stt</th>
+                            <th>Tên dịch vụ</th>
+                            <th>Mô tả</th>
+                            <th>Giá</th>
+                            <th>Thời gian</th>
+                            <th>Combo?</th>
+                            <th class="text-center">Hành động</th>
                         </tr>
-                    @endif
-                </tbody>
+                    </thead>
+                    <tbody>
+                        @if ($services->count())
+                            @foreach ($services as $index => $service)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $service->name }}</td>
+                                    <td>{{ $service->description ? $service->description : 'Không có mô tả' }}</td>
+                                    <td>{{ number_format($service->price, 0, ',', '.') }}đ</td>
+                                    <td>{{ $service->duration }} phút</td>
+                                    <td>{{ $service->is_combo ? 'Có' : 'Không' }}</td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                id="actionMenu{{ $service->id }}" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end"
+                                                aria-labelledby="actionMenu{{ $service->id }}">
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('services.show', ['service' => $service->id, 'page' => request('page', 1)]) }}">
+                                                        <i class="fas fa-eye me-2"></i> Xem
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('services.edit', ['service' => $service->id, 'page' => request('page', 1)]) }}">
+                                                        <i class="fas fa-edit me-2"></i> Sửa
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <form action="{{ route('services.destroy', $service->id) }}"
+                                                        method="POST"
+                                                        onsubmit="return confirm('Bạn có chắc chắn muốn xoá dịch vụ này không?');">
+                                                        @csrf @method('DELETE')
+                                                        <button type="submit" class="dropdown-item text-danger">
+                                                            <i class="fas fa-trash me-2"></i> Xoá
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
 
-            </table>
- </div>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">Không tìm thấy dịch vụ nào phù hợp.</td>
+                            </tr>
+                        @endif
+                    </tbody>
+
+                </table>
+            </div>
             <div class="d-flex justify-content-center mt-3">
                 {{ $services->links() }}
             </div>

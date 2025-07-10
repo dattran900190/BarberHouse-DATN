@@ -202,7 +202,6 @@ class AppointmentController extends Controller
             'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.'
         ]);
     }
-
     public function store(BookingRequest $request)
     {
         try {

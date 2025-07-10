@@ -25,7 +25,7 @@
                      </form>
                  </ul>
              </li>
-             <li class="nav-item topbar-icon dropdown hidden-caret">
+             {{-- <li class="nav-item topbar-icon dropdown hidden-caret">
                  <a class="nav-link dropdown-toggle" href="#" id="messageDropdown" role="button"
                      data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                      <i class="fa fa-envelope"></i>
@@ -94,17 +94,21 @@
                          </a>
                      </li>
                  </ul>
-             </li>
+             </li> --}}
              <li class="nav-item topbar-icon dropdown hidden-caret">
                  <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button"
                      data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                      <i class="fa fa-bell"></i>
-                     <span class="notification">4</span>
+                     <span id="pending-appointment-count"  class="notification">{{ $pendingCount }}</span>
+                      {{-- <span id="pending-appointment-count" class="badge badge-danger"
+                        style="{{ $pendingCount > 0 ? '' : 'display: none;' }}">
+                        {{ $pendingCount }}
+                    </span> --}}
                  </a>
                  <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
                      <li>
                          <div class="dropdown-title">
-                             You have 4 new notification
+                             Bạn có {{ $pendingCount }} thông báo mới
                          </div>
                      </li>
                      <li>
@@ -161,7 +165,7 @@
                      </li>
                  </ul>
              </li>
-             <li class="nav-item topbar-icon dropdown hidden-caret">
+             {{-- <li class="nav-item topbar-icon dropdown hidden-caret">
                  <a class="nav-link" data-bs-toggle="dropdown" href="#" aria-expanded="false">
                      <i class="fas fa-layer-group"></i>
                  </a>
@@ -225,7 +229,7 @@
                          </div>
                      </div>
                  </div>
-             </li>
+             </li> --}}
 
              <li class="nav-item topbar-user dropdown hidden-caret">
                  <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#"

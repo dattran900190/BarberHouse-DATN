@@ -136,10 +136,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
         ->only(['index', 'show']);
 
     Route::get('/dashboard', function () {
-        // Lấy số lượng lịch đang chờ
-        $pendingCount = Appointment::where('status', 'pending')->count();
-
-        return view('admin.dashboard', compact('pendingCount'));
+        return view('admin.dashboard');
     })->name('dashboard');
 
     // Hiển thị giao diện danh sách Thợ cắt tóc

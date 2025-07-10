@@ -33,6 +33,6 @@ class Order extends Model
 
     public function refundRequests()
     {
-        return $this->hasMany(RefundRequest::class);
+        return $this->hasMany(RefundRequest::class, 'order_id');
     }
 }

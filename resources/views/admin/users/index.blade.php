@@ -1,13 +1,13 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Quản lý Người dùng & Quản trị viên')
+@section('title', 'Quản lý người dùng')
 
 @section('content')
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+                <span aria-hidden="true">×</span>
             </button>
         </div>
     @endif
@@ -16,16 +16,35 @@
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ session('error') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+                <span aria-hidden="true">×</span>
             </button>
         </div>
     @endif
 
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-gradient-primary text-white">
-            <h3 class="card-title mb-0">Quản lý Người dùng & Quản trị viên</h3>
-        </div>
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('users.index') }}">Quản lý người dùng</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/users?role=' . $role) }}">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</a>
+            </li>
+        </ul>
+    </div>
 
+    <div class="card shadow-sm border-0">
         <div class="card-body p-4">
             <!-- Tabs -->
             <ul class="nav nav-tabs custom-tabs" id="userTabs" role="tablist">
@@ -51,8 +70,9 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="mb-0">Danh sách Người dùng</h4>
                         <a href="{{ route('users.create', ['role' => 'user']) }}"
-                            class="btn btn-success btn-sm btn-icon-toggle">
-                            <i class="fas fa-plus mr-1"></i> Thêm người dùng
+                            class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
+                            <i class="fas fa-plus"></i>
+                            <span class="ms-2">Thêm người dùng</span>
                         </a>
                     </div>
 
@@ -62,8 +82,9 @@
                             <input type="text" name="search" class="form-control rounded-left"
                                 placeholder="Tìm kiếm theo tên hoặc email..." value="{{ $role == 'user' ? $search : '' }}">
                             <div class="input-group-append">
-                                <button class="btn btn-primary rounded-right" type="submit">
-                                    <i class="fas fa-search mr-1"></i> Tìm
+                                <button type="submit"
+                                    class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
+                                    <i class="fa fa-search"></i>
                                 </button>
                             </div>
                         </div>
@@ -93,56 +114,70 @@
                                             <td class="text-center">
                                                 @if ($user->avatar)
                                                     <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar"
-                                                        class="rounded-circle img-fluid avatar-img">
+                                                        class="img-fluid avatar-img"
+                                                        style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
                                                 @else
-                                                    <div
-                                                        class="rounded-circle bg-secondary d-flex align-items-center justify-content-center avatar-placeholder">
-                                                        <span class="text-white">N/A</span>
+                                                    <div class="bg-secondary d-flex align-items-center justify-content-center avatar-placeholder"
+                                                        style="width: 40px; height: 40px; border-radius: 5px;">
+                                                        <span class="text-white" style="font-size: 0.8rem;">N/A</span>
                                                     </div>
                                                 @endif
                                             </td>
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
                                             <td>{{ $user->phone ?? 'Không có' }}</td>
-                                            <td>{{ $user->gender ?? 'Không xác định' }}</td>
+                                            <td>{{ $user->gender == 'male' ? 'Nam' : ($user->gender == 'female' ? 'Nữ' : 'Khác') }}
+                                            </td>
                                             <td>{{ $user->address ?? 'Không có' }}</td>
-                                            <td>{{ $user->role }}</td>
+                                            <td>{{ $user->role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</td>
                                             <td>
                                                 <span
-                                                    class="badge badge-pill
-                                                {{ $user->status == 'active'
-                                                    ? 'badge-success'
-                                                    : ($user->status == 'inactive'
-                                                        ? 'badge-warning'
-                                                        : 'badge-danger') }}">
+                                                    class="badge badge-pill badge-status-fixed
+                                                    {{ $user->status == 'active'
+                                                        ? 'badge-success'
+                                                        : ($user->status == 'inactive'
+                                                            ? 'badge-warning'
+                                                            : 'badge-danger') }}">
                                                     {{ $user->status }}
                                                 </span>
                                             </td>
                                             <td class="text-center">
                                                 <div class="d-inline-flex gap-1">
-                                                    <a href="{{ route('users.show', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}"
-                                                        class="btn btn-info btn-sm d-inline-flex align-items-center">
-                                                        <i class="fas fa-eye"></i> <span>Xem</span>
-                                                    </a>
-                                                    <a href="{{ route('users.edit', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}"
-                                                        class="btn btn-warning btn-sm d-inline-flex align-items-center">
-                                                        <i class="fas fa-edit"></i> <span>Sửa</span>
-                                                    </a>
-                                                    <button type="button"
-                                                        class="btn btn-secondary btn-sm toggle-status-btn d-inline-flex align-items-center"
-                                                        data-id="{{ $user->id }}" data-status="{{ $user->status }}"
-                                                        data-role="{{ $user->role }}">
-                                                        <i class="fas fa-ban mr-1"></i>
-                                                        <span>{{ $user->status === 'active' ? 'Chặn' : 'Bỏ chặn' }}</span>
-                                                    </button>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                            id="actionMenu{{ $user->id }}" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu"
+                                                            aria-labelledby="dropdownMenuButton{{ $user->id }}">
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('users.edit', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
+                                                                <i class="fas fa-edit"></i> Sửa
+                                                            </a>
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('users.show', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
+                                                                <i class="fas fa-eye"></i> Xem
+                                                            </a>
+                                                            <div class="dropdown-divider"></div>
+                                                            <button type="button"
+                                                                class="dropdown-item toggle-status-btn d-inline-flex align-items-center"
+                                                                data-id="{{ $user->id }}"
+                                                                data-status="{{ $user->status }}"
+                                                                data-role="{{ $user->role }}">
+                                                                <i class="fas fa-ban mr-1"></i>
+                                                                <span>{{ $user->status === 'active' ? 'Chặn' : 'Bỏ chặn' }}</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </td>
                                         </tr>
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted">Không tìm thấy người dùng nào phù
-                                            hợp.</td>
+                                        <td colspan="10" class="text-center text-muted">Không tìm thấy người dùng nào
+                                            phù hợp.</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -160,8 +195,9 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="mb-0">Danh sách Quản trị viên</h4>
                         <a href="{{ route('users.create', ['role' => 'admin']) }}"
-                            class="btn btn-success btn-sm btn-icon-toggle">
-                            <i class="fas fa-plus mr-1"></i> Thêm quản trị viên
+                            class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
+                            <i class="fas fa-plus"></i>
+                            <span class="ms-2">Thêm quản trị viên</span>
                         </a>
                     </div>
 
@@ -172,8 +208,9 @@
                                 placeholder="Tìm kiếm theo tên hoặc email..."
                                 value="{{ $role == 'admin' ? $search : '' }}">
                             <div class="input-group-append">
-                                <button class="btn btn-primary rounded-right" type="submit">
-                                    <i class="fas fa-search mr-1"></i> Tìm
+                                <button type="submit"
+                                    class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
+                                    <i class="fa fa-search"></i>
                                 </button>
                             </div>
                         </div>
@@ -202,23 +239,25 @@
                                         <td class="text-center">
                                             @if ($admin->avatar)
                                                 <img src="{{ asset('storage/' . $admin->avatar) }}" alt="Avatar"
-                                                    class="rounded-circle img-fluid avatar-img">
+                                                    class="img-fluid avatar-img"
+                                                    style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
                                             @else
-                                                <div
-                                                    class="rounded-circle bg-secondary d-flex align-items-center justify-content-center avatar-placeholder">
-                                                    <span class="text-white">N/A</span>
+                                                <div class="bg-secondary d-flex align-items-center justify-content-center avatar-placeholder"
+                                                    style="width: 40px; height: 40px; border-radius: 5px;">
+                                                    <span class="text-white" style="font-size: 0.8rem;">N/A</span>
                                                 </div>
                                             @endif
                                         </td>
                                         <td>{{ $admin->name }}</td>
                                         <td>{{ $admin->email }}</td>
                                         <td>{{ $admin->phone ?? 'Không có' }}</td>
-                                        <td>{{ $admin->gender ?? 'Không xác định' }}</td>
+                                        <td>{{ $admin->gender == 'male' ? 'Nam' : ($admin->gender == 'female' ? 'Nữ' : 'Khác') }}
+                                        </td>
                                         <td>{{ $admin->address ?? 'Không có' }}</td>
-                                        <td>{{ $admin->role }}</td>
+                                        <td>{{ $admin->role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</td>
                                         <td>
                                             <span
-                                                class="badge badge-pill
+                                                class="badge badge-pill badge-status-fixed
                                                 {{ $admin->status == 'active'
                                                     ? 'badge-success'
                                                     : ($admin->status == 'inactive'
@@ -229,26 +268,24 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center flex-wrap btn-group-sm">
-                                                <a href="{{ route('users.show', ['user' => $admin->id, 'role' => 'admin']) }}"
-                                                    class="btn btn-info btn-sm d-inline-flex align-items-center">
-                                                    <i class="fas fa-eye"></i> <span>Xem</span>
-                                                </a>
-                                                <a href="{{ route('users.edit', ['user' => $admin->id, 'role' => 'admin']) }}"
-                                                    class="btn btn-warning btn-sm d-inline-flex align-items-center">
-                                                    <i class="fas fa-edit"></i> <span>Sửa</span>
-                                                </a>
-                                                {{-- <form
-                                                    action="{{ route('users.destroy', ['user' => $admin->id, 'role' => 'admin']) }}"
-                                                    method="POST" class="d-inline m-0"
-                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xoá quản trị viên này không?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="btn btn-danger btn-sm d-inline-flex align-items-center">
-                                                        <i class="fas fa-trash"></i> <span>Xoá</span>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                        id="actionMenu{{ $admin->id }}" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
                                                     </button>
-                                                </form> --}}
-                                            </div>
+                                                    <div class="dropdown-menu"
+                                                        aria-labelledby="dropdownMenuButton{{ $admin->id }}">
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('users.edit', ['user' => $admin->id, 'role' => 'admin', 'page' => request('page', 1)]) }}">
+                                                            <i class="fas fa-edit"></i> Sửa
+                                                        </a>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('users.show', ['user' => $admin->id, 'role' => 'admin', 'page' => request('page', 1)]) }}">
+                                                            <i class="fas fa-eye"></i> Xem
+                                                        </a>
+                                                    </div>
+                                                </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -273,6 +310,20 @@
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/admin/user.css') }}">
     <style>
+        img.avatar-img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .avatar-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+
         .badge-status-fixed {
             display: inline-block;
             min-width: 80px;
@@ -318,7 +369,6 @@
                     const btn = this;
 
                     fetch(`/admin/users/${userId}/toggle-status`, {
-
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': document.querySelector(
@@ -332,13 +382,13 @@
                             return res.json();
                         })
                         .then(data => {
-                            // Cập nhật text trong badge
                             const row = btn.closest('tr');
                             const badge = row.querySelector('.badge');
-                            badge.textContent = data.status;
-                            badge.className = 'badge badge-pill ' + data.badge_class;
 
-                            // Cập nhật text của nút
+                            badge.textContent = data.status;
+                            badge.className = 'badge badge-pill badge-status-fixed ' + data
+                                .badge_class;
+
                             btn.querySelector('span').textContent = data.button_label;
                             btn.dataset.status = data.status;
                         })
@@ -346,20 +396,8 @@
                             console.error('Lỗi cập nhật trạng thái:', err);
                             alert('Cập nhật thất bại. Vui lòng thử lại.');
                         });
-                    const badge = row.querySelector('.badge');
-
-                    // Xóa các màu cũ
-                    badge.classList.remove('badge-success', 'badge-warning', 'badge-danger');
-
-                    // Thêm màu mới
-                    badge.classList.add(data.badge_class);
-
-                    // Cập nhật nội dung
-                    badge.textContent = data.status;
                 });
             });
         });
     </script>
-
-
 @endsection
