@@ -64,7 +64,7 @@ class CartController extends Controller
         if ($request->ajax()) {
             return response()->json(['success' => true, 'cart_count' => $cart_count]);
         }
-        return redirect()->route('cart.show')->with('success', 'Sản phẩm đã được thêm vào giỏ hàng.');
+       return redirect()->back()->with('success', 'Sản phẩm đã được thêm vào giỏ hàng.');
     }
 
 

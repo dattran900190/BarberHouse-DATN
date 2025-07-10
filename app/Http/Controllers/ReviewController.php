@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ReviewRequest;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
@@ -34,6 +35,9 @@ class ReviewController extends Controller
      */
     public function create()
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('reviews.index')->with('error', 'Bạn không có quyền thêm bình luận.');
+        }
         return view('admin.reviews.create');
     }
 
@@ -42,6 +46,9 @@ class ReviewController extends Controller
      */
     public function store(ReviewRequest $request)
     {
+          if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('reviews.index')->with('error', 'Bạn không có quyền thêm bình luận.');
+        }
         $data = $request->validated();
 
         Review::create($data);
@@ -62,6 +69,9 @@ class ReviewController extends Controller
      */
     public function edit(Review $review)
     {
+         if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('reviews.index')->with('error', 'Bạn không có quyền sửa bình luận.');
+        }
         return view('admin.reviews.edit', compact('review'));
     }
 
@@ -70,6 +80,9 @@ class ReviewController extends Controller
      */
     public function update(ReviewRequest $request, Review $review)
     {
+          if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('reviews.index')->with('error', 'Bạn không có quyền sửa bình luận.');
+        }
         $data = $request->validated();
 
         $review->update($data);
@@ -86,6 +99,9 @@ class ReviewController extends Controller
      */
     public function destroy(Review $review)
     {
+         if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('reviews.index')->with('error', 'Bạn không có quyền xóa bình luận.');
+        }
         $review->delete();
 
         return redirect()->route('reviews.index')->with('success', 'Xoá bình luận thành công');

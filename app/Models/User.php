@@ -19,7 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name', 'email', 'password', 'phone', 'gender', 'avatar',
-        'address', 'role', 'status', 'points_balance'
+        'address', 'role', 'status', 'points_balance', 'branch_id',
     ];
 
     /**
@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserRedeemedVoucher::class);
     }
+    public function branch()
+{
+    return $this->belongsTo(Branch::class);
+}
+
 }

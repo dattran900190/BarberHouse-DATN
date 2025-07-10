@@ -9,6 +9,7 @@ use App\Models\Volume;
 use App\Models\ProductVariant;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
@@ -28,6 +29,9 @@ class ProductController extends Controller
 
     public function create()
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền thêm sản phẩm.');
+        }
         $categories = ProductCategory::all();
         $volumes = Volume::all();
         return view('admin.products.create', compact('categories', 'volumes'));
@@ -35,6 +39,9 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền thêm sản phẩm.');
+        }
         $imagePath = null;
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $imagePath = $request->file('image')->store('products', 'public');
@@ -89,6 +96,9 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền sửa sản phẩm.');
+        }
         $categories = ProductCategory::all();
         $volumes = Volume::all();
         $product->load('variants', 'images');
@@ -97,6 +107,9 @@ class ProductController extends Controller
 
     public function update(ProductRequest $request, Product $product)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền sửa sản phẩm.');
+        }
         DB::transaction(function () use ($request, $product) {
             // 1. Xử lý ảnh chính sản phẩm
             $imagePath = $product->image;
@@ -190,6 +203,9 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền xóa sản phẩm.');
+        }
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }

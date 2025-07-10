@@ -56,7 +56,7 @@
                         $variants = $product->variants;
                     @endphp
                     @if ($variants->count())
-                        <form action="{{ route('cart.add') }}" method="POST" class="mt-3" id="variantForm">
+                        <form action="{{ route('cart.add') }}" method="POST" class="mt-3" id="addToCartForm">
                             @csrf
                             <label for="variant_id" class="me-2">Chọn thể tích:</label>
                             <select name="product_variant_id" id="variant_id" class="form-select d-inline-block w-auto">
@@ -72,7 +72,9 @@
                             <input type="number" name="quantity" id="quantity"
                                 class="form-control-sm d-inline-block w-auto" value="1" min="1" />
 
-                            <button type="submit" class="btn btn-dark ms-3" class="icon-button" style="margin-top: 20px"><i class="fa-solid fa-cart-plus"></i></button>
+                           <button type="submit" class="btn-add-to-cart icon-button" title="Thêm vào giỏ hàng">
+                                        <i class="fa-solid fa-cart-plus"></i>
+                                    </button>
                         </form>
 
                         <form action="{{ route('cart.buyNow') }}" method="POST" class="d-inline" id="buyNowForm"
@@ -124,10 +126,17 @@
                                             <h6 class="card-title">{{ $item->name }}</h6>
                                             <p class="card-text text-danger fw-bold">{{ number_format($item->price) }} đ
                                             </p>
-                                            <button type="submit" class="btn-add-to-cart icon-button"
-                                                title="Thêm vào giỏ hàng"><i class="fa-solid fa-cart-plus"></i></button>
+                                           
                                         </div>
                                     </a>
+                                    <form action="{{ route('cart.add') }}" method="POST" class="related-add-to-cart-form m-0 p-0">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn-add-to-cart icon-button" title="Thêm vào giỏ hàng">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </button>
+                                    </form>
                                     <div class="action-buttons mt-auto mb-3 d-flex justify-content-center gap-2">
                                         @php $variant = $item->variants->first(); @endphp
                                         @if ($variant)
@@ -136,8 +145,9 @@
                                                 <input type="hidden" name="product_variant_id"
                                                     value="{{ $variant->id }}">
                                                 <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn btn-dark ms-3"
-                                                    style="margin-top: 20px">🛒</button>
+                                                <button type="submit" class="btn-add-to-cart icon-button" title="Thêm vào giỏ hàng">
+                                     
+                                    </button>
                                             </form>
                                             <form action="{{ route('cart.buyNow') }}" method="POST"
                                                 class="m-0 p-0 buy-now-form-related">
@@ -147,10 +157,10 @@
                                                 <input type="hidden" name="quantity" value="1">
                                                 @guest
                                                     <button type="button" class="btn btn-success btn-buy-now"
-                                                        style="margin-top: 20px">Mua</button>
+                                                        style="margin-top: 20px">Mua Ngay</button>
                                                 @else
                                                     <button type="submit" class="btn btn-success btn-buy-now"
-                                                        style="margin-top: 20px">Mua</button>
+                                                        style="margin-top: 20px">Mua Ngay</button>
                                                 @endguest
                                             </form>
                                         @endif
@@ -237,5 +247,72 @@
         });
     });
     </script>
+    <script>
+$(function() {
+    $('#addToCartForm').on('submit', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: form.serialize(),
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã thêm vào giỏ hàng!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                if(response.cart_count !== undefined) {
+                    $('#cartCount').text(response.cart_count);
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể thêm vào giỏ hàng. Vui lòng thử lại!'
+                });
+            }
+        });
+    });
+});
+$(function() {
+    $('.related-add-to-cart-form').on('submit', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: form.serialize(),
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã thêm vào giỏ hàng!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                if(response.cart_count !== undefined) {
+                    $('#cartCount').text(response.cart_count);
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể thêm vào giỏ hàng. Vui lòng thử lại!'
+                });
+            }
+        });
+    });
+});
+
+</script>
 
 @endsection

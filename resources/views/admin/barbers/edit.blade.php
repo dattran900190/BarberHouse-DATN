@@ -3,6 +3,9 @@
 @section('title', 'Chỉnh sửa Thợ Cắt Tóc')
 
 @section('content')
+    @php
+        $currentRole = Auth::user()->role;
+    @endphp
     <div class="card">
         <div class="card-header bg-warning text-white">
             <h3 class="card-title">Chỉnh sửa Thợ Cắt Tóc</h3>
@@ -74,15 +77,29 @@
 
                         <div class="form-group">
                             <label for="branch_id">Chi nhánh</label>
-                            <select id="branch_id" name="branch_id" class="form-control">
-                                <option value="">-- Chọn chi nhánh --</option>
-                                @foreach ($branches as $branch)
-                                    <option value="{{ $branch->id }}"
-                                        {{ old('branch_id', $barber->branch_id) == $branch->id ? 'selected' : '' }}>
-                                        {{ $branch->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            @if ($currentRole === 'admin_branch')
+                                <select id="branch_id" name="branch_id" class="form-control" disabled>
+                                    <option value="">-- Chọn chi nhánh --</option>
+                                    @foreach ($branches as $branch)
+                                        <option value="{{ $branch->id }}"
+                                            {{ old('branch_id', $barber->branch_id) == $branch->id ? 'selected' : '' }}>
+                                            {{ $branch->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            @else
+                                <select id="branch_id" name="branch_id" class="form-control">
+                                    <option value="">-- Chọn chi nhánh --</option>
+                                    @foreach ($branches as $branch)
+                                        <option value="{{ $branch->id }}"
+                                            {{ old('branch_id', $barber->branch_id) == $branch->id ? 'selected' : '' }}>
+                                            {{ $branch->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            @endif
+
+                            {{-- Hiển thị thông báo lỗi nếu có --}}
                             @error('branch_id')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
