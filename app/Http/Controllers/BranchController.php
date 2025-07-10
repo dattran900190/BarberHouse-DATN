@@ -5,29 +5,43 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BranchRequest;
 use App\Models\Branch;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BranchController extends Controller
 {
     // Hiển thị danh sách chi nhánh
     public function index(Request $request)
     {
+        $user = auth()->user();
         $search = $request->input('search');
-        $branches = Branch::when($search, function ($query, $search) {
-            return $query->where('name', 'like', '%' . $search . '%');
-        })->latest()->paginate(10);
 
-        return view('admin.branches.index', compact('branches'));
+        $branches = Branch::when($user->role === 'admin_branch', function ($query) use ($user) {
+            return $query->where('id', $user->branch_id);
+        })
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.branches.index', compact('branches', 'search'));
     }
 
     // Hiển thị form tạo chi nhánh
     public function create()
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('branches.index')->with('error', 'Bạn không có quyền thêm chi nhánh.');
+        }
         return view('admin.branches.create');
     }
 
     // Lưu chi nhánh mới
     public function store(BranchRequest $request)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('branches.index')->with('error', 'Bạn không có quyền thêm chi nhánh.');
+        }
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -95,6 +109,9 @@ class BranchController extends Controller
     // Xoá chi nhánh
     public function destroy(Branch $branch)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('branches.index')->with('error', 'Bạn không có quyền xóa chi nhánh.');
+        }
         $branch->delete();
         return redirect()->route('branches.index')->with('success', 'Xoá chi nhánh thành công');
     }

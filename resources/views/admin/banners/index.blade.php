@@ -3,6 +3,14 @@
 @section('title', 'Quản lý Banner')
 
 @section('content')
+    @foreach (['success' => 'success', 'error' => 'danger'] as $key => $type)
+        @if (session($key))
+            <div class="alert alert-{{ $type }} alert-dismissible fade show" role="alert">
+                {{ session($key) }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    @endforeach
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách Banner</h3>
@@ -32,37 +40,39 @@
                             <td class="text-center">{{ $index + 1 }}</td>
                             <td>{{ $banner->title }}</td>
                             <td class="text-center">
-                                @if($banner->image_url)
-                                    <img src="{{ asset('storage/' . $banner->image_url) }}" alt="Banner" width="100" class="img-thumbnail">
+                                @if ($banner->image_url)
+                                    <img src="{{ asset('storage/' . $banner->image_url) }}" alt="Banner" width="100"
+                                        class="img-thumbnail">
                                 @else
                                     <span class="text-muted">Không có ảnh</span>
                                 @endif
                             </td>
-                            
+
                             <td class="text-center">
-                                @if($banner->is_active)
+                                @if ($banner->is_active)
                                     <span class="badge bg-success">Hiển thị</span>
                                 @else
                                     <span class="badge bg-secondary">Ẩn</span>
                                 @endif
                             </td>
-                            <td class="text-center">{{ $banner->created_at ? $banner->created_at->format('d/m/Y') : '' }}</td>
+                            <td class="text-center">{{ $banner->created_at ? $banner->created_at->format('d/m/Y') : '' }}
+                            </td>
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
                                     <a href="{{ route('banners.show', $banner->id) }}"
-                                       class="btn btn-info btn-sm d-inline-flex align-items-center">
+                                        class="btn btn-info btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-eye"></i> <span>Xem</span>
                                     </a>
                                     <a href="{{ route('banners.edit', $banner->id) }}"
-                                       class="btn btn-warning btn-sm d-inline-flex align-items-center">
+                                        class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                         <i class="fas fa-edit"></i> <span>Sửa</span>
                                     </a>
-                                    <form action="{{ route('banners.destroy', $banner->id) }}"
-                                          method="POST" class="d-inline m-0"
-                                          onsubmit="return confirm('Xác nhận xoá banner?');">
+                                    <form action="{{ route('banners.destroy', $banner->id) }}" method="POST"
+                                        class="d-inline m-0" onsubmit="return confirm('Xác nhận xoá banner?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm d-inline-flex align-items-center">
+                                        <button type="submit"
+                                            class="btn btn-danger btn-sm d-inline-flex align-items-center">
                                             <i class="fas fa-trash"></i> <span>Xoá</span>
                                         </button>
                                     </form>

@@ -6,6 +6,12 @@
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+        @php
+            $currentRole = Auth::user()->role;
+        @endphp
 
         <div class="card">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -54,6 +60,7 @@
                                             {{ \Carbon\Carbon::parse($holiday->holiday_start_date)->format('d/m/Y') }}
                                             - {{ \Carbon\Carbon::parse($holiday->holiday_end_date)->format('d/m/Y') }}
                                         </div>
+                                        @if($currentRole == 'admin')
                                         <div class="action-buttons d-none d-md-flex">
                                             <a href="{{ route('barber_schedules.editHoliday', $firstSchedule->id) }}"
                                                 class="btn btn-sm btn-warning text-white me-2">
@@ -70,6 +77,7 @@
                                                 </button>
                                             </form>
                                         </div>
+                                        @endif
                                     </li>
                                 @endif
                             @endforeach

@@ -27,9 +27,15 @@ class AuthController extends Controller
             }
 
             // Bình thường
-            return $user->role === 'admin'
-                ? redirect()->route('dashboard')
-                : redirect()->route('home');
+            if (in_array($user->role, ['admin', 'admin_branch'])) {
+                return redirect()->route('dashboard');
+            }
+
+            return match ($user->role) {
+                'admin' => redirect()->route('dashboard'),
+                'admin_branch' => redirect()->route('branches.index'),
+                default => redirect()->route('home'),
+            };
         }
 
         return redirect()->back()->with([

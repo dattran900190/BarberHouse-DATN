@@ -18,6 +18,9 @@
     @endif
 
     @php
+        $currentRole = Auth::user()->role;
+    @endphp
+    @php
         $paymentMethodMap = [
             'cash' => 'Thanh toán khi nhận hàng',
             'vnpay' => 'Thanh toán qua VNPAY',
@@ -52,10 +55,11 @@
                         <th>Địa chỉ</th>
                         <th>Tổng tiền</th>
                         <th>Phương thức</th>
-                        <th>Ghi chú</th>
                         <th>Ngày đặt hàng</th>
                         <th>Trạng thái</th>
-                        <th class="text-center">Hành động</th>
+                        @if ($currentRole == 'admin')
+                            <th class="text-center">Hành động</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -67,24 +71,27 @@
                             <td>{{ $order->phone }}</td>
                             <td>{{ Str::limit($order->address, 30) }}</td>
                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                            <td class="text-uppercase"> {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
-                            <td>{{ Str::limit($order->note, 30) }}</td>
+                            <td class="text-uppercase">
+                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                             <td><span class="badge bg-warning">Chờ xác nhận</span></td>
-                            <td class="text-center">
-                                <form action="{{ route('admin.orders.confirm', $order->id) }}" method="POST"
-                                    style="display:inline-block;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success btn-sm">Xác nhận</button>
-                                </form>
-                                <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-info btn-sm">Xem</a>
-                                <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST"
-                                    style="display:inline-block;"
-                                    onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-danger btn-sm">Hủy</button>
-                                </form>
-                            </td>
+                            @if ($currentRole == 'admin')
+                                <td class="text-center">
+                                    <form action="{{ route('admin.orders.confirm', $order->id) }}" method="POST"
+                                        style="display:inline-block;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success btn-sm">Xác nhận</button>
+                                    </form>
+                                    <a href="{{ route('admin.orders.show', $order->id) }}"
+                                        class="btn btn-info btn-sm">Xem</a>
+                                    <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST"
+                                        style="display:inline-block;"
+                                        onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-danger btn-sm">Hủy</button>
+                                    </form>
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
@@ -106,10 +113,11 @@
                         <th>Địa chỉ</th>
                         <th>Tổng tiền</th>
                         <th>Phương thức</th>
-                        <th>Ghi chú</th>
                         <th>Ngày đặt hàng</th>
                         <th>Trạng thái</th>
-                        <th class="text-center">Hành động</th>
+                        @if ($currentRole == 'admin')
+                            <th class="text-center">Hành động</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -121,8 +129,8 @@
                             <td>{{ $order->phone }}</td>
                             <td>{{ Str::limit($order->address, 30) }}</td>
                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                            <td class="text-uppercase"> {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
-                            <td>{{ Str::limit($order->note, 30) }}</td>
+                            <td class="text-uppercase">
+                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                             <td>
                                 @php
@@ -143,9 +151,11 @@
                                     {{ $statusMap[$order->status] ?? ucfirst($order->status) }}
                                 </span>
                             </td>
+                               @if ($currentRole == 'admin')
                             <td class="text-center">
                                 <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-info btn-sm">Xem</a>
                             </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>

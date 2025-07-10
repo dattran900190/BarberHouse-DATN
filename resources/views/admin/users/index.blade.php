@@ -12,6 +12,7 @@
         </div>
     @endif
 
+
     @if (session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ session('error') }}
@@ -20,7 +21,9 @@
             </button>
         </div>
     @endif
-
+    @php
+        $currentRole = Auth::user()->role;
+    @endphp
     <div class="page-header">
         <h3 class="fw-bold mb-3">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
         <ul class="breadcrumbs mb-3">
@@ -159,15 +162,17 @@
                                                                 href="{{ route('users.show', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
                                                                 <i class="fas fa-eye"></i> Xem
                                                             </a>
-                                                            <div class="dropdown-divider"></div>
-                                                            <button type="button"
-                                                                class="dropdown-item toggle-status-btn d-inline-flex align-items-center"
-                                                                data-id="{{ $user->id }}"
-                                                                data-status="{{ $user->status }}"
-                                                                data-role="{{ $user->role }}">
-                                                                <i class="fas fa-ban mr-1"></i>
-                                                                <span>{{ $user->status === 'active' ? 'Chặn' : 'Bỏ chặn' }}</span>
-                                                            </button>
+                                                            @if ($currentRole === 'admin')
+                                                                <div class="dropdown-divider"></div>
+                                                                <button type="button"
+                                                                    class="dropdown-item toggle-status-btn d-inline-flex align-items-center"
+                                                                    data-id="{{ $user->id }}"
+                                                                    data-status="{{ $user->status }}"
+                                                                    data-role="{{ $user->role }}">
+                                                                    <i class="fas fa-ban mr-1"></i>
+                                                                    <span>{{ $user->status === 'active' ? 'Chặn' : 'Bỏ chặn' }}</span>
+                                                                </button>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>
