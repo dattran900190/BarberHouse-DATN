@@ -62,7 +62,11 @@ class Appointment extends Model
         return $this->hasOne(Checkin::class);
     }
     public function review()
-{
-    return $this->hasOne(Review::class, 'appointment_id');
-}
+    {
+        return $this->hasOne(Review::class, 'appointment_id');
+    }
+    public function refundRequests()
+    {
+        return $this->hasMany(RefundRequest::class, 'appointment_id');
+    }
 }

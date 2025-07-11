@@ -488,6 +488,7 @@ $q->whereNull('required_points')->orWhere('required_points', 0);
             ], 500);
         }
     }
+
     public function getAvailableBarbersByDate($branch_id, $date, $time = null, $service_id = null)
     {
         // 1. Validate branch

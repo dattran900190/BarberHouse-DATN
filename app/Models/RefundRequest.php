@@ -13,6 +13,7 @@ class RefundRequest extends Model
         'user_id',
         'reason',
         'order_id',
+        'appointment_id',
         'refund_amount',
         'bank_account_name',
         'bank_account_number',
@@ -34,5 +35,9 @@ class RefundRequest extends Model
     public function order()
     {
         return $this->belongsTo(Order::class);
+    }
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
     }
 }

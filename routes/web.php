@@ -136,10 +136,14 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('barber_schedules', BarberScheduleController::class)
         ->only(['index', 'show']);
 
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('admin.dashboard');
+    // })->name('dashboard');
 
+    // ==== Admin Dashboard ====
+    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+    // Hiển thị giao diện Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
 
