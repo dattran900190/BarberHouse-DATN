@@ -123,6 +123,9 @@ Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.walle
 Route::post('/payment/vnpay', [PaymentController::class, 'vnpayPayment'])->name('client.payment.vnpay');
 Route::get('/payment/vnpay/callback', [PaymentController::class, 'vnpayCallback'])->name('client.payment.vnpay.callback');
 
+Route::match(['get', 'post'], '/payment/vnpay/order', [PaymentController::class, 'vnpayOrderPayment'])->name('client.payment.vnpay.order');
+Route::get('/payment/vnpay/order/callback', [PaymentController::class, 'vnpayOrderCallback'])->name('client.payment.vnpay.order.callback');
+
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
         ->name('barber_schedules.showBranch');
