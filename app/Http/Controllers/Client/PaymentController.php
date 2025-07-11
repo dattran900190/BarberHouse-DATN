@@ -176,6 +176,4 @@ class PaymentController extends Controller
             return redirect()->route('client.orderHistory')->with('error', 'Thanh toán thất bại!');
         }
     }
-   
-  
 }

@@ -97,25 +97,34 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('admin.products.show', $product->id) }}"
-                                       class="btn btn-info btn-sm d-inline-flex align-items-center">
-                                        <i class="fas fa-eye"></i> <span>Xem</span>
-                                    </a>
-                                    <a href="{{ route('admin.products.edit', $product->id) }}"
-                                       class="btn btn-warning btn-sm d-inline-flex align-items-center">
-                                        <i class="fas fa-edit"></i> <span>Sửa</span>
-                                    </a>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                        id="actionMenu{{ $product->id }}" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end"
+                                                    aria-labelledby="actionMenu{{ $product->id }}">
+                                                    <li> <a href="{{ route('admin.products.show', $product->id) }}"
+                                                        class="dropdown-item">
+                                                        <i class="fas fa-eye me-2"></i> Xem
+                                                    </a></li>
+                                                    <li>  <a href="{{ route('admin.products.edit', $product->id) }}"
+                                                        class="dropdown-item">
+                                                        <i class="fas fa-edit me-2"></i> Sửa
+                                                    </a></li>
+                                  <li>
                                     <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST"
                                           class="d-inline m-0"
                                           onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                                class="btn btn-danger btn-sm d-inline-flex align-items-center">
-                                            <i class="fas fa-trash"></i> <span>Xóa</span>
+                                                class="dropdown-item text-danger">
+                                            <i class="fas fa-trash-alt"></i> <span>  Xóa </span>
                                         </button>
                                     </form>
+                                </li>
                                 </div>
                             </td>
                         </tr>
