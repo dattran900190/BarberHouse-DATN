@@ -42,14 +42,32 @@
                 </li>
 
                 <li class="nav-item">
-                    <a data-bs-toggle="collapse" href="#base">
+                    <a href="{{ asset('admin/appointments') }}">
                         <i class="fas fa-calendar-check"></i>
+                        <p>Danh sách đặt lịch</p>
+                        <span id="pending-appointment-count" class="badge badge-danger"
+                            style="{{ $pendingCount > 0 ? '' : 'display: none;' }}">
+                            {{ $pendingCount }}
+                        </span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ asset('admin/orders') }}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Danh sách Đơn hàng</p>
+                        
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#base">
+                        <i class="fas fa-cut"></i>
                         <p>Quản lý đặt lịch</p>
                         <span class="caret"></span>
                     </a>
                     <div class="collapse" id="base">
                         <ul class="nav nav-collapse">
-                            <li>
+                            {{-- <li>
                                 <a href="{{ asset('admin/appointments') }}">
                                     <span class="sub-item">Đặt lịch</span> <span id="pending-appointment-count"
                                         class="badge badge-danger"
@@ -57,7 +75,7 @@
                                         {{ $pendingCount }}
                                     </span>
                                 </a>
-                            </li>
+                            </li> --}}
                             <li>
                                 <a href="{{ asset('admin/services') }}">
                                     <span class="sub-item">Dịch vụ</span>
@@ -93,7 +111,7 @@
                 </li>
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#sidebarLayouts">
-                        <i class="fas fa-shopping-cart"></i>
+                        <i class="fas fa-shopping-bag"></i>
                         <p>Quản lý đặt hàng</p>
                         <span class="caret"></span>
                     </a>
@@ -109,11 +127,11 @@
                                     <span class="sub-item">Dung tích</span>
                                 </a>
                             </li>
-                            <li>
+                            {{-- <li>
                                 <a href="{{ asset('admin/orders') }}">
                                     <span class="sub-item">Đơn hàng</span>
                                 </a>
-                            </li>
+                            </li> --}}
                             <li>
                                 <a href="{{ asset('admin/refunds') }}">
                                     <span class="sub-item">Hoàn tiền</span>

@@ -22,6 +22,8 @@ class AppointmentRequest extends FormRequest
             'payment_status' => 'required|in:unpaid,paid,refunded,failed',
             'note' => 'nullable|string|max:500',
             'voucher_id' => 'nullable|exists:user_redeemed_vouchers,id,user_id,' . Auth::id(),
+            'additional_services' => 'nullable|json',
+            'additional_services.*' => 'exists:services,id',
         ];
     }
 

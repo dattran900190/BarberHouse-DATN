@@ -26,6 +26,29 @@
         </ul>
     </div>
 
+    @php
+        $currentStatus = $appointment->status;
+        $currentPaymentStatus = $appointment->payment_status;
+
+        $statusOptions = [
+            'pending' => 'Chờ xác nhận',
+            'confirmed' => 'Đã xác nhận',
+            'checked-in' => 'Đã check-in',
+            'progress' => 'Đang làm tóc',
+            'completed' => 'Hoàn thành',
+            'cancelled' => 'Đã hủy',
+        ];
+        $paymentOptions = [
+            'unpaid' => 'Chưa thanh toán',
+            'paid' => 'Thanh toán thành công',
+            'refunded' => 'Hoàn trả thanh toán',
+            'failed' => 'Thanh toán thất bại',
+        ];
+
+        // Khi payment đã 'paid' hoặc 'refunded' hoặc 'failed', khóa select này
+        $paymentLocked = in_array($currentPaymentStatus, ['paid', 'refunded']);
+        // (Nếu bạn vẫn muốn cho ‘failed’ → ‘paid’, thì hãy loại bỏ 'failed' khỏi mảng trên)
+    @endphp
 
     <div class="card">
         <div class="card-header text-white align-items-center">
@@ -47,27 +70,92 @@
                     @enderror
                 </div>
 
-                @php
-                    $currentStatus = $appointment->status;
-                    $currentPaymentStatus = $appointment->payment_status;
+                <div class="mb-3">
+                    <label for="service_id" class="form-label">Dịch vụ chính</label>
+                    <select class="form-control" id="service_id" name="service_id" required>
+                        @foreach ($services as $service)
+                            <option value="{{ $service->id }}"
+                                {{ old('service_id', $appointment->service_id) == $service->id ? 'selected' : '' }}>
+                                {{ $service->name }} ({{ number_format($service->price) }} VNĐ, {{ $service->duration }}
+                                phút)
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('service_id')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
 
-                    $statusOptions = [
-                        'pending' => 'Chờ xác nhận',
-                        'confirmed' => 'Đã xác nhận',
-                        'completed' => 'Hoàn thành',
-                        'cancelled' => 'Đã hủy',
-                    ];
-                    $paymentOptions = [
-                        'unpaid' => 'Chưa thanh toán',
-                        'paid' => 'Thanh toán thành công',
-                        'refunded' => 'Hoàn trả thanh toán',
-                        'failed' => 'Thanh toán thất bại',
-                    ];
+                <div class="mb-3">
+                    <label for="services" class="form-label">Dịch vụ bổ sung</label>
 
-                    // Khi payment đã 'paid' hoặc 'refunded' hoặc 'failed', khóa select này
-                    $paymentLocked = in_array($currentPaymentStatus, ['paid', 'refunded']);
-                    // (Nếu bạn vẫn muốn cho ‘failed’ → ‘paid’, thì hãy loại bỏ 'failed' khỏi mảng trên)
-                @endphp
+                    <div class="input-group mb-2">
+                        <select class="form-control" id="additionalServiceDropdown" style="width: 70%;">
+                            <option value="">Chọn dịch vụ bổ sung</option>
+                            @foreach ($services as $service)
+                                <option value="{{ $service->id }}" data-price="{{ $service->price }}"
+                                    data-duration="{{ $service->duration }}">
+                                    {{ $service->name }} ({{ number_format($service->price) }} VNĐ,
+                                    {{ $service->duration }} phút)
+                                </option>
+                            @endforeach
+                        </select>
+                        <button type="button" class="btn btn-primary" id="addAdditionalServiceBtn" style="width: 30%;">Thêm
+                            dịch vụ</button>
+                    </div>
+
+                    {{-- <div id="selectedAdditionalServices" class="mt-2">
+                        @if ($appointment->additional_services)
+                            @foreach (json_decode($appointment->additional_services, true) as $serviceId)
+                                @php
+                                    $service = $services->firstWhere('id', $serviceId);
+                                @endphp
+                                @if ($service)
+                                    <div class="border rounded p-2 mb-2" data-id="{{ $service->id }}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ $service->name }}</strong>
+                                                <span class="ms-2">({{ number_format($service->price) }} VNĐ,
+                                                    {{ $service->duration }} phút)</span>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-danger remove-service"
+                                                style="display: none;">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        @endif
+                    </div> --}}
+                    <div id="selectedAdditionalServices" class="mt-2">
+                        @if ($appointment->additional_services)
+                            @foreach (json_decode($appointment->additional_services, true) as $serviceId)
+                                @php
+                                    $service = $services->firstWhere('id', $serviceId);
+                                @endphp
+                                @if ($service)
+                                    <div class="selected-service border rounded p-2 mb-2" data-id="{{ $service->id }}"
+                                        data-price="{{ $service->price }}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span>{{ $service->name }} ({{ number_format($service->price) }} VNĐ,
+                                                    {{ $service->duration }} phút)</span>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-danger remove-service">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        @endif
+                    </div>
+                    {{-- <input type="hidden" name="additional_services" id="additionalServicesInput"
+                        value="{{ $appointment->additional_services }}"> --}}
+
+                    <input type="hidden" name="additional_services" id="additionalServicesInput">
+                </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -130,11 +218,6 @@
                     </div>
                 </div>
 
-                {{-- <button type="submit" class="btn btn-warning update-appointment-btn" data-id="{{ $appointment->id }}">Cập
-                    nhật</button>
-                <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
-                    lại</a> --}}
-
                 <button type="submit" class="btn btn-sm btn-outline-primary update-appointment-btn"
                     data-id="{{ $appointment->id }}">
                     <i class="fa fa-edit me-1"></i> Cập nhật
@@ -147,9 +230,134 @@
 
         </div>
     </div>
+
 @endsection
 
 @section('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const serviceIdSelect = document.getElementById('service_id');
+            const additionalServiceDropdown = document.getElementById('additionalServiceDropdown');
+            const addAdditionalServiceBtn = document.getElementById('addAdditionalServiceBtn');
+            const selectedAdditionalServices = document.getElementById('selectedAdditionalServices');
+            const additionalServicesInput = document.getElementById('additionalServicesInput');
+            const totalAmountDisplay = document.getElementById('totalAmountDisplay');
+            const totalAmountInput = document.getElementById('totalAmountInput');
+
+            // Hàm định dạng số
+            function numberFormat(number) {
+                return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' VNĐ';
+            }
+
+            // Hàm tính tổng chi phí
+            function calculateTotalAmount() {
+                let total = 0;
+                const mainServicePrice = parseFloat(serviceIdSelect.options[serviceIdSelect.selectedIndex]
+                    .getAttribute('data-price')) || 0;
+                total += mainServicePrice;
+
+                const additionalServices = Array.from(selectedAdditionalServices.querySelectorAll(
+                    '.selected-service'));
+                additionalServices.forEach(service => {
+                    total += parseFloat(service.getAttribute('data-price')) || 0;
+                });
+
+                const discount = parseFloat(document.querySelector('input[name="discount_amount"]')?.value) || 0;
+                total -= discount;
+
+                totalAmountDisplay.value = numberFormat(total);
+                totalAmountInput.value = total;
+            }
+
+            // Thêm dịch vụ bổ sung
+            addAdditionalServiceBtn.addEventListener('click', function() {
+                const selectedOption = additionalServiceDropdown.options[additionalServiceDropdown
+                    .selectedIndex];
+
+                if (selectedOption.value) {
+                    const serviceId = selectedOption.value;
+                    const serviceName = selectedOption.text;
+                    const servicePrice = selectedOption.getAttribute('data-price');
+
+                    const isDuplicate = Array.from(selectedAdditionalServices.querySelectorAll(
+                            '.selected-service'))
+                        .some(service => service.getAttribute('data-id') === serviceId);
+
+                    if (!isDuplicate) {
+                        const serviceDiv = document.createElement('div');
+                        serviceDiv.className = 'selected-service border rounded p-2 mb-2';
+                        serviceDiv.setAttribute('data-id', serviceId);
+                        serviceDiv.setAttribute('data-price', servicePrice);
+
+                        serviceDiv.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span>${serviceName}</span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-service">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+                        selectedAdditionalServices.appendChild(serviceDiv);
+
+                        // Xoá option khỏi dropdown sau khi chọn
+                        selectedOption.remove();
+
+                        updateAdditionalServicesInput();
+                        calculateTotalAmount();
+                    } else {
+                        alert('Dịch vụ đã được chọn!');
+                    }
+                }
+            });
+
+
+            // Xóa dịch vụ bổ sung
+            selectedAdditionalServices.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-service')) {
+                    const serviceDiv = e.target.closest('.selected-service');
+                    const serviceId = serviceDiv.getAttribute('data-id');
+                    serviceDiv.remove();
+
+                    const option = document.createElement('option');
+                    option.value = serviceId;
+                    option.text = serviceDiv.textContent.replace(' - .*', '').trim();
+                    option.setAttribute('data-price', serviceDiv.getAttribute('data-price'));
+                    option.setAttribute('data-duration', serviceDiv.querySelector('input[type="hidden"]')
+                        .value.match(/duration_(\d+)/)[1] || 0);
+                    additionalServiceDropdown.appendChild(option);
+
+                    updateAdditionalServicesInput();
+                    calculateTotalAmount();
+                }
+            });
+
+            // Cập nhật khi chọn dịch vụ chính
+            serviceIdSelect.addEventListener('change', function() {
+                calculateTotalAmount();
+            });
+
+            // Cập nhật input ẩn
+            // function updateAdditionalServicesInput() {
+            //     const serviceIds = Array.from(selectedAdditionalServices.querySelectorAll('.selected-service'))
+            //         .map(service => service.getAttribute('data-id'));
+            //     additionalServicesInput.value = JSON.stringify(serviceIds);
+            // }
+
+            function updateAdditionalServicesInput() {
+                const serviceIds = Array.from(document.querySelectorAll(
+                        '#selectedAdditionalServices .selected-service'))
+                    .map(service => service.getAttribute('data-id'));
+                document.getElementById('additionalServicesInput').value = JSON.stringify(serviceIds);
+            }
+            updateAdditionalServicesInput();
+
+            // Khởi tạo giá trị ban đầu
+            calculateTotalAmount();
+        });
+    </script>
     <script>
         // Xử lý nút "Cập nhật"
         document.querySelectorAll('.update-appointment-btn').forEach(button => {

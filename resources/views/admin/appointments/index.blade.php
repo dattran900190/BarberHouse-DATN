@@ -19,6 +19,8 @@
         $statusMap = [
             'completed' => ['class' => 'success', 'text' => 'Hoàn thành'],
             'pending' => ['class' => 'warning', 'text' => 'Chờ xác nhận'],
+            'checked-in' => ['class' => 'info', 'text' => 'Đã check-in'],
+            'progress' => ['class' => 'secondary', 'text' => 'Đang làm tóc'],
             'cancelled' => ['class' => 'danger', 'text' => 'Đã huỷ'],
             'confirmed' => ['class' => 'primary', 'text' => 'Đã xác nhận'],
         ];
@@ -74,11 +76,24 @@
             <ul class="nav nav-tabs" id="appointmentTabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link {{ $activeTab == 'pending' ? 'active' : '' }}" id="pending-tab" data-toggle="tab"
-                        href="#pending" role="tab">Chưa xác nhận</a>
+                        href="#pending" role="tab">Chưa xác nhận 
+                        @if ($pendingCount > 0)
+                            <span class="position-relative">
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                    <span class="visually-hidden">New alerts</span>
+                                </span>
+                            </span>
+                        @endif
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ $activeTab == 'confirmed' ? 'active' : '' }}" id="confirmed-tab" data-toggle="tab"
                         href="#confirmed" role="tab">Đã xác nhận</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $activeTab == 'progress' ? 'active' : '' }}" id="progress-tab" data-toggle="tab"
+                        href="#progress" role="tab">Đang làm tóc</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ $activeTab == 'completed' ? 'active' : '' }}" id="completed-tab" data-toggle="tab"
@@ -273,6 +288,111 @@
                                                                 class="dropdown-item text-primary no-show-btn"
                                                                 data-id="{{ $appointment->id }}">
                                                                 <i class="fas fa-user-times me-2"></i> Không đến
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button type="button"
+                                                                class="dropdown-item text-danger cancel-btn"
+                                                                data-id="{{ $appointment->id }}">
+                                                                <i class="fas fa-times-circle me-2"></i> Hủy
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="11" class="text-center text-muted">Không có lịch hẹn nào phù hợp.
+                                        </td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3">
+                        {{ $confirmedAppointments->appends(['search' => request('search')])->links() }}
+                    </div>
+                </div>
+
+                <!-- Tab Đã xác nhận -->
+                <div class="tab-pane fade {{ $activeTab == 'progress' ? 'show active' : '' }}" id="progress"
+                    role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Stt</th>
+                                    <th>Mã lịch hẹn</th>
+                                    <th>Khách hàng</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Thợ</th>
+                                    <th>Dịch vụ</th>
+                                    <th>Thời gian</th>
+                                    <th>Trạng thái lịch hẹn</th>
+                                    <th>Trạng thái thanh toán</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($progressAppointments->count())
+                                    @foreach ($progressAppointments as $index => $appointment)
+                                        <tr>
+                                            <td>{{ $progressAppointments->firstItem() + $index }}</td>
+                                            <td>{{ $appointment->appointment_code }}</td>
+                                            <td>{{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}</td>
+                                            <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
+                                            <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
+                                            <td>{{ $appointment->service?->name ?? 'N/A' }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
+                                            </td>
+                                            @php
+                                                $statusClass = $statusMap[$appointment->status]['class'] ?? 'secondary';
+                                                $statusText = $statusMap[$appointment->status]['text'] ?? 'Không rõ';
+
+                                                $paymentClass =
+                                                    $paymentMap[$appointment->payment_status]['class'] ?? 'secondary';
+                                                $paymentText =
+                                                    $paymentMap[$appointment->payment_status]['text'] ?? 'Không rõ';
+                                            @endphp
+                                            <td>
+                                                <span class="badge bg-{{ $statusClass }}">{{ $statusText }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                        id="actionMenuConfirmed{{ $appointment->id }}"
+                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+
+                                                    <ul class="dropdown-menu dropdown-menu-end"
+                                                        aria-labelledby="actionMenuConfirmed{{ $appointment->id }}">
+
+                                                        <li>
+                                                            <a href="{{ route('appointments.show', $appointment->id) }}"
+                                                                class="dropdown-item">
+                                                                <i class="fas fa-eye me-2"></i> Xem
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="{{ route('appointments.edit', $appointment->id) }}"
+                                                                class="dropdown-item">
+                                                                <i class="fas fa-edit me-2"></i> Sửa
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <hr class="dropdown-divider">
+                                                        </li>
+                                                        <li>
+                                                            <button type="button"
+                                                                class="dropdown-item text-success complete-btn"
+                                                                data-id="{{ $appointment->id }}">
+                                                                <i class="fas fa-check-circle me-2"></i> Hoàn thành
                                                             </button>
                                                         </li>
                                                         <li>

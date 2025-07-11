@@ -149,7 +149,7 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="form-label">Dịch vụ <span class="required">*</span></label>
                     <div id="servicesList">
                         <div class="service-item" data-service-index="0">
@@ -171,7 +171,35 @@
                             </div>
                         </div>
                     </div>
-                    {{-- <button class="add-service-btn" type="button" id="addServiceBtn">Thêm dịch vụ</button> --}}
+                    <button class="add-service-btn" type="button" id="addServiceBtn">Thêm dịch vụ</button>
+                </div> --}}
+
+                <div class="form-group">
+                    <label class="form-label">Dịch vụ <span class="required">*</span></label>
+                    <div id="servicesList">
+                        <div class="service-item" data-service-index="0">
+                            <div class="position-relative">
+                                <select id="service" name="service_id" class="form-select service-select"
+                                    data-index="0" required>
+                                    <option value="">Chọn dịch vụ chính</option>
+                                    @foreach ($services as $service)
+                                        <option value="{{ $service->id }}" data-name="{{ $service->name }}"
+                                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
+                                            {{ old('service_id') == $service->id ? 'selected' : '' }}>
+                                            {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('service_id')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="additionalServicesContainer" class="mt-2"></div>
+                    <input type="hidden" name="additional_services" id="additionalServicesInput">
+                    <button class="add-service-btn mt-2" type="button" id="addServiceBtn">Thêm dịch vụ</button>
                 </div>
 
                 <div class="form-group">
@@ -337,24 +365,74 @@
                 });
             });
         }
-
     </script>
     <script>
-        // $('#service').select2({
-        //     width: '100%',
-        //     templateResult: function(data) {
-        //         if (!data.id) return data.text;
-        //         let name = $(data.element).data('name');
-        //         let price = $(data.element).data('price');
-        //         return $(`<div style="display: flex; justify-content: space-between;">
-    //             <span>${name}</span>
-    //             <span>${price}</span>
-    //         </div>`);
-        //     },
-        //     templateSelection: function(data) {
-        //         return data.text;
-        //     }
-        // });
+        document.addEventListener('DOMContentLoaded', function() {
+            const addServiceBtn = document.getElementById('addServiceBtn');
+            const additionalServicesContainer = document.getElementById('additionalServicesContainer');
+            const additionalServicesInput = document.getElementById('additionalServicesInput');
+           
+            
+            // Hàm thêm dịch vụ bổ sung
+            function addAdditionalService() {
+                // Tạo container cho dịch vụ bổ sung
+                const serviceWrapper = document.createElement('div');
+                serviceWrapper.className = 'service-wrapper mt-2 d-flex align-items-center';
+
+                // Tạo select box
+                const serviceSelect = document.createElement('select');
+                serviceSelect.className = 'form-select additional-service-select';
+                serviceSelect.name = 'additional_services[]';
+                serviceSelect.innerHTML = `
+                    <option value="">Chọn dịch vụ bổ sung</option>
+                    @foreach ($services as $service)
+                        <option value="{{ $service->id }}" data-name="{{ $service->name }}"
+                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}">
+                            {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }}
+                        </option>
+                    @endforeach
+                `;
+
+                // Tạo nút "Xóa" bên ngoài select
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-sm btn-danger remove-service ms-2';
+                removeBtn.textContent = 'Xóa';
+                removeBtn.addEventListener('click', function() {
+                    additionalServicesContainer.removeChild(serviceWrapper);
+                    updateAdditionalServicesInput();
+                });
+
+                // Thêm select và nút "Xóa" vào wrapper
+                serviceWrapper.appendChild(serviceSelect);
+                serviceWrapper.appendChild(removeBtn);
+
+                // Thêm wrapper vào container
+                additionalServicesContainer.appendChild(serviceWrapper);
+                updateAdditionalServicesInput();
+            }
+
+            // Sự kiện click để thêm dịch vụ bổ sung
+            addServiceBtn.addEventListener('click', addAdditionalService);
+
+            // Cập nhật input ẩn khi thay đổi
+            function updateAdditionalServicesInput() {
+                const additionalServices = Array.from(additionalServicesContainer.querySelectorAll(
+                        '.additional-service-select'))
+                    .map(select => select.value)
+                    .filter(value => value !== '');
+                additionalServicesInput.value = JSON.stringify(additionalServices);
+            }
+
+            additionalServicesContainer.addEventListener('change', function(e) {
+                if (e.target.classList.contains('additional-service-select')) {
+                    updateAdditionalServicesInput();
+                }
+            });
+        });
+        
+    </script>
+    <script>
         serviceSelect.addEventListener('change', function() {
             const sel = this.options[this.selectedIndex];
             console.log('DEBUG sel.dataset =', sel.dataset);…

@@ -238,6 +238,10 @@ class AppointmentController extends Controller
                 ], 422);
             }
 
+            // Check for overlapping appointments
+            $service = Service::findOrFail($request->service_id);
+            $duration = $service->duration;
+
             // Kiểm tra khoảng thời gian trùng lặp
             $existingAppointment = Appointment::where('barber_id', $request->barber_id)
                 ->where('branch_id', $request->branch_id)
@@ -257,6 +261,7 @@ class AppointmentController extends Controller
                 ], 422);
             }
 
+
             // Get name, phone, and email (for self or other person)
             $name = $request->other_person ? $request->name : Auth::user()->name;
             $phone = $request->other_person ? $request->phone : Auth::user()->phone;
@@ -264,9 +269,13 @@ class AppointmentController extends Controller
 
             // Calculate total amount and discount
             $totalAmount = $service->price ?? 0;
+            $additionalServices = json_decode($request->input('additional_services', '[]'), true) ?? [];
+            $additionalServicesTotal = Service::whereIn('id', $additionalServices)->sum('price');
+            $totalAmount += $additionalServicesTotal;
+
             $discountAmount = 0;
             $promotion = null;
-
+Log::info('Received Additional Services: ' . $request->input('additional_services'));
             // Xử lý voucher
             if ($request->voucher_code) {
                 $code = trim($request->voucher_code);
@@ -322,6 +331,7 @@ class AppointmentController extends Controller
                 'promotion_id' => $promotion ? $promotion->id : null,
                 'discount_amount' => $discountAmount,
                 'total_amount' => $totalAmount,
+                'additional_services' => json_encode($additionalServices),
             ]);
 
             // Xử lý voucher

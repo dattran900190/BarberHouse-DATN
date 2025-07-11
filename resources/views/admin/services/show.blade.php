@@ -87,49 +87,6 @@
         </div>
     </div>
 
-    <!-- Card 2: Lịch hẹn liên quan (nếu có) -->
-    {{-- @if($relatedAppointments && $relatedAppointments->count())
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-info text-white">
-                <h4 class="mb-0">Lịch hẹn sử dụng dịch vụ này</h4>
-            </div>
-            <div class="card-body">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Mã lịch hẹn</th>
-                            <th>Khách hàng</th>
-                            <th>Thợ</th>
-                            <th>Thời gian</th>
-                            <th>Trạng thái</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($relatedAppointments as $appointment)
-                            <tr>
-                                <td>{{ $appointment->appointment_code }}</td>
-                                <td>{{ $appointment->user->name ?? 'N/A' }}</td>
-                                <td>{{ $appointment->barber->name ?? 'N/A' }}</td>
-                                <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}</td>
-                                <td>
-                                    <span class="badge bg-{{ $statusColors[$appointment->status] ?? 'secondary' }}">
-                                        {{ $statusTexts[$appointment->status] ?? ucfirst($appointment->status) }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="{{ route('appointments.show', $appointment->id) }}" class="btn btn-sm btn-outline-primary">
-                                        <i class="fa fa-eye me-1"></i> Xem
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    @endif --}}
-
     <!-- Card 3: Hành động -->
     <div class="card shadow-sm mb-4">
         <div class="card-header text-white d-flex align-items-center">
@@ -140,35 +97,16 @@
                 <a href="{{ route('services.edit', $service->id) }}" class="btn btn-outline-primary btn-sm">
                     <i class="fa fa-edit me-1"></i> Sửa
                 </a>
-                <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                    <i class="fa fa-trash me-1"></i> Xóa
-                </button>
+                <form action="{{ route('services.destroy', $service->id) }}" method="POST"
+                    onsubmit="return confirm('Bạn có chắc chắn muốn xoá dịch vụ này không?');">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="fas fa-trash me-2"></i> Xoá
+                    </button>
+                </form>
                 <a href="{{ route('services.index', ['page' => request('page', 1)]) }}" class="btn btn-outline-secondary btn-sm">
                     <i class="fa fa-arrow-left me-1"></i> Quay lại
                 </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal xác nhận xóa -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa dịch vụ</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Bạn có chắc muốn xóa dịch vụ <strong>{{ $service->name }}</strong>? Hành động này không thể hoàn tác.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <form action="{{ route('services.destroy', $service->id) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
-                    </form>
-                </div>
             </div>
         </div>
     </div>
