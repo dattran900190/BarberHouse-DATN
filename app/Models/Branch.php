@@ -22,4 +22,8 @@ class Branch extends Model
     {
         return $this->hasMany(Barber::class);
     }
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

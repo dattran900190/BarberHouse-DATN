@@ -3,6 +3,14 @@
 @section('title', 'Quản lý Tin tức')
 
 @section('content')
+    @foreach (['success' => 'success', 'error' => 'danger'] as $key => $type)
+        @if (session($key))
+            <div class="alert alert-{{ $type }} alert-dismissible fade show" role="alert">
+                {{ session($key) }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    @endforeach
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách bài viết</h3>

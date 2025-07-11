@@ -3,6 +3,11 @@
 @section('title-page')
     Đặt lịch Baber House
 @endsection
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
 @section('content')
@@ -228,6 +233,7 @@
                             <option value="{{ $voucher->promotion->code }}"
                                 data-discount-type="{{ $voucher->promotion->discount_type }}"
                                 data-discount-value="{{ $voucher->promotion->discount_value }}"
+                                data-expired-at="{{ $voucher->promotion->end_date }}"
                                 data-voucher-id="{{ $voucher->id }}">
                                 {{ $voucher->promotion->code }}
                                 ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
@@ -236,6 +242,7 @@
                         @foreach ($publicPromotions as $promotion)
                             <option value="{{ $promotion->code }}" data-discount-type="{{ $promotion->discount_type }}"
                                 data-discount-value="{{ $promotion->discount_value }}"
+                                data-expired-at="{{ $promotion->end_date }}"
                                 data-promotion-id="public_{{ $promotion->id }}">
                                 {{ $promotion->code }}
                                 ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
@@ -567,5 +574,49 @@
                 });
             }
         });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const appointmentDateInput = document.getElementById('appointment_date');
+        const voucherSelect = document.getElementById('voucher_id');
+
+        function filterVouchersByDate() {
+            const selectedDate = appointmentDateInput.value;
+            if (!selectedDate) return;
+
+            Array.from(voucherSelect.options).forEach((option, idx) => {
+                if (idx === 0) return; // Bỏ qua option đầu
+                const expiredAt = option.getAttribute('data-expired-at');
+                if (expiredAt && selectedDate > expiredAt) {
+                    option.style.display = 'none';
+                } else {
+                    option.style.display = '';
+                }
+            });
+
+            // Nếu option đang chọn bị ẩn thì reset về mặc định
+            if (voucherSelect.selectedIndex > 0 && voucherSelect.options[voucherSelect.selectedIndex].style.display === 'none') {
+                voucherSelect.selectedIndex = 0;
+            }
+        }
+
+        if (appointmentDateInput && voucherSelect) {
+            appointmentDateInput.addEventListener('change', filterVouchersByDate);
+            filterVouchersByDate();
+        }
+    });
+$(document).ready(function () {
+    $('#voucher_id').select2({
+        placeholder: 'Chọn hoặc tìm mã khuyến mãi',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function () {
+                return "Không tìm thấy mã phù hợp";
+            }
+        }
+    });
+});
+
     </script>
 @endsection

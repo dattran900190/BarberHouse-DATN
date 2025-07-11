@@ -55,8 +55,9 @@ Route::put('/gio-hang/update/{cartItem}', [CartController::class, 'updateQuantit
 Route::delete('/gio-hang/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
 Route::put('/gio-hang/update-variant/{cartItem}', [CartController::class, 'updateVariant'])->name('cart.update.variant');
 
-Route::get('/mua-ngay/checkout', [CartController::class, 'showBuyNowCheckout'])->name('cart.buyNow.checkout')->middleware('auth');
-Route::post('/mua-ngay', [CartController::class, 'buyNow'])->name('cart.buyNow');
+
+Route::match(['get', 'post'], '/mua-ngay', [CartController::class, 'buyNow'])->name('cart.buyNow');
+
 //checkout
 
 Route::get('/thanh-toan', [CartController::class, 'checkout'])->name('cart.checkout');
@@ -122,6 +123,9 @@ Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.walle
 Route::post('/payment/vnpay', [PaymentController::class, 'vnpayPayment'])->name('client.payment.vnpay');
 Route::get('/payment/vnpay/callback', [PaymentController::class, 'vnpayCallback'])->name('client.payment.vnpay.callback');
 
+Route::match(['get', 'post'], '/payment/vnpay/order', [PaymentController::class, 'vnpayOrderPayment'])->name('client.payment.vnpay.order');
+Route::get('/payment/vnpay/order/callback', [PaymentController::class, 'vnpayOrderCallback'])->name('client.payment.vnpay.order.callback');
+
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
         ->name('barber_schedules.showBranch');
@@ -135,10 +139,14 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('barber_schedules', BarberScheduleController::class)
         ->only(['index', 'show']);
 
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('admin.dashboard');
+    // })->name('dashboard');
 
+    // ==== Admin Dashboard ====
+    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+    // Hiển thị giao diện Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
 

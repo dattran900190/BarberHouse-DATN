@@ -48,6 +48,9 @@ class PostController extends Controller
 
     public function create()
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('posts.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         $authors = User::all(); // hoặc Author::all() nếu bạn dùng model riêng
         return view('admin.posts.create', compact('authors'));
     }
@@ -79,6 +82,9 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('posts.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         return view('admin.posts.edit', compact('post'));
     }
 
@@ -110,6 +116,9 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('posts.index')->with('error', 'Bạn không có quyền xóa bài viết.');
+        }
         // Xóa hình ảnh nếu có
         if ($post->image && \Storage::disk('public')->exists($post->image)) {
             \Storage::disk('public')->delete($post->image);

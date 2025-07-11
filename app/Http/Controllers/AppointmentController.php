@@ -27,10 +27,13 @@ class AppointmentController extends Controller
         $allAppointments = collect();
         $statuses = ['pending', 'confirmed', 'checked-in', 'progress', 'completed'];
         $appointments = [];
-
+        $user = auth()->user();
         // Hàm xây dựng truy vấn cho bảng appointments
-        $buildAppointmentQuery = function ($query, $search) {
+        $buildAppointmentQuery = function ($query, $search) use ($user) {
             $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
+                ->when($user->role === 'admin_branch', function ($q) use ($user) {
+                    $q->where('branch_id', $user->branch_id);
+                })
                 ->when($search, function ($q) use ($search) {
                     $q->where(function ($subQuery) use ($search) {
                         $subQuery->where('appointment_code', 'like', '%' . $search . '%')
@@ -47,10 +50,11 @@ class AppointmentController extends Controller
                 })
                 ->orderBy('updated_at', 'DESC');
         };
-
+        $user = auth()->user();
         // Hàm xây dựng truy vấn cho bảng cancelled_appointments
-        $buildCancelledQuery = function ($query, $search) {
+        $buildCancelledQuery = function ($query, $search) use ($user) {
             $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
+                ->when($user->role === 'admin_branch', fn($q) => $q->where('branch_id', $user->branch_id))
                 ->when($search, function ($q) use ($search) {
                     $q->where(function ($subQuery) use ($search) {
                         $subQuery->where('appointment_code', 'like', '%' . $search . '%')
