@@ -278,7 +278,8 @@ class CartController extends Controller
         $orderCode = 'ORD' . now()->format('Ymd') . strtoupper(Str::random(4));
 
         try {
-            DB::transaction(function () use ($request, $paymentMethod, $shippingFee, $expectedTotal, $orderCode) {
+            $order = null;
+            DB::transaction(function () use ($request, $paymentMethod, $shippingFee, $expectedTotal, $orderCode, &$order) {
                 // Tạo đơn hàng
                 $order = new \App\Models\Order();
                 $order->order_code = $orderCode;
@@ -293,6 +294,7 @@ class CartController extends Controller
                 $order->shipping_fee = $shippingFee;
                 $order->total_money = $expectedTotal;
                 $order->status = 'pending';
+                $order->payment_status = 'unpaid';
                 $order->save();
 
                 // Lưu chi tiết + trừ kho từng variant
@@ -327,6 +329,11 @@ class CartController extends Controller
                     Session::forget('cart_id');
                 }
             });
+
+            // Nếu chọn VNPay, chuyển hướng đến thanh toán
+            if ($paymentMethod === 'vnpay' && $order) {
+                return redirect()->route('client.payment.vnpay.order', ['order_id' => $order->id]);
+            }
 
             return redirect()->route('order.success')->with('success', 'Đặt hàng thành công!');
         } catch (\Exception $e) {
