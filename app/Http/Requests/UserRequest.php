@@ -6,30 +6,33 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UserRequest extends FormRequest
 {
-    
+
     public function authorize()
     {
-        return true; 
+        return true;
     }
 
-    
+
     public function rules()
-    {
-        $userId = $this->user ? $this->user->id : null;
+{
+    $userId = $this->user ? $this->user->id : null;
+    $role = $this->input('role'); // <-- lấy giá trị role từ input
 
-        return [
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|max:255|unique:users,email,' . $userId,
-            'password' => $this->isMethod('post') ? 'required|string|min:8|max:255' : 'nullable|string|min:8|max:255',
-            'phone' => 'required|string|max:20|unique:users,phone,' . $userId,
-            'gender' => 'required|in:male,female,other',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Ảnh tối đa 2MB
-            'address' => 'nullable|string',
-            'role' => 'required|in:user,admin,super_admin,admin_branch',
-            'status' => 'required|in:active,inactive,banned',
-            'points_balance' => 'nullable|integer|min:0',
-        ];
-    }
+    return [
+        'name' => 'required|string|max:100',
+        'email' => 'required|email|max:255|unique:users,email,' . $userId,
+        'password' => $this->isMethod('post') ? 'required|string|min:8|max:255' : 'nullable|string|min:8|max:255',
+        'phone' => 'required|string|max:20|unique:users,phone,' . $userId,
+        'gender' => 'required|in:male,female,other',
+        'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'address' => 'nullable|string',
+        'role' => 'required|in:user,admin,super_admin,admin_branch',
+        'status' => 'required|in:active,inactive,banned',
+        'points_balance' => 'nullable|integer|min:0',
+        'branch_id' => $role === 'admin_branch' ? 'required|exists:branches,id' : 'nullable|exists:branches,id',
+    ];
+}
+
 
 
     public function messages()
@@ -60,6 +63,9 @@ class UserRequest extends FormRequest
             'status.in' => 'Trạng thái phải là active, inactive hoặc banned.',
             'points_balance.integer' => 'Số điểm phải là số nguyên.',
             'points_balance.min' => 'Số điểm không được nhỏ hơn 0.',
+            'branch_id.required' => 'Chi nhánh là bắt buộc đối với quản trị viên.',
+            'branch_id.exists' => 'Chi nhánh không tồn tại.',
+
         ];
     }
 }

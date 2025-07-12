@@ -69,11 +69,15 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="phone" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control" name="phone" value="{{ old('phone', $user->phone) }}"
+                          @if ($role == 'admin')
+                        <input type="text" class="form-control" name="phone" value="{{ old('phone', $user->phone) }}">
+                        @else
+                         <input type="text" class="form-control" name="phone" value="{{ old('phone', $user->phone) }}"
                             readonly>
                         @error('phone')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
+                        @endif
                     </div>
                     <div class="col-md-6">
                         <label for="gender" class="form-label">Giới tính</label>
@@ -95,28 +99,39 @@
                 {{-- Hàng 3 --}}
                 <div class="row mb-3">
                     <div class="col-md-6">
+                        @if ($role == 'admin')
+                        <label for="" class="form-label">Chi nhánh</label>
+                        <select name="" id="" class="form-control" selected>
+                            <option value="">Chọn chi nhánh</option>
+                            @foreach ($branches as $branch)
+                                <option value="{{ $branch->id }}"
+                                    {{ old('branch_id', $user->branch_id) == $branch->id ? 'selected' : '' }}>
+                                    {{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                        @else
                         <label for="points_balance" class="form-label">Số điểm</label>
                         <input type="number" class="form-control" name="points_balance"
                             value="{{ old('points_balance', $user->points_balance) }}" readonly>
                         @error('points_balance')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
+                        @endif
                     </div>
                     <div class="col-md-6">
                         <label for="role" class="form-label">Vai trò</label>
                         <select class="form-control" name="role">
                             <option value="">Chọn vai trò</option>
                             @if ($role == 'user')
-                                <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User
+                                <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>Người dùng
                                 </option>
                             @else
-                                <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin
+                                <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Quản trị viên
                                 </option>
                                 <option value="admin_branch"
-                                    {{ old('role', $user->role) == 'admin_branch' ? 'selected' : '' }}>Admin Branch
+                                    {{ old('role', $user->role) == 'admin_branch' ? 'selected' : '' }}>Quản lý chi nhánh
                                 </option>
-                                <option value="super_admin"
-                                    {{ old('role', $user->role) == 'super_admin' ? 'selected' : '' }}>Super Admin</option>
+                                
                             @endif
                         </select>
                         @error('role')
