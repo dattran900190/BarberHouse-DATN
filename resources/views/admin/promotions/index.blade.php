@@ -122,8 +122,8 @@
                 </table>
             </div>
 
-            <div class="mt-3 d-flex justify-content-center">
-                {{ $promotions->withQueryString()->links('pagination::bootstrap-5') }}
+             <div class="d-flex justify-content-center mt-3">
+                {{ $promotions->links() }}
             </div>
         </div>
     </div>
