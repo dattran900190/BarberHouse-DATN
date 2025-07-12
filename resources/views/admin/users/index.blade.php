@@ -104,7 +104,7 @@
                                     <th>Số điện thoại</th>
                                     <th>Giới tính</th>
                                     <th>Địa chỉ</th>
-                                    <th>Vai trò</th>
+                                    {{-- <th>Vai trò</th> --}}
                                     <th>Trạng thái</th>
                                     <th>Hành động</th>
                                 </tr>
@@ -132,16 +132,12 @@
                                             <td>{{ $user->gender == 'male' ? 'Nam' : ($user->gender == 'female' ? 'Nữ' : 'Khác') }}
                                             </td>
                                             <td>{{ $user->address ?? 'Không có' }}</td>
-                                            <td>{{ $user->role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</td>
+                                            {{-- <td>{{ $user->role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</td> --}}
                                             <td>
                                                 <span
                                                     class="badge badge-pill badge-status-fixed
-                                                    {{ $user->status == 'active'
-                                                        ? 'badge-success'
-                                                        : ($user->status == 'inactive'
-                                                            ? 'badge-warning'
-                                                            : 'badge-danger') }}">
-                                                    {{ $user->status }}
+                                                    {{ $user->status === 'active' ? 'badge-success' : ($user->status === 'inactive' ? 'badge-warning' : 'badge-danger') }}">
+                                                    {{ $user->status === 'active' ? 'Hoạt động' : ($user->status === 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
                                                 </span>
                                             </td>
                                             <td class="text-center">
@@ -189,7 +185,7 @@
                         </table>
                     </div>
 
-                    <div class="mt-3">
+                  <div class="d-flex justify-content-center mt-3">
                         {{ $users->appends(['role' => 'user', 'role_filter' => 'user', 'search' => $role == 'user' ? $search : null])->links() }}
                     </div>
                 </div>
@@ -259,16 +255,13 @@
                                         <td>{{ $admin->gender == 'male' ? 'Nam' : ($admin->gender == 'female' ? 'Nữ' : 'Khác') }}
                                         </td>
                                         <td>{{ $admin->address ?? 'Không có' }}</td>
-                                        <td>{{ $admin->role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</td>
+                                        <td>{{ $admin->role == 'admin' ?? 'admin_branch' ? 'Quản trị viên' : 'Quản lý chi nhánh' }}
+                                        </td>
                                         <td>
                                             <span
                                                 class="badge badge-pill badge-status-fixed
-                                                {{ $admin->status == 'active'
-                                                    ? 'badge-success'
-                                                    : ($admin->status == 'inactive'
-                                                        ? 'badge-warning'
-                                                        : 'badge-danger') }}">
-                                                {{ $admin->status }}
+                                                {{ $admin->status === 'active' ? 'badge-success' : ($admin->status === 'inactive' ? 'badge-warning' : 'badge-danger') }}">
+                                                {{ $admin->status === 'active' ? 'Hoạt động' : ($admin->status === 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
                                             </span>
                                         </td>
                                         <td class="text-center">
@@ -289,6 +282,26 @@
                                                             href="{{ route('users.show', ['user' => $admin->id, 'role' => 'admin', 'page' => request('page', 1)]) }}">
                                                             <i class="fas fa-eye"></i> Xem
                                                         </a>
+                                                        @if ($currentRole === 'admin')
+                                                            <form
+                                                                action="{{ route('users.destroy', ['user' => $admin->id, 'role' => 'admin', 'page' => request('page', 1)]) }}"
+                                                                method="POST" style="display:inline;"
+                                                                onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="dropdown-item">
+                                                                    <i class="fas fa-trash me-1"></i> Xóa
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                        <button type="button"
+                                                            class="dropdown-item toggle-status-btn d-inline-flex align-items-center"
+                                                            data-id="{{ $admin->id }}"
+                                                            data-status="{{ $admin->status }}"
+                                                            data-role="{{ $admin->role }}">
+                                                            <i class="fas fa-ban mr-1"></i>
+                                                            <span>{{ $admin->status === 'active' ? 'Chặn' : 'Bỏ chặn' }}</span>
+                                                        </button>
                                                     </div>
                                                 </div>
                                         </td>
@@ -303,9 +316,10 @@
                         </table>
                     </div>
 
-                    <div class="mt-3">
+                    <div class="d-flex justify-content-center mt-3">
                         {{ $admins->appends(['role' => 'admin', 'role_filter' => 'admin', 'search' => $role == 'admin' ? $search : null])->links() }}
                     </div>
+
                 </div>
             </div>
         </div>
@@ -390,7 +404,8 @@
                             const row = btn.closest('tr');
                             const badge = row.querySelector('.badge');
 
-                            badge.textContent = data.status;
+                            badge.textContent = data.status_label;
+
                             badge.className = 'badge badge-pill badge-status-fixed ' + data
                                 .badge_class;
 

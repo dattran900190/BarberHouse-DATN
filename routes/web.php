@@ -57,6 +57,7 @@ Route::put('/gio-hang/update-variant/{cartItem}', [CartController::class, 'updat
 
 
 Route::match(['get', 'post'], '/mua-ngay', [CartController::class, 'buyNow'])->name('cart.buyNow');
+Route::get('/mua-ngay/checkout', [CartController::class, 'showBuyNowCheckout'])->name('cart.buyNow.checkout');
 
 //checkout
 

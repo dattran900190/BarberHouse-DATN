@@ -1,6 +1,6 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Thêm ' . ($role == 'user' ? 'Người dùng' : 'Quản trị viên') . ' mới') 
+@section('title', 'Thêm ' . ($role == 'user' ? 'Người dùng' : 'Quản trị viên') . ' mới')
 
 @section('content')
     <div class="page-header">
@@ -15,13 +15,14 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ route('users.index')}}">Quản lý người dùng</a>
+                <a href="{{ route('users.index') }}">Quản lý người dùng</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ route('users.index', ['role' => $role]) }}">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</a>
+                <a
+                    href="{{ route('users.index', ['role' => $role]) }}">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
@@ -44,14 +45,20 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label">Họ và tên</label>
-                        <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}">
-                        @error('name') <div class="text-danger">{{ $message }}</div> @enderror
+                        <input type="text" class="form-control" id="name" name="name"
+                            value="{{ old('name') }}">
+                        @error('name')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}">
-                        @error('email') <div class="text-danger">{{ $message }}</div> @enderror
+                        <input type="email" class="form-control" id="email" name="email"
+                            value="{{ old('email') }}">
+                        @error('email')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
@@ -59,13 +66,18 @@
                     <div class="col-md-6 mb-3">
                         <label for="password" class="form-label">Mật khẩu</label>
                         <input type="password" class="form-control" id="password" name="password">
-                        @error('password') <div class="text-danger">{{ $message }}</div> @enderror
+                        @error('password')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="phone" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}">
-                        @error('phone') <div class="text-danger">{{ $message }}</div> @enderror
+                        <input type="text" class="form-control" id="phone" name="phone"
+                            value="{{ old('phone') }}">
+                        @error('phone')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
@@ -78,20 +90,26 @@
                             <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Nữ</option>
                             <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Khác</option>
                         </select>
-                        @error('gender') <div class="text-danger">{{ $message }}</div> @enderror
+                        @error('gender')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="avatar" class="form-label">Ảnh đại diện</label>
                         <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
-                        @error('avatar') <div class="text-danger">{{ $message }}</div> @enderror
+                        @error('avatar')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="address" class="form-label">Địa chỉ</label>
                     <textarea class="form-control" id="address" name="address">{{ old('address') }}</textarea>
-                    @error('address') <div class="text-danger">{{ $message }}</div> @enderror
+                    @error('address')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="row">
@@ -100,14 +118,15 @@
                         <select class="form-control" id="role" name="role">
                             <option value="">Chọn vai trò</option>
                             @if ($role == 'user')
-                                <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                                <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>Người dùng</option>
                             @else
-                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                <option value="super_admin" {{ old('role') == 'super_admin' ? 'selected' : '' }}>Super Admin</option>
-                                <option value="admin_branch" {{ old('role') == 'admin_branch' ? 'selected' : '' }}>Admin chi nhánh</option>
+                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Quản trị viên</option>
+                                <option value="admin_branch" {{ old('role') == 'admin_branch' ? 'selected' : '' }}>Quản lý chi nhánh</option>
                             @endif
                         </select>
-                        @error('role') <div class="text-danger">{{ $message }}</div> @enderror
+                        @error('role')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
@@ -117,9 +136,31 @@
                             <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Hoạt động</option>
                             <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Tạm khóa</option>
                         </select>
-                        @error('status') <div class="text-danger">{{ $message }}</div> @enderror
+                        @error('status')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
+                @if ($role === 'admin')
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="branch_id" class="form-label">Chi nhánh</label>
+                            <select class="form-control" id="branch_id" name="branch_id">
+                                <option value="">Chọn chi nhánh</option>
+                                @foreach ($branches as $branch)
+                                    <option value="{{ $branch->id }}"
+                                        {{ old('branch_id') == $branch->id ? 'selected' : '' }}>
+                                        {{ $branch->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('branch_id')
+                                <div class="text-danger">{{ $errors->first('branch_id') }}</div>
+                            @enderror
+
+                        </div>
+                    </div>
+                @endif
 
                 <button type="submit" class="btn btn-sm btn-outline-success">
                     <i class="fas fa-plus"></i> <span class="ms-2">Thêm</span>
@@ -147,22 +188,24 @@
             align-items: stretch;
         }
 
-        .equal-height-columns > .col-md-6 {
+        .equal-height-columns>.col-md-6 {
             display: flex;
             flex-direction: column;
             align-items: stretch;
             min-height: 100%;
         }
 
-        .equal-height-columns > .col-md-6 > .mb-3 {
+        .equal-height-columns>.col-md-6>.mb-3 {
             flex: 0 1 auto;
         }
 
-        .equal-height-columns > .col-md-6 > .flex-fill {
+        .equal-height-columns>.col-md-6>.flex-fill {
             flex: 1 1 auto;
         }
 
-        .form-control, .form-control-file, .form-control textarea {
+        .form-control,
+        .form-control-file,
+        .form-control textarea {
             font-size: 0.9rem;
             width: 100%;
         }
@@ -220,7 +263,9 @@
                 margin-bottom: 1rem;
             }
 
-            .form-control, .form-control-file, .form-control textarea {
+            .form-control,
+            .form-control-file,
+            .form-control textarea {
                 font-size: 0.8rem;
             }
 
@@ -238,7 +283,8 @@
                 min-height: 100px;
             }
 
-            .avatar-placeholder, .avatar-img {
+            .avatar-placeholder,
+            .avatar-img {
                 width: 60px;
                 height: 60px;
                 font-size: 0.8rem;
