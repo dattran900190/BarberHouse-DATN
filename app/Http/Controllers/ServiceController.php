@@ -43,7 +43,7 @@ class ServiceController extends Controller
 
         Service::create($data);
 
-        return redirect()->route('services.index')->with('success', 'Thêm chi nhánh thành công');
+        return redirect()->route('services.index')->with('success', 'Thêm dịch vụ thành công');
     }
 
     public function show(Service $service)
@@ -101,6 +101,6 @@ class ServiceController extends Controller
         }
 
         $service->delete();
-        return redirect()->route('services.index')->with('success', 'Xoá chi nhánh thành công');
+        return redirect()->route('services.index')->with('success', 'Xoá dịch vụ thành công');
     }
 }

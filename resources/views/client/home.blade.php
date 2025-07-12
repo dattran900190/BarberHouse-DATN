@@ -88,12 +88,15 @@
                             @php $variant = $product->variants->first(); @endphp
 
                             @if ($variant)
-                                <div class="d-flex gap-2 mt-2">
+                                <div class="d-flex justify-content-center gap-2 mt-2">
                                     <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
                                         @csrf
                                         <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
                                         <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-dark">🛒</button>
+                                        <button type="submit" class="btn btn-dark icon-button"
+                                        title="Thêm vào giỏ hàng">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
                                     </form>
                                     <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
                                         @csrf

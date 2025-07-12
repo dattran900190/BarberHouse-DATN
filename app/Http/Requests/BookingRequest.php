@@ -20,7 +20,7 @@ class BookingRequest extends FormRequest
         // Cho phép tất cả yêu cầu, kiểm tra đăng nhập sẽ được xử lý trong controller
         return true;
     }
-    
+
     public function rules(): array
     {
         return [
@@ -45,6 +45,8 @@ class BookingRequest extends FormRequest
                 'email:rfc,dns'
             ],
             'payment_method' => 'required|in:cash,vnpay',
+            'additional_services' => 'nullable|json',
+            'additional_services.*' => 'exists:services,id',
         ];
     }
 
