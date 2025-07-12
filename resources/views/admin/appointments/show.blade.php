@@ -74,92 +74,116 @@
 
     <!-- Card 2: Chi tiết lịch hẹn -->
     <div class="card shadow-sm mb-4">
-    <div class="card-header text-white align-items-center">
-        <h3 class="card-title">Chi tiết đặt lịch</h3>
-    </div>
-    <div class="card-body">
-        <div class="row gy-3">
+        <div class="card-header text-white align-items-center">
+            <h3 class="card-title">Chi tiết đặt lịch</h3>
+        </div>
+        <div class="card-body">
+            <div class="row gy-3">
 
-            {{-- Dòng 1 --}}
-            <div class="col-md-6">
-                <i class="fa fa-barcode me-2 text-muted"></i>
-                <strong>Mã lịch hẹn:</strong> {{ $appointment->appointment_code ?? 'N/A' }}
-            </div>
-            <div class="col-md-6">
-                <i class="fa fa-cut me-2 text-success"></i>
-                <strong>Thợ:</strong> {{ $appointment->barber->name ?? 'N/A' }}
-            </div>
+                {{-- Dòng 1 --}}
+                <div class="col-md-6">
+                    <i class="fa fa-barcode me-2 text-muted"></i>
+                    <strong>Mã lịch hẹn:</strong> {{ $appointment->appointment_code ?? 'N/A' }}
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-cut me-2 text-success"></i>
+                    <strong>Thợ:</strong> {{ $appointment->barber->name ?? 'N/A' }}
+                </div>
 
-            {{-- Dòng 2 --}}
-            <div class="col-md-6">
-                <i class="fa fa-map-marker-alt me-2 text-success"></i>
-                <strong>Chi nhánh:</strong> {{ $appointment->branch->name ?? 'N/A' }}
-            </div>
+                {{-- Dòng 2 --}}
+                <div class="col-md-6">
+                    <i class="fa fa-map-marker-alt me-2 text-success"></i>
+                    <strong>Chi nhánh:</strong> {{ $appointment->branch->name ?? 'N/A' }}
+                </div>
 
-            {{-- Dòng 3 --}}
-            <div class="col-md-6">
-                <i class="fa fa-clock me-2 text-warning"></i>
-                <strong>Thời gian:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
-            </div>
-            <div class="col-md-6">
-                <i class="fa fa-info-circle me-2 text-warning"></i>
-                <strong>Trạng thái:</strong>
-                <span class="badge bg-{{ $statusColors[$appointment->status] ?? 'secondary' }}">
-                    {{ $statusTexts[$appointment->status] ?? ucfirst($appointment->status) }}
-                </span>
-            </div>
+                {{-- Dòng 3 --}}
+                <div class="col-md-6">
+                    <i class="fa fa-clock me-2 text-warning"></i>
+                    <strong>Thời gian:</strong>
+                    {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-info-circle me-2 text-warning"></i>
+                    <strong>Trạng thái:</strong>
+                    <span class="badge bg-{{ $statusColors[$appointment->status] ?? 'secondary' }}">
+                        {{ $statusTexts[$appointment->status] ?? ucfirst($appointment->status) }}
+                    </span>
+                </div>
 
-            {{-- Dòng 4 --}}
-            <div class="col-md-6">
-                <i class="fa fa-wallet me-2 text-info"></i>
-                <strong>Thanh toán:</strong>
-                <span class="badge bg-{{ $paymentColors[$appointment->payment_status] ?? 'secondary' }}">
-                    {{ $paymentTexts[$appointment->payment_status] ?? ucfirst($appointment->payment_status) }}
-                </span>
-            </div>
-            <div class="col-md-6">
-                <i class="fa fa-percentage me-2 text-success"></i>
-                <strong>Giảm giá:</strong> {{ number_format($appointment->discount_amount, 0, ',', '.') }} VNĐ
-            </div>
+                {{-- Dòng 4 --}}
+                <div class="col-md-6">
+                    <i class="fa fa-wallet me-2 text-info"></i>
+                    <strong>Thanh toán:</strong>
+                    <span class="badge bg-{{ $paymentColors[$appointment->payment_status] ?? 'secondary' }}">
+                        {{ $paymentTexts[$appointment->payment_status] ?? ucfirst($appointment->payment_status) }}
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-percentage me-2 text-success"></i>
+                    <strong>Giảm giá:</strong> {{ number_format($appointment->discount_amount, 0, ',', '.') }} VNĐ
+                </div>
 
-            {{-- Dòng 5 --}}
-            <div class="col-md-6">
-                <i class="fa fa-dollar-sign me-2 text-success"></i>
-                <strong>Tổng thanh toán:</strong> {{ number_format($appointment->total_amount, 0, ',', '.') }} VNĐ
-            </div>
-            <div class="col-md-6">
-                <i class="fa fa-calendar-alt me-2 text-muted"></i>
-                <strong>Ngày tạo:</strong>
-                {{ $appointment->created_at ? $appointment->created_at->format('d/m/Y H:i') : 'N/A' }}
-            </div>
+                {{-- Dòng 5 --}}
+                <div class="col-md-6">
+                    <i class="fa fa-dollar-sign me-2 text-success"></i>
+                    <strong>Tổng thanh toán:</strong> {{ number_format($appointment->total_amount, 0, ',', '.') }} VNĐ
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-calendar-alt me-2 text-muted"></i>
+                    <strong>Ngày tạo:</strong>
+                    {{ $appointment->created_at ? $appointment->created_at->format('d/m/Y H:i') : 'N/A' }}
+                </div>
 
-            {{-- Ghi chú (nguyên dòng) --}}
-            <div class="col-md-12">
-                <i class="fa fa-sticky-note me-2 text-muted"></i>
-                <strong>Ghi chú:</strong> {{ $appointment->note ?? 'N/A' }}
-            </div>
+                {{-- Ghi chú (nguyên dòng) --}}
+                <div class="col-md-6">
+                    <i class="fa fa-sticky-note me-2 text-muted"></i>
+                    <strong>Ghi chú:</strong> {{ $appointment->note ?? 'N/A' }}
+                </div>
 
-            <div class="col-md-6">
-                <i class="fas fa-concierge-bell me-2 text-success"></i>
-                <strong>Dịch vụ:</strong> {{ $appointment->service->name ?? 'N/A' }}
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <i class="fa fa-comment-dots me-2 text-primary"></i>
+                        <strong>Bình luận:</strong>
+                        <span class="text-muted">{{ $review->comment ?? 'Chưa có bình luận' }}</span>
+                    </div>
 
-                <div class="mt-2">
-                    <i class="fas fa-plus-circle text-primary me-2"></i>
-                    <strong>Dịch vụ bổ sung:</strong>
-                    @if ($additionalServices->isNotEmpty())
-                        <ul class="m-3 mt-0 ps-3">
-                            @foreach ($additionalServices as $service)
-                                <li>{{ $service->name }}</li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <p class="text-muted fst-italic mt-1">Không có dịch vụ bổ sung</p>
+                    @if (isset($review->rating))
+                        <div>
+                            <i class="fa fa-star me-2 text-warning"></i>
+                            <strong>Đánh giá:</strong>
+                            @for ($i = 1; $i <= 5; $i++)
+                                @if ($i <= $review->rating)
+                                    <i class="fa fa-star text-warning"></i>
+                                @else
+                                    <i class="fa fa-star text-secondary"></i>
+                                @endif
+                            @endfor
+                            <span class="ms-2 text-muted">({{ $review->rating }}/5)</span>
+                        </div>
                     @endif
+                </div>
+
+                <div class="col-md-6">
+                    <i class="fas fa-concierge-bell me-2 text-success"></i>
+                    <strong>Dịch vụ:</strong> {{ $appointment->service->name ?? 'N/A' }}
+
+                    <div class="mt-2">
+                        <i class="fas fa-plus-circle text-primary me-2"></i>
+                        <strong>Dịch vụ bổ sung:</strong>
+                        @if ($additionalServices->isNotEmpty())
+                            <ul class="m-3 mt-0 ps-3">
+                                @foreach ($additionalServices as $service)
+                                    <li>{{ $service->name }}</li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p class="text-muted fst-italic mt-1">Không có dịch vụ bổ sung</p>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 
     <!-- Card 3: Thông tin hủy (nếu có) -->

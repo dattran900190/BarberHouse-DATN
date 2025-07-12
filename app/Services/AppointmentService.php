@@ -36,7 +36,25 @@ class AppointmentService
 
         // Kiểm tra điều kiện đơn hàng tối thiểu
         $service = $appointment->service;
-        if ($promotion->min_order_value && $service->price < $promotion->min_order_value) {
+
+        // Tính tổng giá dịch vụ chính + dịch vụ bổ sung
+        $totalServicePrice = $service->price;
+
+        // Nếu có dịch vụ bổ sung, cộng thêm giá
+        if (!empty($appointment->additional_services)) {
+            // Nếu lưu dạng JSON
+            $additionalServiceIds = is_array($appointment->additional_services)
+                ? $appointment->additional_services
+                : json_decode($appointment->additional_services, true);
+
+            if ($additionalServiceIds && is_array($additionalServiceIds)) {
+                $additionalPrices = \App\Models\Service::whereIn('id', $additionalServiceIds)->pluck('price')->sum();
+                $totalServicePrice += $additionalPrices;
+            }
+        }
+
+        // Kiểm tra điều kiện đơn hàng tối thiểu
+        if ($promotion->min_order_value && $totalServicePrice < $promotion->min_order_value) {
             throw new \Exception('Giá trị đơn hàng không đủ để áp dụng mã giảm giá.');
         }
 
@@ -45,19 +63,19 @@ class AppointmentService
         if ($promotion->discount_type === 'fixed') {
             $discount = $promotion->discount_value;
         } elseif ($promotion->discount_type === 'percent') {
-            $discount = ($promotion->discount_value / 100) * $service->price;
+            $discount = ($promotion->discount_value / 100) * $totalServicePrice;
             if ($promotion->max_discount_amount && $discount > $promotion->max_discount_amount) {
                 $discount = $promotion->max_discount_amount;
             }
         }
 
         // Bắt đầu transaction
-        DB::transaction(function () use ($appointment, $promotion, $redeemedVoucher, $discount) {
+        DB::transaction(function () use ($appointment, $promotion, $redeemedVoucher, $discount, $totalServicePrice) {
             // Cập nhật lịch hẹn
             $appointment->update([
                 'promotion_id' => $promotion->id,
                 'discount_amount' => $discount,
-                'total_amount' => $appointment->service->price - $discount,
+                'total_amount' => $totalServicePrice - $discount,
             ]);
 
             // Nếu có voucher, cập nhật đã sử dụng

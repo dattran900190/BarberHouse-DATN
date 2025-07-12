@@ -213,22 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
       updateBarbers(branchContainer.value, dateStr, appointmentTime.value, serviceSelect.value);
     }
   });
-
-  // tính tổng tiền và thời gian dịch vụ 
-  const priceOutput = document.getElementById('totalPrice');
-  const durationOutput = document.getElementById('totalDuration');
-
-  serviceSelect.addEventListener('change', function () {
-    const opt = this.options[this.selectedIndex];
-    // console.log('DEBUG sel.dataset =', opt.dataset);
-
-    const price = parseFloat(opt.dataset.price);
-    const duration = parseInt(opt.dataset.duration, 10);
-
-    priceOutput.textContent = isNaN(price) ? '0 vnđ' : price.toLocaleString('vi-VN') + ' vnđ';
-    durationOutput.textContent = isNaN(duration) ? '0 Phút' : duration + ' Phút';
-  });
-
+  
   // Trigger nếu old() đã chọn
   if (serviceSelect.value) {
     serviceSelect.dispatchEvent(new Event('change'));
@@ -259,69 +244,93 @@ document.addEventListener('DOMContentLoaded', function () {
     otherInfo.style.display = this.checked ? 'block' : 'none';
   });
 
-  document.addEventListener('DOMContentLoaded', function () {
-    const checkbox = document.getElementById('other_person');
-    const otherInfo = document.getElementById('other-info');
-
-    checkbox.addEventListener('change', function () {
-      otherInfo.style.display = this.checked ? 'block' : 'none';
-    });
-  });
-
-
-});
-
-
-
-document.addEventListener('DOMContentLoaded', function () {
-  const serviceSelect = document.getElementById('service');
   const voucherSelect = document.getElementById('voucher_id');
-  const priceOutput = document.querySelectorAll('#totalPrice');
+  const priceOutput = document.getElementById('totalPrice');
   const totalAfterDiscount = document.getElementById('total_after_discount');
+  const durationOutput = document.getElementById('totalDuration');
+  const additionalServicesContainer = document.getElementById('additionalServicesContainer');
 
-  function getServicePrice() {
-    const opt = serviceSelect.options[serviceSelect.selectedIndex];
-    // Nếu có data-price thì lấy, không thì lấy số trong text
-    let price = opt.dataset.price ? parseFloat(opt.dataset.price) : 0;
-    if (!price) {
-      // fallback: lấy số trong text
-      const match = opt.textContent.match(/(\d[\d\.]*)đ/);
-      if (match) price = parseInt(match[1].replace(/\./g, ''));
-    }
-    return price || 0;
+  function getServiceInfo(option) {
+    if (!option) return { price: 0, duration: 0 };
+    return {
+      price: parseFloat(option.getAttribute('data-price')) || 0,
+      duration: parseInt(option.getAttribute('data-duration'), 10) || 0
+    };
+  }
+
+  function getAdditionalServicesInfo() {
+    let totalPrice = 0;
+    let totalDuration = 0;
+    if (!additionalServicesContainer) return { totalPrice, totalDuration };
+    const selects = additionalServicesContainer.querySelectorAll('.additional-service-select');
+    selects.forEach(select => {
+      const opt = select.options[select.selectedIndex];
+      if (opt && opt.value) {
+        const info = getServiceInfo(opt);
+        totalPrice += info.price;
+        totalDuration += info.duration;
+      }
+    });
+    return { totalPrice, totalDuration };
   }
 
   function updateTotal() {
-    const price = getServicePrice();
+    // Lấy thông tin dịch vụ chính
+    const mainOpt = serviceSelect.options[serviceSelect.selectedIndex];
+    const mainInfo = getServiceInfo(mainOpt);
+
+    // Lấy thông tin các dịch vụ phụ
+    const addInfo = getAdditionalServicesInfo();
+
+    // Tính tổng giá và tổng thời gian trước khi giảm giá
+    const totalPrice = mainInfo.price + addInfo.totalPrice;
+    const totalDuration = mainInfo.duration + addInfo.totalDuration;
+
+    // Lấy thông tin voucher
+    const voucherOpt = voucherSelect.options[voucherSelect.selectedIndex];
+    const discountType = voucherOpt?.getAttribute('data-discount-type') || '';
+    const discountValue = parseFloat(voucherOpt?.getAttribute('data-discount-value')) || 0;
+
+    // Tính giảm giá
     let discount = 0;
     let discountText = '';
-    const voucherOpt = voucherSelect.options[voucherSelect.selectedIndex];
-    const discountType = voucherOpt.getAttribute('data-discount-type');
-    const discountValue = parseFloat(voucherOpt.getAttribute('data-discount-value')) || 0;
-
-    if (voucherSelect.value && price > 0) {
+    if (voucherSelect.value && totalPrice > 0 && discountType) {
       if (discountType === 'fixed') {
         discount = discountValue;
-        discountText = `- ${discount.toLocaleString('vi-VN')} vnđ`;
+        discountText = `Đã giảm: <span>${discount.toLocaleString('vi-VN')} VNĐ</span>`;
       } else if (discountType === 'percent') {
-        discount = price * discountValue / 100;
-        discountText = `- ${discountValue}% (${discount.toLocaleString('vi-VN')} vnđ)`;
+        discount = Math.round(totalPrice * discountValue / 100);
+        discountText = `Đã giảm: <span>${discountValue}%</span> (<span>${discount.toLocaleString('vi-VN')} VNĐ</span>)`;
       }
     }
 
-    let total = price - discount;
-    if (total < 0) total = 0;
+    // Tính tổng sau giảm giá
+    let totalAfter = totalPrice - discount;
+    if (totalAfter < 0) totalAfter = 0;
 
-    // Cập nhật tất cả chỗ hiển thị tổng tiền
-    priceOutput.forEach(el => el.textContent = total.toLocaleString('vi-VN') + ' vnđ');
-    totalAfterDiscount.innerHTML = discount > 0 ?
-      `<span class="text-success">Đã giảm: ${discountText}</span>` :
-      '';
+    // Cập nhật giao diện người dùng
+    priceOutput.textContent = totalAfter.toLocaleString('vi-VN') + ' vnđ';
+    durationOutput.textContent = totalDuration + ' Phút';
+    totalAfterDiscount.innerHTML = discount > 0
+      ? `<span class="text-success">${discountText}</span>`
+      : '';
   }
 
+  // Listen for changes
   serviceSelect.addEventListener('change', updateTotal);
   voucherSelect.addEventListener('change', updateTotal);
 
-  // Gọi khi load trang
-  updateTotal();
+  // Listen for changes in additional services
+  if (additionalServicesContainer) {
+    additionalServicesContainer.addEventListener('change', function (e) {
+      if (e.target.classList.contains('additional-service-select')) {
+        updateTotal();
+      }
+    });
+    // Also update when add/remove additional service
+    new MutationObserver(updateTotal).observe(additionalServicesContainer, { childList: true, subtree: true });
+  }
+
 });
+
+

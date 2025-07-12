@@ -12,8 +12,10 @@ use App\Mail\CancelBookingMail;
 use Illuminate\Support\Facades\Log;
 use App\Events\AppointmentConfirmed;
 use App\Models\CancelledAppointment;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\AppointmentRequest;
+use App\Models\Review;
 
 class AppointmentController extends Controller
 {
@@ -27,7 +29,7 @@ class AppointmentController extends Controller
         $allAppointments = collect();
         $statuses = ['pending', 'confirmed', 'checked-in', 'progress', 'completed'];
         $appointments = [];
-        $user = auth()->user();
+        $user = Auth::user();
         // Hàm xây dựng truy vấn cho bảng appointments
         $buildAppointmentQuery = function ($query, $search) use ($user) {
             $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
@@ -50,7 +52,7 @@ class AppointmentController extends Controller
                 })
                 ->orderBy('updated_at', 'DESC');
         };
-        $user = auth()->user();
+        $user = Auth::user();
         // Hàm xây dựng truy vấn cho bảng cancelled_appointments
         $buildCancelledQuery = function ($query, $search) use ($user) {
             $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
@@ -294,13 +296,15 @@ class AppointmentController extends Controller
 
         $additionalServicesIds = json_decode($appointment->additional_services, true) ?? [];
         $additionalServices = Service::whereIn('id', $additionalServicesIds)->get();
+        $review = Review::where('appointment_id', $appointment->id)->first();
 
         return view('admin.appointments.show', compact(
             'appointment',
             'otherBarberAppointments',
             'otherUserAppointments',
             'isCancelled',
-            'additionalServices'
+            'additionalServices',
+            'review'
         ));
     }
 
