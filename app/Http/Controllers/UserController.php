@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
+use App\Models\Branch;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
@@ -39,13 +40,18 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
-
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('users.index')->with('error', 'Bạn không có quyền thêm người dùng.');
         }
+        $branches = Branch::whereNotIn('id', function ($query) {
+            $query->select('branch_id')
+                ->from('users')
+                ->whereNotNull('branch_id')
+                ->where('role', 'admin_branch');
+        })->get();
         $role = $request->input('role', 'user');
         $status = $request->input('status', 'active');
-        return view('admin.users.create', compact('role'));
+        return view('admin.users.create', compact('role', 'branches'));
     }
 
     public function store(UserRequest $request)
@@ -54,7 +60,8 @@ class UserController extends Controller
             return redirect()->route('users.index')->with('error', 'Bạn không có quyền thêm người dùng.');
         }
         $data = $request->validated();
-        $role = $request->input('role', 'user');
+        $role = $request->query('role', 'user');
+
         $data['status'] = $request->input('status', 'active'); // set mặc định là active
 
         if ($role === 'admin' && !in_array($data['role'], ['admin', 'admin_branch', 'super_admin'])) {
@@ -97,14 +104,29 @@ class UserController extends Controller
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('users.index')->with('error', 'Bạn không có quyền sửa người dùng.');
         }
+
         $role = $request->input('role', 'user');
+
         if (($role === 'user' && $user->role !== 'user') ||
             ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
         ) {
             abort(403, 'Không có quyền truy cập');
         }
-        return view('admin.users.edit', compact('user', 'role'));
+
+        // Lấy chi nhánh chưa gán cho admin_branch, nhưng giữ lại chi nhánh của user đang edit
+        $branches = Branch::where(function ($query) use ($user) {
+            $query->whereNotIn('id', function ($subQuery) {
+                $subQuery->select('branch_id')
+                    ->from('users')
+                    ->whereNotNull('branch_id')
+                    ->where('role', 'admin_branch');
+            })
+                ->orWhere('id', $user->branch_id); // giữ lại chi nhánh đã chọn nếu đang edit
+        })->get();
+
+        return view('admin.users.edit', compact('user', 'role', 'branches'));
     }
+
 
     public function update(UserRequest $request, User $user)
     {
@@ -112,7 +134,7 @@ class UserController extends Controller
             return redirect()->route('users.index')->with('error', 'Bạn không có quyền sửa người dùng.');
         }
         $currentPage = $request->input('page', 1);
-        $role = $request->input('role', 'user');
+        $role = $request->query('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
             ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
         ) {
@@ -150,8 +172,7 @@ class UserController extends Controller
     }
 
     public function destroy(User $user, Request $request)
-    {   
-        
+    {
         $role = $request->input('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
             ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
@@ -169,14 +190,30 @@ class UserController extends Controller
     }
     public function toggleStatus(Request $request, User $user)
     {
-        
+        // Đảo trạng thái
         $user->status = $user->status === 'active' ? 'banned' : 'active';
         $user->save();
 
+        // Gán class và nhãn tương ứng
+        $badgeClass = match ($user->status) {
+            'active' => 'badge-success',
+            'inactive' => 'badge-warning',
+            default => 'badge-danger',
+        };
+
+        $statusLabel = match ($user->status) {
+            'active' => 'Hoạt động',
+            'inactive' => 'Không hoạt động',
+            default => 'Bị khóa',
+        };
+
+        $buttonLabel = $user->status === 'active' ? 'Chặn' : 'Bỏ chặn';
+
         return response()->json([
             'status' => $user->status,
-            'button_label' => $user->status === 'active' ? 'Chặn' : 'Bỏ chặn',
-            'badge_class' => $user->status === 'active' ? 'badge-success' : 'badge-danger',
+            'status_label' => $statusLabel,
+            'badge_class' => $badgeClass,
+            'button_label' => $buttonLabel,
         ]);
     }
 }
