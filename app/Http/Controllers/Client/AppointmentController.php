@@ -144,7 +144,7 @@ class AppointmentController extends Controller
 
             $allAppointments = $appointmentsResult->merge($canceledResult)
                 ->sortByDesc('updated_at')
-                ->take(5);
+                ->values();
         }
 
         // Phân trang thủ công

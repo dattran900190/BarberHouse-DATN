@@ -63,6 +63,18 @@
                         @endif
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{ asset('admin/refunds') }}">
+                        <i class="fas fa-exchange-alt"></i>
+                        <p>Danh sách Hoàn tiền</p>
+                        {{-- <span id="pending-appointment-count" class="badge badge-danger"
+                            style="{{ $pendingCount > 0 ? '' : 'display: none;' }}">
+                            {{ $pendingCount }}
+                        </span> --}}
+                    </a>
+                </li>
+             
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#base">
                         <i class="fas fa-cut"></i>
@@ -71,15 +83,6 @@
                     </a>
                     <div class="collapse" id="base">
                         <ul class="nav nav-collapse">
-                            {{-- <li>
-                                <a href="{{ asset('admin/appointments') }}">
-                                    <span class="sub-item">Đặt lịch</span> <span id="pending-appointment-count"
-                                        class="badge badge-danger"
-                                        style="{{ $pendingCount > 0 ? '' : 'display: none;' }}">
-                                        {{ $pendingCount }}
-                                    </span>
-                                </a>
-                            </li> --}}
                             <li>
                                 <a href="{{ asset('admin/services') }}">
                                     <span class="sub-item">Dịch vụ</span>
@@ -132,15 +135,10 @@
                                 </a>
                             </li>
                             {{-- <li>
-                                <a href="{{ asset('admin/orders') }}">
-                                    <span class="sub-item">Đơn hàng</span>
-                                </a>
-                            </li> --}}
-                            <li>
                                 <a href="{{ asset('admin/refunds') }}">
                                     <span class="sub-item">Hoàn tiền</span>
                                 </a>
-                            </li>
+                            </li> --}}
                             <li>
                                 <a href="{{ asset('admin/product_categories') }}">
                                     <span class="sub-item">Danh mục</span>
