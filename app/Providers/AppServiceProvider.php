@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+   public function boot(): void
     {
         // Kích hoạt phân trang dùng Bootstrap
         Paginator::useBootstrap();
@@ -38,23 +38,11 @@ class AppServiceProvider extends ServiceProvider
             $pendingCount = Appointment::where('status', 'pending')->count();
             $view->with('pendingCount', $pendingCount);
         });
-<<<<<<< HEAD
 
-        // banners
-
-        View::composer('client.*', function ($view) {
-            $banners = Banner::where('is_active', 1)
-                ->orderBy('id', 'desc')
-                ->get();
-
-            $view->with('banners', $banners);
-=======
-        
         // Thêm biến số lượng đơn hàng chờ xác nhận cho mọi view
         View::composer('*', function ($view) {
             $pendingOrderCount = \App\Models\Order::where('status', 'pending')->count();
             $view->with('pendingOrderCount', $pendingOrderCount);
->>>>>>> b9bb882467ba62a5efe1d8da53f20aa1d7f0c564
         });
     }
 }
