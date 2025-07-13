@@ -44,5 +44,14 @@ class AppServiceProvider extends ServiceProvider
             $pendingOrderCount = \App\Models\Order::where('status', 'pending')->count();
             $view->with('pendingOrderCount', $pendingOrderCount);
         });
+         // banners
+
+        View::composer('client.*', function ($view) {
+            $banners = Banner::where('is_active', 1)
+                ->orderBy('id', 'desc')
+                ->get();
+
+            $view->with('banners', $banners);
+        });
     }
 }
