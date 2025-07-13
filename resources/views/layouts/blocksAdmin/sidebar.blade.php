@@ -56,7 +56,11 @@
                     <a href="{{ asset('admin/orders') }}">
                         <i class="fas fa-shopping-cart"></i>
                         <p>Danh sách Đơn hàng</p>
-                        
+                        @if($pendingOrderCount > 0)
+                            <span style="background:#F55A5A;color:#fff;border-radius:8px;padding:2px 8px;font-size:13px;margin-left:8px;display:inline-block;">
+                                {{ $pendingOrderCount }}
+                            </span>
+                        @endif
                     </a>
                 </li>
                 <li class="nav-item">
