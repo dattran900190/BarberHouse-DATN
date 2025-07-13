@@ -100,10 +100,6 @@
                      data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                      <i class="fa fa-bell"></i>
                      <span id="pending-appointment-count"  class="notification">{{ $pendingCount }}</span>
-                      {{-- <span id="pending-appointment-count" class="badge badge-danger"
-                        style="{{ $pendingCount > 0 ? '' : 'display: none;' }}">
-                        {{ $pendingCount }}
-                    </span> --}}
                  </a>
                  <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
                      <li>

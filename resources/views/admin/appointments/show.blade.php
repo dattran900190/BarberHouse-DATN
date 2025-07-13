@@ -284,8 +284,6 @@
         </div>
     </div>
 
-    {{-- </div> --}}
-
 
     @if ($otherBarberAppointments->count())
         <div class="card mt-4">

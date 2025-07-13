@@ -20,23 +20,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // —— Nav background on scroll ——
   const nav = document.getElementById("mainNav");
-  window.addEventListener("scroll", () => {
+  function updateNavScrolled() {
     if (window.scrollY > 100) nav.classList.add("scrolled");
     else nav.classList.remove("scrolled");
-  });
+  }
+  window.addEventListener("scroll", updateNavScrolled);
+  updateNavScrolled(); // Call once on page load
 
   // —— Hero slider ——
+  // const slides = document.querySelectorAll(".hero-slider .slide");
+  // let idx = 0;
+  // function showSlide(i) {
+  //   slides.forEach(s => s.classList.remove("active"));
+  //   slides[i].classList.add("active");
+  // }
+  // document.querySelector(".hero-slider .next")
+  //   .addEventListener("click", () => { idx = (idx + 1) % slides.length; showSlide(idx); });
+  // document.querySelector(".hero-slider .prev")
+  //   .addEventListener("click", () => { idx = (idx - 1 + slides.length) % slides.length; showSlide(idx); });
+  // setInterval(() => { idx = (idx + 1) % slides.length; showSlide(idx); }, 4000);
   const slides = document.querySelectorAll(".hero-slider .slide");
-  let idx = 0;
-  function showSlide(i) {
-    slides.forEach(s => s.classList.remove("active"));
-    slides[i].classList.add("active");
-  }
-  document.querySelector(".hero-slider .next")
-    .addEventListener("click", () => { idx = (idx + 1) % slides.length; showSlide(idx); });
-  document.querySelector(".hero-slider .prev")
-    .addEventListener("click", () => { idx = (idx - 1 + slides.length) % slides.length; showSlide(idx); });
+let idx = 0;
+function showSlide(i) {
+  slides.forEach(s => s.classList.remove("active"));
+  slides[i].classList.add("active");
+}
+const nextSlideBtn = document.querySelector(".hero-slider .next");
+const prevSlideBtn = document.querySelector(".hero-slider .prev");
+if (nextSlideBtn && prevSlideBtn && slides.length) {
+  nextSlideBtn.addEventListener("click", () => { idx = (idx + 1) % slides.length; showSlide(idx); });
+  prevSlideBtn.addEventListener("click", () => { idx = (idx - 1 + slides.length) % slides.length; showSlide(idx); });
   setInterval(() => { idx = (idx + 1) % slides.length; showSlide(idx); }, 4000);
+}
 
   // —— Posts slider ——
   const wrapper = document.querySelector(".posts-wrapper");
@@ -51,12 +66,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const slideWidth = wrapper.clientWidth;
     track.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
   }
+  // nextBtn.addEventListener("click", () => {
+  //   if (currentSlide < totalSlides - 1) { currentSlide++; updateSlide(); }
+  // });
+  // prevBtn.addEventListener("click", () => {
+  //   if (currentSlide > 0) { currentSlide--; updateSlide(); }
+  // });
+  if (nextBtn && prevBtn && wrapper && track && posts.length) {
   nextBtn.addEventListener("click", () => {
     if (currentSlide < totalSlides - 1) { currentSlide++; updateSlide(); }
   });
   prevBtn.addEventListener("click", () => {
     if (currentSlide > 0) { currentSlide--; updateSlide(); }
   });
+  window.addEventListener("resize", updateSlide);
+}
   window.addEventListener("resize", updateSlide);
 
   // —— Time picker ——
@@ -93,10 +117,32 @@ document.addEventListener('DOMContentLoaded', function () {
   const barberSelect = document.getElementById('barber');
   const serviceSelect = document.getElementById('service');
 
+  // const timeGrid = document.getElementById('timeGrid');
+
+  // // Xử lý sự kiện nhấp chuột trên các ô giờ
+  // timeGrid.querySelectorAll('.time-slot').forEach(slot => {
+  //   slot.addEventListener('click', function () {
+  //     // Xóa lớp 'selected' khỏi tất cả các ô giờ
+  //     timeGrid.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+  //     // Thêm lớp 'selected' cho ô giờ được nhấp
+  //     this.classList.add('selected');
+  //     // Cập nhật giá trị input ẩn
+  //     appointmentTime.value = this.getAttribute('data-value');
+  //     updateBarbers(branchContainer.value, appointmentDate.value, appointmentTime.value, serviceSelect.value);
+  //   });
+  // });
+
+  // // Đánh dấu ô giờ nếu có giá trị cũ (từ {{ old('appointment_time') }})
+  // const oldTime = appointmentTime.value;
+  // if (oldTime) {
+  //   const slot = timeGrid.querySelector(`.time-slot[data-value="${oldTime}"]`);
+  //   if (slot) slot.classList.add('selected');
+  // }
 
   const timeGrid = document.getElementById('timeGrid');
 
-  // Xử lý sự kiện nhấp chuột trên các ô giờ
+// Xử lý sự kiện nhấp chuột trên các ô giờ
+if (timeGrid) {
   timeGrid.querySelectorAll('.time-slot').forEach(slot => {
     slot.addEventListener('click', function () {
       // Xóa lớp 'selected' khỏi tất cả các ô giờ
@@ -115,6 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const slot = timeGrid.querySelector(`.time-slot[data-value="${oldTime}"]`);
     if (slot) slot.classList.add('selected');
   }
+}
 
   let lastRequest = null;
 
@@ -213,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
       updateBarbers(branchContainer.value, dateStr, appointmentTime.value, serviceSelect.value);
     }
   });
-  
+
   // Trigger nếu old() đã chọn
   if (serviceSelect.value) {
     serviceSelect.dispatchEvent(new Event('change'));

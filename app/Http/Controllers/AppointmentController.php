@@ -25,7 +25,7 @@ class AppointmentController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $activeTab = 'pending';
+        $activeTab = $request->input('status', 'pending');
         $allAppointments = collect();
         $statuses = ['pending', 'confirmed', 'checked-in', 'progress', 'completed'];
         $appointments = [];
@@ -74,19 +74,16 @@ class AppointmentController extends Controller
                 ->orderBy('updated_at', 'DESC');
         };
 
-        // Nếu có tìm kiếm, lấy tất cả lịch hẹn từ cả hai bảng
-        if ($search) {
-            // Lấy từ bảng appointments
+        // Nếu có tìm kiếm và không có tham số status rõ ràng, điều chỉnh $activeTab
+        if ($search && !$request->has('status')) {
             $appointmentQuery = Appointment::query();
             $buildAppointmentQuery($appointmentQuery, $search);
             $appointmentsResult = $appointmentQuery->get();
 
-            // Lấy từ bảng cancelled_appointments
             $cancelledQuery = CancelledAppointment::query();
             $buildCancelledQuery($cancelledQuery, $search);
             $cancelledResult = $cancelledQuery->get();
 
-            // Kết hợp kết quả
             $allAppointments = $appointmentsResult->merge($cancelledResult);
 
             if ($allAppointments->count() > 0) {
@@ -211,12 +208,12 @@ class AppointmentController extends Controller
     {
         try {
             // Kiểm tra trạng thái hợp lệ
-            if ($appointment->status !== 'confirmed') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Chỉ có thể hoàn thành lịch hẹn đã được xác nhận.'
-                ], 400);
-            }
+            // if ($appointment->status !== 'confirmed') {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Chỉ có thể hoàn thành lịch hẹn đã được xác nhận.'
+            //     ], 400);
+            // }
 
             // Cập nhật trạng thái lịch hẹn và thanh toán
             $appointment->status = 'completed';
@@ -351,37 +348,8 @@ class AppointmentController extends Controller
     public function update(AppointmentRequest $request, Appointment $appointment)
     {
         try {
-            $currentStatus = $appointment->status;
             $newStatus = $request->status;
-            $currentPaymentStatus = $appointment->payment_status;
             $newPaymentStatus = $request->payment_status;
-
-
-            // Kiểm tra logic chuyển trạng thái
-            if (
-                ($currentStatus === 'cancelled' && $newStatus !== 'cancelled') ||
-                ($currentStatus === 'completed' && $newStatus !== 'completed') ||
-                ($currentStatus === 'confirmed' && $newStatus === 'pending') ||
-                ($currentStatus === 'checked-in' && $newStatus === 'pending') ||
-                ($currentStatus === 'in-progress' && in_array($newStatus, ['pending', 'confirmed']))
-            ) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Không thể chuyển sang trạng thái này.'
-                ], 400);
-            }
-
-            // Kiểm tra logic chuyển trạng thái thanh toán
-            if (
-                ($currentPaymentStatus === 'refunded' && $newPaymentStatus !== 'refunded') ||
-                ($currentPaymentStatus === 'paid' && $newPaymentStatus === 'unpaid') ||
-                ($currentPaymentStatus === 'failed' && $newPaymentStatus === 'unpaid')
-            ) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Không thể chuyển sang trạng thái thanh toán này.'
-                ], 400);
-            }
 
             $serviceId = $request->input('service_id');
             $additionalServices = json_decode($request->input('additional_services', '[]'), true) ?? [];
@@ -401,6 +369,40 @@ class AppointmentController extends Controller
 
             // Giữ nguyên trang
             $currentPage = $request->input('page', 1);
+
+            // Nếu trạng thái là 'pending', gửi email thông báo
+            if ($appointment->status === 'confirmed') {
+                // Tạo mã QR check-in
+                $qrCode = rand(100000, 999999);
+                Checkin::create([
+                    'appointment_id' => $appointment->id,
+                    'qr_code_value' => $qrCode,
+                    'is_checked_in' => false,
+                    'checkin_time' => null,
+                ]);
+
+                // Gửi email mã QR
+                $checkin = Checkin::where('appointment_id', $appointment->id)->first();
+                Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment));
+            }
+
+            // Nếu trạng thái là 'cancelled', lưu vào bảng cancelled_appointments
+            if ($appointment->status === 'cancelled') {
+                // Lưu bản ghi vào bảng cancelled_appointments
+                CancelledAppointment::create(array_merge($appointment->toArray(), [
+                    'status' => 'cancelled',
+                    'payment_status' => 'failed',
+                    'cancellation_type' => 'no-show',
+                    'status_before_cancellation' => $appointment->status,
+                    'note' => $appointment->note,
+                    'cancellation_reason' => $request->input('no_show_reason', 'Khách hàng không đến'),
+                ]));
+
+                // Xóa bản ghi khỏi bảng appointments
+                $appointment->delete();
+
+                Mail::to($appointment->email)->send(new CancelBookingMail($appointment));
+            }
 
             return response()->json([
                 'success' => true,

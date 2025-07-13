@@ -225,10 +225,10 @@ class AppointmentController extends Controller
                 return redirect()->route('dat-lich')->with('mustLogin', true);
             }
 
-            // Parse appointment datetime
+            // Phân tích ngày giờ cuộc hẹn
             $datetime = Carbon::parse($request->appointment_date . ' ' . $request->appointment_time . ':00');
 
-            // Check for overlapping appointments
+            // Kiểm tra các cuộc hẹn trùng lặp
             $service = Service::findOrFail($request->service_id);
             $duration = $service->duration;
 
@@ -248,8 +248,8 @@ class AppointmentController extends Controller
             }
 
             // Check for overlapping appointments
-            $service = Service::findOrFail($request->service_id);
-            $duration = $service->duration;
+            // $service = Service::findOrFail($request->service_id);
+            // $duration = $service->duration;
 
             // Kiểm tra khoảng thời gian trùng lặp
             $existingAppointment = Appointment::where('barber_id', $request->barber_id)
@@ -271,12 +271,12 @@ class AppointmentController extends Controller
             }
 
 
-            // Get name, phone, and email (for self or other person)
+            // Get name, phone, and email (người khác)
             $name = $request->other_person ? $request->name : Auth::user()->name;
             $phone = $request->other_person ? $request->phone : Auth::user()->phone;
             $email = $request->other_person ? $request->email : Auth::user()->email;
 
-            // Calculate total amount and discount
+            // Tính tổng giá trị lịch hẹn
             $totalAmount = $service->price ?? 0;
             $additionalServices = json_decode($request->input('additional_services', '[]'), true) ?? [];
             $additionalServicesTotal = Service::whereIn('id', $additionalServices)->sum('price');
@@ -284,7 +284,7 @@ class AppointmentController extends Controller
 
             $discountAmount = 0;
             $promotion = null;
-            Log::info('Received Additional Services: ' . $request->input('additional_services'));
+
             // Xử lý voucher
             if ($request->voucher_code) {
                 $code = trim($request->voucher_code);
@@ -319,29 +319,6 @@ class AppointmentController extends Controller
                 }
             }
 
-            // Create appointment
-            $appointment = Appointment::create([
-                'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
-                'user_id' => Auth::id(),
-                'barber_id' => $request->barber_id,
-                'branch_id' => $request->branch_id,
-                'service_id' => $request->service_id,
-                'appointment_time' => $datetime,
-                'status' => 'pending',
-                'payment_method' => $request->payment_method,
-                'payment_status' => 'unpaid',
-                'note' => $request->note,
-                'name' => $name,
-                'phone' => $phone,
-                'email' => $email,
-                'cancellation_reason' => null,
-                'rejection_reason' => null,
-                'status_before_cancellation' => null,
-                'promotion_id' => $promotion ? $promotion->id : null,
-                'discount_amount' => $discountAmount,
-                'total_amount' => $totalAmount,
-                'additional_services' => json_encode($additionalServices),
-            ]);
             // Xử lý voucher và gửi thông báo
             if ($request->voucher_code) {
                 $code = trim($request->voucher_code);
@@ -375,7 +352,7 @@ class AppointmentController extends Controller
                     }
 
                     // Kiểm tra min_order_value
-                    if ($promotion->min_order_value !== null && $total_amount < $promotion->min_order_value) {
+                    if ($promotion->min_order_value !== null && $totalAmount < $promotion->min_order_value) {
                         session()->flash('error', "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher.");
                         return response()->json([
                             'success' => false,
@@ -425,7 +402,7 @@ class AppointmentController extends Controller
                         }
 
                         // Kiểm tra min_order_value
-                        if ($promotion->min_order_value !== null && $total_amount < $promotion->min_order_value) {
+                        if ($promotion->min_order_value !== null && $totalAmount < $promotion->min_order_value) {
                             session()->flash('error', "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher.");
                             return response()->json([
                                 'success' => false,
@@ -455,6 +432,32 @@ class AppointmentController extends Controller
                     }
                 }
             }
+
+            // Create appointment
+            $appointment = Appointment::create([
+                'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
+                'user_id' => Auth::id(),
+                'barber_id' => $request->barber_id,
+                'branch_id' => $request->branch_id,
+                'service_id' => $request->service_id,
+                'appointment_time' => $datetime,
+                'status' => 'pending',
+                'payment_method' => $request->payment_method,
+                'payment_status' => 'unpaid',
+                'note' => $request->note,
+                'name' => $name,
+                'phone' => $phone,
+                'email' => $email,
+                'cancellation_reason' => null,
+                'rejection_reason' => null,
+                'status_before_cancellation' => null,
+                'promotion_id' => $promotion ? $promotion->id : null,
+                'discount_amount' => $discountAmount,
+                'total_amount' => $totalAmount,
+                'additional_services' => json_encode($additionalServices),
+            ]);
+            
+            
             // Xử lý voucher
             if ($promotion && $redeemedVoucher) {
                 $this->appointmentService->applyPromotion($appointment, $redeemedVoucher);

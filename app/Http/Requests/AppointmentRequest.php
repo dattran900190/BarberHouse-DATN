@@ -18,7 +18,7 @@ class AppointmentRequest extends FormRequest
         return [
             'appointment_time' => 'required|date',
             // 'status' => 'required|in:pending,confirmed,completed,cancelled',
-            'status' => 'in:pending,confirmed,completed,cancelled',
+            'status' => 'in:pending,confirmed,checked-in,progress,completed,cancelled',
             'payment_status' => 'required|in:unpaid,paid,refunded,failed',
             'note' => 'nullable|string|max:500',
             'voucher_id' => 'nullable|exists:user_redeemed_vouchers,id,user_id,' . Auth::id(),
