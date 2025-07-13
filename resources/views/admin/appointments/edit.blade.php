@@ -45,14 +45,31 @@
             'failed' => 'Thanh toán thất bại',
         ];
 
-        // Khi payment đã 'paid' hoặc 'refunded' hoặc 'failed', khóa select này
         $paymentLocked = in_array($currentPaymentStatus, ['paid', 'refunded']);
-        // (Nếu bạn vẫn muốn cho ‘failed’ → ‘paid’, thì hãy loại bỏ 'failed' khỏi mảng trên)
+
+        // Quy tắc chuyển đổi trạng thái lịch hẹn
+    $allowedStatusTransitions = [
+        'pending' => ['confirmed', 'cancelled'],
+        'confirmed' => ['checked-in', 'cancelled'],
+        'checked-in' => ['progress'],
+        'progress' => ['completed'],
+        'completed' => [],
+        'cancelled' => [],
+    ];
+
+    // Quy tắc chuyển đổi trạng thái thanh toán
+    $allowedPaymentTransitions = [
+        'unpaid' => ['paid', 'failed'],
+        'paid' => ['refunded'],
+        'failed' => ['paid'],
+        'refunded' => [],
+    ];
+
     @endphp
 
     <div class="card">
         <div class="card-header text-white align-items-center">
-            <div class="card-title">Sửa đặt lịch</div>
+            <div class="card-title">Sửa đặt lịch {{ $appointment->appointment_code }}</div>
         </div>
 
         <div class="card-body">
@@ -104,30 +121,6 @@
                             dịch vụ</button>
                     </div>
 
-                    {{-- <div id="selectedAdditionalServices" class="mt-2">
-                        @if ($appointment->additional_services)
-                            @foreach (json_decode($appointment->additional_services, true) as $serviceId)
-                                @php
-                                    $service = $services->firstWhere('id', $serviceId);
-                                @endphp
-                                @if ($service)
-                                    <div class="border rounded p-2 mb-2" data-id="{{ $service->id }}">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <strong>{{ $service->name }}</strong>
-                                                <span class="ms-2">({{ number_format($service->price) }} VNĐ,
-                                                    {{ $service->duration }} phút)</span>
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-outline-danger remove-service"
-                                                style="display: none;">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endforeach
-                        @endif
-                    </div> --}}
                     <div id="selectedAdditionalServices" class="mt-2">
                         @if ($appointment->additional_services)
                             @foreach (json_decode($appointment->additional_services, true) as $serviceId)
@@ -151,72 +144,56 @@
                             @endforeach
                         @endif
                     </div>
-                    {{-- <input type="hidden" name="additional_services" id="additionalServicesInput"
-                        value="{{ $appointment->additional_services }}"> --}}
+
 
                     <input type="hidden" name="additional_services" id="additionalServicesInput">
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="status" class="form-label">Trạng thái lịch hẹn</label>
-                        <select class="form-control" id="status" name="status" {{-- Nếu đã cancelled hoặc completed thì disable toàn bộ --}}
-                            @if (in_array($currentStatus, ['completed', 'cancelled'])) disabled @endif>
-                            @foreach ($statusOptions as $statusValue => $label)
-                                <option value="{{ $statusValue }}"
-                                    {{ old('status', $currentStatus) === $statusValue ? 'selected' : '' }}
-                                    {{-- Disabled từng option khi cần --}} @if (
-                                        // Nếu đang cancelled ⇒ disable mọi option khác
-                                        ($currentStatus === 'cancelled' && $statusValue !== 'cancelled') ||
-                                            // Nếu đang completed ⇒ disable mọi option khác
-                                            ($currentStatus === 'completed' && $statusValue !== 'completed') ||
-                                            // Nếu đang confirmed ⇒ disable option 'pending'
-                                            ($currentStatus === 'confirmed' && $statusValue === 'pending') ||
-                                            // Nếu đang completed/cancelled ⇒ disable 'pending','confirmed'
-                                            (in_array($currentStatus, ['completed', 'cancelled']) && in_array($statusValue, ['pending', 'confirmed']))) disabled @endif>
-                                    {{ $label }}
-                                </option>
-                            @endforeach
-                        </select>
-
-                        @error('status')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label for="payment_status" class="form-label">Trạng thái thanh toán</label>
-                        <select class="form-control" id="payment_status" name="payment_status"
-                            {{ $paymentLocked ? 'disabled' : '' }}>
-                            @foreach ($paymentOptions as $payValue => $label)
-                                <option value="{{ $payValue }}"
-                                    {{ old('payment_status', $currentPaymentStatus) === $payValue ? 'selected' : '' }}
-                                    @if (
-                                        // Nếu đã refunded ⇒ disable mọi option khác
-                                        ($currentPaymentStatus === 'refunded' && $payValue !== 'refunded') ||
-                                            // Nếu đã paid ⇒ disable 'unpaid'
-                                            ($currentPaymentStatus === 'paid' && $payValue === 'unpaid') ||
-                                            // Nếu đã failed ⇒ disable 'unpaid'
-                                            ($currentPaymentStatus === 'failed' && $payValue === 'unpaid')) disabled @endif>
-                                    {{ $label }}
-                                </option>
-                            @endforeach
-                        </select>
-
-                        @if ($paymentLocked)
-                            <input type="hidden" name="payment_status" value="{{ $currentPaymentStatus }}">
-                            <small class="text-muted">
-                                Thanh toán đã {{ $currentPaymentStatus === 'refunded' ? 'hoàn trả' : 'thành công' }}, không
-                                thể
-                                thay đổi.
-                            </small>
-                        @endif
-
-                        @error('payment_status')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
+               <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="status" class="form-label">Trạng thái lịch hẹn</label>
+                    <select class="form-control" id="status" name="status"
+                        @if (in_array($currentStatus, ['completed', 'cancelled'])) disabled @endif>
+                        @foreach ($statusOptions as $statusValue => $label)
+                            <option value="{{ $statusValue }}"
+                                {{ old('status', $currentStatus) === $statusValue ? 'selected' : '' }}
+                                @if (!in_array($statusValue, $allowedStatusTransitions[$currentStatus] ?? []) && $statusValue !== $currentStatus)
+                                    disabled
+                                @endif>
+                                {{ $label }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('status')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="payment_status" class="form-label">Trạng thái thanh toán</label>
+                    <select class="form-control" id="payment_status" name="payment_status"
+                        {{ $paymentLocked ? 'disabled' : '' }}>
+                        @foreach ($paymentOptions as $payValue => $label)
+                            <option value="{{ $payValue }}"
+                                {{ old('payment_status', $currentPaymentStatus) === $payValue ? 'selected' : '' }}
+                                @if (!in_array($payValue, $allowedPaymentTransitions[$currentPaymentStatus] ?? []) && $payValue !== $currentPaymentStatus)
+                                    disabled
+                                @endif>
+                                {{ $label }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if ($paymentLocked)
+                        <input type="hidden" name="payment_status" value="{{ $currentPaymentStatus }}">
+                        <small class="text-muted">
+                            Thanh toán đã {{ $currentPaymentStatus === 'refunded' ? 'hoàn trả' : 'thành công' }}, không thể thay đổi.
+                        </small>
+                    @endif
+                    @error('payment_status')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
 
                 <button type="submit" class="btn btn-sm btn-outline-primary update-appointment-btn"
                     data-id="{{ $appointment->id }}">

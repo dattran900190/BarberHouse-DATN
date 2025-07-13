@@ -104,7 +104,6 @@
                                     <th>Số điện thoại</th>
                                     <th>Giới tính</th>
                                     <th>Địa chỉ</th>
-                                    {{-- <th>Vai trò</th> --}}
                                     <th>Trạng thái</th>
                                     <th>Hành động</th>
                                 </tr>
@@ -132,7 +131,6 @@
                                             <td>{{ $user->gender == 'male' ? 'Nam' : ($user->gender == 'female' ? 'Nữ' : 'Khác') }}
                                             </td>
                                             <td>{{ $user->address ?? 'Không có' }}</td>
-                                            {{-- <td>{{ $user->role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</td> --}}
                                             <td>
                                                 <span
                                                     class="badge badge-pill badge-status-fixed

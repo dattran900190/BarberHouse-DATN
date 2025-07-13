@@ -65,7 +65,6 @@
                         <th>Stt</th>
                         <th>Người bình luận</th>
                         <th>Thợ</th>
-                        {{-- <th>Giá</th> --}}
                         <th>Đánh giá</th>
                         <th>Bình luận</th>
                         <th>Trạng thái</th>
