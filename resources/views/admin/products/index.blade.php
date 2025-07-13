@@ -20,12 +20,27 @@
             </button>
         </div>
     @endif
-
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Sản phẩm</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Danh sách sản phẩm</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/products') }}">Sản phẩm</a>
+            </li>
+        </ul>
+    </div>
     <div class="card">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách Sản phẩm</h3>
+        <div class="card-header text-white d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0  flex-grow-1">Danh sách Sản phẩm</h3>
             <a href="{{ route('admin.products.create') }}"
-               class="btn btn-success btn-icon-toggle d-flex align-items-center">
+               class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
                 <i class="fas fa-plus"></i>
                 <span class="btn-text ms-2">Thêm sản phẩm</span>
             </a>
@@ -37,7 +52,7 @@
                     <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên sản phẩm..."
                            value="{{ request()->get('search') }}">
                     <div class="input-group-append">
-                        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+                        <button class="btn btn-outline-primary type="submit">   <i class="fa fa-search"></i></button>
                     </div>
                 </div>
             </form>
