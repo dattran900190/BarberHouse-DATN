@@ -70,6 +70,7 @@
                 </div>
             </form>
 
+
             <!-- Tabs -->
             <ul class="nav nav-tabs" id="appointmentTabs" role="tablist">
                 <li class="nav-item">

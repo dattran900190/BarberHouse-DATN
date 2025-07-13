@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 
@@ -38,6 +39,10 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
+
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('users.index')->with('error', 'Bạn không có quyền thêm người dùng.');
+        }
         $role = $request->input('role', 'user');
         $status = $request->input('status', 'active');
         return view('admin.users.create', compact('role'));
@@ -45,6 +50,9 @@ class UserController extends Controller
 
     public function store(UserRequest $request)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('users.index')->with('error', 'Bạn không có quyền thêm người dùng.');
+        }
         $data = $request->validated();
         $role = $request->input('role', 'user');
         $data['status'] = $request->input('status', 'active'); // set mặc định là active
@@ -86,6 +94,9 @@ class UserController extends Controller
 
     public function edit(User $user, Request $request)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('users.index')->with('error', 'Bạn không có quyền sửa người dùng.');
+        }
         $role = $request->input('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
             ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
@@ -97,6 +108,9 @@ class UserController extends Controller
 
     public function update(UserRequest $request, User $user)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('users.index')->with('error', 'Bạn không có quyền sửa người dùng.');
+        }
         $currentPage = $request->input('page', 1);
         $role = $request->input('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
@@ -136,7 +150,8 @@ class UserController extends Controller
     }
 
     public function destroy(User $user, Request $request)
-    {
+    {   
+        
         $role = $request->input('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
             ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
@@ -154,6 +169,7 @@ class UserController extends Controller
     }
     public function toggleStatus(Request $request, User $user)
     {
+        
         $user->status = $user->status === 'active' ? 'banned' : 'active';
         $user->save();
 

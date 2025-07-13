@@ -6,6 +6,7 @@ use App\Http\Requests\OrderRequest;
 use App\Models\Order;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -40,6 +41,7 @@ class OrderController extends Controller
     }
     public function confirm(Order $order)
     {
+
         if ($order->status === 'pending') {
             $order->status = 'processing';
             $order->save();
@@ -54,9 +56,10 @@ class OrderController extends Controller
     // Hiển thị chi tiết đơn hàng, load quan hệ items và productVariant
     public function show(Order $order)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('admin.orders.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         $order->load('items.productVariant.product');
-
-
 
         return view('admin.orders.show', compact('order'))->with('title', 'Chi tiết đơn hàng');
     }
@@ -119,6 +122,9 @@ class OrderController extends Controller
 
     public function destroy(Order $order)
     {
+          if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('admin.orders.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         $order->status = 'cancelled';
         $order->save();
 

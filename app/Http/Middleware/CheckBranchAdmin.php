@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use Closure;
@@ -12,8 +11,8 @@ class CheckBranchAdmin
     {
         $user = Auth::user();
 
-        if (!$user || $user->role !== 'branch_admin') {
-            // Nếu không phải admin branch thì chuyển về trang khác hoặc báo lỗi
+        // Cho phép cả admin và admin_branch
+        if (!$user || !in_array($user->role, ['admin', 'admin_branch'])) {
             return redirect()->route('home')->with('error', 'Bạn không có quyền truy cập.');
         }
 

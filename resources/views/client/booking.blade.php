@@ -52,8 +52,11 @@
 
 
                 <div id="other-info" style="{{ old('other_person') ? '' : 'display:none;' }}">
+
                     <div class="row">
                         <div class="col-sm-6">
+
+
                             <div class="form-group mb-3">
                                 <label class="form-label">Họ và tên <span class="required">*</span></label>
                                 <input id="name" name="name" class="form-control" type="text"
@@ -82,6 +85,17 @@
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
+
+
+                </div>
+
+                <div class="form-group mb-3" id="self-phone-area" style="{{ old('other_person') ? 'display:none;' : '' }}">
+                    <label class="form-label">Số điện thoại của bạn <span class="required">*</span></label>
+                    <input id="self_phone" name="self_phone" class="form-control" type="tel"
+                        placeholder="Nhập số điện thoại của bạn" value="{{ old('self_phone') }}">
+                    @error('self_phone')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
 
                 <div class="form-group">
@@ -200,6 +214,7 @@
                             <option value="{{ $voucher->promotion->code }}"
                                 data-discount-type="{{ $voucher->promotion->discount_type }}"
                                 data-discount-value="{{ $voucher->promotion->discount_value }}"
+                                data-expired-at="{{ $voucher->promotion->end_date }}"
                                 data-voucher-id="{{ $voucher->id }}">
                                 {{ $voucher->promotion->code }}
                                 ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
@@ -208,6 +223,7 @@
                         @foreach ($publicPromotions as $promotion)
                             <option value="{{ $promotion->code }}" data-discount-type="{{ $promotion->discount_type }}"
                                 data-discount-value="{{ $promotion->discount_value }}"
+                                data-expired-at="{{ $promotion->end_date }}"
                                 data-promotion-id="public_{{ $promotion->id }}">
                                 {{ $promotion->code }}
                                 ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
@@ -238,9 +254,27 @@
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>
+                {{-- <div id="self-phone-container" style="{{ old('other_person') ? 'display:none;' : '' }}">
+                    <div class="form-group mb-3">
+                        <label class="form-label">Số điện thoại của bạn <span class="required">*</span></label>
+                        <input id="self_phone" name="self_phone" class="form-control" type="tel"
+                            placeholder="Nhập số điện thoại của bạn" value="{{ old('self_phone') }}">
+                    </div>
+                </div> --}}
+
+                <div id="recaptcha-container"></div>
+                <button type="button" id="send-otp-btn" class="btn btn-sm btn-primary mt-2">Gửi mã xác minh</button>
+
+                <div class="form-group mb-3" id="otp-area" style="display: none;">
+                    <label for="otp">Nhập mã OTP</label>
+                    <input type="text" id="otp" class="form-control" placeholder="Nhập mã OTP">
+                    <button type="button" id="verify-otp-btn" class="btn btn-sm btn-success mt-2">Xác minh OTP</button>
+                </div>
+                <input type="hidden" id="otp_verified" name="otp_verified" value="0">
+
 
                 <div class="form-btn mt-3">
-                    <button type="submit" class="submit-btn book-btn booking-btn" data-id="{{ $service->id }}">
+                    <button type="submit" class="submit-btn book-btn booking-btn">
                         Đặt lịch
                     </button>
                 </div>
@@ -337,7 +371,6 @@
                 });
             });
         }
-
     </script>
     <script>
         // $('#service').select2({
@@ -368,9 +401,16 @@
             event.preventDefault();
             const form = document.getElementById('bookingForm');
 
-            // Kiểm tra form trước khi gửi
+            // Kiểm tra đã xác minh OTP chưa
+            const otpVerified = document.getElementById('otp_verified').value;
+            if (otpVerified !== '1') {
+                Swal.fire('Cảnh báo', 'Vui lòng xác minh số điện thoại trước khi đặt lịch.', 'warning');
+                return;
+            }
+
+            // Kiểm tra form
             if (!form.checkValidity()) {
-                form.reportValidity(); // Hiển thị lỗi HTML5 mặc định
+                form.reportValidity();
                 return;
             }
 
@@ -490,4 +530,40 @@
             }
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const appointmentDateInput = document.getElementById('appointment_date');
+            const voucherSelect = document.getElementById('voucher_id');
+
+            function filterVouchersByDate() {
+                const selectedDate = appointmentDateInput.value;
+                if (!selectedDate) return;
+
+                Array.from(voucherSelect.options).forEach((option, idx) => {
+                    if (idx === 0) return; // Bỏ qua option đầu
+                    const expiredAt = option.getAttribute('data-expired-at');
+                    if (expiredAt && selectedDate > expiredAt) {
+                        option.style.display = 'none';
+                    } else {
+                        option.style.display = '';
+                    }
+                });
+
+                // Nếu option đang chọn bị ẩn thì reset về mặc định
+                if (voucherSelect.selectedIndex > 0 && voucherSelect.options[voucherSelect.selectedIndex].style
+                    .display === 'none') {
+                    voucherSelect.selectedIndex = 0;
+                }
+            }
+
+            if (appointmentDateInput && voucherSelect) {
+                appointmentDateInput.addEventListener('change', filterVouchersByDate);
+                filterVouchersByDate();
+            }
+        });
+    </script>
+
+
+
+
 @endsection

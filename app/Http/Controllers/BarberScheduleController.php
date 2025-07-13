@@ -7,15 +7,28 @@ use App\Http\Requests\BarberSchedulesRequest;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\Auth;
 
 class BarberScheduleController extends Controller
 {
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $branches = Branch::when($search, function ($query) use ($search) {
-            return $query->where('name', 'like', "%{$search}%");
-        })->get();
+        $user = Auth::user();
+
+        // Nếu là admin_branch, chỉ lấy chi nhánh của chính họ
+        if ($user->role === 'admin_branch') {
+            $branches = Branch::where('id', $user->branch_id)
+                ->when($search, function ($query) use ($search) {
+                    return $query->where('name', 'like', "%{$search}%");
+                })
+                ->get();
+        } else {
+            // Nếu là admin thường, lấy tất cả
+            $branches = Branch::when($search, function ($query) use ($search) {
+                return $query->where('name', 'like', "%{$search}%");
+            })->get();
+        }
 
         $holidays = BarberSchedule::where('status', 'holiday')
             ->select('holiday_start_date', 'holiday_end_date', 'note')
@@ -25,6 +38,7 @@ class BarberScheduleController extends Controller
 
         return view('admin.barber_schedules.index', compact('branches', 'search', 'holidays'));
     }
+
 
     public function show($id)
     {
@@ -42,6 +56,7 @@ class BarberScheduleController extends Controller
 
     public function create($branchId = null)
     {
+        
         $branch = $branchId ? Branch::findOrFail($branchId) : null;
         $barbers = $branch ? $branch->barbers()->whereNotNull('branch_id')->get() : Barber::whereNotNull('branch_id')->get();
 
@@ -50,6 +65,9 @@ class BarberScheduleController extends Controller
 
     public function createHoliday()
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('barber_schedules.index')->with('error', 'Bạn không có quyền thêm lịch nghỉ lễ.');
+        }
         return view('admin.barber_schedules.create_holiday');
     }
 
@@ -100,6 +118,9 @@ class BarberScheduleController extends Controller
 
     public function editHoliday($id)
     {
+          if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('barber_schedules.index')->with('error', 'Bạn không có quyền sửa lịch nghỉ lễ.');
+        }
         $schedule = BarberSchedule::findOrFail($id);
 
         $holiday = [
@@ -113,6 +134,9 @@ class BarberScheduleController extends Controller
 
     public function updateHoliday(BarberSchedulesRequest $request, $id)
     {
+          if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('barber_schedules.index')->with('error', 'Bạn không có quyền sửa lịch nghỉ lễ.');
+        }
         $data = $request->validated();
 
         $schedule = BarberSchedule::findOrFail($id);
@@ -149,6 +173,9 @@ class BarberScheduleController extends Controller
 
     public function deleteHoliday($id)
     {
+          if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('barber_schedules.index')->with('error', 'Bạn không có quyền xóa lịch nghỉ lễ.');
+        }
         $schedule = BarberSchedule::findOrFail($id);
 
         BarberSchedule::where('status', 'holiday')

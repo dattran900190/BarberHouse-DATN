@@ -17,7 +17,7 @@ class BannerRequest extends FormRequest
     return [
         'title'      => 'required|string|max:255',
         'link_url'   => ['nullable', 'url', 'max:500', 'regex:/^https?:\/\/.*/i'],
-        'status'     => 'required|boolean',
+        'is_active'     => 'required|boolean',
         'image'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
     ];
 }

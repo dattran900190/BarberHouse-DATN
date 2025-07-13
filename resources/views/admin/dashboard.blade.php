@@ -3,20 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <div aria-live="polite" aria-atomic="true" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"
-        id="toastContainer">
-        <!-- Toast mẫu (sẽ được clone động) -->
-        <div id="appointmentToastTemplate" class="toast" role="alert" data-bs-delay="180000" style="display: none;">
-            <div class="toast-header bg-success text-white">
-                <strong class="me-auto">Thông báo lịch hẹn</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                <p id="toastMessage"></p>
-                <a id="toastDetailLink" href="#" class="btn btn-sm btn-primary mt-2">Xem chi tiết</a>
-            </div>
-        </div>
-    </div>
+    
 
     <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
         <div>
@@ -325,142 +312,11 @@
 
 @stop
 
-@vite('resources/js/app.js')
 @section('js')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
 
-    <script>
-        function initEchoListener() {
-            if (typeof Echo !== 'undefined' && Echo !== null) {
-                // console.log('Echo is defined:', Echo);
-                const channel = Echo.channel('appointments');
-                channel.subscribed(() => {
-                        // console.log('Subscribed to appointments channel');
-                    })
-                    .listen('NewAppointment', (event) => {
-                        showToast(event);
-                        updatePendingCount(1); // Tăng badge khi có lịch mới
-                    })
-                    .listen('.NewAppointment', (event) => {
-                        showToast(event);
-                        updatePendingCount(1); // Tăng badge khi có lịch mới
-                    })
-                    .listen('AppointmentConfirmed', (event) => {
-                        // console.log('Appointment confirmed:', event);
-                        updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
-                    })
-                    .listen('App\\Events\\NewAppointment', (event) => {
-                        showToast(event);
-                        updatePendingCount(1); // Tăng badge khi có lịch mới
-                    })
-                    .listen('.App\\Events\\AppointmentConfirmed', (event) => {
-                        updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
-                    })
-                    .error((error) => {
-                        console.error('Echo channel error:', error);
-                    });
-            } else {
-                console.error('Echo is not defined or null, retrying...');
-                setTimeout(initEchoListener, 200);
-            }
-        }
-
-        function updatePendingCount(change) {
-            // Cập nhật badge trên dashboard
-            const dashboardBadge = document.getElementById('pending-appointment-count');
-            if (dashboardBadge) {
-                let currentCount = parseInt(dashboardBadge.textContent) || 0;
-                currentCount = Math.max(0, currentCount + change);
-                dashboardBadge.textContent = currentCount;
-                dashboardBadge.style.display = currentCount > 0 ? 'inline' : 'none';
-                console.log('Updated dashboard badge to:', currentCount);
-            } else {
-                console.error('Dashboard badge element not found');
-            }
-
-            // Cập nhật badge trong sidebar menu
-            const sidebarBadges = document.getElementsByClassName('pending-appointment-count');
-            if (sidebarBadges.length === 0) {
-                console.error('Sidebar badge element not found. Check HTML for class "pending-appointment-count"');
-            } else {
-                Array.from(sidebarBadges).forEach(badge => {
-                    let currentCount = parseInt(badge.textContent) || 0;
-                    currentCount = Math.max(0, currentCount + change);
-                    badge.textContent = currentCount;
-                    badge.classList.toggle('hidden', currentCount === 0);
-                    console.log('Updated sidebar badge to:', currentCount);
-                });
-            }
-        }
-
-        function showToast(event) {
-            try {
-                const toastContainer = document.getElementById('toastContainer');
-                const toastTemplate = document.getElementById('appointmentToastTemplate');
-
-                const newToast = toastTemplate.cloneNode(true);
-                newToast.id = 'appointmentToast-' + Date.now();
-                newToast.style.display = 'block';
-
-                const toastMessage = newToast.querySelector('#toastMessage');
-                const toastDetailLink = newToast.querySelector('#toastDetailLink');
-
-                toastMessage.textContent = event?.message || 'Không có thông tin chi tiết';
-                toastDetailLink.href = `/admin/appointments/${event?.appointment_id || ''}`;
-
-                toastContainer.appendChild(newToast);
-
-                const toast = new bootstrap.Toast(newToast, {
-                    delay: 180000 // 3 phút
-                });
-                toast.show();
-                // console.log('Toast shown successfully');
-
-                newToast.addEventListener('hidden.bs.toast', () => {
-                    newToast.remove();
-                });
-
-            } catch (error) {
-                console.error('Error showing toast:', error);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', initEchoListener);
-    </script>
 @stop
 
 @section('css')
-    <style>
-        .toast {
-            min-width: 300px;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin-top: 10px;
-            /* Khoảng cách giữa các Toast */
-        }
-
-        .toast-header {
-            font-size: 14px;
-            padding: 8px 12px;
-        }
-
-        .toast-body {
-            font-size: 13px;
-            padding: 12px;
-        }
-
-        .btn-close {
-            background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707A1 1 0 01.293.293z'/%3e%3c/svg%3e") center/1em auto no-repeat;
-            width: 1em;
-            height: 1em;
-            opacity: 0.8;
-            border: none;
-            padding: 0;
-            margin-left: 8px;
-        }
-
-        .btn-close:hover {
-            opacity: 1;
-        }
-    </style>
+   
 @endsection

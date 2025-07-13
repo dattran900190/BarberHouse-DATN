@@ -55,8 +55,9 @@ Route::put('/gio-hang/update/{cartItem}', [CartController::class, 'updateQuantit
 Route::delete('/gio-hang/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
 Route::put('/gio-hang/update-variant/{cartItem}', [CartController::class, 'updateVariant'])->name('cart.update.variant');
 
-Route::get('/mua-ngay/checkout', [CartController::class, 'showBuyNowCheckout'])->name('cart.buyNow.checkout')->middleware('auth');
-Route::post('/mua-ngay', [CartController::class, 'buyNow'])->name('cart.buyNow');
+
+Route::match(['get', 'post'], '/mua-ngay', [CartController::class, 'buyNow'])->name('cart.buyNow');
+
 //checkout
 
 Route::get('/thanh-toan', [CartController::class, 'checkout'])->name('cart.checkout');
@@ -65,7 +66,6 @@ Route::get('/dat-hang-thanh-cong', function () {
     return view('client.order-success');
 })->name('order.success');
 Route::post('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('client.orders.cancel');
-
 
 
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
@@ -136,10 +136,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
         ->only(['index', 'show']);
 
     Route::get('/dashboard', function () {
-        // Lấy số lượng lịch đang chờ
-        $pendingCount = Appointment::where('status', 'pending')->count();
-
-        return view('admin.dashboard', compact('pendingCount'));
+        return view('admin.dashboard');
     })->name('dashboard');
 
     // Hiển thị giao diện danh sách Thợ cắt tóc

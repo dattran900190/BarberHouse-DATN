@@ -26,10 +26,13 @@ class AppointmentController extends Controller
         $allAppointments = collect();
         $statuses = ['pending', 'confirmed', 'completed'];
         $appointments = [];
-
+        $user = auth()->user();
         // Hàm xây dựng truy vấn cho bảng appointments
-        $buildAppointmentQuery = function ($query, $search) {
+        $buildAppointmentQuery = function ($query, $search) use ($user) {
             $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
+                ->when($user->role === 'admin_branch', function ($q) use ($user) {
+                    $q->where('branch_id', $user->branch_id);
+                })
                 ->when($search, function ($q) use ($search) {
                     $q->where(function ($subQuery) use ($search) {
                         $subQuery->where('appointment_code', 'like', '%' . $search . '%')
@@ -46,10 +49,11 @@ class AppointmentController extends Controller
                 })
                 ->orderBy('updated_at', 'DESC');
         };
-
+        $user = auth()->user();
         // Hàm xây dựng truy vấn cho bảng cancelled_appointments
-        $buildCancelledQuery = function ($query, $search) {
+        $buildCancelledQuery = function ($query, $search) use ($user) {
             $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
+                ->when($user->role === 'admin_branch', fn($q) => $q->where('branch_id', $user->branch_id))
                 ->when($search, function ($q) use ($search) {
                     $q->where(function ($subQuery) use ($search) {
                         $subQuery->where('appointment_code', 'like', '%' . $search . '%')
@@ -328,7 +332,7 @@ class AppointmentController extends Controller
     public function edit(Appointment $appointment)
     {
         $appointments = Appointment::all();
-        return view('admin.appointments.edit', compact('appointment',));
+        return view('admin.appointments.edit', compact('appointment', ));
     }
 
     /**
@@ -476,5 +480,12 @@ class AppointmentController extends Controller
         ]);
 
         return redirect()->route('appointments.index')->with('success', 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.');
+    }
+
+    public function store(Request $request)
+    {
+        if ($request->otp_verified != '1') {
+            return response()->json(['success' => false, 'message' => 'Bạn chưa xác minh số điện thoại.'], 400);
+        }
     }
 }
