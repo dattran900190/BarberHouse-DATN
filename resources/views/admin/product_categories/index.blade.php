@@ -64,6 +64,7 @@
                 <table class="table table-bordered table-hover">
                     <thead class="thead-light text-center align-middle">
                         <tr>
+<<<<<<< HEAD
                             <th>STT</th>
                             <th>Tên danh mục</th>
                             <th>Slug</th>
@@ -121,6 +122,51 @@
                     </tbody>
                 </table>
             </div>
+=======
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td>{{ $category->name }}</td>
+                            <td>{{ $category->slug }}</td>
+                            <td>{{ $category->description }}</td>
+                            <td class="text-center">{{ $category->created_at->format('d/m/Y') }}</td>
+                            <td class="text-center">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                        id="actionMenu{{ $category->id }}" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end"
+                                                    aria-labelledby="actionMenu{{ $category->id }}">
+                                                    <li> <a href="{{ route('product_categories.show', $category->id) }}"
+                                                        class="dropdown-item">
+                                                        <i class="fas fa-eye me-2"></i> Xem
+                                                    </a></li>
+                                                    <li>    <a href="{{ route('product_categories.edit', $category->id) }}"
+                                                        class="dropdown-item">
+                                                        <i class="fas fa-edit me-2"></i> Sửa
+                                                    </a></li>
+                                  <li>
+                                    <form action="{{ route('product_categories.destroy', $category->id) }}" method="POST"
+                                        class="d-inline m-0" onsubmit="return confirm('Xác nhận xoá danh mục?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                        class="dropdown-item text-danger">
+                                        <i class="fas fa-trash-alt"></i> <span>  Xóa </span>
+                                        </button>
+                                    </form>
+                                </li>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Chưa có danh mục nào.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+>>>>>>> b9bb882467ba62a5efe1d8da53f20aa1d7f0c564
 
             <!-- Phân trang -->
             <div class="d-flex justify-content-center mt-3">

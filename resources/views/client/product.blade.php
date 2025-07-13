@@ -73,36 +73,44 @@
                                     </div>
                                 </a>
 
-                                <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
-                                    @csrf
-                                    <input type="hidden" name="product_variant_id"
-                                        value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn-add-to-cart icon-button" title="Thêm vào giỏ hàng">
-                                        <i class="fa-solid fa-cart-plus"></i>
-                                    </button>
-                                </form>
+                                <div
+                                    class="card-footer bg-white border-top-0 d-flex justify-content-center gap-2 flex-wrap">
+                                    {{-- Thêm vào giỏ hàng --}}
+                                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form m-0 p-0">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id"
+                                            value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-dark icon-button"
+                                            title="Thêm vào giỏ hàng">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </form>
 
-                                <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form"
-                                    style="display:inline-block; margin-left:5px;">
-                                    @csrf
-                                    <input type="hidden" name="product_variant_id"
-                                        value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
-                                    <input type="hidden" name="quantity" value="1">
-                                    @guest
-                                        <button type="button" class="btn btn-success btn-buy-now" title="Mua ngay">Mua
-                                            ngay</button>
-                                    @else
-                                        <button type="submit" class="btn btn-success btn-buy-now" title="Mua ngay">Mua
-                                            ngay</button>
-                                    @endguest
-                                </form>
+                                    {{-- Mua ngay --}}
+                                    <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form m-0 p-0">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id"
+                                            value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        @guest
+                                            <button type="button" class="btn btn-danger btn-buy-now" title="Mua ngay">
+                                                <span>Mua ngay</span>
+                                            </button>
+                                        @else
+                                            <button type="submit" class="btn btn-danger btn-buy-now" title="Mua ngay">
+                                                <span>Mua ngay</span>
+                                            </button>
+                                        @endguest
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     @empty
                         <p class="text-center">Không có sản phẩm nào.</p>
                     @endforelse
                 </div>
+
 
 
                 {{-- PHÂN TRANG --}}

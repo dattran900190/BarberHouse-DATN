@@ -20,12 +20,27 @@
             </button>
         </div>
     @endif
-
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Sản phẩm</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Danh sách sản phẩm</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/products') }}">Sản phẩm</a>
+            </li>
+        </ul>
+    </div>
     <div class="card">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách Sản phẩm</h3>
+        <div class="card-header text-white d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0  flex-grow-1">Danh sách Sản phẩm</h3>
             <a href="{{ route('admin.products.create') }}"
-               class="btn btn-success btn-icon-toggle d-flex align-items-center">
+               class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
                 <i class="fas fa-plus"></i>
                 <span class="btn-text ms-2">Thêm sản phẩm</span>
             </a>
@@ -37,7 +52,7 @@
                     <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên sản phẩm..."
                            value="{{ request()->get('search') }}">
                     <div class="input-group-append">
-                        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+                        <button class="btn btn-outline-primary type="submit">   <i class="fa fa-search"></i></button>
                     </div>
                 </div>
             </form>
@@ -97,25 +112,34 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('admin.products.show', $product->id) }}"
-                                       class="btn btn-info btn-sm d-inline-flex align-items-center">
-                                        <i class="fas fa-eye"></i> <span>Xem</span>
-                                    </a>
-                                    <a href="{{ route('admin.products.edit', $product->id) }}"
-                                       class="btn btn-warning btn-sm d-inline-flex align-items-center">
-                                        <i class="fas fa-edit"></i> <span>Sửa</span>
-                                    </a>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                        id="actionMenu{{ $product->id }}" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end"
+                                                    aria-labelledby="actionMenu{{ $product->id }}">
+                                                    <li> <a href="{{ route('admin.products.show', $product->id) }}"
+                                                        class="dropdown-item">
+                                                        <i class="fas fa-eye me-2"></i> Xem
+                                                    </a></li>
+                                                    <li>  <a href="{{ route('admin.products.edit', $product->id) }}"
+                                                        class="dropdown-item">
+                                                        <i class="fas fa-edit me-2"></i> Sửa
+                                                    </a></li>
+                                  <li>
                                     <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST"
                                           class="d-inline m-0"
                                           onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                                class="btn btn-danger btn-sm d-inline-flex align-items-center">
-                                            <i class="fas fa-trash"></i> <span>Xóa</span>
+                                                class="dropdown-item text-danger">
+                                            <i class="fas fa-trash-alt"></i> <span>  Xóa </span>
                                         </button>
                                     </form>
+                                </li>
                                 </div>
                             </td>
                         </tr>

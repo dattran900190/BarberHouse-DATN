@@ -12,7 +12,7 @@ class BranchController extends Controller
     // Hiển thị danh sách chi nhánh
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $search = $request->input('search');
 
         $branches = Branch::when($user->role === 'admin_branch', function ($query) use ($user) {

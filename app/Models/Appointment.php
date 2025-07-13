@@ -17,8 +17,9 @@ class Appointment extends Model
         'appointment_code',
         'user_id',
         'barber_id',
-        'service_id',
         'branch_id',
+        'service_id',
+        'additional_services',
         'appointment_time',
         'status',
         'payment_method',
@@ -62,7 +63,11 @@ class Appointment extends Model
         return $this->hasOne(Checkin::class);
     }
     public function review()
-{
-    return $this->hasOne(Review::class, 'appointment_id');
-}
+    {
+        return $this->hasOne(Review::class, 'appointment_id');
+    }
+    public function refundRequests()
+    {
+        return $this->hasMany(RefundRequest::class, 'appointment_id');
+    }
 }

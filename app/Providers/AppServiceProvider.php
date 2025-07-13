@@ -38,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
             $pendingCount = Appointment::where('status', 'pending')->count();
             $view->with('pendingCount', $pendingCount);
         });
+<<<<<<< HEAD
 
         // banners
 
@@ -47,6 +48,13 @@ class AppServiceProvider extends ServiceProvider
                 ->get();
 
             $view->with('banners', $banners);
+=======
+        
+        // Thêm biến số lượng đơn hàng chờ xác nhận cho mọi view
+        View::composer('*', function ($view) {
+            $pendingOrderCount = \App\Models\Order::where('status', 'pending')->count();
+            $view->with('pendingOrderCount', $pendingOrderCount);
+>>>>>>> b9bb882467ba62a5efe1d8da53f20aa1d7f0c564
         });
     }
 }

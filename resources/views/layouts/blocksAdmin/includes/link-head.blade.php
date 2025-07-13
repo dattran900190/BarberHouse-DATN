@@ -35,6 +35,38 @@
         font-size: 1.5rem !important;
 
     }
+
+     .toast {
+            min-width: 300px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 10px;
+            /* Khoảng cách giữa các Toast */
+        }
+
+        .toast-header {
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        .toast-body {
+            font-size: 13px;
+            padding: 12px;
+        }
+
+        .btn-close {
+            background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707A1 1 0 01.293.293z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+            width: 1em;
+            height: 1em;
+            opacity: 0.8;
+            border: none;
+            padding: 0;
+            margin-left: 8px;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+        }
 </style>
 
 <!-- Fonts and icons -->

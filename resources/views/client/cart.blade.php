@@ -313,10 +313,11 @@
                         method: m,
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': b?.dataset.csrf || document.querySelector(
-                                `[data-item-id="${u.split('/').pop()}"]`)?.dataset.csrf,
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content'),
                             'Accept': 'application/json'
                         },
+
                         body: JSON.stringify(d)
                     })
                     .then(r => r.ok ? r.json() : r.text().then(t => {
@@ -355,15 +356,25 @@
                 });
             });
 
+            // Thêm debounce
+            function debounce(func, wait) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+
             document.querySelectorAll('.quantity-input').forEach(input => {
-                input.addEventListener('change', () => {
-                    const id = input.dataset.itemId;
-                    let value = parseInt(input.value) || 1;
+                input.addEventListener('input', debounce(function() {
+                    const id = this.dataset.itemId;
+                    let value = parseInt(this.value) || 1;
                     if (value < 1) value = 1;
-                    input.value = value;
+                    this.value = value;
                     updateQuantity(id, value);
-                });
+                }, 500)); // 500ms debounce
             });
+
 
             document.querySelectorAll('.cart-item-checkbox').forEach(box => {
                 box.addEventListener('change', updateTotal);
@@ -433,7 +444,7 @@
             // SWEETALERT2 CHO KHÁCH
             const btnGuest = document.getElementById('btn-checkout-guest');
             if (btnGuest) {
-                btnGuest.addEventListener('click', function () {
+                btnGuest.addEventListener('click', function() {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Bạn chưa đăng nhập!',
@@ -450,4 +461,3 @@
         };
     </script>
 @endsection
-

@@ -69,6 +69,16 @@
                                                     hàng</button>
                                             </form>
                                         @endif
+                                        @if (
+                                            $order->status != 'cancelled' &&
+                                                $order->payment_status == 'paid' &&
+                                                !$order->refundRequests()->whereIn('refund_status', ['pending', 'processing'])->exists())
+                                            <a href="{{ route('client.wallet', ['refundable_type' => 'order', 'refundable_id' => $order->id]) }}"
+                                                class="btn btn-outline-warning btn-sm me-1 refund-btn"
+                                                data-order-id="{{ $order->id }}">
+                                                Yêu cầu hoàn tiền
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

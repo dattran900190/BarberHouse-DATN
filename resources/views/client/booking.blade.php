@@ -4,21 +4,20 @@
     Đặt lịch Baber House
 @endsection
 
-
 @section('content')
     <main class="container" style="padding: 10% 0;">
-
+{{-- 
         @if (session('success'))
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
+            <span aria-hidden="true">×</span>
             </button>
         @endif
 
         @if (session('error'))
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
+            <span aria-hidden="true">×</span>
             </button>
-        @endif
+        @endif --}}
 
         <div class="booking-container">
             <!-- Header -->
@@ -163,14 +162,15 @@
                     @enderror
                 </div>
 
+
                 <div class="form-group">
                     <label class="form-label">Dịch vụ <span class="required">*</span></label>
                     <div id="servicesList">
                         <div class="service-item" data-service-index="0">
                             <div class="position-relative">
                                 <select id="service" name="service_id" class="form-select service-select"
-                                    data-index="0">
-                                    <option value="">Chọn dịch vụ</option>
+                                    data-index="0" required>
+                                    <option value="">Chọn dịch vụ chính</option>
                                     @foreach ($services as $service)
                                         <option value="{{ $service->id }}" data-name="{{ $service->name }}"
                                             data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
@@ -185,7 +185,10 @@
                             </div>
                         </div>
                     </div>
-                    {{-- <button class="add-service-btn" type="button" id="addServiceBtn">Thêm dịch vụ</button> --}}
+
+                    <div id="additionalServicesContainer" class="mt-2"></div>
+                    <input type="hidden" name="additional_services" id="additionalServicesInput">
+                    <button class="add-service-btn mt-2" type="button" id="addServiceBtn">Thêm dịch vụ</button>
                 </div>
 
                 <div class="form-group">
@@ -244,14 +247,22 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Phương thức thanh toán <span class="required">*</span></label>
-                    <select name="payment_method" id="payment_method" class="form-control" required>
-                        <option value="">-- Chọn phương thức thanh toán --</option>
-                        <option value="cash">Tiền mặt</option>
-                        <option value="vnpay">VNPay</option>
-                    </select>
+                    <label class="form-label">Phương thức thanh toán <span class="required">*</span></label><br>
+                    
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="payment_method" id="payment_cash"
+                            value="cash" {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="payment_cash">Tiền mặt</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="payment_method" id="payment_vnpay"
+                            value="vnpay" {{ old('payment_method') == 'vnpay' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="payment_vnpay">VNPay</label>
+                    </div>
+
                     @error('payment_method')
-                        <small class="text-danger">{{ $message }}</small>
+                        <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
                 {{-- <div id="self-phone-container" style="{{ old('other_person') ? 'display:none;' : '' }}">
@@ -295,38 +306,6 @@
 
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            @if (session('success'))
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công!',
-                    text: '{{ session('success') }}',
-                    confirmButtonText: 'OK',
-                    customClass: {
-                        popup: 'custom-swal-popup',
-                        title: 'custom-swal-title',
-                        confirmButton: 'custom-swal-confirm'
-                    }
-                });
-            @endif
-
-            @if (session('error'))
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi!',
-                    text: '{{ session('error') }}',
-                    confirmButtonText: 'Thử lại',
-                    customClass: {
-                        popup: 'custom-swal-popup',
-                        title: 'custom-swal-title',
-                        confirmButton: 'custom-swal-confirm'
-                    }
-                });
-            @endif
-        });
-    </script>
-
 
     <script>
         // // Initialize booking system
@@ -373,24 +352,74 @@
         }
     </script>
     <script>
-        // $('#service').select2({
-        //     width: '100%',
-        //     templateResult: function(data) {
-        //         if (!data.id) return data.text;
-        //         let name = $(data.element).data('name');
-        //         let price = $(data.element).data('price');
-        //         return $(`<div style="display: flex; justify-content: space-between;">
-    //             <span>${name}</span>
-    //             <span>${price}</span>
-    //         </div>`);
-        //     },
-        //     templateSelection: function(data) {
-        //         return data.text;
-        //     }
-        // });
+        document.addEventListener('DOMContentLoaded', function() {
+            const addServiceBtn = document.getElementById('addServiceBtn');
+            const additionalServicesContainer = document.getElementById('additionalServicesContainer');
+            const additionalServicesInput = document.getElementById('additionalServicesInput');
+
+
+            // Hàm thêm dịch vụ bổ sung
+            function addAdditionalService() {
+                // Tạo container cho dịch vụ bổ sung
+                const serviceWrapper = document.createElement('div');
+                serviceWrapper.className = 'service-wrapper mt-2 d-flex align-items-center';
+
+                // Tạo select box
+                const serviceSelect = document.createElement('select');
+                serviceSelect.className = 'form-select additional-service-select';
+                serviceSelect.name = 'additional_services[]';
+                serviceSelect.innerHTML = `
+                    <option value="">Chọn dịch vụ bổ sung</option>
+                    @foreach ($services as $service)
+                        <option value="{{ $service->id }}" data-name="{{ $service->name }}"
+                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}">
+                            {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }}
+                        </option>
+                    @endforeach
+                `;
+
+                // Tạo nút "Xóa" bên ngoài select
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-sm btn-danger remove-service ms-2';
+                removeBtn.textContent = 'Xóa';
+                removeBtn.addEventListener('click', function() {
+                    additionalServicesContainer.removeChild(serviceWrapper);
+                    updateAdditionalServicesInput();
+                });
+
+                // Thêm select và nút "Xóa" vào wrapper
+                serviceWrapper.appendChild(serviceSelect);
+                serviceWrapper.appendChild(removeBtn);
+
+                // Thêm wrapper vào container
+                additionalServicesContainer.appendChild(serviceWrapper);
+                updateAdditionalServicesInput();
+            }
+
+            // Sự kiện click để thêm dịch vụ bổ sung
+            addServiceBtn.addEventListener('click', addAdditionalService);
+
+            // Cập nhật input ẩn khi thay đổi
+            function updateAdditionalServicesInput() {
+                const additionalServices = Array.from(additionalServicesContainer.querySelectorAll(
+                        '.additional-service-select'))
+                    .map(select => select.value)
+                    .filter(value => value !== '');
+                additionalServicesInput.value = JSON.stringify(additionalServices);
+            }
+
+            additionalServicesContainer.addEventListener('change', function(e) {
+                if (e.target.classList.contains('additional-service-select')) {
+                    updateAdditionalServicesInput();
+                }
+            });
+        });
+    </script>
+    <script>
         serviceSelect.addEventListener('change', function() {
             const sel = this.options[this.selectedIndex];
-            console.log('DEBUG sel.dataset =', sel.dataset);…
+            // console.log('DEBUG sel.dataset =', sel.dataset);…
         });
     </script>
 
@@ -553,6 +582,7 @@
                 if (voucherSelect.selectedIndex > 0 && voucherSelect.options[voucherSelect.selectedIndex].style
                     .display === 'none') {
                     voucherSelect.selectedIndex = 0;
+<<<<<<< HEAD
                 }
             }
 
@@ -561,6 +591,108 @@
                 filterVouchersByDate();
             }
         });
+=======
+                }
+            }
+
+            if (appointmentDateInput && voucherSelect) {
+                appointmentDateInput.addEventListener('change', filterVouchersByDate);
+                filterVouchersByDate();
+            }
+        });
+        $(document).ready(function() {
+            $('#voucher_id').select2({
+                placeholder: 'Chọn hoặc tìm mã khuyến mãi',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "Không tìm thấy mã phù hợp";
+                    }
+                }
+            });
+        });
+
+        function getServiceInfo(opt) {
+            if (!opt.length) return {
+                price: 0,
+                duration: 0
+            };
+            return {
+                price: parseFloat(opt.data('price')) || 0,
+                duration: parseInt(opt.data('duration')) || 0
+            };
+        }
+
+        function getAdditionalServicesInfo() {
+            let totalPrice = 0;
+            let totalDuration = 0;
+            $('.additional-service-select').each(function() {
+                const opt = $(this).find('option:selected');
+                if (opt.val()) {
+                    const info = getServiceInfo(opt);
+                    totalPrice += info.price;
+                    totalDuration += info.duration;
+                }
+            });
+            return {
+                totalPrice,
+                totalDuration
+            };
+        }
+
+        function updateTotal() {
+            // Main service
+            const mainOpt = $('#service option:selected');
+            const mainInfo = getServiceInfo(mainOpt);
+
+            // Additional services
+            const addInfo = getAdditionalServicesInfo();
+
+            // Total before discount
+            const totalPrice = mainInfo.price + addInfo.totalPrice;
+            const totalDuration = mainInfo.duration + addInfo.totalDuration;
+
+            // Voucher
+            const voucherOpt = $('#voucher_id option:selected');
+            const discountType = voucherOpt.data('discount-type');
+            const discountValue = parseFloat(voucherOpt.data('discount-value')) || 0;
+
+            let discount = 0;
+            let discountText = '';
+            if ($('#voucher_id').val() && totalPrice > 0 && discountType) {
+                if (discountType === 'fixed') {
+                    discount = discountValue;
+                    discountText = '- ' + discount.toLocaleString('vi-VN') + ' vnđ';
+                } else if (discountType === 'percent') {
+                    discount = Math.round(totalPrice * discountValue / 100);
+                    discountText = '- ' + discountValue + '% (' + discount.toLocaleString('vi-VN') + ' vnđ)';
+                }
+            }
+
+            let total = totalPrice - discount;
+            if (total < 0) total = 0;
+
+            $('#totalPrice').text(total.toLocaleString('vi-VN') + ' vnđ');
+            $('#total_after_discount').html(discount > 0 ?
+                '<span class="text-success">Đã giảm: ' + discountText + '</span>' :
+                '');
+            $('#totalDuration').text(totalDuration + ' Phút');
+        }
+
+        $('#service').on('change', updateTotal);
+        $('#voucher_id').on('select2:select', updateTotal);
+        $('#voucher_id').on('change', updateTotal);
+        $('#additionalServicesContainer').on('change', '.additional-service-select', updateTotal);
+
+        // Also update when add/remove additional service
+        new MutationObserver(updateTotal).observe(document.getElementById('additionalServicesContainer'), {
+            childList: true,
+            subtree: true
+        });
+
+        updateTotal();
+>>>>>>> b9bb882467ba62a5efe1d8da53f20aa1d7f0c564
     </script>
 
 

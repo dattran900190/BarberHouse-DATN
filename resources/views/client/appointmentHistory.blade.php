@@ -31,7 +31,6 @@
                             <li><a class="dropdown-item"
                                     href="{{ route('client.appointmentHistory', array_merge(request()->except('status'), ['status' => 'cancelled'])) }}">Đã
                                     hủy</a></li>
-                           
                         </ul>
                     </div>
                 </div>
@@ -62,14 +61,10 @@
                                     <br>
                                     <span class="text-muted">Tổng tiền:
                                         {{ number_format($appointment->total_amount) }}đ</span>
-                                    @if ($appointment->status == 'cancelled' || isset($appointment->cancellation_type))
+                                    @if ($appointment->status === 'cancelled' && $appointment->cancellation_reason)
                                         <br>
                                         <span class="text-muted">Lý do hủy: {{ $appointment->cancellation_reason }}</span>
                                     @endif
-                                    {{-- @if (isset($appointment->cancellation_type) && $appointment->cancellation_reason)
-                                        <br>
-                                        <span class="text-muted">Lý do hủy: {{ $appointment->cancellation_reason }}</span>
-                                    @endif --}}
                                 </div>
 
                                 <div class="col-md-2 text-center">
@@ -78,11 +73,11 @@
                                     @elseif ($appointment->status == 'confirmed')
                                         <span class="status-label status-confirmed">Đã xác nhận</span>
                                     @elseif ($appointment->status == 'cancelled')
-                                        <span class="status-label status-cancelled">Đã hủy</span>
+                                        <span class="status-label status-cancelled">
+                                            {{ $appointment->cancellation_type == 'no-show' ? 'Không đến' : 'Đã hủy' }}
+                                        </span>
                                     @elseif ($appointment->status == 'completed')
                                         <span class="status-label status-completed">Đã hoàn thành</span>
-                                    @elseif ($appointment->cancellation_type == 'no-show' ? 'Không đến' : 'Đã hủy')
-                                        <span class="status-label status-cancelled">Đã huỷ</span>
                                     @endif
                                 </div>
                                 <div class="col-md-3 text-center">
@@ -97,20 +92,23 @@
                                                 Đánh giá
                                             </button>
                                         @endif
-
-
                                         @if (in_array($appointment->status, ['pending', 'confirmed']))
-                                            {{-- <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#cancelModal{{ $appointment->id }}">Hủy</button> --}}
-                                            <button type="button" class="btn btn-outline-danger btn-sm me-2 cancel-btn"
+                                            <button type="button" class="btn btn-outline-danger btn-sm cancel-btn"
                                                 data-swal-toggle="modal" data-id="{{ $appointment->id }}">Hủy đặt
                                                 lịch</button>
+                                        @endif
+                                        @if (
+                                            $appointment->status != 'cancelled' &&
+                                                $appointment->status != 'completed' &&
+                                                $appointment->payment_status == 'paid' &&
+                                                !$appointment->refundRequests()->whereIn('refund_status', ['pending', 'processing'])->exists())
+                                            <a href="{{ route('client.wallet', ['refundable_type' => 'appointment', 'refundable_id' => $appointment->id]) }}"
+                                                class="btn btn-outline-warning btn-sm refund-btn"
+                                                data-appointment-id="{{ $appointment->id }}">Yêu cầu hoàn tiền</a>
                                         @endif
                                     </div>
                                 </div>
                             </div>
-
-
                         </div>
                     @empty
                         <div class="text-center text-muted p-3">Bạn chưa có lịch hẹn nào.</div>
@@ -131,7 +129,6 @@
             padding: 5px 10px;
             border-radius: 12px;
             font-size: 14px;
-
         }
 
         .swal2-textarea {
@@ -339,7 +336,7 @@
                     }
                 }).then(result => {
                     if (result.isConfirmed) {
-                         Swal.fire({
+                        Swal.fire({
                             title: 'Đang xử lý...',
                             text: 'Vui lòng chờ trong giây lát.',
                             allowOutsideClick: false,
@@ -350,7 +347,6 @@
                             didOpen: () => {
                                 Swal.showLoading();
                             }
-                        
                         });
                         fetch("{{ route('client.submitReview', ['appointment' => '__ID__']) }}"
                                 .replace('__ID__', appointmentId), {
@@ -364,8 +360,6 @@
                                         comment: result.value.comment
                                     })
                                 })
-
-
                             .then(response => {
                                 if (!response.ok) {
                                     throw new Error('Gửi đánh giá thất bại');
@@ -377,7 +371,6 @@
                                 Swal.close();
 
                                 if (data.success) {
-                                    button.style.display = 'none';
                                     Swal.fire({
                                         title: 'Thành công!',
                                         text: data.message,
@@ -416,14 +409,11 @@
                                     }
                                 });
                             });
-
                     }
                 });
             });
         });
     </script>
-
-
     <script>
         const swiper = new Swiper(".mySwiper", {
             loop: true,

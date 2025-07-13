@@ -113,6 +113,16 @@
                                 <i class="fa-solid fa-qrcode"></i>
                             </div>
                         </div>
+                        <div class="form-check" style="display: flex; justify-content: space-between">
+                            <div class="chon">
+                                <input class="form-check-input" value="3" type="radio"
+                                    name="phuong_thuc_thanh_toan_id" id="paymentMethodMOMO" />
+                                <label class="form-check-label" for="paymentMethodMOMO">Thanh toán qua MOMO</label>
+                            </div>
+                            <div class="icon-bank">
+                                <i class="fa-solid fa-qrcode"></i>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="informationProduct">
