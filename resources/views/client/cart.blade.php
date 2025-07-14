@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <main class="container">
+    <main class="container-fluid">
         <section class="h-custom">
             <div class="padding-5vh">
                 <div class="flex-center">
@@ -165,10 +165,6 @@
                                                     ₫</h5>
                                             </div>
 
-
-
-
-
                                             <hr class="my-4">
 
                                             <div class="d-flex justify-content-between mb-5">
@@ -183,7 +179,7 @@
                                                     <button type="button" class="btn btn-dark btn-block btn-lg"
                                                         id="btn-checkout-guest">Xác nhận</button>
                                                 @else
-                                                    <button type="submit" class="btn btn-dark btn-block btn-lg">Xác
+                                                    <button type="submit" class="btn-outline-buy">Xác
                                                         nhận</button>
                                                 @endguest
                                             </form>
@@ -199,13 +195,13 @@
         </section>
     </main>
     <style>
-        .table th {
-            white-space: nowrap;
-        }
-
         #mainNav {
             background-color: #000;
         }
+        /* .table th {
+            white-space: nowrap;
+        }
+
 
         .padding-5vh {
             padding: 5vh 0;
@@ -250,7 +246,7 @@
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-        }
+        } */
     </style>
 @endsection
 

@@ -2,6 +2,8 @@ html {
   scroll-behavior: smooth;
   height: 100%;
   margin: 0;
+  font-family: Arial, sans-serif;
+
 }
 
 body {
@@ -605,107 +607,7 @@ footer {
   margin-bottom: 15px;
 }
 
-/* Responsive cho màn hình nhỏ */
-/* @media (max-width: 768px) {
-  .main-footer {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .description,
-  .information,
-  .faq,
-  .follow-us {
-    flex: none;
-    width: 100%;
-  }
-
-  .social ul {
-    justify-content: center;
-  }
-} */
-
 /* ----------- booking ---------- */
-
-/* Tổng thể form */
-/* #bookingForm {
-  max-width: 500px;
-  margin: 50px auto;
-  padding: 30px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', sans-serif;
-} */
-
-/* #bookingForm label {
-  display: block;
-  margin-bottom: 16px;
-  font-weight: 600;
-  color: #333;
-} */
-
-/* #bookingForm input,
-#bookingForm select {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 15px;
-  transition: border-color 0.3s;
-}
-
-#bookingForm input:focus,
-#bookingForm select:focus {
-  border-color: #444;
-  outline: none;
-}
-
-#bookingForm button {
-  width: 100%;
-  padding: 12px;
-  background-color: #111;
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-#bookingForm button:hover {
-  background-color: #444;
-} */
-
-/* .select2-container {
-  width: 100% !important;
-  margin-bottom: 1.5rem;
-}
-
-.select2-container--default .select2-selection--single {
-  min-height: 46px;
-  padding: 10px 4px;
-  border-radius: 6px;
-  box-shadow: none;
-  background-color: #fff;
-  transition: border-color .3s;
-  border: 1px solid #ccc !important;
-}
-
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-  line-height: 24px;
-  padding: 10;
-}
-
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-  display: none !important;
-}
-
-.select2-container--default.select2-container--focus .select2-selection--single {
-
-  outline: 0;
-} */
 
 .booking-container {
   max-width: 500px;
@@ -758,9 +660,9 @@ footer {
 .booking-container .form-select {
   width: 100%;
   padding: 15px;
-  border: none;
+  border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #f5f5f5;
+  background-color: #fff;
   color: #333;
   font-size: 16px;
   outline: none;
@@ -793,6 +695,7 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border: 1px solid #ccc;
 }
 
 .booking-container .branch-content {
@@ -869,7 +772,7 @@ footer {
   width: 100%;
   padding: 15px;
   background-color: #f5f5f5;
-  border: none;
+  border: 1px solid #ccc;
   border-radius: 5px;
   color: #333;
   font-size: 16px;
@@ -906,7 +809,7 @@ footer {
 .booking-container .time-slot {
   padding: 12px 8px;
   /* background-color: #f5f5f5; */
-  border: none;
+  border: 1px solid #ccc;
   border-radius: 5px;
   color: #333;
   font-size: 14px;
@@ -929,6 +832,7 @@ footer {
 
 .booking-container .date-input {
   position: relative;
+  background-color: #fff;
 }
 
 .booking-container .date-input input[type="date"] {
@@ -945,6 +849,7 @@ footer {
   transform: translateY(-50%);
   color: #999;
   pointer-events: none;
+  background-color: #fff;
 }
 
 .booking-container .notes-textarea {
@@ -957,7 +862,7 @@ footer {
   width: 100%;
   padding: 18px;
   background-color: #000000;
-  border: none;
+  border: 1px solid #ccc;
   border-radius: 5px;
   color: #fff;
   font-size: 18px;
@@ -1251,7 +1156,7 @@ footer {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: Arial, sans-serif;
+  /* font-family: Arial, sans-serif; */
   margin: 40px 0;
 }
 
@@ -1766,16 +1671,6 @@ footer {
 
 }
 
-.mainCheckout {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 30px;
-  /* Khoảng cách giữa các khối */
-  padding: 40px 20px;
-  flex-wrap: wrap;
-  /* Cho responsive nếu không đủ chỗ */
-}
 
 .informationUser,
 .deliveryPayment,
