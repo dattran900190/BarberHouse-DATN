@@ -6,7 +6,7 @@
 
 @section('content')
     <main class="container" style="padding: 10% 0;">
-{{--
+{{-- 
         @if (session('success'))
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>
@@ -51,11 +51,8 @@
 
 
                 <div id="other-info" style="{{ old('other_person') ? '' : 'display:none;' }}">
-
                     <div class="row">
                         <div class="col-sm-6">
-
-
                             <div class="form-group mb-3">
                                 <label class="form-label">Họ và tên <span class="required">*</span></label>
                                 <input id="name" name="name" class="form-control" type="text"
@@ -84,10 +81,7 @@
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
-
-
                 </div>
-
 
                 <div class="form-group">
                     <label class="form-label">Ngày đặt lịch <span class="required">*</span></label>
@@ -119,6 +113,34 @@
                     @enderror
                 </div>
 
+                <div class="form-group">
+                    <label class="form-label">Dịch vụ <span class="required">*</span></label>
+                    <div id="servicesList">
+                        <div class="service-item" data-service-index="0">
+                            <div class="position-relative">
+                                <select id="service" name="service_id" class="form-select service-select"
+                                    data-index="0" required>
+                                    <option value="">Chọn dịch vụ chính</option>
+                                    @foreach ($services as $service)
+                                        <option value="{{ $service->id }}" data-name="{{ $service->name }}"
+                                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
+                                            {{ old('service_id') == $service->id ? 'selected' : '' }}>
+                                            {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('service_id')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="additionalServicesContainer" class="mt-2"></div>
+                    <input type="hidden" name="additional_services" id="additionalServicesInput">
+                    <button class="add-service-btn mt-2" type="button" id="addServiceBtn">Thêm dịch vụ</button>
+                </div>
+                
                 <div class="form-group">
                     <label class="form-label">Chọn khung giờ dịch vụ <span class="required">*</span></label>
                     <input type="hidden" name="appointment_time" id="appointment_time"
@@ -152,35 +174,6 @@
                     @error('appointment_time')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
-                </div>
-
-
-                <div class="form-group">
-                    <label class="form-label">Dịch vụ <span class="required">*</span></label>
-                    <div id="servicesList">
-                        <div class="service-item" data-service-index="0">
-                            <div class="position-relative">
-                                <select id="service" name="service_id" class="form-select service-select"
-                                    data-index="0" required>
-                                    <option value="">Chọn dịch vụ chính</option>
-                                    @foreach ($services as $service)
-                                        <option value="{{ $service->id }}" data-name="{{ $service->name }}"
-                                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
-                                            {{ old('service_id') == $service->id ? 'selected' : '' }}>
-                                            {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('service_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="additionalServicesContainer" class="mt-2"></div>
-                    <input type="hidden" name="additional_services" id="additionalServicesInput">
-                    <button class="add-service-btn mt-2" type="button" id="addServiceBtn">Thêm dịch vụ</button>
                 </div>
 
                 <div class="form-group">
@@ -240,7 +233,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Phương thức thanh toán <span class="required">*</span></label><br>
-
+                    
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="payment_method" id="payment_cash"
                             value="cash" {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
@@ -258,9 +251,8 @@
                     @enderror
                 </div>
 
-
                 <div class="form-btn mt-3">
-                    <button type="submit" class="submit-btn book-btn booking-btn">
+                    <button type="submit" class="submit-btn book-btn booking-btn" data-id="{{ $service->id }}">
                         Đặt lịch
                     </button>
                 </div>
@@ -405,16 +397,9 @@
             event.preventDefault();
             const form = document.getElementById('bookingForm');
 
-            // Kiểm tra đã xác minh OTP chưa
-            const otpVerified = document.getElementById('otp_verified').value;
-            if (otpVerified !== '1') {
-                Swal.fire('Cảnh báo', 'Vui lòng xác minh số điện thoại trước khi đặt lịch.', 'warning');
-                return;
-            }
-
-            // Kiểm tra form
+            // Kiểm tra form trước khi gửi
             if (!form.checkValidity()) {
-                form.reportValidity();
+                form.reportValidity(); // Hiển thị lỗi HTML5 mặc định
                 return;
             }
 
@@ -557,16 +542,6 @@
                 if (voucherSelect.selectedIndex > 0 && voucherSelect.options[voucherSelect.selectedIndex].style
                     .display === 'none') {
                     voucherSelect.selectedIndex = 0;
-<<<<<<< HEAD
-                }
-            }
-
-            if (appointmentDateInput && voucherSelect) {
-                appointmentDateInput.addEventListener('change', filterVouchersByDate);
-                filterVouchersByDate();
-            }
-        });
-=======
                 }
             }
 
@@ -667,10 +642,5 @@
         });
 
         updateTotal();
->>>>>>> b9bb882467ba62a5efe1d8da53f20aa1d7f0c564
     </script>
-
-
-
-
 @endsection

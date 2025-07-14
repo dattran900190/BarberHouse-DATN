@@ -444,11 +444,4 @@ class AppointmentController extends Controller
 
         return redirect()->route('appointments.index')->with('success', 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.');
     }
-
-    public function store(Request $request)
-    {
-        if ($request->otp_verified != '1') {
-            return response()->json(['success' => false, 'message' => 'Bạn chưa xác minh số điện thoại.'], 400);
-        }
-    }
 }
