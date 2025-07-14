@@ -6,7 +6,7 @@
 
 @section('content')
     <main class="container" style="padding: 10% 0;">
-{{-- 
+{{--
         @if (session('success'))
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>
@@ -88,14 +88,6 @@
 
                 </div>
 
-                <div class="form-group mb-3" id="self-phone-area" style="{{ old('other_person') ? 'display:none;' : '' }}">
-                    <label class="form-label">Số điện thoại của bạn <span class="required">*</span></label>
-                    <input id="self_phone" name="self_phone" class="form-control" type="tel"
-                        placeholder="Nhập số điện thoại của bạn" value="{{ old('self_phone') }}">
-                    @error('self_phone')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
 
                 <div class="form-group">
                     <label class="form-label">Ngày đặt lịch <span class="required">*</span></label>
@@ -248,7 +240,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Phương thức thanh toán <span class="required">*</span></label><br>
-                    
+
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="payment_method" id="payment_cash"
                             value="cash" {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
@@ -265,23 +257,6 @@
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                {{-- <div id="self-phone-container" style="{{ old('other_person') ? 'display:none;' : '' }}">
-                    <div class="form-group mb-3">
-                        <label class="form-label">Số điện thoại của bạn <span class="required">*</span></label>
-                        <input id="self_phone" name="self_phone" class="form-control" type="tel"
-                            placeholder="Nhập số điện thoại của bạn" value="{{ old('self_phone') }}">
-                    </div>
-                </div> --}}
-
-                <div id="recaptcha-container"></div>
-                <button type="button" id="send-otp-btn" class="btn btn-sm btn-primary mt-2">Gửi mã xác minh</button>
-
-                <div class="form-group mb-3" id="otp-area" style="display: none;">
-                    <label for="otp">Nhập mã OTP</label>
-                    <input type="text" id="otp" class="form-control" placeholder="Nhập mã OTP">
-                    <button type="button" id="verify-otp-btn" class="btn btn-sm btn-success mt-2">Xác minh OTP</button>
-                </div>
-                <input type="hidden" id="otp_verified" name="otp_verified" value="0">
 
 
                 <div class="form-btn mt-3">
