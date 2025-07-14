@@ -8,10 +8,10 @@
             <h3 class="fw-bold mb-3">Bảng điều khiển</h3>
             <h6 class="op-7 mb-2">Trang quản trị hệ thống tiệm & bán hàng</h6>
         </div>
-        <div class="ms-md-auto py-2 py-md-0">
+        {{-- <div class="ms-md-auto py-2 py-md-0">
             <a href="#" class="btn btn-label-info btn-round me-2">Quản lý</a>
             <a href="#" class="btn btn-primary btn-round">Thêm khách hàng</a>
-        </div>
+        </div> --}}
     </div>
 
     <div class="row">
@@ -21,13 +21,13 @@
                     <div class="row align-items-center">
                         <div class="col-icon">
                             <div class="icon-big text-center icon-primary bubble-shadow-small">
-                                <i class="fas fa-users"></i>
+                                <i class="fas fa-calendar-check"></i>
                             </div>
                         </div>
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
-                                <p class="card-category">Khách truy cập</p>
-                                <h4 class="card-title">{{ number_format($totalVisitors) }}</h4>
+                                <p class="card-category">Lượt đặt lịch</p>
+                                <h4 class="card-title">{{ number_format($totalBookings) }}</h4>
                             </div>
                         </div>
                     </div>

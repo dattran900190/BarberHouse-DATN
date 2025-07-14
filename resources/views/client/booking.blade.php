@@ -6,7 +6,7 @@
 
 @section('content')
     <main class="container" style="padding: 10% 0;">
-{{-- 
+        {{-- 
         @if (session('success'))
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>
@@ -100,7 +100,7 @@
                         <input type="hidden" id="branch_input" name="branch_id" value="{{ old('branch_id') }}">
                         @foreach ($branches as $branch)
                             <div class="branch-item {{ old('branch_id') == $branch->id ? 'active' : '' }}"
-                                data-id="{{ $branch->id }}">
+                                data-id="{{ $branch->id }}" style="border: 2px solid #000;">
                                 <i class="fas fa-map-marker-alt branch-icon"
                                     data-value="{{ $branch->google_map_url }}"></i>
                                 <span class="branch-name">{{ $branch->name }}</span>
@@ -118,8 +118,8 @@
                     <div id="servicesList">
                         <div class="service-item" data-service-index="0">
                             <div class="position-relative">
-                                <select id="service" name="service_id" class="form-select service-select"
-                                    data-index="0" required>
+                                <select id="service" name="service_id" class="form-select service-select" data-index="0"
+                                    required>
                                     <option value="">Chọn dịch vụ chính</option>
                                     @foreach ($services as $service)
                                         <option value="{{ $service->id }}" data-name="{{ $service->name }}"
@@ -138,38 +138,39 @@
 
                     <div id="additionalServicesContainer" class="mt-2"></div>
                     <input type="hidden" name="additional_services" id="additionalServicesInput">
-                    <button class="add-service-btn mt-2" type="button" id="addServiceBtn">Thêm dịch vụ</button>
+                    <button class="btn-outline-booking" style="margin-top: 10px" type="button" id="addServiceBtn">Thêm
+                        dịch vụ</button>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">Chọn khung giờ dịch vụ <span class="required">*</span></label>
                     <input type="hidden" name="appointment_time" id="appointment_time"
                         value="{{ old('appointment_time') }}">
                     <div class="time-grid" id="timeGrid">
-                        <span class="time-slot" data-value="08:00">08:00</span>
-                        <span class="time-slot" data-value="08:30">08:30</span>
-                        <span class="time-slot" data-value="09:00">09:00</span>
-                        <span class="time-slot" data-value="09:30">09:30</span>
-                        <span class="time-slot" data-value="10:00">10:00</span>
-                        <span class="time-slot" data-value="10:30">10:30</span>
-                        <span class="time-slot" data-value="11:00">11:00</span>
-                        <span class="time-slot" data-value="11:30">11:30</span>
-                        <span class="time-slot" data-value="12:00">12:00</span>
-                        <span class="time-slot" data-value="12:30">12:30</span>
-                        <span class="time-slot" data-value="13:00">13:00</span>
-                        <span class="time-slot" data-value="13:30">13:30</span>
-                        <span class="time-slot" data-value="14:00">14:00</span>
-                        <span class="time-slot" data-value="14:30">14:30</span>
-                        <span class="time-slot" data-value="15:00">15:00</span>
-                        <span class="time-slot" data-value="15:30">15:30</span>
-                        <span class="time-slot" data-value="16:00">16:00</span>
-                        <span class="time-slot" data-value="16:30">16:30</span>
-                        <span class="time-slot" data-value="17:00">17:00</span>
-                        <span class="time-slot" data-value="17:30">17:30</span>
-                        <span class="time-slot" data-value="18:00">18:00</span>
-                        <span class="time-slot" data-value="18:30">18:30</span>
-                        <span class="time-slot" data-value="19:00">19:00</span>
-                        <span class="time-slot" data-value="19:30">19:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="08:00">08:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="08:30">08:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="09:00">09:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="09:30">09:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="10:00">10:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="10:30">10:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="11:00">11:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="11:30">11:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="12:00">12:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="12:30">12:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="13:00">13:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="13:30">13:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="14:00">14:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="14:30">14:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="15:00">15:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="15:30">15:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="16:00">16:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="16:30">16:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="17:00">17:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="17:30">17:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="18:00">18:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="18:30">18:30</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="19:00">19:00</span>
+                        <span class="time-slot" style="border: 2px solid #000" data-value="19:30">19:30</span>
                     </div>
                     @error('appointment_time')
                         <small class="text-danger">{{ $message }}</small>
@@ -232,8 +233,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Phương thức thanh toán <span class="required">*</span></label><br>
-                    
+                    <label class="form-label">Phương thức thanh toán <span class="required">*</span></label>
+
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="payment_method" id="payment_cash"
                             value="cash" {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
@@ -252,7 +253,7 @@
                 </div>
 
                 <div class="form-btn mt-3">
-                    <button type="submit" class="submit-btn book-btn booking-btn" data-id="{{ $service->id }}">
+                    <button type="submit" class=" btn-outline-booking booking-btn" data-id="{{ $service->id }}">
                         Đặt lịch
                     </button>
                 </div>
@@ -267,6 +268,113 @@
         #mainNav {
             background-color: #000;
         }
+
+        #bookingForm .form-control,
+        #bookingForm .form-select {
+            border: 2px solid #000;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background-color: #fff;
+            color: #000;
+            box-shadow: none;
+        }
+
+        #bookingForm .form-control:focus,
+        #bookingForm .form-select:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+        }
+
+        #bookingForm .form-check-input {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #000;
+            margin-top: 3px;
+            cursor: pointer;
+        }
+
+        #bookingForm .form-check-input:checked {
+            background-color: #000;
+            border-color: #000;
+        }
+
+        #bookingForm .notes-textarea {
+            border: 2px solid #000;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 15px;
+            width: 100%;
+            resize: vertical;
+        }
+
+        /* Giao diện chính của select2 */
+        .select2-container--default .select2-selection--single {
+            height: 44px;
+            padding: 8px 14px;
+            border: 2px solid #000;
+            border-radius: 6px;
+            background-color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            color: #000;
+            transition: all 0.3s ease;
+        }
+
+        /* Khi focus */
+        .select2-container--default .select2-selection--single:focus,
+        .select2-container--default .select2-selection--single.select2-selection--focus {
+            border-color: #000;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+
+        /* Mũi tên chọn */
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top: 8px;
+            right: 8px;
+        }
+
+        /* Text hiển thị */
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #000;
+            line-height: 28px;
+        }
+
+        /* Dropdown list */
+        .select2-container--default .select2-results>.select2-results__options {
+            max-height: 240px;
+            border: 1px solid #000;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .select2-container--default .select2-results__option--highlighted {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .btn-icon-remove {
+            background-color: transparent;
+            border: 2px solid #000;
+            color: #000;
+            border-radius: 6px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-icon-remove:hover {
+                background-color: #000;
+                color: #fff;
+            }
     </style>
 @endsection
 
@@ -348,8 +456,9 @@
                 // Tạo nút "Xóa" bên ngoài select
                 const removeBtn = document.createElement('button');
                 removeBtn.type = 'button';
-                removeBtn.className = 'btn btn-sm btn-danger remove-service ms-2';
-                removeBtn.textContent = 'Xóa';
+                removeBtn.className = 'btn-icon-remove ms-2';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                // removeBtn.textContent = 'Xóa';
                 removeBtn.addEventListener('click', function() {
                     additionalServicesContainer.removeChild(serviceWrapper);
                     updateAdditionalServicesInput();
@@ -358,9 +467,20 @@
                 // Thêm select và nút "Xóa" vào wrapper
                 serviceWrapper.appendChild(serviceSelect);
                 serviceWrapper.appendChild(removeBtn);
-
-                // Thêm wrapper vào container
                 additionalServicesContainer.appendChild(serviceWrapper);
+
+                // Khởi tạo Select2 cho select vừa tạo
+                $(serviceSelect).select2({
+                    placeholder: 'Chọn dịch vụ bổ sung',
+                    allowClear: true,
+                    width: '100%',
+                    language: {
+                        noResults: function() {
+                            return "Không tìm thấy dịch vụ phù hợp";
+                        }
+                    }
+                });
+
                 updateAdditionalServicesInput();
             }
 
@@ -550,6 +670,8 @@
                 filterVouchersByDate();
             }
         });
+
+        // mã khuyến mãi
         $(document).ready(function() {
             $('#voucher_id').select2({
                 placeholder: 'Chọn hoặc tìm mã khuyến mãi',
@@ -561,6 +683,18 @@
                     }
                 }
             });
+        });
+
+        // Chọn dịch vụ 
+        $('#service').select2({
+            placeholder: 'Chọn dịch vụ chính',
+            allowClear: true,
+            width: '100%',
+            language: {
+                noResults: function() {
+                    return "Không tìm thấy dịch vụ phù hợp";
+                }
+            }
         });
 
         function getServiceInfo(opt) {
