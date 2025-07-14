@@ -5,10 +5,29 @@
 @section('content')
     @php
         $currentRole = Auth::user()->role;
+        $isRetired = $barber->status === 'retired';
     @endphp
+
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Thợ Cắt Tóc</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="#">Quản lý nhân sự</a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="{{ url('admin/barbers') }}">Thợ cắt tóc</a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="#">Chỉnh sửa</a></li>
+        </ul>
+    </div>
+
     <div class="card">
-        <div class="card-header bg-warning text-white">
-            <h3 class="card-title">Chỉnh sửa Thợ Cắt Tóc</h3>
+        <div class="card-header text-white align-items-center">
+            <div class="card-title">Chỉnh sửa Thợ Cắt Tóc</div>
         </div>
 
         <div class="card-body">
@@ -18,128 +37,104 @@
                 <input type="hidden" name="page" value="{{ request('page', 1) }}">
 
                 <div class="row">
-                    <!-- Phần bên trái: Ảnh đại diện -->
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="avatar">Ảnh đại diện mới (nếu có)</label>
-                            <input type="file" id="avatar" name="avatar" class="form-control-file" accept="image/*">
-                            @error('avatar')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        @if ($barber->avatar)
-                            <div class="form-group">
-                                <label>Ảnh đại diện hiện tại:</label><br>
-                                <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar"
-                                    style="max-height: 150px;">
-                            </div>
-                        @endif
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Họ tên</label>
+                        <input type="text" id="name" name="name" class="form-control"
+                            value="{{ old('name', $barber->name) }}" required>
+                        @error('name')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <!-- Phần bên phải: Các thông tin thợ cắt tóc -->
-                    <div class="col-md-8">
-                        <div class="form-group">
-                            <label for="name">Họ tên</label>
-                            <input type="text" id="name" name="name" class="form-control"
-                                value="{{ old('name', $barber->name) }}" required>
-                            @error('name')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="skill_level">Trình độ</label>
-                            <input type="text" id="skill_level" name="skill_level" class="form-control"
-                                value="{{ old('skill_level', $barber->skill_level) }}" required>
-                            @error('skill_level')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="rating_avg">Đánh giá trung bình</label>
-                            <input type="number" id="rating_avg" name="rating_avg" class="form-control"
-                                value="{{ old('rating_avg', $barber->rating_avg) }}" step="0.1" min="0"
-                                max="5">
-                            @error('rating_avg')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="profile">Hồ sơ</label>
-                            <textarea id="profile" name="profile" class="form-control" rows="3">{{ old('profile', $barber->profile) }}</textarea>
-                            @error('profile')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="branch_id">Chi nhánh</label>
-                            @if ($currentRole === 'admin_branch')
-                                <select id="branch_id" name="branch_id" class="form-control" disabled>
-                                    <option value="">-- Chọn chi nhánh --</option>
-                                    @foreach ($branches as $branch)
-                                        <option value="{{ $branch->id }}"
-                                            {{ old('branch_id', $barber->branch_id) == $branch->id ? 'selected' : '' }}>
-                                            {{ $branch->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            @else
-                                <select id="branch_id" name="branch_id" class="form-control">
-                                    <option value="">-- Chọn chi nhánh --</option>
-                                    @foreach ($branches as $branch)
-                                        <option value="{{ $branch->id }}"
-                                            {{ old('branch_id', $barber->branch_id) == $branch->id ? 'selected' : '' }}>
-                                            {{ $branch->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            @endif
-
-                            {{-- Hiển thị thông báo lỗi nếu có --}}
-                            @error('branch_id')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        @php
-                            $isRetired = $barber->status === 'retired';
-                        @endphp
-
-                        <div class="form-group">
-                            <label for="status">Trạng thái</label>
-
-                            <select id="status" name="status" class="form-control" {{ $isRetired ? 'disabled' : '' }}>
-                                <option value="idle" {{ old('status', $barber->status) == 'idle' ? 'selected' : '' }}>
-                                    Đang hoạt động
-                                </option>
-                                <option value="busy" {{ old('status', $barber->status) == 'busy' ? 'selected' : '' }}>
-                                    Không nhận lịch
-                                </option>
-                                <option value="retired"
-                                    {{ old('status', $barber->status) == 'retired' ? 'selected' : '' }}>
-                                    Đã Nghỉ việc
-                                </option>
-                            </select>
-
-                            {{-- Khi bị disabled thì phải thêm hidden input để giữ lại dữ liệu --}}
-                            @if ($isRetired)
-                                <input type="hidden" name="status" value="retired">
-                            @endif
-
-                            @error('status')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="skill_level" class="form-label">Trình độ</label>
+                        <input type="text" id="skill_level" name="skill_level" class="form-control"
+                            value="{{ old('skill_level', $barber->skill_level) }}" required>
+                        @error('skill_level')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-warning">Cập nhật</button>
-                <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">Quay
-                    lại</a>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="rating_avg" class="form-label">Đánh giá trung bình</label>
+                        <input type="number" id="rating_avg" name="rating_avg" class="form-control" step="0.1" min="0" max="5"
+                            value="{{ old('rating_avg', $barber->rating_avg) }}">
+                        @error('rating_avg')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="branch_id" class="form-label">Chi nhánh</label>
+                        @if ($currentRole === 'admin_branch')
+                            <select id="branch_id" name="branch_id" class="form-control" disabled>
+                        @else
+                            <select id="branch_id" name="branch_id" class="form-control">
+                        @endif
+                                <option value="">-- Chọn chi nhánh --</option>
+                                @foreach ($branches as $branch)
+                                    <option value="{{ $branch->id }}"
+                                        {{ old('branch_id', $barber->branch_id) == $branch->id ? 'selected' : '' }}>
+                                        {{ $branch->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @error('branch_id')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="profile" class="form-label">Hồ sơ</label>
+                    <textarea id="profile" name="profile" class="form-control" rows="3">{{ old('profile', $barber->profile) }}</textarea>
+                    @error('profile')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="avatar" class="form-label">Ảnh đại diện</label>
+                    <input type="file" id="avatar" name="avatar" class="form-control" accept="image/*">
+                    @if ($barber->avatar)
+                        <div class="mt-2">
+                            <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" width="120" class="rounded">
+                        </div>
+                    @endif
+                    @error('avatar')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="status" class="form-label">Trạng thái</label>
+                    <select id="status" name="status" class="form-control" {{ $isRetired ? 'disabled' : '' }}>
+                        <option value="idle" {{ old('status', $barber->status) == 'idle' ? 'selected' : '' }}>
+                            Đang hoạt động
+                        </option>
+                        <option value="busy" {{ old('status', $barber->status) == 'busy' ? 'selected' : '' }}>
+                            Không nhận lịch
+                        </option>
+                        <option value="retired" {{ old('status', $barber->status) == 'retired' ? 'selected' : '' }}>
+                            Đã nghỉ việc
+                        </option>
+                    </select>
+                    @if ($isRetired)
+                        <input type="hidden" name="status" value="retired">
+                    @endif
+                    @error('status')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <button type="submit" class="btn btn-sm btn-outline-warning">
+                    <i class="fa fa-edit me-1"></i> Cập nhật
+                </button>
+                <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa fa-arrow-left me-1"></i> Quay lại
+                </a>
             </form>
         </div>
     </div>
