@@ -196,6 +196,146 @@
 
 @endsection
 @section('js')
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <script>
+        const paymentMap = {
+            paid: {
+                class: 'success',
+                text: 'Thanh toán thành công'
+            },
+            unpaid: {
+                class: 'warning',
+                text: 'Chưa thanh toán'
+            },
+            failed: {
+                class: 'danger',
+                text: 'Thanh toán thất bại'
+            },
+            refunded: {
+                class: 'danger',
+                text: 'Hoàn trả thanh toán'
+            }
+        };
+
+        // 1. Lắng nghe sự kiện click các nút confirm-btn
+        document.addEventListener('click', function(e) {
+            const confirmBtn = e.target.closest('.confirm-btn');
+            if (!confirmBtn) return;
+
+            const id = confirmBtn.dataset.id;
+            Swal.fire({
+                title: 'Xác nhận lịch hẹn',
+                text: 'Bạn có chắc chắn muốn xác nhận lịch hẹn này?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Xác nhận',
+                cancelButtonText: 'Hủy',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        text: 'Vui lòng chờ trong giây lát.',
+                        allowOutsideClick: false,
+                        customClass: {
+                            popup: 'custom-swal-popup' // CSS
+                        },
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`{{ route('appointments.confirm', ':id') }}`.replace(':id', id), {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            Swal.close();
+                            Swal.fire({
+                                title: data.success ? 'Thành công!' : 'Thất bại!',
+                                text: data.message,
+                                icon: data.success ? 'success' : 'error'
+                            }).then(() => {
+                                if (data.success) location.reload();
+                            });
+                        })
+                        .catch(err => {
+                            Swal.close();
+                            Swal.fire('Lỗi', 'Không thể xác nhận lịch hẹn.', 'error');
+                            console.error(err);
+                        });
+                }
+            });
+        });
+
+        // 2. Lắng nghe sự kiện từ Pusher
+        const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+            cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+            encrypted: true
+        });
+
+        const channel = pusher.subscribe('appointments');
+        channel.bind('App\\Events\\AppointmentCreated', function(data) {
+            const tableBody = document.querySelector('#pending tbody');
+            if (tableBody) {
+                const paymentInfo = paymentMap[data.payment_status] || {
+                    class: 'secondary',
+                    text: data.payment_status
+                };
+
+                const actionDropdown = `
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary" type="button" id="actionMenu${data.id}"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionMenu${data.id}">
+                        <li>
+                            <a href="admin/appointments/${data.id}" class="dropdown-item">
+                                <i class="fas fa-eye me-2"></i> Xem
+                            </a>
+                        </li>
+                        <li>
+                            <a href="admin/appointments/${data.id}/edit" class="dropdown-item">
+                                <i class="fas fa-edit me-2"></i> Sửa
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <button type="button" class="dropdown-item text-success confirm-btn" data-id="${data.id}">
+                                <i class="fas fa-check me-2"></i> Xác nhận
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            `;
+
+                const row = `
+                <tr>
+                    <td>Mới</td>
+                    <td>${data.appointment_code}</td>
+                    <td>${data.user_name}</td>
+                    <td>${data.phone}</td>
+                    <td>${data.barber_name}</td>
+                    <td>${data.service_name}</td>
+                    <td>${data.created_at}</td>
+                    <td><span class="badge bg-warning">Chờ xác nhận</span></td>
+                    <td><span class="badge bg-${paymentInfo.class}">${paymentInfo.text}</span></td>
+                    <td class="text-center">${actionDropdown}</td>
+                </tr>
+            `;
+                tableBody.insertAdjacentHTML('afterbegin', row);
+            } else {
+                console.warn('Không tìm thấy bảng #pending tbody!');
+            }
+        });
+    </script>
 
     <script>
         function handleSwalAction({

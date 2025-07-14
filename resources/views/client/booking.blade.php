@@ -114,6 +114,34 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">Dịch vụ <span class="required">*</span></label>
+                    <div id="servicesList">
+                        <div class="service-item" data-service-index="0">
+                            <div class="position-relative">
+                                <select id="service" name="service_id" class="form-select service-select"
+                                    data-index="0" required>
+                                    <option value="">Chọn dịch vụ chính</option>
+                                    @foreach ($services as $service)
+                                        <option value="{{ $service->id }}" data-name="{{ $service->name }}"
+                                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
+                                            {{ old('service_id') == $service->id ? 'selected' : '' }}>
+                                            {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('service_id')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="additionalServicesContainer" class="mt-2"></div>
+                    <input type="hidden" name="additional_services" id="additionalServicesInput">
+                    <button class="add-service-btn mt-2" type="button" id="addServiceBtn">Thêm dịch vụ</button>
+                </div>
+                
+                <div class="form-group">
                     <label class="form-label">Chọn khung giờ dịch vụ <span class="required">*</span></label>
                     <input type="hidden" name="appointment_time" id="appointment_time"
                         value="{{ old('appointment_time') }}">
@@ -146,35 +174,6 @@
                     @error('appointment_time')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
-                </div>
-
-
-                <div class="form-group">
-                    <label class="form-label">Dịch vụ <span class="required">*</span></label>
-                    <div id="servicesList">
-                        <div class="service-item" data-service-index="0">
-                            <div class="position-relative">
-                                <select id="service" name="service_id" class="form-select service-select"
-                                    data-index="0" required>
-                                    <option value="">Chọn dịch vụ chính</option>
-                                    @foreach ($services as $service)
-                                        <option value="{{ $service->id }}" data-name="{{ $service->name }}"
-                                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
-                                            {{ old('service_id') == $service->id ? 'selected' : '' }}>
-                                            {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('service_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="additionalServicesContainer" class="mt-2"></div>
-                    <input type="hidden" name="additional_services" id="additionalServicesInput">
-                    <button class="add-service-btn mt-2" type="button" id="addServiceBtn">Thêm dịch vụ</button>
                 </div>
 
                 <div class="form-group">
