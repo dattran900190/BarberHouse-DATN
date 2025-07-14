@@ -7,6 +7,7 @@ use App\Http\Requests\StoreRefundRequest;
 use App\Models\Order;
 use App\Models\Appointment;
 use App\Models\RefundRequest;
+use App\Events\RefundRequestCreated;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -136,7 +137,7 @@ class WalletController extends Controller
                 ], 422);
             }
 
-            RefundRequest::create([
+            $refundRequest = RefundRequest::create([
                 'user_id' => $userId,
                 'order_id' => $refundableType === 'order' ? $refundableId : null,
                 'appointment_id' => $refundableType === 'appointment' ? $refundableId : null,
@@ -147,6 +148,12 @@ class WalletController extends Controller
                 'bank_name' => $request->bank_name,
                 'refund_status' => 'pending',
             ]);
+
+            // Load relationships để có đủ data cho event
+            $refundRequest->load(['user', 'order', 'appointment']);
+
+            // Trigger event để broadcast đến admin
+            event(new RefundRequestCreated($refundRequest));
 
             DB::commit();
             return response()->json([

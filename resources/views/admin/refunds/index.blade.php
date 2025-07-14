@@ -3,12 +3,11 @@
 @section('title', 'Danh sách Yêu cầu hoàn tiền')
 
 @section('content')
-    {{-- Flash messages --}}
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Đóng">
-                <span aria-hidden="true">&times;</span>
+                <span aria-hidden="true">×</span>
             </button>
         </div>
     @endif
@@ -17,12 +16,11 @@
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ $errors->first() }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Đóng">
-                <span aria-hidden="true">&times;</span>
+                <span aria-hidden="true">×</span>
             </button>
         </div>
     @endif
 
-    {{-- Page header + breadcrumbs --}}
     <div class="page-header">
         <h3 class="fw-bold mb-3">Danh sách Yêu cầu hoàn tiền</h3>
         <ul class="breadcrumbs mb-3">
@@ -38,27 +36,22 @@
         </ul>
     </div>
 
-    {{-- Card --}}
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <div class="card-title">Yêu cầu hoàn tiền</div>
         </div>
 
         <div class="card-body">
-            {{-- Search --}}
             <form method="GET" action="{{ route('refunds.index') }}" class="mb-3">
-                <input type="hidden" name="status" value="{{ $activeTab }}">
                 <div class="position-relative">
                     <input type="text" name="search" class="form-control pe-5" placeholder="Tìm kiếm yêu cầu hoàn..."
                         value="{{ request()->get('search') }}">
-                    <button type="submit"
-                        class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
+                    <button type="submit" class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
                         <i class="fa fa-search"></i>
                     </button>
                 </div>
             </form>
 
-            {{-- Tabs --}}
             @php
                 $tabs = [
                     'pending' => 'Chờ duyệt',
@@ -74,20 +67,28 @@
                         <a class="nav-link {{ $activeTab == $key ? 'active' : '' }}" id="{{ $key }}-tab"
                             href="{{ route('refunds.index', ['status' => $key, 'search' => request('search')]) }}">
                             {{ $label }}
+                            @if ($key == 'pending' && $pendingRefundCount > 0)
+                                <span class="position-relative">
+                                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                        <span class="visually-hidden">New alerts</span>
+                                    </span>
+                                </span>
+                            @endif
                         </a>
                     </li>
                 @endforeach
             </ul>
 
-            {{-- Table --}}
             <div class="tab-content">
                 @foreach ($tabs as $key => $label)
                     <div class="tab-pane fade {{ $activeTab == $key ? 'show active' : '' }}" id="{{ $key }}">
-                        @php $filtered = $refunds->where('refund_status', $key); @endphp
+                        @php
+                            $filteredRefundsForTab = $refunds->where('refund_status', $key);
+                        @endphp
 
-                        @if ($search && $filtered->isEmpty())
+                        @if ($search && $filteredRefundsForTab->isEmpty() && $activeTab == $key)
                             <div class="alert alert-warning mt-3">
-                                Không tìm thấy yêu cầu nào khớp với "{{ $search }}".
+                                Không tìm thấy yêu cầu nào khớp với "{{ $search }}" trong tab này.
                             </div>
                         @endif
 
@@ -104,12 +105,12 @@
                                         <th>Hành động</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @forelse ($filtered as $index => $refund)
-                                        <tr>
-                                            <td>{{ $index + 1 }}</td>
+                                <tbody id="refund-table-{{ $key }}">
+                                    @forelse ($filteredRefundsForTab as $index => $refund)
+                                        <tr data-refund-id="{{ $refund->id }}">
+                                            <td>{{ $refunds->firstItem() + $index }}</td>
                                             <td>{{ $refund->user->name ?? 'N/A' }}</td>
-                                            <td>{{ $refund->order->order_code ?? 'Không có đơn' }}</td>
+                                            <td>{{ $refund->order->order_code ?? ($refund->appointment->appointment_code ?? 'Không có') }}</td>
                                             <td class="text-end">
                                                 {{ number_format($refund->refund_amount, 0, ',', '.') }} đ
                                             </td>
@@ -146,8 +147,10 @@
                                                                     onsubmit="return confirm('Chuyển trạng thái sang đang xử lý?')">
                                                                     @csrf
                                                                     @method('PUT')
-                                                                    <input type="hidden" name="refund_status" value="processing">
-                                                                    <button class="dropdown-item text-success" type="submit">
+                                                                    <input type="hidden" name="refund_status"
+                                                                        value="processing">
+                                                                    <button class="dropdown-item text-success"
+                                                                        type="submit">
                                                                         <i class="fas fa-check-circle me-2"></i> Xác nhận
                                                                     </button>
                                                                 </form>
@@ -158,12 +161,16 @@
                                             </td>
                                         </tr>
                                     @empty
-                                        <tr>
+                                        <tr class="no-data-row">
                                             <td colspan="7" class="text-center text-muted">Không có yêu cầu nào.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
                             </table>
+                        </div>
+
+                        <div class="d-flex justify-content-center mt-3">
+                            {{ $refunds->appends(['status' => $status, 'search' => $search])->links() }}
                         </div>
                     </div>
                 @endforeach
@@ -174,18 +181,39 @@
 
 @section('css')
     <style>
-        .img-fluid {
-            max-width: 100%;
-            height: auto;
+        .dot-indicator {
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 4px;
+            vertical-align: middle;
         }
 
-        .btn-icon-toggle .btn-text {
-            display: none;
-            transition: opacity 0.3s ease;
+        .rounded-circle {
+            width: 10px;
+            height: 10px;
+            line-height: 10px;
+            text-align: center;
+            font-size: 0.7em;
         }
 
-        .btn-icon-toggle:hover .btn-text {
-            display: inline;
+        .toast {
+            max-width: 350px;
+        }
+
+        .new-refund-row {
+            animation: highlight 2s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0% {
+                background-color: #fff3cd;
+            }
+            100% {
+                background-color: transparent;
+            }
         }
     </style>
 @endsection
