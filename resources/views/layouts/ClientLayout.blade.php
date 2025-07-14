@@ -18,6 +18,83 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <style>
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            /* điều chỉnh khoảng cách tại đây */
+            margin-top: 12px;
+        }
+
+        .btn-outline-buy {
+            padding: 10px 24px;
+            border: 2px solid #000;
+            border-radius: 6px;
+            background-color: transparent;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #000;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .btn-outline-cart {
+            padding: 13px 24px;
+            border: 2px solid #000;
+            border-radius: 6px;
+            background-color: transparent;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #000;
+        }
+
+        .btn-outline-booking {
+            padding: 13px 24px;
+            border: 2px solid #000;
+            border-radius: 6px;
+            background-color: transparent;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            /* display: inline-flex; */
+            align-items: center;
+            text-align: center
+            gap: 10px;
+            color: #000;
+            width: 100%;
+        }
+
+        .btn-outline-buy i {
+            font-size: 16px;
+        }
+
+        .btn-outline-buy:hover,
+        .btn-outline-booking:hover,
+        .btn-outline-cart:hover {
+            background-color: #000;
+            color: #fff;
+        }
+    </style>
 </head>
 
 

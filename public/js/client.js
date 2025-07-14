@@ -117,28 +117,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const barberSelect = document.getElementById('barber');
   const serviceSelect = document.getElementById('service');
 
-  // const timeGrid = document.getElementById('timeGrid');
-
-  // // Xử lý sự kiện nhấp chuột trên các ô giờ
-  // timeGrid.querySelectorAll('.time-slot').forEach(slot => {
-  //   slot.addEventListener('click', function () {
-  //     // Xóa lớp 'selected' khỏi tất cả các ô giờ
-  //     timeGrid.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
-  //     // Thêm lớp 'selected' cho ô giờ được nhấp
-  //     this.classList.add('selected');
-  //     // Cập nhật giá trị input ẩn
-  //     appointmentTime.value = this.getAttribute('data-value');
-  //     updateBarbers(branchContainer.value, appointmentDate.value, appointmentTime.value, serviceSelect.value);
-  //   });
-  // });
-
-  // // Đánh dấu ô giờ nếu có giá trị cũ (từ {{ old('appointment_time') }})
-  // const oldTime = appointmentTime.value;
-  // if (oldTime) {
-  //   const slot = timeGrid.querySelector(`.time-slot[data-value="${oldTime}"]`);
-  //   if (slot) slot.classList.add('selected');
-  // }
-
   const timeGrid = document.getElementById('timeGrid');
 
 // Xử lý sự kiện nhấp chuột trên các ô giờ
