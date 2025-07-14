@@ -96,4 +96,59 @@ function showToast(event) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', initEchoListener);
+function initOrderEchoListener() {
+    if (typeof Echo !== 'undefined' && Echo !== null) {
+        const orderChannel = Echo.channel('orders');
+        orderChannel
+            .listen('NewOrderCreated', (event) => {
+                showOrderToast(event);
+                updatePendingOrderCount(1); // Tăng badge khi có đơn hàng mới
+            })
+            .error((error) => {
+                console.error('Echo order channel error:', error);
+            });
+    } else {
+        setTimeout(initOrderEchoListener, 200);
+    }
+}
+
+function updatePendingOrderCount(change) {
+    const orderBadge = document.getElementById('pending-order-count');
+    if (orderBadge) {
+        let currentCount = parseInt(orderBadge.textContent) || 0;
+        currentCount = Math.max(0, currentCount + change);
+        orderBadge.textContent = currentCount;
+        orderBadge.style.display = currentCount > 0 ? 'inline' : 'none';
+    }
+}
+
+function showOrderToast(event) {
+    try {
+        // Nếu có template riêng cho đơn hàng thì dùng, không thì dùng chung với appointment
+        const toastContainer = document.getElementById('toastContainer');
+        let toastTemplate = document.getElementById('orderToastTemplate');
+        if (!toastTemplate) {
+            toastTemplate = document.getElementById('appointmentToastTemplate');
+        }
+        const newToast = toastTemplate.cloneNode(true);
+        newToast.id = 'orderToast-' + Date.now();
+        newToast.style.display = 'block';
+        const toastMessage = newToast.querySelector('#toastMessage');
+        const toastDetailLink = newToast.querySelector('#toastDetailLink');
+        toastMessage.textContent = event?.message || 'Có đơn hàng mới';
+        toastDetailLink.href = `/admin/orders/${event?.order_id || ''}`;
+        toastContainer.appendChild(newToast);
+        const toast = new bootstrap.Toast(newToast, { delay: 180000 });
+        toast.show();
+        newToast.addEventListener('hidden.bs.toast', () => {
+            newToast.remove();
+        });
+    } catch (error) {
+        console.error('Error showing order toast:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initEchoListener();
+    initOrderEchoListener();
+});

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-
+use App\Events\NewOrderCreated;
 
 
 class CartController extends Controller
@@ -396,6 +396,11 @@ class CartController extends Controller
                     Session::forget('cart_id');
                 }
             });
+
+            // Phát event realtime khi có đơn hàng mới
+            if ($order) {
+                event(new NewOrderCreated($order));
+            }
 
             // Nếu chọn VNPay, chuyển hướng đến thanh toán
             if ($paymentMethod === 'vnpay' && $order) {
