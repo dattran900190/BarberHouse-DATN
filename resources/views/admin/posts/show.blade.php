@@ -1,45 +1,96 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Chi tiết bài viết')
+@section('title', 'Chi tiết Bài viết')
 
 @section('content')
-    <div class="card">
-        <div class="card-header bg-info text-white">
-            <h3 class="card-title">Chi tiết bài viết</h3>
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Tin tức</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/posts') }}">Tin tức</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/posts/' . $post->id) }}">Chi tiết bài viết</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Card: Thông tin bài viết -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white d-flex align-items-center">
+            <h4 class="card-title">Chi tiết bài viết</h4>
         </div>
-
         <div class="card-body">
-            <p><strong>Tiêu đề:</strong> {{ $post->title }}</p>
-
-            <p><strong>Slug:</strong> {{ $post->slug }}</p>
-
-            <p><strong>Mô tả:</strong> {{ $post->short_description }}</p>
-            <p><strong>Nổi bật:</strong></strong> {{ $post->is_featured? 'Nổi bật' : 'Không nổi bật' }}</p>
-            <p><strong>Nội dung:</strong></p>
-            <div>{!! $post->content !!}</div>
-
-
-            <p><strong>Ảnh:</strong></p>
-            @if ($post->image)
-                <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh bài viết" width="200">
-            @else
-                <p><em>Không có ảnh</em></p>
-            @endif
-
-            <p><strong>Trạng thái:</strong>
-                @if ($post->status)
-                    <span class="badge bg-success">Đã xuất bản</span>
-                @else
-                    <span class="badge bg-secondary">Chưa xuất bản</span>
+            <div class="row gy-3">
+                @if ($post->image)
+                    <div class="col-md-4 text-center">
+                        <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh bài viết"
+                             class="img-fluid rounded mb-3" style="max-height: 250px; object-fit: cover; border: 1px solid #dee2e6;">
+                    </div>
                 @endif
-            </p>
+                <div class="col-md-{{ $post->image ? '8' : '12' }}">
+                    <h4 class="fw-bold mb-3">{{ $post->title }}</h4>
 
-            <p><strong>Ngày xuất bản:</strong>
-                {{ $post->published_at ? \Carbon\Carbon::parse($post->published_at)->format('d/m/Y') : 'Chưa có' }}
-            </p>
+                    <p class="text-muted mb-2">
+                        <i class="fa fa-link me-2 text-primary"></i><strong>Slug:</strong> {{ $post->slug }}
+                    </p>
 
-            <a href="{{ route('posts.index') }}" class="btn btn-secondary">Quay lại</a>
-            <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-primary">Chỉnh sửa</a>
+                    <p class="text-muted mb-2">
+                        <i class="fa fa-info-circle me-2 text-info"></i><strong>Mô tả:</strong> {{ $post->short_description }}
+                    </p>
+
+                    <p class="text-muted mb-2">
+                        <i class="fa fa-star me-2 text-warning"></i><strong>Nổi bật:</strong> {{ $post->is_featured ? 'Nổi bật' : 'Không nổi bật' }}
+                    </p>
+
+                    <p class="text-muted mb-2">
+                        <i class="fa fa-calendar me-2 text-muted"></i><strong>Ngày xuất bản:</strong>
+                        {{ $post->published_at ? \Carbon\Carbon::parse($post->published_at)->format('d/m/Y') : 'Chưa có' }}
+                    </p>
+
+                    <p class="text-muted mb-2">
+                        <i class="fa fa-eye me-2 text-success"></i><strong>Trạng thái:</strong>
+                        @if ($post->status)
+                            <span class="badge bg-success">Đã xuất bản</span>
+                        @else
+                            <span class="badge bg-secondary">Bản nháp</span>
+                        @endif
+                    </p>
+
+                    <div class="mt-3">
+                        <p><strong>Nội dung:</strong></p>
+                        <div>{!! $post->content !!}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card: Hành động -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white d-flex align-items-center">
+            <h4 class="card-title">Hành động</h4>
+        </div>
+        <div class="card-body">
+            <div class="d-flex gap-2">
+                <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-outline-primary btn-sm">
+                    <i class="fa fa-edit me-1"></i> Sửa
+                </a>
+                <a href="{{ route('posts.index') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa fa-arrow-left me-1"></i> Quay lại
+                </a>
+            </div>
         </div>
     </div>
 @endsection

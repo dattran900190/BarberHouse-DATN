@@ -3,50 +3,70 @@
 @section('title', 'Thêm Banner')
 
 @section('content')
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Banner</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('banners.index') }}">Banner</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">Thêm banner</a>
+            </li>
+        </ul>
+    </div>
+
     <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h3 class="card-title">Thêm Banner mới</h3>
-        </div>
-        <form action="{{ route('banners.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    <div class="card-body">
-
-        <div class="form-group">
-            <label>Tiêu đề</label>
-            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
-                   value="{{ old('title') }}">
-            @error('title')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+        <div class="card-header text-white align-items-center">
+            <div class="card-title">Thêm Banner mới</div>
         </div>
 
-       
-        <div class="form-group">
-            <label>Hình ảnh</label>
-            <input type="file" name="image" class="form-control-file @error('image') is-invalid @enderror">
-            @error('image')
-                <div class="invalid-feedback d-block">{{ $message }}</div>
-            @enderror
+        <div class="card-body">
+            <form action="{{ route('banners.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tiêu đề</label>
+                        <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}">
+                        @error('title') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Hình ảnh</label>
+                        <input type="file" name="image" class="form-control @error('image') is-invalid @enderror">
+                        @error('image') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select name="is_active" class="form-control @error('is_active') is-invalid @enderror">
+                            <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Ẩn</option>
+                            <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Hiển thị</option>
+                        </select>
+                        @error('is_active') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-sm btn-outline-success">
+                    <i class="fas fa-save"></i> <span class="ms-2">Lưu Banner</span>
+                </button>
+                <a href="{{ route('banners.index') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa fa-arrow-left me-1"></i> Quay lại
+                </a>
+            </form>
         </div>
-
-        <div class="form-group">
-            <label>Trạng thái</label>
-            <select name="is_active" class="form-control @error('is_active') is-invalid @enderror">
-            <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Ẩn</option>
-            <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Hiển thị</option>
-        </select>
-        @error('is_active')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-
-        </div>
-
-    </div>
-
-    <div class="card-footer text-right">
-        <button type="submit" class="btn btn-success">Lưu Banner</button>
-    </div>
-</form>
-
     </div>
 @endsection

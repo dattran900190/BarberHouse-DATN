@@ -72,11 +72,14 @@
                 </div>
             </form>
 
+<<<<<<< HEAD
+=======
             @if ($search && trim($search) && $allAppointments->isEmpty())
                 <div class="alert alert-warning">
                     Không tìm thấy lịch hẹn nào khớp với "{{ $search }}".
                 </div>
             @endif
+>>>>>>> b9bb882467ba62a5efe1d8da53f20aa1d7f0c564
 
             <!-- Tabs -->
             <ul class="nav nav-tabs" id="appointmentTabs" role="tablist">

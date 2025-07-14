@@ -25,7 +25,7 @@
                                 {{ $topPost->title }}
                             </a>
                         </h4>
-                        <p>{{ Str::limit(strip_tags($topPost->content), 100) }}</p>
+                        <p>{{ Str::limit(strip_tags($topPost->short_description), 100) }}</p>
                     </div>
 
                     {{-- Các bài nổi bật còn lại --}}

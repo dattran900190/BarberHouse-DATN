@@ -6,7 +6,7 @@
 
 @section('content')
     <main class="container" style="padding: 10% 0;">
-{{-- 
+{{--
         @if (session('success'))
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>
@@ -51,8 +51,11 @@
 
 
                 <div id="other-info" style="{{ old('other_person') ? '' : 'display:none;' }}">
+
                     <div class="row">
                         <div class="col-sm-6">
+
+
                             <div class="form-group mb-3">
                                 <label class="form-label">Họ và tên <span class="required">*</span></label>
                                 <input id="name" name="name" class="form-control" type="text"
@@ -81,7 +84,10 @@
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
+
+
                 </div>
+
 
                 <div class="form-group">
                     <label class="form-label">Ngày đặt lịch <span class="required">*</span></label>
@@ -233,7 +239,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Phương thức thanh toán <span class="required">*</span></label><br>
-                    
+
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="payment_method" id="payment_cash"
                             value="cash" {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
@@ -251,8 +257,9 @@
                     @enderror
                 </div>
 
+
                 <div class="form-btn mt-3">
-                    <button type="submit" class="submit-btn book-btn booking-btn" data-id="{{ $service->id }}">
+                    <button type="submit" class="submit-btn book-btn booking-btn">
                         Đặt lịch
                     </button>
                 </div>
@@ -397,9 +404,16 @@
             event.preventDefault();
             const form = document.getElementById('bookingForm');
 
-            // Kiểm tra form trước khi gửi
+            // Kiểm tra đã xác minh OTP chưa
+            const otpVerified = document.getElementById('otp_verified').value;
+            if (otpVerified !== '1') {
+                Swal.fire('Cảnh báo', 'Vui lòng xác minh số điện thoại trước khi đặt lịch.', 'warning');
+                return;
+            }
+
+            // Kiểm tra form
             if (!form.checkValidity()) {
-                form.reportValidity(); // Hiển thị lỗi HTML5 mặc định
+                form.reportValidity();
                 return;
             }
 
@@ -542,6 +556,16 @@
                 if (voucherSelect.selectedIndex > 0 && voucherSelect.options[voucherSelect.selectedIndex].style
                     .display === 'none') {
                     voucherSelect.selectedIndex = 0;
+<<<<<<< HEAD
+                }
+            }
+
+            if (appointmentDateInput && voucherSelect) {
+                appointmentDateInput.addEventListener('change', filterVouchersByDate);
+                filterVouchersByDate();
+            }
+        });
+=======
                 }
             }
 
@@ -642,5 +666,10 @@
         });
 
         updateTotal();
+>>>>>>> b9bb882467ba62a5efe1d8da53f20aa1d7f0c564
     </script>
+
+
+
+
 @endsection
