@@ -6,17 +6,13 @@
 
 @section('slider')
     <section class="hero-slider">
-        <div class="slide active">
-            <img src="https://4rau.vn/upload/hinhanh/cover-fb-10th-collection-0744.png" alt="Slide 1" />
-        </div>
-        <div class="slide">
-            <img src="https://4rau.vn/upload/hinhanh/z4459651440290_1e4a90c27fc15cc175132ecd94872e98-2870.jpg"
-                alt="Slide 2" />
-        </div>
-        <div class="slide">
-            <img src="https://4rau.vn/upload/hinhanh/z6220937549697_8ae15d51c35246081cf6bc8d60780126-1254.jpg"
-                alt="Slide 3" />
-        </div>
+        @foreach ($banners as $index => $banner)
+            <div class="slide {{ $index === 0 ? 'active' : '' }}">
+                <img src="{{ asset('storage/' . $banner->image_url) }}" alt="{{ $banner->title }}" />
+            </div>
+        @endforeach
+
+        <!-- optional prev/next buttons -->
         <button class="prev">‹</button>
         <button class="next">›</button>
     </section>
@@ -77,36 +73,44 @@
                                     </div>
                                 </a>
 
-                                <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
-                                    @csrf
-                                    <input type="hidden" name="product_variant_id"
-                                        value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn-add-to-cart icon-button" title="Thêm vào giỏ hàng">
-                                        <i class="fa-solid fa-cart-plus"></i>
-                                    </button>
-                                </form>
+                                <div
+                                    class="card-footer bg-white border-top-0 d-flex justify-content-center gap-2 flex-wrap">
+                                    {{-- Thêm vào giỏ hàng --}}
+                                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form m-0 p-0">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id"
+                                            value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-dark icon-button"
+                                            title="Thêm vào giỏ hàng">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </form>
 
-                                <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form"
-                                    style="display:inline-block; margin-left:5px;">
-                                    @csrf
-                                    <input type="hidden" name="product_variant_id"
-                                        value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
-                                    <input type="hidden" name="quantity" value="1">
-                                    @guest
-                                        <button type="button" class="btn btn-success btn-buy-now" title="Mua ngay">Mua
-                                            ngay</button>
-                                    @else
-                                        <button type="submit" class="btn btn-success btn-buy-now" title="Mua ngay">Mua
-                                            ngay</button>
-                                    @endguest
-                                </form>
+                                    {{-- Mua ngay --}}
+                                    <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form m-0 p-0">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id"
+                                            value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        @guest
+                                            <button type="button" class="btn btn-danger btn-buy-now" title="Mua ngay">
+                                                <span>Mua ngay</span>
+                                            </button>
+                                        @else
+                                            <button type="submit" class="btn btn-danger btn-buy-now" title="Mua ngay">
+                                                <span>Mua ngay</span>
+                                            </button>
+                                        @endguest
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     @empty
                         <p class="text-center">Không có sản phẩm nào.</p>
                     @endforelse
                 </div>
+
 
 
                 {{-- PHÂN TRANG --}}

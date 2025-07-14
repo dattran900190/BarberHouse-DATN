@@ -57,6 +57,7 @@ Route::put('/gio-hang/update-variant/{cartItem}', [CartController::class, 'updat
 
 
 Route::match(['get', 'post'], '/mua-ngay', [CartController::class, 'buyNow'])->name('cart.buyNow');
+Route::get('/mua-ngay/checkout', [CartController::class, 'showBuyNowCheckout'])->name('cart.buyNow.checkout');
 
 //checkout
 
@@ -66,7 +67,6 @@ Route::get('/dat-hang-thanh-cong', function () {
     return view('client.order-success');
 })->name('order.success');
 Route::post('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('client.orders.cancel');
-
 
 
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
@@ -122,6 +122,9 @@ Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.walle
 
 Route::post('/payment/vnpay', [PaymentController::class, 'vnpayPayment'])->name('client.payment.vnpay');
 Route::get('/payment/vnpay/callback', [PaymentController::class, 'vnpayCallback'])->name('client.payment.vnpay.callback');
+
+Route::match(['get', 'post'], '/payment/vnpay/order', [PaymentController::class, 'vnpayOrderPayment'])->name('client.payment.vnpay.order');
+Route::get('/payment/vnpay/order/callback', [PaymentController::class, 'vnpayOrderCallback'])->name('client.payment.vnpay.order.callback');
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])

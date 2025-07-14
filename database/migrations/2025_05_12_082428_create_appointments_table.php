@@ -19,12 +19,13 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->bigInteger('barber_id')->nullable();
-            $table->bigInteger('service_id')->nullable()->index('service_id');
             $table->bigInteger('branch_id')->nullable()->index('branch_id');
+            $table->bigInteger('service_id')->nullable()->index('service_id');
+            $table->json('additional_services')->nullable();
             $table->dateTime('appointment_time')->nullable();
-            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed', 'pending_cancellation'])->nullable();
-            $table->enum('payment_method', ['cash', 'vnpay', 'momo'])->nullable();
-            $table->enum('payment_status', ['unpaid', 'paid' , 'failed', 'refunded'])->nullable();
+            $table->enum('status', ['pending', 'confirmed', 'checked-in', 'progress', 'completed', 'cancelled'])->nullable();
+            $table->enum('payment_method', ['cash', 'vnpay'])->nullable();
+            $table->enum('payment_status', ['unpaid', 'paid', 'failed', 'refunded'])->nullable();
             $table->text('note')->nullable();
             $table->text('cancellation_reason')->nullable();
             $table->string('status_before_cancellation')->nullable();

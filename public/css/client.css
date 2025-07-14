@@ -21,7 +21,6 @@ body a:hover {
   height: 450px !important;
 }
 
-/* Tăng kích thước vòng xoáy loading */
 .swal2-loading {
   font-size: 1.5rem !important;
 }

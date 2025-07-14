@@ -15,11 +15,15 @@ class Order extends Model
         'order_code',
         'user_id',
         'name',
+        'email',
         'phone',
         'address',
+        'shipping_method',
+        'shipping_fee',
         'total_money',
         'status',
         'payment_method',
+        'payment_status',
         'note',
     ];
 
@@ -34,5 +38,10 @@ class Order extends Model
     public function refundRequests()
     {
         return $this->hasMany(RefundRequest::class, 'order_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -14,30 +14,66 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-
-        $pendingOrders = Order::query()
-            ->when($search, function ($query, $search) {
-                return $query->where(function ($q) use ($search) {
-                    $q->where('order_code', 'like', '%' . $search . '%')
+        $activeTab = $request->input('tab', 'pending');
+        
+        $user = Auth::user();
+        
+        // Hàm xây dựng truy vấn cơ bản
+        $buildQuery = function ($query, $search) use ($user) {
+            $query->when($search, function ($q) use ($search) {
+                return $q->where(function ($subQuery) use ($search) {
+                    $subQuery->where('order_code', 'like', '%' . $search . '%')
                         ->orWhere('name', 'like', '%' . $search . '%');
                 });
             })
-            ->where('status', 'pending')
-            ->latest()
-            ->get();
-
-        $confirmedOrders = Order::query()
-            ->when($search, function ($query, $search) {
-                return $query->where(function ($q) use ($search) {
-                    $q->where('order_code', 'like', '%' . $search . '%')
-                        ->orWhere('name', 'like', '%' . $search . '%');
-                });
+            ->when($user->role === 'admin_branch', function ($q) use ($user) {
+                $q->where('branch_id', $user->branch_id);
             })
-            ->where('status', '!=', 'pending')
-            ->latest()
-            ->get();
+            ->orderBy('created_at', 'DESC');
+        };
 
-        return view('admin.orders.index', compact('pendingOrders', 'confirmedOrders', 'search'));
+        // Lấy đơn hàng theo từng trạng thái với phân trang
+        $pendingOrders = Order::query();
+        $buildQuery($pendingOrders, $search);
+        $pendingOrders = $pendingOrders->where('status', 'pending')->paginate(10, ['*'], 'pending_page');
+
+        $processingOrders = Order::query();
+        $buildQuery($processingOrders, $search);
+        $processingOrders = $processingOrders->where('status', 'processing')->paginate(10, ['*'], 'processing_page');
+
+        $shippingOrders = Order::query();
+        $buildQuery($shippingOrders, $search);
+        $shippingOrders = $shippingOrders->where('status', 'shipping')->paginate(10, ['*'], 'shipping_page');
+
+        $completedOrders = Order::query();
+        $buildQuery($completedOrders, $search);
+        $completedOrders = $completedOrders->where('status', 'completed')->paginate(10, ['*'], 'completed_page');
+
+        $cancelledOrders = Order::query();
+        $buildQuery($cancelledOrders, $search);
+        $cancelledOrders = $cancelledOrders->where('status', 'cancelled')->paginate(10, ['*'], 'cancelled_page');
+
+        // Đếm số lượng đơn hàng cho mỗi tab
+        $pendingCount = Order::where('status', 'pending')->count();
+        $processingCount = Order::where('status', 'processing')->count();
+        $shippingCount = Order::where('status', 'shipping')->count();
+        $completedCount = Order::where('status', 'completed')->count();
+        $cancelledCount = Order::where('status', 'cancelled')->count();
+
+        return view('admin.orders.index', compact(
+            'pendingOrders', 
+            'processingOrders', 
+            'shippingOrders', 
+            'completedOrders', 
+            'cancelledOrders',
+            'activeTab',
+            'search',
+            'pendingCount',
+            'processingCount',
+            'shippingCount',
+            'completedCount',
+            'cancelledCount'
+        ));
     }
     public function confirm(Order $order)
     {

@@ -118,6 +118,12 @@ class CartController extends Controller
     public function show()
     {
         $user = Auth::user();
+        
+        // Nếu user đã đăng nhập và có session cart_id từ guest, merge cart
+        if ($user && Session::has('cart_id')) {
+            $this->mergeGuestCartToUser($user);
+        }
+        
         $cart = $this->getOrCreateCart($user);
 
         // Lấy lại item từ DB mới nhất
@@ -148,6 +154,67 @@ class CartController extends Controller
         }
         return $cart;
     }
+
+    /**
+     * Chuyển giỏ hàng từ guest sang user
+     */
+    private function mergeGuestCartToUser($user)
+    {
+        $guestCartId = Session::get('cart_id');
+        
+        if (!$guestCartId) {
+            return; // Không có giỏ hàng guest
+        }
+
+        $guestCart = Cart::where('id', $guestCartId)
+                        ->whereNull('user_id')
+                        ->with('items.productVariant')
+                        ->first();
+
+        if (!$guestCart) {
+            Session::forget('cart_id');
+            return;
+        }
+
+        // Tìm hoặc tạo giỏ hàng của user
+        $userCart = Cart::where('user_id', $user->id)->first();
+        if (!$userCart) {
+            $userCart = Cart::create(['user_id' => $user->id]);
+        }
+
+        // Chuyển các item từ guest cart sang user cart
+        foreach ($guestCart->items as $guestItem) {
+            // Kiểm tra xem item này đã có trong user cart chưa
+            $existingItem = $userCart->items()
+                                   ->where('product_variant_id', $guestItem->product_variant_id)
+                                   ->first();
+
+            if ($existingItem) {
+                // Nếu đã có, cộng thêm số lượng
+                $existingItem->update([
+                    'quantity' => $existingItem->quantity + $guestItem->quantity,
+                    'price' => $guestItem->price // Cập nhật giá mới nhất
+                ]);
+            } else {
+                // Nếu chưa có, tạo mới
+                $userCart->items()->create([
+                    'product_variant_id' => $guestItem->product_variant_id,
+                    'quantity' => $guestItem->quantity,
+                    'price' => $guestItem->price
+                ]);
+            }
+        }
+
+        // Xóa cart_items trước, sau đó xóa cart để tránh lỗi foreign key
+        $guestCart->items()->delete();
+        $guestCart->delete();
+        Session::forget('cart_id');
+        
+        // Cập nhật số lượng trong session
+        $cartCount = $userCart->items()->sum('quantity');
+        Session::put('cart_count', $cartCount);
+    }
+
     public function updateVariant(Request $request, CartItem $cartItem)
     {
         $request->validate([
@@ -278,7 +345,8 @@ class CartController extends Controller
         $orderCode = 'ORD' . now()->format('Ymd') . strtoupper(Str::random(4));
 
         try {
-            DB::transaction(function () use ($request, $paymentMethod, $shippingFee, $expectedTotal, $orderCode) {
+            $order = null;
+            DB::transaction(function () use ($request, $paymentMethod, $shippingFee, $expectedTotal, $orderCode, &$order) {
                 // Tạo đơn hàng
                 $order = new \App\Models\Order();
                 $order->order_code = $orderCode;
@@ -293,6 +361,7 @@ class CartController extends Controller
                 $order->shipping_fee = $shippingFee;
                 $order->total_money = $expectedTotal;
                 $order->status = 'pending';
+                $order->payment_status = 'unpaid';
                 $order->save();
 
                 // Lưu chi tiết + trừ kho từng variant
@@ -327,6 +396,11 @@ class CartController extends Controller
                     Session::forget('cart_id');
                 }
             });
+
+            // Nếu chọn VNPay, chuyển hướng đến thanh toán
+            if ($paymentMethod === 'vnpay' && $order) {
+                return redirect()->route('client.payment.vnpay.order', ['order_id' => $order->id]);
+            }
 
             return redirect()->route('order.success')->with('success', 'Đặt hàng thành công!');
         } catch (\Exception $e) {
