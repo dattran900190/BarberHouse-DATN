@@ -49,7 +49,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/appointments' . $appointment->id) }}">Chi tiết đặt lịch</a>
+                <a href="{{ url('admin/appointments/' . $appointment->id) }}">Chi tiết đặt lịch</a>
             </li>
         </ul>
     </div>

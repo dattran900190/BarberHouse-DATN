@@ -15,7 +15,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalVisitors = 1294; // Giả lập hoặc truy xuất từ bảng logs nếu có
+        $totalBookings = Appointment::where('status', 'completed')->count();
         $totalRegistrations = User::count();
 
         // Doanh thu từ lịch hẹn hoàn thành
@@ -62,7 +62,7 @@ class DashboardController extends Controller
         $latestTransactions = Order::latest()->take(5)->get();
 
         return view('admin.dashboard', compact(
-            'totalVisitors',
+            'totalBookings',
             'totalRegistrations',
             'serviceRevenue',
             'productRevenue',
