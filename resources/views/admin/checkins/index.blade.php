@@ -3,110 +3,140 @@
 @section('title', 'Quản lý Checkin')
 
 @section('content')
-    <div class="card">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách Check-ins</h3>
+    {{-- THÔNG BÁO --}}
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Quản lý Checkin</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+             <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Quản lý đặt lịch</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+
+            <li class="nav-item">
+                <a href="{{ url('admin/checkins') }}">Checkin</a>
+            </li>
+        </ul>
+    </div>
+
+    {{-- <div class="card">
+        <div class="card-header text-white d-flex justify-content-between align-items-center">
+            <div class="card-title">Xác nhận mã Checkin</div>
         </div>
 
-        {{-- THÔNG BÁO --}}
         <div class="card-body">
-            @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
+            <form action="{{ route('checkins.store') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label for="code" class="form-label fw-bold">Nhập mã Checkin (6 chữ số)</label>
+                    <input type="text" name="code" id="code"
+                        class="form-control @error('code') is-invalid @enderror"
+                        maxlength="6" required placeholder="Ví dụ: 123456">
+                    @error('code')
+                        <span class="invalid-feedback d-block mt-1"><strong>{{ $message }}</strong></span>
+                    @enderror
                 </div>
-            @endif
-
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check-circle"></i> Xác nhận
+                    </button>
                 </div>
-            @endif
+            </form>
+        </div>
+    </div> --}}
 
-            {{-- FORM CHECK-IN TRÀN TOÀN BỘ --}}
-            <div class="mb-4">
-                <form action="{{ route('checkins.store') }}" method="POST" class="w-100">
-                    @csrf
-                    <div class="form-group w-100 text-start">
-                        <label for="code" class="fw-bold">Xác nhận mã Check-in</label>
-                        <input type="text" name="code" class="form-control @error('code') is-invalid @enderror w-100"
-                            maxlength="6" required placeholder="Nhập mã gồm 6 chữ số">
+    {{-- BẢNG DỮ LIỆU --}}
+    <div class="card mt-4">
+        <div class="card-header text-white d-flex justify-content-between align-items-center">
+            <div class="card-title">Danh sách Checkins</div>
+        </div>
 
-                        @error('code')
-                            <span class="invalid-feedback d-block mt-1" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-
-                    <div class="text-end mt-3">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-check-circle"></i> Xác nhận
-                        </button>
-                    </div>
-                </form>
-
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="thead-light text-center">
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã Checkin</th>
+                            <th>Trạng thái</th>
+                            <th>Thời gian Checkin</th>
+                            <th>Khách hàng</th>
+                            <th>Thời gian hẹn</th>
+                            <th>Ngày tạo</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($checkins as $index => $checkin)
+                            <tr>
+                                <td class="text-center">{{ $checkins->firstItem() + $index }}</td>
+                                <td class="text-center"><strong>{{ $checkin->qr_code_value }}</strong></td>
+                                <td class="text-center">
+                                    @if ($checkin->is_checked_in)
+                                        <span class="badge bg-success">Đã Checkin</span>
+                                    @else
+                                        <span class="badge bg-warning text-dark">Chưa Checkin</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    {{ $checkin->checkin_time ? \Carbon\Carbon::parse($checkin->checkin_time)->format('d/m/Y H:i') : '-' }}
+                                </td>
+                                <td class="text-center">
+                                    @if (!empty($checkin->appointment->name))
+                                        {{ $checkin->appointment->name }}
+                                    @else
+                                        {{ $checkin->appointment->user->name ?? '-' }}
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    {{ optional($checkin->appointment)->appointment_time ? \Carbon\Carbon::parse($checkin->appointment->appointment_time)->format('d/m/Y H:i') : '-' }}
+                                </td>
+                                <td class="text-center">{{ $checkin->created_at->format('d/m/Y H:i') }}</td>
+                                <td class="text-center">
+                                    <a href="{{ route('checkins.show', $checkin->id) }}" class="btn btn-info btn-sm">
+                                        <i class="fas fa-eye"></i> Xem
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">Chưa có dữ liệu checkin nào.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-
-            {{-- BẢNG DỮ LIỆU --}}
-            <table class="table table-bordered table-hover">
-                <thead class="thead-light text-center align-middle">
-                    <tr>
-                        <th>STT</th>
-                        <th>Mã Check-in</th>
-                        <th>Trạng thái</th>
-                        <th>Thời gian Check-in</th>
-                        <th>Khách hàng</th>
-                        <th>Thời gian hẹn</th>
-                        <th>Ngày tạo</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($checkins as $index => $checkin)
-                        <tr>
-                            <td class="text-center">{{ $checkins->firstItem() + $index }}</td>
-                            <td class="text-center"><strong>{{ $checkin->qr_code_value }}</strong></td>
-                            <td class="text-center">
-                                @if ($checkin->is_checked_in)
-                                    <span class="badge bg-success">Đã Check-in</span>
-                                @else
-                                    <span class="badge bg-warning text-dark">Chưa Check-in</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                {{ $checkin->checkin_time ? \Carbon\Carbon::parse($checkin->checkin_time)->format('d/m/Y H:i') : '-' }}
-                            </td>
-                            <td class="text-center">
-                                @if (!empty($checkin->appointment->name))
-                                    {{ $checkin->appointment->name }}
-                                @else
-                                    {{ $checkin->appointment->user->name ?? '-' }}
-                                @endif
-                            </td>
-
-
-                            <td>
-                                {{ optional($checkin->appointment)->appointment_time ? \Carbon\Carbon::parse($checkin->appointment->appointment_time)->format('d/m/Y H:i') : '-' }}
-                            </td>
-                            <td class="text-center">{{ $checkin->created_at->format('d/m/Y H:i') }}</td>
-                            <td class="text-center">
-                                <a href="{{ route('checkins.show', $checkin->id) }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-eye"></i> Xem
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="text-center text-muted">Chưa có dữ liệu check-in nào.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-
             <div class="d-flex justify-content-center mt-3">
                 {{ $checkins->links() }}
             </div>

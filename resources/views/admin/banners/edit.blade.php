@@ -11,10 +11,16 @@
                     <i class="icon-home"></i>
                 </a>
             </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Quản lý chung</a>
+            </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
-            <li class="nav-item"><a href="{{ route('banners.index') }}">Danh sách Banner</a></li>
+            <li class="nav-item"><a href="{{ route('banners.index') }}">Banner</a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
-            <li class="nav-item"><a href="#">Chỉnh sửa</a></li>
+            <li class="nav-item"><a href="#">Chỉnh sửa Banner</a></li>
         </ul>
     </div>
 
