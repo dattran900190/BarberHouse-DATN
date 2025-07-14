@@ -3,15 +3,32 @@
 @section('title', 'Chi tiết Thợ Cắt Tóc')
 
 @section('content')
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Thợ Cắt Tóc</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="#">Quản lý nhân sự</a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="{{ url('admin/barbers') }}">Thợ cắt tóc</a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="#">Chi tiết</a></li>
+        </ul>
+    </div>
+
     <div class="card">
-        <div class="card-header bg-info text-white">
-            <h3 class="card-title">Chi tiết Thợ Cắt Tóc</h3>
+        <div class="card-header text-white align-items-center">
+            <div class="card-title">Chi tiết Thợ Cắt Tóc</div>
         </div>
 
         <div class="card-body">
             <div class="row">
                 <!-- Cột ảnh -->
-                <div class="col-md-4 text-center">
+                <div class="col-md-4 text-center mb-3">
                     @if ($barber->avatar)
                         <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" class="img-fluid rounded"
                             style="max-height: 300px;">
@@ -22,29 +39,29 @@
 
                 <!-- Cột thông tin -->
                 <div class="col-md-8">
-                    <div class="form-group">
-                        <label>Họ tên</label>
-                        <p>{{ $barber->name }}</p>
+                    <div class="mb-3">
+                        <label class="form-label">Họ tên</label>
+                        <div class="form-control-plaintext">{{ $barber->name }}</div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Trình độ</label>
-                        <p>{{ $barber->skill_level }}</p>
+                    <div class="mb-3">
+                        <label class="form-label">Trình độ</label>
+                        <div class="form-control-plaintext">{{ $barber->skill_level }}</div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Đánh giá trung bình</label>
-                        <p>{{ $barber->rating_avg }}</p>
+                    <div class="mb-3">
+                        <label class="form-label">Đánh giá trung bình</label>
+                        <div class="form-control-plaintext">{{ $barber->rating_avg }}</div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Hồ sơ</label>
-                        <p>{{ $barber->profile }}</p>
+                    <div class="mb-3">
+                        <label class="form-label">Hồ sơ</label>
+                        <div class="form-control-plaintext">{{ $barber->profile }}</div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Chi nhánh</label>
-                        <p>
+                    <div class="mb-3">
+                        <label class="form-label">Chi nhánh</label>
+                        <div class="form-control-plaintext">
                             @if ($barber->branch)
                                 <a href="{{ route('branches.show', $barber->branch->id) }}">
                                     {{ $barber->branch->name }}
@@ -52,27 +69,32 @@
                             @else
                                 Chưa có chi nhánh
                             @endif
-                        </p>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Trạng thái</label>
-                        <p>
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <div class="form-control-plaintext">
                             @if ($barber->status === 'idle')
-                                <span class="text-success font-weight-bold">Đang hoạt động</span>
+                                <span class="text-success fw-bold">Đang hoạt động</span>
                             @elseif ($barber->status === 'busy')
-                                <span class="text-warning font-weight-bold">Không nhận lịch</span>
+                                <span class="text-warning fw-bold">Không nhận lịch</span>
                             @elseif ($barber->status === 'retired')
-                                <span class="text-danger font-weight-bold">Đã Nghỉ việc</span>
+                                <span class="text-danger fw-bold">Đã Nghỉ việc</span>
                             @else
                                 <span>Không rõ trạng thái</span>
                             @endif
-                        </p>
+                        </div>
                     </div>
+
                     <a href="{{ route('barbers.edit', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
-                        class="btn btn-warning">Sửa</a>
-                    <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}" class="btn btn-secondary">
-                        Quay lại</a>
+                        class="btn btn-sm btn-outline-warning me-2">
+                        <i class="fa fa-edit me-1"></i> Sửa
+                    </a>
+                    <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}"
+                        class="btn btn-sm btn-outline-secondary">
+                        <i class="fa fa-arrow-left me-1"></i> Quay lại
+                    </a>
                 </div>
             </div>
         </div>
