@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Banner;
 use App\Models\Appointment;
 use App\Models\ProductCategory;
 use Illuminate\Pagination\Paginator;
@@ -24,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+   public function boot(): void
     {
         // Kích hoạt phân trang dùng Bootstrap
         Paginator::useBootstrap();
@@ -37,11 +38,20 @@ class AppServiceProvider extends ServiceProvider
             $pendingCount = Appointment::where('status', 'pending')->count();
             $view->with('pendingCount', $pendingCount);
         });
-        
+
         // Thêm biến số lượng đơn hàng chờ xác nhận cho mọi view
         View::composer('*', function ($view) {
             $pendingOrderCount = \App\Models\Order::where('status', 'pending')->count();
             $view->with('pendingOrderCount', $pendingOrderCount);
+        });
+         // banners
+
+        View::composer('client.*', function ($view) {
+            $banners = Banner::where('is_active', 1)
+                ->orderBy('id', 'desc')
+                ->get();
+
+            $view->with('banners', $banners);
         });
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Product;
+use App\Models\Banner;
 
 class HomeController extends Controller
 {
@@ -28,6 +29,9 @@ class HomeController extends Controller
         ->latest('published_at')
         ->take(8)
         ->get();
+
+
+
 
     // Sản phẩm
     $products = Product::with('variants')->latest()->take(8)->get();

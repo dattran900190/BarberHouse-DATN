@@ -6,17 +6,13 @@
 
 @section('slider')
     <section class="hero-slider">
-        <div class="slide active">
-            <img src="https://4rau.vn/upload/hinhanh/cover-fb-10th-collection-0744.png" alt="Slide 1" />
-        </div>
-        <div class="slide">
-            <img src="https://4rau.vn/upload/hinhanh/z4459651440290_1e4a90c27fc15cc175132ecd94872e98-2870.jpg"
-                alt="Slide 2" />
-        </div>
-        <div class="slide">
-            <img src="https://4rau.vn/upload/hinhanh/z6220937549697_8ae15d51c35246081cf6bc8d60780126-1254.jpg"
-                alt="Slide 3" />
-        </div>
+        @foreach ($banners as $index => $banner)
+            <div class="slide {{ $index === 0 ? 'active' : '' }}">
+                <img src="{{ asset('storage/' . $banner->image_url) }}" alt="{{ $banner->title }}" />
+            </div>
+        @endforeach
+
+        <!-- optional prev/next buttons -->
         <button class="prev">‹</button>
         <button class="next">›</button>
     </section>
@@ -85,7 +81,7 @@
                                         <input type="hidden" name="product_variant_id"
                                             value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
                                         <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-dark icon-button"
+                                        <button type="submit" class="btn-outline-cart"
                                             title="Thêm vào giỏ hàng">
                                             <i class="fas fa-cart-plus"></i>
                                         </button>
@@ -98,11 +94,11 @@
                                             value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
                                         <input type="hidden" name="quantity" value="1">
                                         @guest
-                                            <button type="button" class="btn btn-danger btn-buy-now" title="Mua ngay">
+                                            <button type="button" class="btn-outline-buy" title="Mua ngay">
                                                 <span>Mua ngay</span>
                                             </button>
                                         @else
-                                            <button type="submit" class="btn btn-danger btn-buy-now" title="Mua ngay">
+                                            <button type="submit" class="btn-outline-buy" title="Mua ngay">
                                                 <span>Mua ngay</span>
                                             </button>
                                         @endguest

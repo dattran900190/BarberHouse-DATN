@@ -335,7 +335,7 @@ class AppointmentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Appointment $appointment)
+     public function edit(Appointment $appointment)
     {
         $appointments = Appointment::all();
         $services = Service::all();

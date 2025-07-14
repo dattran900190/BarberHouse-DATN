@@ -366,7 +366,7 @@ class CartController extends Controller
 
                 // Lưu chi tiết + trừ kho từng variant
                 foreach ($request->items as $item) {
-                    $variant = \App\Models\ProductVariant::find($item['product_variant_id']);
+                    $variant = ProductVariant::find($item['product_variant_id']);
                     if (!$variant) {
                         throw new \Exception('Sản phẩm không tồn tại!');
                     }

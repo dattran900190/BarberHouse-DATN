@@ -1,11 +1,34 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Chỉnh sửa Danh mục')
+@section('title', 'Chỉnh sửa Danh Mục')
 
 @section('content')
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Danh mục sản phẩm</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('product_categories.index') }}">Danh mục</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('product_categories.edit', $product_category->id) }}">Sửa danh mục</a>
+            </li>
+        </ul>
+    </div>
+
     <div class="card">
-        <div class="card-header bg-warning text-dark">
-            <h3 class="card-title mb-0">Chỉnh sửa Danh mục</h3>
+        <div class="card-header text-white align-items-center">
+            <div class="card-title">Sửa danh mục</div>
         </div>
 
         <div class="card-body">
@@ -13,36 +36,38 @@
                 @csrf
                 @method('PUT')
 
-                <div class="mb-3">
-                    <label for="name" class="form-label">Tên danh mục <span class="text-danger">*</span></label>
-                    <input type="text" name="name" class="form-control"
-                           value="{{ old('name', $product_category->name) }}">
-                    @error('name')
-                        <div class="text-danger small">{{ $message }}</div>
-                    @enderror
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                        <input type="text" name="name"
+                               class="form-control @error('name') is-invalid @enderror"
+                               value="{{ old('name', $product_category->name) }}">
+                        @error('name') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Slug (tự sinh nếu để trống)</label>
+                        <input type="text" name="slug"
+                               class="form-control @error('slug') is-invalid @enderror"
+                               value="{{ old('slug', $product_category->slug) }}">
+                        @error('slug') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="slug" class="form-label">Slug(nếu để trống sẽ tạo tự động)</label>
-                    <input type="text" name="slug" class="form-control"
-                           value="{{ old('slug', $product_category->slug) }}">
-                    @error('slug')
-                        <div class="text-danger small">{{ $message }}</div>
-                    @enderror
+                    <label class="form-label">Mô tả</label>
+                    <textarea name="description"
+                              class="form-control @error('description') is-invalid @enderror"
+                              rows="4">{{ old('description', $product_category->description) }}</textarea>
+                    @error('description') <div class="text-danger">{{ $message }}</div> @enderror
                 </div>
 
-                <div class="mb-3">
-                    <label for="description" class="form-label">Mô tả</label>
-                    <textarea name="description" class="form-control" rows="4">{{ old('description', $product_category->description) }}</textarea>
-                    @error('description')
-                        <div class="text-danger small">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="d-flex justify-content-between">
-                    <a href="{{ route('product_categories.index') }}" class="btn btn-secondary">Quay lại</a>
-                    <button type="submit" class="btn btn-primary">Cập nhật</button>
-                </div>
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                    <i class="fa fa-edit me-1"></i> Cập nhật
+                </button>
+                <a href="{{ route('product_categories.index') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa fa-arrow-left me-1"></i> Quay lại
+                </a>
             </form>
         </div>
     </div>

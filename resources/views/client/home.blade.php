@@ -6,22 +6,18 @@
 
 @section('slider')
     <section class="hero-slider">
-        <div class="slide active">
-            <img src="https://4rau.vn/upload/hinhanh/cover-fb-10th-collection-0744.png" alt="Slide 1" />
-        </div>
-        <div class="slide">
-            <img src="https://4rau.vn/upload/hinhanh/z4459651440290_1e4a90c27fc15cc175132ecd94872e98-2870.jpg"
-                alt="Slide 2" />
-        </div>
-        <div class="slide">
-            <img src="https://4rau.vn/upload/hinhanh/z6220937549697_8ae15d51c35246081cf6bc8d60780126-1254.jpg"
-                alt="Slide 3" />
-        </div>
+        @foreach ($banners as $index => $banner)
+            <div class="slide {{ $index === 0 ? 'active' : '' }}">
+                <img src="{{ asset('storage/' . $banner->image_url) }}" alt="{{ $banner->title }}" />
+            </div>
+        @endforeach
+
         <!-- optional prev/next buttons -->
         <button class="prev">‹</button>
         <button class="next">›</button>
     </section>
 @endsection
+
 
 @section('content')
     <main class="container">
@@ -39,7 +35,7 @@
                             </div>
                             <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
                             <p><a
-                                    href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->content), 50) }}</a>
+                                    href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->short_description), 50) }}</a>
                             </p>
                         </div>
                     @endforeach
@@ -57,7 +53,7 @@
                         </div>
                         <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
                         <p><a
-                                href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->content), 50) }}</a>
+                                href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->short_description), 50) }}</a>
                         </p>
                     </div>
                 @endforeach
@@ -88,27 +84,26 @@
                             @php $variant = $product->variants->first(); @endphp
 
                             @if ($variant)
-                                <div class="d-flex justify-content-center gap-2 mt-2">
+                                <div class="button-group">
                                     <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
                                         @csrf
                                         <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
                                         <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-dark icon-button"
-                                        title="Thêm vào giỏ hàng">
-                                        <i class="fas fa-cart-plus"></i>
-                                    </button>
+                                        <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
                                     </form>
+
                                     <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
                                         @csrf
                                         <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
                                         <input type="hidden" name="quantity" value="1">
                                         @guest
-                                            <button type="button" class="btn btn-success btn-buy-now">Mua ngay</button>
+                                            <button type="button" class="btn-outline-buy">Mua ngay</button>
                                         @else
-                                            <button type="submit" class="btn btn-success btn-buy-now">Mua ngay</button>
+                                            <button type="submit" class="btn-outline-buy">Mua ngay</button>
                                         @endguest
                                     </form>
-
                                 </div>
                             @endif
                         </div>
