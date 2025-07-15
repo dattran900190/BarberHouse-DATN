@@ -21,39 +21,58 @@
         </div>
     @endif
 
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Sản phẩm</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item">
+                <a href="{{ url('admin/volumes') }}">Danh sách dung tích</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/volumes/create') }}">Thêm dung tích</a>
+            </li>
+        </ul>
+    </div>
+
     <div class="card">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách dung tích sản phẩm</h3>
-            <a href="{{ route('admin.volumes.create') }}"
-               class="btn btn-success btn-icon-toggle d-flex align-items-center">
-                <i class="fas fa-plus"></i>
-                <span class="btn-text ms-2">Thêm sản phẩm</span>
-            </a>
-        </div>
-    <h1>Thêm dung tích mới</h1>
-
-    {{-- Hiển thị lỗi nếu có --}}
-    @if ($errors->any())
-        <div style="color: red;">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form action="{{ route('admin.volumes.store') }}" method="POST">
-        @csrf
-
-        <div style="margin-bottom: 10px;">
-            <label for="name">Tên dung tích:</label><br>
-            <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                   style="padding: 5px; width: 300px;" placeholder="Nhập tên dung tích">
+        <div class="card-header text-white align-items-center">
+            <div class="card-title">Thêm dung tích sản phẩm</div>
         </div>
 
-<button type="submit" class="btn btn-primary px-3">Lưu</button>
-<a href="{{ route('admin.volumes.index') }}" class="btn btn-secondary ms-2">Quay lại</a>
+        {{-- Hiển thị lỗi nếu có --}}
+        @if ($errors->any())
+            <div style="color: red;">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        <div class="card-body">
+        <form action="{{ route('admin.volumes.store') }}" method="POST">
+            @csrf
 
-    </form>
+            <div class="form-group mb-3" style="max-width: 400px;">
+                <label for="name" class="form-label fw-bold">Tên dung tích <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <input type="number" name="name" id="name" class="form-control"
+                        value="{{ old('name') ? preg_replace('/[^0-9]/', '', old('name')) : '' }}" placeholder="Nhập số"
+                        required>
+                    <span class="input-group-text">ml</span>
+                </div>
+            </div>
+
+
+
+            <button type="submit" class="btn btn-sm btn-outline-primary">Lưu</button>
+            <a href="{{ route('admin.volumes.index') }}" class="btn btn-sm btn-outline-danger">Quay lại</a>
+
+        </form>
+        </div>
+    </div>
 @endsection

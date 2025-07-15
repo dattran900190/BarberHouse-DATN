@@ -154,9 +154,10 @@
             </table>
         </div>
     </div>
-    <div class="mt-3">
+    <div class="d-flex justify-content-center mt-3">
     {{ $products->withQueryString()->links() }}
 </div>
+
 @endsection
 
 @section('css')

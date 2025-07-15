@@ -16,9 +16,19 @@
             <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
     @endif
-
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Sản phẩm</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item">
+                <a href="{{ url('admin/user_redeemed_vouchers') }}">Danh sách voucher</a>
+            </li>
+           
+        </ul>
+    </div>
     <div class="card shadow mb-4">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg- text-black">
             <h4 class="mb-0"><i class="fas fa-ticket-alt mr-2"></i>Danh sách Voucher đã đổi</h4>
         </div>
 
@@ -27,8 +37,8 @@
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Nhập tên người dùng..." value="{{ request('search') }}">
                     <div class="input-group-append">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="fas fa-search mr-1"></i> Tìm
+                        <button class="btn " style="border: 1px solid #a29b9b;" type="submit">
+                            <i class="fas fa-search mr-1"></i>
                         </button>
                     </div>
                 </div>
