@@ -1,124 +1,120 @@
 @extends('layouts.AdminLayout')
-@section('title', 'Danh sách lịch theo chi nhánh')
+
+@section('title', 'Danh sách Chi nhánh')
 
 @section('content')
-    <div class="card">
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-        @php
-            $currentRole = Auth::user()->role;
-        @endphp
-
-        <div class="card">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h3 class="card-title mb-0 text-center flex-grow-1">Danh sách Chi nhánh</h3>
-                <a href="{{ route('barber_schedules.createHoliday') }}"
-                    class="btn btn-success btn-icon-toggle d-flex align-items-center">
-                    <i class="fas fa-plus"></i>
-                    <span class="btn-text ms-2"> Tạo lịch nghỉ lễ</span>
+    <div class="page-header mb-4">
+        <h3 class="fw-bold mb-0">Lịch làm việc theo chi nhánh</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
                 </a>
-            </div>
+            </li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="#">Quản lý Chi nhánh</a></li>
+        </ul>
+    </div>
 
-            <div class="card-body">
-                @php
-                    $holidays = \App\Models\BarberSchedule::where('status', 'holiday')
-                        ->where('holiday_end_date', '>=', now()->toDateString())
-                        ->select('holiday_start_date', 'holiday_end_date', 'note')
-                        ->groupBy('holiday_start_date', 'holiday_end_date', 'note')
-                        ->orderBy('holiday_start_date')
-                        ->get();
-                @endphp
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center rounded-top border-bottom-0"
+            style="border-radius: 16px 16px 0 0;">
+            <h4 class="mb-0 fw-bold" style="color: #232b43;">Danh sách chi nhánh</h4>
+            <a href="{{ route('barber_schedules.createHoliday') }}"
+                class="btn btn-outline-success btn-sm d-flex align-items-center">
+                <i class="fas fa-plus me-1"></i> Tạo lịch nghỉ lễ
+            </a>
+        </div>
+        <div class="card-body">
+            {{-- Tìm kiếm chi nhánh --}}
+            <form action="{{ route('barber_schedules.index') }}" method="GET" class="mb-4">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Tìm theo tên chi nhánh..."
+                        value="{{ request()->get('search') }}">
+                    <button class="btn btn-outline-primary" type="submit">Tìm</button>
+                </div>
+            </form>
+            {{-- Thông báo lịch nghỉ lễ --}}
+            @php
+                $holidays = \App\Models\BarberSchedule::where('status', 'holiday')
+                    ->where('holiday_end_date', '>=', now()->toDateString())
+                    ->select('holiday_start_date', 'holiday_end_date', 'note')
+                    ->groupBy('holiday_start_date', 'holiday_end_date', 'note')
+                    ->orderBy('holiday_start_date')
+                    ->get();
+            @endphp
 
-                @if ($holidays->count())
-                    <div class="alert alert-warning shadow-sm">
-                        <h5 class="mb-3 text-danger">
-                            <i class="fas fa-bell"></i> Thông báo nghỉ lễ
-                        </h5>
-                        <ul class="list-unstyled mb-0">
-                            @foreach ($holidays as $holiday)
-                                @php
-                                    // Lấy bản ghi đầu tiên của kỳ nghỉ lễ này (có thể là MAX hoặc MIN id cũng được)
-                                    $firstSchedule = \App\Models\BarberSchedule::where(
-                                        'holiday_start_date',
-                                        $holiday->holiday_start_date,
-                                    )
-                                        ->where('holiday_end_date', $holiday->holiday_end_date)
-                                        ->where('note', $holiday->note)
-                                        ->first();
-                                @endphp
-
-                                @if ($firstSchedule)
-                                    <li
-                                        class="holiday-item d-flex justify-content-between align-items-center p-2 mb-1 rounded border border-warning bg-light position-relative">
-                                        <div>
-                                            <i class="fas fa-calendar-day text-danger"></i>
-                                            <strong>{{ $holiday->note }}</strong>:
-                                            {{ \Carbon\Carbon::parse($holiday->holiday_start_date)->format('d/m/Y') }}
-                                            - {{ \Carbon\Carbon::parse($holiday->holiday_end_date)->format('d/m/Y') }}
-                                        </div>
-                                        @if($currentRole == 'admin')
-                                        <div class="action-buttons d-none d-md-flex">
-                                            <a href="{{ route('barber_schedules.editHoliday', $firstSchedule->id) }}"
-                                                class="btn btn-sm btn-warning text-white me-2">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-
-                                            <form action="{{ route('barber_schedules.deleteHoliday', $firstSchedule->id) }}"
-                                                method="POST" class="d-inline"
-                                                onsubmit="return confirm('Bạn có chắc chắn muốn xoá kỳ nghỉ này?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-sm btn-danger">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                        @endif
-                                    </li>
+            @if ($holidays->count())
+                <div class="alert alert-warning shadow-sm mb-4" style="border-left: 4px solid #f59e42;">
+                    <h5 class="mb-3 text-danger"><i class="fas fa-bell"></i> Thông báo nghỉ lễ</h5>
+                    <ul class="list-unstyled mb-0">
+                        @foreach ($holidays as $holiday)
+                            @php
+                                $first = \App\Models\BarberSchedule::where(
+                                    'holiday_start_date',
+                                    $holiday->holiday_start_date,
+                                )
+                                    ->where('holiday_end_date', $holiday->holiday_end_date)
+                                    ->where('note', $holiday->note)
+                                    ->first();
+                            @endphp
+                            <li class="d-flex justify-content-between align-items-center border border-warning p-2 mb-2 rounded bg-light holiday-row"
+                                style="position: relative;">
+                                <span>
+                                    <strong>{{ $holiday->note }}</strong>:
+                                    {{ \Carbon\Carbon::parse($holiday->holiday_start_date)->format('d/m/Y') }} -
+                                    {{ \Carbon\Carbon::parse($holiday->holiday_end_date)->format('d/m/Y') }}
+                                </span>
+                                @if ($first)
+                                    <div class="action-buttons" style="display: flex; gap: 0.5rem;">
+                                        <a href="{{ route('barber_schedules.editHoliday', $first->id) }}"
+                                            class="btn btn-sm btn-warning text-white" title="Sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('barber_schedules.deleteHoliday', $first->id) }}"
+                                            method="POST" class="d-inline" onsubmit="return confirm('Xoá kỳ nghỉ này?')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Xoá">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 @endif
-                            @endforeach
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                        </ul>
-                    </div>
-                @endif
-
-                {{-- Form tìm kiếm --}}
-                <form action="{{ route('barber_schedules.index') }}" method="GET" class="mb-3">
-                    <div class="input-group">
-                        <input type="text" name="search" class="form-control"
-                            placeholder="Tìm kiếm theo tên chi nhánh..." value="{{ request()->get('search') }}">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-                        </div>
-                    </div>
-                </form>
-
-                {{-- Danh sách chi nhánh --}}
-                <table class="table table-bordered table-hover">
+            {{-- Danh sách chi nhánh --}}
+            <div class="table-responsive">
+                <table class="table table-borderless align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>Tên chi nhánh</th>
-                            <th>Địa chỉ</th>
-                            <th>Điện thoại</th>
-                            <th>Hành động</th>
+                            <th class="fw-semibold" style="color: #232b43;">Tên chi nhánh</th>
+                            <th class="fw-semibold" style="color: #232b43;">Địa chỉ</th>
+                            <th class="fw-semibold" style="color: #232b43;">Điện thoại</th>
+                            <th class="fw-semibold text-center" style="color: #232b43;">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($branches as $branch)
+                        @forelse ($branches as $branch)
                             <tr>
                                 <td>{{ $branch->name }}</td>
                                 <td>{{ $branch->address }}</td>
                                 <td>{{ $branch->phone }}</td>
-                                <td>
+                                <td class="text-center">
                                     <a href="{{ route('barber_schedules.showBranch', $branch->id) }}"
-                                        class="btn btn-info btn-sm uniform-btn">Xem</a>
+                                        class="btn btn-outline-primary btn-sm uniform-btn">
+                                        <i class="fas fa-eye"></i> Xem lịch
+                                    </a>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">Không tìm thấy chi nhánh nào.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -128,81 +124,96 @@
 
 @section('css')
     <style>
-        .btn-icon-toggle .btn-text {
-            display: none;
-            transition: opacity 0.3s ease;
+        .holiday-row .action-buttons {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
         }
 
-        .btn-icon-toggle:hover .btn-text {
-            display: inline;
+        .holiday-row:hover .action-buttons {
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        .input-group input {
-            border-right: 0;
-        }
-
-        .input-group .input-group-append {
-            border-left: 0;
-        }
-
-        .input-group button {
-            border-radius: 0;
-        }
-
-        .img-fluid {
-            max-width: 100%;
-            height: auto;
+        .holiday-row .action-buttons .btn {
+            min-width: 36px;
+            height: 36px;
+            padding: 6px 8px;
+            font-size: 13px;
         }
 
         .uniform-btn {
             min-width: 110px;
-            min-height: 36px;
-            padding: 6px 12px;
-            font-size: 14px;
-            white-space: nowrap;
-            text-align: center;
         }
 
-        .holiday-item {
-            transition: background-color 0.3s ease;
-            position: relative;
+        .card-header.bg-white {
+            background: #fff !important;
+            border-radius: 16px 16px 0 0;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .holiday-item:hover {
-            background-color: #fff3cd;
+        .card-header .btn {
+            font-weight: 500;
+            border-radius: 8px;
         }
 
-        /* ...existing code... */
-        .action-buttons {
-            display: none !important;
+        .card-header .btn-outline-success {
+            color: #198754;
+            border-color: #198754;
         }
 
-        .holiday-item:hover .action-buttons {
-            display: flex !important;
+        .card-header .btn-outline-success:hover {
+            background: #198754;
+            color: #fff;
         }
 
-        /* ...existing code... */
-
-        .action-buttons a,
-        .action-buttons button {
-            padding: 5px 8px;
-            font-size: 13px;
-            border-radius: 4px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 32px;
-            height: 32px;
+        /* Thêm viền cho bảng */
+        .table {
+            border: 1px solid #e5e7eb !important;
+            border-radius: 12px;
+            overflow: hidden;
         }
 
-        .action-buttons a i,
-        .action-buttons button i {
-            margin: 0;
+        .table th,
+        .table td {
+            border: 1px solid #e5e7eb !important;
         }
 
-        .action-buttons a:hover,
-        .action-buttons button:hover {
-            opacity: 0.85;
+        .table thead th {
+            border-bottom: none;
+            background: transparent;
+        }
+
+        .table td,
+        .table th {
+            vertical-align: middle;
+        }
+
+        .page-header {
+            background: transparent;
+            padding: 0 0 16px 0;
+        }
+
+        .breadcrumbs {
+            background: transparent;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .breadcrumbs li {
+            display: inline-block;
+            color: #232b43;
+            font-size: 15px;
+        }
+
+        .breadcrumbs .icon-home,
+        .breadcrumbs .icon-arrow-right {
+            font-size: 16px;
+            vertical-align: middle;
+        }
+
+        .breadcrumbs .separator {
+            margin: 0 6px;
         }
     </style>
 @endsection
