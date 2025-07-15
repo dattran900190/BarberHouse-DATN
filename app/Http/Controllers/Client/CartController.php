@@ -35,7 +35,10 @@ class CartController extends Controller
         $productVariant = ProductVariant::find($request->product_variant_id);
 
         if (!$productVariant) {
-            return redirect()->back()->with('error', 'Sản phẩm không tồn tại.');
+            $message = 'Sản phẩm không tồn tại.';
+            return $request->ajax()
+                ? response()->json(['success' => false, 'message' => $message], 404)
+                : redirect()->back()->with('error', $message);
         }
 
         $cart = $this->getOrCreateCart($user);
@@ -46,9 +49,35 @@ class CartController extends Controller
 
         $cartItem = $cart->items()->where('product_variant_id', $request->product_variant_id)->first();
 
+        $existingQty = $cartItem ? $cartItem->quantity : 0;
+        $newQty = $existingQty + $request->quantity;
+        if ($existingQty >= $productVariant->stock) {
+            $message = "Bạn đã thêm tối đa số lượng có sẵn của sản phẩm này ({$productVariant->stock} sản phẩm).";
+            return $request->ajax()
+                ? response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'available_stock' => $productVariant->stock,
+                    'reached_max' => true
+                ], 400)
+                : redirect()->back()->with('error', $message);
+        }
+        if ($newQty > $productVariant->stock) {
+            $message = "Chỉ còn {$productVariant->stock} sản phẩm trong kho. Bạn đang có {$existingQty} sản phẩm trong giỏ.";
+            return $request->ajax()
+                ? response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'available_stock' => $productVariant->stock,
+                ], 400)
+                : redirect()->back()->with('error', $message);
+        }
+
+
+
         if ($cartItem) {
             $cartItem->update([
-                'quantity' => $cartItem->quantity + $request->quantity,
+                'quantity' => $newQty,
                 'price' => $productVariant->price,
             ]);
         } else {
@@ -62,9 +91,13 @@ class CartController extends Controller
         $cart_count = $cart->items()->sum('quantity');
         Session::put('cart_count', $cart_count);
         if ($request->ajax()) {
-            return response()->json(['success' => true, 'cart_count' => $cart_count]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã thêm vào giỏ hàng.',
+                'cart_count' => $cart_count,
+            ]);
         }
-       return redirect()->back()->with('success', 'Sản phẩm đã được thêm vào giỏ hàng.');
+        return redirect()->back()->with('success', 'Sản phẩm đã được thêm vào giỏ hàng.');
     }
 
 
@@ -100,30 +133,57 @@ class CartController extends Controller
         $cart = $this->getOrCreateCart($user);
 
         if ($cartItem->cart_id !== $cart->id) {
-            return response()->json(['success' => false, 'message' => 'Bạn không có quyền cập nhật mục này.'], 403);
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền cập nhật mục này.'
+            ], 403);
         }
 
+        // Kiểm tra tồn kho
+        $variant = $cartItem->productVariant;
+        if (!$variant) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sản phẩm không tồn tại.'
+            ], 404);
+        }
+
+        if ($request->quantity > $variant->stock) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Số lượng vượt quá tồn kho.',
+                'available_stock' => $variant->stock
+            ], 422);
+        }
+
+        // Cập nhật số lượng
         $cartItem->update([
             'quantity' => $request->quantity,
         ]);
 
+        $cart_count = $cart->items()->sum('quantity');
+        Session::put('cart_count', $cart_count);
+
         return response()->json([
             'success' => true,
             'unit_price' => round($cartItem->price),
-            'subtotal' => round($cartItem->price * $cartItem->quantity)
+            'subtotal' => round($cartItem->price * $cartItem->quantity),
+            'cart_count' => $cart_count,
         ]);
     }
+
+
 
 
     public function show()
     {
         $user = Auth::user();
-        
+
         // Nếu user đã đăng nhập và có session cart_id từ guest, merge cart
         if ($user && Session::has('cart_id')) {
             $this->mergeGuestCartToUser($user);
         }
-        
+
         $cart = $this->getOrCreateCart($user);
 
         // Lấy lại item từ DB mới nhất
@@ -161,15 +221,15 @@ class CartController extends Controller
     private function mergeGuestCartToUser($user)
     {
         $guestCartId = Session::get('cart_id');
-        
+
         if (!$guestCartId) {
             return; // Không có giỏ hàng guest
         }
 
         $guestCart = Cart::where('id', $guestCartId)
-                        ->whereNull('user_id')
-                        ->with('items.productVariant')
-                        ->first();
+            ->whereNull('user_id')
+            ->with('items.productVariant')
+            ->first();
 
         if (!$guestCart) {
             Session::forget('cart_id');
@@ -186,8 +246,8 @@ class CartController extends Controller
         foreach ($guestCart->items as $guestItem) {
             // Kiểm tra xem item này đã có trong user cart chưa
             $existingItem = $userCart->items()
-                                   ->where('product_variant_id', $guestItem->product_variant_id)
-                                   ->first();
+                ->where('product_variant_id', $guestItem->product_variant_id)
+                ->first();
 
             if ($existingItem) {
                 // Nếu đã có, cộng thêm số lượng
@@ -209,7 +269,7 @@ class CartController extends Controller
         $guestCart->items()->delete();
         $guestCart->delete();
         Session::forget('cart_id');
-        
+
         // Cập nhật số lượng trong session
         $cartCount = $userCart->items()->sum('quantity');
         Session::put('cart_count', $cartCount);
@@ -317,6 +377,21 @@ class CartController extends Controller
             'items.required' => 'Giỏ hàng không được để trống.',
             'tong_tien.required' => 'Tổng tiền không được để trống.',
         ]);
+        $user = $request->user();
+
+        // Cập nhật lại thông tin user nếu còn thiếu
+        $needUpdate = false;
+        if (empty($user->phone) && $request->filled('phone')) {
+            $user->phone = $request->phone;
+            $needUpdate = true;
+        }
+        if (empty($user->address) && $request->filled('address')) {
+            $user->address = $request->address;
+            $needUpdate = true;
+        }
+        if ($needUpdate) {
+            $user->save();
+        }
 
         // Tính lại tổng tiền sản phẩm
         $productTotal = collect($request->items)->sum(function ($item) {
@@ -411,6 +486,8 @@ class CartController extends Controller
             }
 
             return redirect()->route('order.success')->with('success', 'Đặt hàng thành công!');
+            Session::forget('buy_now_product');
+
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -441,7 +518,8 @@ class CartController extends Controller
                 'product_variant_id' => $request->product_variant_id,
                 'quantity' => $request->quantity ?? 1,
             ]
-            : Session::pull('buy_now_product');
+            : Session::get('buy_now_product'); // ✅ không xóa
+
 
         if (!$buyNow || empty($buyNow['product_variant_id'])) {
             return redirect('/')->with('error', 'Không tìm thấy sản phẩm để mua ngay.');
@@ -460,7 +538,7 @@ class CartController extends Controller
             'price' => $variant->price,
             'quantity' => $buyNow['quantity'],
             'image' => $variant->image ? Storage::url($variant->image) : asset('images/no-image.png'),
-            'cart_item_id' => null, // Không qua giỏ hàng
+            'cart_item_id' => null,
             'subtotal' => $variant->price * $buyNow['quantity'],
         ];
 
@@ -473,13 +551,15 @@ class CartController extends Controller
 
         $shippingFee = 25000;
 
-        // Lưu ý: truyền $items là mảng 1 phần tử
+        // Nếu thiếu SĐT hoặc địa chỉ thì cảnh báo
+       
+
         return view('client.checkout', [
             'userInfo' => $userInfo,
             'mappedItems' => [$item],
             'shippingFee' => $shippingFee,
             'items' => [$item],
-            'buyNow' => true, // Để view biết là “mua ngay”
+            'buyNow' => true,
         ]);
     }
 }
