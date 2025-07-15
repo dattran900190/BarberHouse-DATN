@@ -40,7 +40,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label">Họ tên</label>
                         <input type="text" id="name" name="name" class="form-control"
-                            value="{{ old('name', $barber->name) }}" required>
+                            value="{{ old('name', $barber->name) }}">
                         @error('name')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -49,7 +49,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="skill_level" class="form-label">Trình độ</label>
                         <input type="text" id="skill_level" name="skill_level" class="form-control"
-                            value="{{ old('skill_level', $barber->skill_level) }}" required>
+                            value="{{ old('skill_level', $barber->skill_level) }}">
                         @error('skill_level')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -59,8 +59,8 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="rating_avg" class="form-label">Đánh giá trung bình</label>
-                        <input type="number" id="rating_avg" name="rating_avg" class="form-control" step="0.1" min="0" max="5"
-                            value="{{ old('rating_avg', $barber->rating_avg) }}">
+                        <input type="number" id="rating_avg" name="rating_avg" class="form-control" step="0.1"
+                            min="0" max="5" value="{{ old('rating_avg', $barber->rating_avg) }}">
                         @error('rating_avg')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -70,17 +70,17 @@
                         <label for="branch_id" class="form-label">Chi nhánh</label>
                         @if ($currentRole === 'admin_branch')
                             <select id="branch_id" name="branch_id" class="form-control" disabled>
-                        @else
-                            <select id="branch_id" name="branch_id" class="form-control">
+                            @else
+                                <select id="branch_id" name="branch_id" class="form-control">
                         @endif
-                                <option value="">-- Chọn chi nhánh --</option>
-                                @foreach ($branches as $branch)
-                                    <option value="{{ $branch->id }}"
-                                        {{ old('branch_id', $barber->branch_id) == $branch->id ? 'selected' : '' }}>
-                                        {{ $branch->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <option value="">-- Chọn chi nhánh --</option>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}"
+                                {{ old('branch_id', $barber->branch_id) == $branch->id ? 'selected' : '' }}>
+                                {{ $branch->name }}
+                            </option>
+                        @endforeach
+                        </select>
                         @error('branch_id')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -100,7 +100,8 @@
                     <input type="file" id="avatar" name="avatar" class="form-control" accept="image/*">
                     @if ($barber->avatar)
                         <div class="mt-2">
-                            <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" width="120" class="rounded">
+                            <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" width="120"
+                                class="rounded">
                         </div>
                     @endif
                     @error('avatar')
@@ -132,7 +133,8 @@
                 <button type="submit" class="btn btn-sm btn-outline-warning">
                     <i class="fa fa-edit me-1"></i> Cập nhật
                 </button>
-                <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}" class="btn btn-sm btn-outline-secondary">
+                <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}"
+                    class="btn btn-sm btn-outline-secondary">
                     <i class="fa fa-arrow-left me-1"></i> Quay lại
                 </a>
             </form>
