@@ -9,7 +9,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NewOrderCreated implements ShouldBroadcast
+class OrderPaymentStatusUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -29,15 +29,8 @@ class NewOrderCreated implements ShouldBroadcast
     {
         return [
             'order_id' => $this->order->id,
+            'payment_status' => $this->order->payment_status,
             'order_code' => $this->order->order_code,
-            'name' => $this->order->name,
-            'phone' => $this->order->phone,
-            'address' => $this->order->address,
-            'total_money' => $this->order->total_money,
-            'payment_method' => $this->order->payment_method,
-            'payment_status' => $this->order->payment_status ?? 'unpaid',
-            'created_at' => $this->order->created_at ? $this->order->created_at->format('d/m/Y H:i') : '',
-            'message' => 'Có đơn hàng mới từ ' . ($this->order->name ?? 'Khách hàng không xác định'),
         ];
     }
 } 

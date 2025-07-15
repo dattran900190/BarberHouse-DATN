@@ -27,7 +27,7 @@ class OrderFactory extends Factory
             'address' => $this->faker->address,
             'total_money' => 0, // sẽ tính sau
             'status' => $this->faker->randomElement(['pending', 'processing', 'shipping', 'completed', 'cancelled']),
-            'payment_method' => $this->faker->randomElement(['cash', 'momo', 'vnpay', 'card']),
+            'payment_method' => $this->faker->randomElement(['cash', 'vnpay',]),
             'note' => $this->faker->sentence,
         ];
     }

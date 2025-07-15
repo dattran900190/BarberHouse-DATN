@@ -392,6 +392,9 @@ class CartController extends Controller
 
                 $cart = $this->getOrCreateCart($request->user());
                 $cart->items()->whereIn('id', $cartItemIds)->delete();
+                // Cập nhật lại số lượng còn lại trong giỏ
+                $cart_count = $cart->items()->sum('quantity');
+                Session::put('cart_count', $cart_count);
                 if ($cart->items()->count() == 0) {
                     Session::forget('cart_id');
                 }

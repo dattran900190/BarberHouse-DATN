@@ -13,6 +13,20 @@
                         {{ session('success') }}
                     </div>
                 @endif
+                @if (session('error'))
+                    <div class="alert alert-danger mt-3" id="error-alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger mt-3" id="error-alert">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form method="POST" action="{{ route('cart.checkout.process') }}" class="mainCheckout">
                     @csrf
 
@@ -113,16 +127,7 @@
                                 <i class="fa-solid fa-qrcode"></i>
                             </div>
                         </div>
-                        <div class="form-check" style="display: flex; justify-content: space-between">
-                            <div class="chon">
-                                <input class="form-check-input" value="3" type="radio"
-                                    name="phuong_thuc_thanh_toan_id" id="paymentMethodMOMO" />
-                                <label class="form-check-label" for="paymentMethodMOMO">Thanh toán qua MOMO</label>
-                            </div>
-                            <div class="icon-bank">
-                                <i class="fa-solid fa-qrcode"></i>
-                            </div>
-                        </div>
+                 
                     </div>
 
                     <div class="informationProduct">
@@ -231,4 +236,14 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const errorAlert = document.getElementById('error-alert');
+            if (errorAlert) {
+                // Cuộn lên đầu trang khi có lỗi
+                window.scrollTo({ top: errorAlert.offsetTop - 20, behavior: 'smooth' });
+            }
+        });
+    </script>
 @endsection

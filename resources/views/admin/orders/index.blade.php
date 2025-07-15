@@ -475,4 +475,79 @@
             });
         });
     </script>
+
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+    <script>
+        const paymentMap = {
+            paid: { class: 'bg-success', text: 'Đã thanh toán' },
+            unpaid: { class: 'bg-warning', text: 'Chưa thanh toán' },
+            failed: { class: 'bg-danger', text: 'Thanh toán thất bại' },
+            refunded: { class: 'bg-secondary', text: 'Đã hoàn tiền' }
+        };
+
+        const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+            cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+            encrypted: true
+        });
+        const orderChannel = pusher.subscribe('orders');
+        orderChannel.bind('App\\Events\\NewOrderCreated', function(data) {
+            const tableBody = document.querySelector('#pending tbody');
+            if (tableBody) {
+                const paymentInfo = paymentMap[data.payment_status] || { class: 'bg-secondary', text: data.payment_status };
+                const row = `
+                    <tr>
+                        <td>Mới</td>
+                        <td>${data.order_code || ''}</td>
+                        <td>${data.name || ''}</td>
+                        <td>${data.phone || ''}</td>
+                        <td>${data.address ? data.address.substring(0, 30) : ''}</td>
+                        <td>${data.total_money ? Number(data.total_money).toLocaleString('vi-VN') + ' đ' : ''}</td>
+                        <td class="text-uppercase">${data.payment_method || ''}</td>
+                        <td>${data.created_at || ''}</td>
+                        <td><span class="badge ${paymentInfo.class}">${paymentInfo.text}</span></td>
+                        <td><span class="badge bg-warning">Chờ xác nhận</span></td>
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary" type="button"
+                                    id="actionMenuOrder${data.order_id || ''}"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionMenuOrder${data.order_id || ''}">
+                                    <li>
+                                        <a href="/admin/orders/${data.order_id || ''}" class="dropdown-item">
+                                            <i class="fas fa-eye me-2"></i> Xem
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML('afterbegin', row);
+            } else {
+                console.warn('Không tìm thấy bảng #pending tbody!');
+            }
+        });
+
+        orderChannel.bind('App\\Events\\OrderPaymentStatusUpdated', function(data) {
+            // Tìm dòng có mã đơn hàng tương ứng
+            const rows = document.querySelectorAll('#pending tbody tr');
+            rows.forEach(row => {
+                const codeCell = row.children[1]; // cột mã đơn
+                if (codeCell && codeCell.textContent.trim() === data.order_code) {
+                    // Cập nhật badge trạng thái thanh toán
+                    const paymentCell = row.children[8]; // cột trạng thái thanh toán
+                    if (paymentCell) {
+                        let badgeClass = 'bg-secondary', badgeText = data.payment_status;
+                        if (data.payment_status === 'paid') { badgeClass = 'bg-success'; badgeText = 'Đã thanh toán'; }
+                        else if (data.payment_status === 'unpaid') { badgeClass = 'bg-warning'; badgeText = 'Chưa thanh toán'; }
+                        else if (data.payment_status === 'failed') { badgeClass = 'bg-danger'; badgeText = 'Thanh toán thất bại'; }
+                        else if (data.payment_status === 'refunded') { badgeClass = 'bg-secondary'; badgeText = 'Đã hoàn tiền'; }
+                        paymentCell.innerHTML = `<span class="badge ${badgeClass}">${badgeText}</span>`;
+                    }
+                }
+            });
+        });
+    </script>
 @endsection
