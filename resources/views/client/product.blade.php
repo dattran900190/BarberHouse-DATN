@@ -81,7 +81,7 @@
                                         <input type="hidden" name="product_variant_id"
                                             value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
                                         <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-dark icon-button"
+                                        <button type="submit" class="btn-outline-cart"
                                             title="Thêm vào giỏ hàng">
                                             <i class="fas fa-cart-plus"></i>
                                         </button>
@@ -94,11 +94,11 @@
                                             value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
                                         <input type="hidden" name="quantity" value="1">
                                         @guest
-                                            <button type="button" class="btn btn-danger btn-buy-now" title="Mua ngay">
+                                            <button type="button" class="btn-outline-buy" title="Mua ngay">
                                                 <span>Mua ngay</span>
                                             </button>
                                         @else
-                                            <button type="submit" class="btn btn-danger btn-buy-now" title="Mua ngay">
+                                            <button type="submit" class="btn-outline-buy" title="Mua ngay">
                                                 <span>Mua ngay</span>
                                             </button>
                                         @endguest

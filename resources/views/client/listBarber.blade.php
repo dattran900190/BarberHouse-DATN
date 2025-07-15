@@ -46,7 +46,7 @@
                             <img src="{{ asset('storage/' . $barber->avatar) }}" alt="{{ $barber->name }}" />
                         </a>
                         <a href="{{ url('/dat-lich?barber_id=' . $barber->id) }}">
-                            <button class="btn">Đặt lịch ngay</button>
+                            <button class="btn-outline-buy">Đặt lịch ngay</button>
                         </a>
                     </div>
                     <h5><a href="{{ route('client.detailBarber', $barber->id) }}">{{ $barber->name }}</a></h5>

@@ -7,11 +7,11 @@
 @section('content')
     <main class="container py-5">
         <div class="main-detail-barber">
-            <section class="bg-light py-5">
+            <section class=" py-5">
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-12 mb-5">
-                            <div class="card border-0 shadow-sm">
+                            <div class="card ">
                                 <div class="card-body p-4 p-md-5 p-lg-6">
                                     <div class="row align-items-center">
                                         <div class="col-lg-6 mb-4 mb-lg-0">
@@ -21,7 +21,7 @@
                                         <div class="col-lg-6 px-xl-10">
                                             <div class="bg-white p-4 mb-4 rounded">
                                                 <h3 class="h2 text-dark mb-0">{{ $barber->name }}</h3>
-                                                <span class="text-primary">Thợ cắt tóc tại
+                                                <span class="text-dark">Thợ cắt tóc tại
                                                     {{ $barber->branch->name ?? 'chưa có chi nhánh' }}</span>
                                             </div>
                                             <ul class="list-unstyled mb-4">
@@ -41,7 +41,7 @@
                                                     <i class="fa-solid fa-star text-warning"></i>
                                                 </li>
                                             </ul>
-                                            <a href="{{ route('dat-lich', $barber->id) }}" class="btn btn-primary">Đặt lịch
+                                            <a href="{{ route('dat-lich', $barber->id) }}" class="btn-outline-buy">Đặt lịch
                                                 hẹn</a>
                                         </div>
                                     </div>
@@ -50,12 +50,12 @@
                         </div>
                         <div class="col-lg-12 mb-5">
                             <div>
-                                <h4 class="text-primary mb-4">Hồ sơ</h4>
+                                <h4 class="text-dark mb-4">Hồ sơ</h4>
                                 <p>{!! $barber->profile ?? 'Chưa có thông tin hồ sơ.' !!}</p>
                             </div>
                         </div>
                         <div class="col-lg-12">
-                            <h4 class="text-primary mb-4">Đánh giá</h4>
+                            <h4 class="text-dark mb-4">Đánh giá</h4>
                             @if ($barber->reviews->where('is_visible', true)->isEmpty())
                                 <p class="text-muted">Chưa có đánh giá nào.</p>
                             @else
@@ -108,9 +108,9 @@
         transition: transform 0.3s;
     }
 
-    .main-detail-barber .card:hover {
+    /* .main-detail-barber .card:hover {
         transform: translateY(-5px);
-    }
+    } */
 
     .avatar {
         width: 50px;
@@ -134,14 +134,14 @@
         color: white;
     }
 
-    .btn-primary {
+    /* .btn-datext-dark {
         background-color: #007bff;
         border-color: #007bff;
         transition: background-color 0.3s;
     }
 
-    .btn-primary:hover {
+    .btn-datext-dark:hover {
         background-color: #0056b3;
         border-color: #0056b3;
-    }
+    } */
 </style>
