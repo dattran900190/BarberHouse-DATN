@@ -25,7 +25,7 @@ class UserController extends Controller
                 });
             })->orderBy('id', 'DESC')->paginate(10);
 
-        $admins = User::whereIn('role', ['admin', 'admin_branch', 'super_admin'])
+        $admins = User::whereIn('role', ['admin', 'admin_branch'])
             ->when($search && $request->input('role_filter') === 'admin', function ($query) use ($search) {
                 return $query->where(function ($query2) use ($search) {
                     $query2->where('name', 'like', '%' . $search . '%')
@@ -64,7 +64,7 @@ class UserController extends Controller
 
         $data['status'] = $request->input('status', 'active'); // set mặc định là active
 
-        if ($role === 'admin' && !in_array($data['role'], ['admin', 'admin_branch', 'super_admin'])) {
+        if ($role === 'admin' && !in_array($data['role'], ['admin', 'admin_branch'])) {
             return back()->withErrors(['role' => 'Vai trò không hợp lệ cho quản trị viên']);
         }
         if ($role === 'user' && $data['role'] !== 'user') {
@@ -92,7 +92,7 @@ class UserController extends Controller
     {
         $role = $request->input('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
-            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
+            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch']))
         ) {
             abort(403, 'Không có quyền truy cập');
         }
@@ -108,7 +108,7 @@ class UserController extends Controller
         $role = $request->input('role', 'user');
 
         if (($role === 'user' && $user->role !== 'user') ||
-            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
+            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch']))
         ) {
             abort(403, 'Không có quyền truy cập');
         }
@@ -136,14 +136,14 @@ class UserController extends Controller
         $currentPage = $request->input('page', 1);
         $role = $request->query('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
-            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
+            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch']))
         ) {
             abort(403, 'Không có quyền truy cập');
         }
 
         $data = $request->validated();
 
-        if ($role === 'admin' && !in_array($data['role'], ['admin', 'admin_branch', 'super_admin'])) {
+        if ($role === 'admin' && !in_array($data['role'], ['admin', 'admin_branch'])) {
             return back()->withErrors(['role' => 'Vai trò không hợp lệ cho quản trị viên']);
         }
         if ($role === 'user' && $data['role'] !== 'user') {
@@ -175,7 +175,7 @@ class UserController extends Controller
     {
         $role = $request->input('role', 'user');
         if (($role === 'user' && $user->role !== 'user') ||
-            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch', 'super_admin']))
+            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch']))
         ) {
             abort(403, 'Không có quyền truy cập');
         }
@@ -184,10 +184,53 @@ class UserController extends Controller
             Storage::disk('public')->delete($user->avatar);
         }
 
-        $user->delete();
+        $user->delete(); // Sẽ xóa mềm nếu model dùng SoftDeletes
+
         return redirect()->route('users.index', ['role' => $role])
             ->with('success', 'Xoá ' . ($role === 'user' ? 'người dùng' : 'quản trị viên') . ' thành công');
     }
+
+    public function trashed(Request $request)
+    {
+        $role = $request->input('role', 'user');
+        $search = $request->input('search');
+
+        $query = User::onlyTrashed()
+            ->when($role === 'user', fn($q) => $q->where('role', 'user'))
+            ->when($role === 'admin', fn($q) => $q->whereIn('role', ['admin', 'admin_branch', 'super_admin']))
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($q2) use ($search) {
+                    $q2->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%');
+                });
+            });
+
+        $trashedUsers = $query->orderBy('deleted_at', 'desc')->paginate(10);
+
+        return view('admin.users.trashed', compact('trashedUsers', 'role', 'search'));
+    }
+    public function restore($id, Request $request)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('users.trashed')->with('error', 'Bạn không có quyền khôi phục người dùng.');
+        }
+        $role = $request->input('role', 'user');
+
+        $user = User::onlyTrashed()->findOrFail($id);
+
+        // Kiểm tra vai trò
+        if (($role === 'user' && $user->role !== 'user') ||
+            ($role === 'admin' && !in_array($user->role, ['admin']))
+        ) {
+            abort(403, 'Không có quyền khôi phục người dùng này.');
+        }
+
+        $user->restore();
+
+        return redirect()->route('users.trashed', ['role' => $role])
+            ->with('success', 'Khôi phục tài khoản thành công.');
+    }
+
     public function toggleStatus(Request $request, User $user)
     {
         // Đảo trạng thái
