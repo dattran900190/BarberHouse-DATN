@@ -10,7 +10,7 @@ class VolumeController extends Controller
 {
     public function index()
     {
-        $volumes = Volume::paginate(10); 
+        $volumes = Volume::orderBy('id', 'desc')->paginate(10);
         return view('admin.volumes.index', compact('volumes'));
     }
 
@@ -24,11 +24,12 @@ class VolumeController extends Controller
 
     public function store(Request $request)
     {
-          if (Auth::user()->role === 'admin_branch') {
+        if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.volumes.index')->with('error', 'Bạn không có quyền thêm dung tích.');
         }
-        $request->validate(['name' => 'required']);
-        Volume::create($request->all());
+        $request->validate(['name' => 'required|numeric']);
+        $name = $request->input('name') . 'ml';
+        Volume::create(['name' => $name]);
         return redirect()->route('admin.volumes.index')->with('success', 'Thêm dung tích thành công!');
     }
 
@@ -42,11 +43,12 @@ class VolumeController extends Controller
 
     public function update(Request $request, Volume $volume)
     {
-          if (Auth::user()->role === 'admin_branch') {
+        if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.volumes.index')->with('error', 'Bạn không có quyền sửa dung tích.');
         }
-        $request->validate(['name' => 'required']);
-        $volume->update($request->all());
+        $request->validate(['name' => 'required|numeric']);
+        $name = $request->input('name') . 'ml';
+        $volume->update(['name' => $name]);
 
         // Lấy lại số trang từ query
         $page = $request->query('page');

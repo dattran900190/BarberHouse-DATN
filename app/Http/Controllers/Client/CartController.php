@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Events\NewOrderCreated;
+use App\Mail\OrderSuccessMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 
 class CartController extends Controller
@@ -403,6 +406,15 @@ class CartController extends Controller
             // Phát event realtime khi có đơn hàng mới
             if ($order) {
                 event(new NewOrderCreated($order));
+                // Gửi email xác nhận đơn hàng
+                try {
+                    $order->load('items.productVariant.product');
+                    if ($order->email) {
+                        Mail::to($order->email)->send(new OrderSuccessMail($order));
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Lỗi gửi email xác nhận đơn hàng: ' . $e->getMessage());
+                }
             }
 
             // Nếu chọn VNPay, chuyển hướng đến thanh toán
