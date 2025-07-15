@@ -53,6 +53,8 @@ class OrderController extends Controller
         $buildQuery($cancelledOrders, $search);
         $cancelledOrders = $cancelledOrders->where('status', 'cancelled')->paginate(10, ['*'], 'cancelled_page');
 
+        $pendingOrderCount = Order::where('status', 'pending')->count();
+
         return view('admin.orders.index', compact(
             'pendingOrders', 
             'processingOrders', 
@@ -60,7 +62,8 @@ class OrderController extends Controller
             'completedOrders', 
             'cancelledOrders',
             'activeTab',
-            'search'
+            'search',
+            'pendingOrderCount' // Đổi tên biến truyền về view
         ));
     }
     public function confirm(Order $order)

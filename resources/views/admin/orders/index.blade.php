@@ -84,7 +84,7 @@
                 <li class="nav-item">
                     <a class="nav-link {{ $activeTab == 'pending' ? 'active' : '' }}" id="pending-tab" data-toggle="tab"
                         href="#pending" role="tab">Chờ xác nhận
-                        @if ($pendingCount > 0)
+                        @if (!empty($pendingOrderCount) && $pendingOrderCount > 0)
                             <span class="position-relative">
                                 <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
                                     <span class="visually-hidden">New alerts</span>
