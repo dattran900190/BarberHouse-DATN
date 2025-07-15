@@ -18,7 +18,7 @@ class CheckinController extends Controller
     {
         $checkins = Checkin::latest()->paginate(10);
 
-    
+
 
         return view('admin.checkins.index', compact('checkins' ));
     }
@@ -30,7 +30,7 @@ class CheckinController extends Controller
         return view('admin.checkins.show', compact('checkin'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, Appointment $appointment )
     {
         $request->validate([
             'code' => 'required|digits:6'
@@ -42,17 +42,23 @@ class CheckinController extends Controller
             return back()->withErrors(['code' => 'Mã không đúng!']);
         }
 
-        if ($checkin->is_checked_in) {
-            return back()->withErrors(['code' => 'Mã này đã được sử dụng!']);
-        }
+        // if ($checkin->is_checked_in) {
+        //     return back()->withErrors(['code' => 'Mã này đã được sử dụng!']);
+        // }
 
         $checkin->update([
             'checkin_time' => now(),
             'is_checked_in' => true,
         ]);
-
-        return redirect()->route('checkins.index')->with('success', 'Check-in thành công!');
+         if ($checkin->appointment) {
+        $checkin->appointment->update([
+            'status' => 'progress', // hoặc 'đang_cắt_tóc' tùy vào hệ thống bạn dùng
+        ]);
     }
+
+        return redirect()->route('appointments.index')->with('success', 'Check-in thành công!');
+    }
+
 
 }
 
