@@ -51,7 +51,7 @@
                 <table class="table table-bordered table-hover text-center">
                     <thead class="thead-light">
                         <tr>
-                            <th>ID</th>
+                            <th>Stt</th>
                             <th>Tên</th>
                             <th>Hành động</th>
                         </tr>
@@ -59,7 +59,8 @@
                     <tbody>
                         @forelse($volumes as $volume)
                             <tr>
-                                <td>{{ $volume->id }}</td>
+                                <td>{{ $loop->iteration + $volumes->firstItem() - 1 }}</td>
+
                                 <td>{{ $volume->name }}</td>
                                 <td class="text-center">
                                     <div class="dropdown">
@@ -98,9 +99,10 @@
                 </table>
             </div>
 
-            <div class="d-flex mt-3">
+            <div class="d-flex justify-content-center mt-3">
                 {{ $volumes->appends(request()->query())->links() }}
             </div>
+            
         </div>
     </div>
 @endsection

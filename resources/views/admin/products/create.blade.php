@@ -20,7 +20,22 @@
             </button>
         </div>
     @endif
-
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Sản phẩm</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Danh sách sản phẩm</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/products/create') }}">Thêm sản phẩm</a>
+            </li>
+        </ul>
+    </div>
 <div class="container">
     <h1>Thêm sản phẩm</h1>
     <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
@@ -136,15 +151,15 @@
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <button type="button" class="btn btn-danger remove-variant">Xóa biến thể</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger">Xóa biến thể</button>
                         </div>
                     @endforeach
                 </div>
-                <button type="button" class="btn btn-secondary mb-3" id="add-variant">Thêm biến thể</button>
+                <button type="button" class="btn btn-sm btn-outline-success" id="add-variant">Thêm biến thể</button>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Thêm mới</button>
+        <button type="submit" class="btn btn-sm btn-outline-success">Thêm mới</button>
     </form>
 </div>
 

@@ -144,7 +144,7 @@
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
                                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                                            <td class="text-uppercase">
+                                            <td >
                                                 {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
                                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                             <td>
@@ -251,7 +251,7 @@
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
                                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                                            <td class="text-uppercase">
+                                            <td >
                                                 {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
                                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                             <td><span class="badge bg-primary">Đang xử lý</span></td>
@@ -305,7 +305,7 @@
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
                                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                                            <td class="text-uppercase">
+                                            <td >
                                                 {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
                                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                             <td><span class="badge bg-info">Đang giao hàng</span></td>
@@ -359,7 +359,7 @@
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
                                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                                            <td class="text-uppercase">
+                                            <td >
                                                 {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
                                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                             <td><span class="badge bg-success">Hoàn thành</span></td>
@@ -413,7 +413,7 @@
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
                                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                                            <td class="text-uppercase">
+                                            <td >
                                                 {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
                                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                             <td><span class="badge bg-danger">Đã hủy</span></td>
@@ -478,11 +478,20 @@
 
     <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
     <script>
+        window.currentRole = "{{ Auth::user()->role }}";
+    </script>
+    <script>
         const paymentMap = {
             paid: { class: 'bg-success', text: 'Đã thanh toán' },
             unpaid: { class: 'bg-warning', text: 'Chưa thanh toán' },
             failed: { class: 'bg-danger', text: 'Thanh toán thất bại' },
             refunded: { class: 'bg-secondary', text: 'Đã hoàn tiền' }
+        };
+
+        // Thêm ánh xạ phương thức thanh toán sang tiếng Việt
+        const paymentMethodMap = {
+            cash: 'Thanh toán khi nhận hàng',
+            vnpay: 'Thanh toán qua VNPAY'
         };
 
         const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
@@ -494,6 +503,39 @@
             const tableBody = document.querySelector('#pending tbody');
             if (tableBody) {
                 const paymentInfo = paymentMap[data.payment_status] || { class: 'bg-secondary', text: data.payment_status };
+                // Sử dụng tiếng Việt cho phương thức thanh toán
+                const paymentMethodText = paymentMethodMap[data.payment_method] || data.payment_method || '';
+                let actionButtons = `
+                    <li>
+                        <a href="/admin/orders/${data.order_id || ''}" class="dropdown-item">
+                            <i class="fas fa-eye me-2"></i> Xem
+                        </a>
+                    </li>
+                `;
+                if (window.currentRole === 'admin') {
+                    actionButtons += `
+                        <li>
+                            <form action="/admin/orders/${data.order_id || ''}/confirm" method="POST"
+                                onsubmit="return confirm('Bạn có chắc muốn xác nhận đơn này không?');">
+                                <input type="hidden" name="_token" value="${document.querySelector('meta[name=csrf-token]').content}">
+                                <button type="submit" class="dropdown-item text-success">
+                                    <i class="fas fa-check-circle me-2"></i> Xác nhận
+                                </button>
+                            </form>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="/admin/orders/${data.order_id || ''}" method="POST"
+                                onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
+                                <input type="hidden" name="_token" value="${document.querySelector('meta[name=csrf-token]').content}">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-times-circle me-2"></i> Hủy
+                                </button>
+                            </form>
+                        </li>
+                    `;
+                }
                 const row = `
                     <tr>
                         <td>Mới</td>
@@ -502,7 +544,7 @@
                         <td>${data.phone || ''}</td>
                         <td>${data.address ? data.address.substring(0, 30) : ''}</td>
                         <td>${data.total_money ? Number(data.total_money).toLocaleString('vi-VN') + ' đ' : ''}</td>
-                        <td class="text-uppercase">${data.payment_method || ''}</td>
+                        <td >${paymentMethodText}</td>
                         <td>${data.created_at || ''}</td>
                         <td><span class="badge ${paymentInfo.class}">${paymentInfo.text}</span></td>
                         <td><span class="badge bg-warning">Chờ xác nhận</span></td>
@@ -514,11 +556,7 @@
                                     <i class="fas fa-ellipsis-v"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionMenuOrder${data.order_id || ''}">
-                                    <li>
-                                        <a href="/admin/orders/${data.order_id || ''}" class="dropdown-item">
-                                            <i class="fas fa-eye me-2"></i> Xem
-                                        </a>
-                                    </li>
+                                    ${actionButtons}
                                 </ul>
                             </div>
                         </td>

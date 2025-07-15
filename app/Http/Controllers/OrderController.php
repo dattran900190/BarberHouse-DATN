@@ -7,6 +7,10 @@ use App\Models\Order;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\OrderSuccessMail;
+use App\Mail\OrderCompletedMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -66,14 +70,20 @@ class OrderController extends Controller
     }
     public function confirm(Order $order)
     {
-
         if ($order->status === 'pending') {
             $order->status = 'processing';
             $order->save();
-
+            // Gửi email xác nhận đơn hàng cho khách
+            try {
+                $order->load('items.productVariant.product');
+                if ($order->email) {
+                    Mail::to($order->email)->send(new OrderSuccessMail($order));
+                }
+            } catch (\Exception $e) {
+                \Log::error('Lỗi gửi email xác nhận đơn hàng (admin): ' . $e->getMessage());
+            }
             return back()->with('success', 'Đã xác nhận đơn hàng.');
         }
-
         return back()->with('error', 'Đơn hàng không thể xác nhận.');
     }
 
@@ -131,6 +141,18 @@ class OrderController extends Controller
                     $variant->stock += $item->quantity;
                     $variant->save();
                 }
+            }
+        }
+
+        // Nếu chuyển sang hoàn thành đơn hàng
+        if ($currentStatus !== 'completed' && $newStatus === 'completed') {
+            try {
+                $order->load('items.productVariant.product');
+                if ($order->email) {
+                    Mail::to($order->email)->send(new OrderCompletedMail($order));
+                }
+            } catch (\Exception $e) {
+                Log::error('Lỗi gửi email hoàn thành đơn hàng (admin): ' . $e->getMessage());
             }
         }
 
