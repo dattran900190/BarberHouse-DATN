@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\View;
 use App\Observers\AppointmentObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use App\Models\RefundRequest;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -37,6 +38,11 @@ class AppServiceProvider extends ServiceProvider
         View::composer('admin.*', function ($view) {
             $pendingCount = Appointment::where('status', 'pending')->count();
             $view->with('pendingCount', $pendingCount);
+        });
+
+        View::composer('admin.*', function ($view) {
+            $pendingRefundCount = RefundRequest::where('refund_status', 'pending')->count();
+            $view->with('pendingRefundCount', $pendingRefundCount);
         });
 
         // Thêm biến số lượng đơn hàng chờ xác nhận cho mọi view

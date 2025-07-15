@@ -72,6 +72,15 @@ class PromotionController extends Controller
         return redirect()->route('promotions.index', ['page' => $currentPage])->with('success', 'Mã giảm giá đã được cập nhật.');
     }
 
+    // chi tiết mã giảm giá
+    public function show(Promotion $promotion)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('promotions.index')->with('error', 'Bạn không có quyền xem chi tiết mã giảm giá.');
+        }
+
+        return view('admin.promotions.show', compact('promotion'));
+    }
     public function destroy(Promotion $promotion)
     {
         if (Auth::user()->role === 'admin_branch') {

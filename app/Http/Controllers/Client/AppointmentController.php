@@ -121,13 +121,11 @@ class AppointmentController extends Controller
             $appointmentsResult = $appointmentQuery->get();
 
             // Lấy từ bảng cancelled_appointments
-            if (!$status || $status === 'canceled') {
-                $canceledQuery = CancelledAppointment::where('user_id', $userId);
-                $buildQuery($canceledQuery, $search, $status);
-                $canceledResult = $canceledQuery->get();
-            } else {
-                $canceledResult = collect();
+            $canceledResult = collect();
+            if (!$status || in_array($status, ['canceled', 'cancelled'])) {
+                $canceledResult = $this->getCancelledAppointments($userId, $search);
             }
+
 
             // Kết hợp kết quả
             $allAppointments = $appointmentsResult->merge($canceledResult)
@@ -161,6 +159,44 @@ class AppointmentController extends Controller
         return view('client.appointmentHistory', compact('appointments', 'search', 'status'));
     }
 
+    protected function getCancelledAppointments($userId, $search = null)
+    {
+        $query = CancelledAppointment::with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name'])
+            ->where('user_id', $userId);
+
+        // Tìm kiếm theo mã lịch, tên dịch vụ hoặc tên thợ
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('appointment_code', 'like', '%' . $search . '%')
+                    ->orWhereHas('service', function ($q2) use ($search) {
+                        $q2->where('name', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('barber', function ($q2) use ($search) {
+                        $q2->where('name', 'like', '%' . $search . '%');
+                    });
+            });
+        }
+
+        // Lấy kết quả và gán status ảo để hiển thị đồng nhất
+        return $query->get()->each(function ($item) {
+            $item->status = 'cancelled'; // Gắn status giả để hiển thị lọc/trạng thái
+        });
+    }
+
+    public function showCancelledAppointment($id)
+    {
+        $appointment = CancelledAppointment::with([
+            'user:id,name,email,phone',
+            'barber:id,name',
+            'service:id,name,price',
+            'branch:id,name,address'
+        ])->where('user_id', Auth::id())
+            ->findOrFail($id);
+
+        return view('client.detailAppointmentHistory', compact('appointment'));
+    }
+
+
     public function detailAppointmentHistory($id)
     {
         $appointment = Appointment::where('user_id', Auth::id())
@@ -169,6 +205,7 @@ class AppointmentController extends Controller
 
         return view('client.detailAppointmentHistory', compact('appointment'));
     }
+
     public function cancel(Request $request, Appointment $appointment)
     {
         // Kiểm tra quyền sở hữu
@@ -212,302 +249,7 @@ class AppointmentController extends Controller
             'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.'
         ]);
     }
-    // public function store(BookingRequest $request)
-    // {
-    //     try {
-    //         // Kiểm tra đăng nhập
-    //         if (!Auth::check()) {
-    //             if ($request->ajax() || $request->wantsJson()) {
-    //                 return response()->json([
-    //                     'success' => false,
-    //                     'message' => 'Bạn cần đăng nhập để đặt lịch.'
-    //                 ], 401);
-    //             }
-    //             return redirect()->route('dat-lich')->with('mustLogin', true);
-    //         }
 
-    //         // Phân tích ngày giờ cuộc hẹn
-    //         $datetime = Carbon::parse($request->appointment_date . ' ' . $request->appointment_time . ':00');
-
-    //         // Kiểm tra các cuộc hẹn trùng lặp
-    //         $service = Service::findOrFail($request->service_id);
-    //         $duration = $service->duration;
-
-
-
-    //         // Check for overlapping appointments
-    //         // $service = Service::findOrFail($request->service_id);
-    //         // $duration = $service->duration;
-
-    //         // Kiểm tra khoảng thời gian trùng lặp
-    //         $existingAppointment = Appointment::where('barber_id', $request->barber_id)
-    //             ->where('branch_id', $request->branch_id)
-    //             ->where('appointment_time', '!=', $datetime)
-    //             ->whereIn('status', ['pending', 'confirmed', 'pending_cancellation'])
-    //             ->whereHas('service', function ($query) use ($datetime, $duration) {
-    //                 $query->whereRaw('? BETWEEN appointment_time AND DATE_ADD(appointment_time, INTERVAL services.duration MINUTE)', [$datetime])
-    //                     ->orWhereRaw('DATE_ADD(?, INTERVAL ? MINUTE) BETWEEN appointment_time AND DATE_ADD(appointment_time, INTERVAL services.duration MINUTE)', [$datetime, $duration]);
-    //             })
-    //             ->exists();
-
-    //         if ($existingAppointment) {
-    //             session()->flash('error', 'Thợ này đã có lịch hẹn trong khoảng thời gian này.');
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Thợ này đã có lịch hẹn trong khoảng thời gian này.'
-    //             ], 422);
-    //         }
-
-
-    //         // Get name, phone, and email (người khác)
-    //         $name = $request->other_person ? $request->name : Auth::user()->name;
-    //         $phone = $request->other_person ? $request->phone : Auth::user()->phone;
-    //         $email = $request->other_person ? $request->email : Auth::user()->email;
-
-    //         // Tính tổng giá trị lịch hẹn
-    //         $totalAmount = $service->price ?? 0;
-    //         $additionalServices = json_decode($request->input('additional_services', '[]'), true) ?? [];
-    //         $additionalServicesTotal = Service::whereIn('id', $additionalServices)->sum('price');
-    //         $totalAmount += $additionalServicesTotal;
-
-    //         $discountAmount = 0;
-    //         $promotion = null;
-
-    //         // Xử lý voucher
-    //         if ($request->voucher_code) {
-    //             $code = trim($request->voucher_code);
-    //             $redeemedVoucher = UserRedeemedVoucher::whereHas('promotion', function ($q) use ($code) {
-    //                 $q->where('code', $code);
-    //             })
-    //                 ->where('user_id', Auth::id())
-    //                 ->where('is_used', false)
-    //                 ->first();
-
-    //             if ($redeemedVoucher) {
-    //                 $promotion = $redeemedVoucher->promotion;
-    //             } else {
-    //                 $promotion = Promotion::where('code', $code)
-    //                     ->where(function ($q) {
-    //                         $q->whereNull('required_points')->orWhere('required_points', 0);
-    //                     })
-    //                     ->where('is_active', true)
-    //                     ->where('quantity', '>', 0)
-    //                     ->where('start_date', '<=', now())
-    //                     ->where('end_date', '>=', now())
-    //                     ->first();
-    //             }
-
-    //             if ($promotion) {
-    //                 if ($promotion->discount_type === 'fixed') {
-    //                     $discountAmount = $promotion->discount_value;
-    //                 } else {
-    //                     $discountAmount = $totalAmount * $promotion->discount_value / 100;
-    //                 }
-    //                 $totalAmount -= $discountAmount;
-    //             }
-    //         }
-
-    //         // Xử lý voucher và gửi thông báo
-    //         if ($request->voucher_code) {
-    //             $code = trim($request->voucher_code);
-    //             $user_id = Auth::id();
-    //             $service = Service::findOrFail($request->service_id); // Lấy thông tin dịch vụ để kiểm tra min_order_value
-    //             $total_amount = $service->price ?? 0; // Tổng tiền ban đầu từ dịch vụ
-
-    //             // Trường hợp voucher cá nhân
-    //             $redeemedVoucher = UserRedeemedVoucher::whereHas('promotion', function ($q) use ($code) {
-    //                 $q->where('code', $code);
-    //             })
-    //                 ->where('user_id', $user_id)
-    //                 ->where('is_used', false)
-    //                 ->first();
-
-    //             if ($redeemedVoucher) {
-    //                 $promotion = $redeemedVoucher->promotion;
-
-    //                 // Kiểm tra usage_limit
-    //                 $usage_count = Appointment::where('user_id', $user_id)
-    //                     ->where('promotion_id', $promotion->id)
-    //                     ->whereIn('status', ['pending', 'confirmed', 'completed'])
-    //                     ->count();
-
-    //                 if ($promotion->usage_limit !== null && $usage_count >= $promotion->usage_limit) {
-    //                     session()->flash('error', 'Bạn đã sử dụng voucher này quá số lần cho phép.');
-    //                     return response()->json([
-    //                         'success' => false,
-    //                         'message' => 'Bạn đã sử dụng voucher này quá số lần cho phép.'
-    //                     ], 422);
-    //                 }
-
-    //                 // Kiểm tra min_order_value
-    //                 if ($promotion->min_order_value !== null && $totalAmount < $promotion->min_order_value) {
-    //                     session()->flash('error', "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher.");
-    //                     return response()->json([
-    //                         'success' => false,
-    //                         'message' => "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher."
-    //                     ], 422);
-    //                 }
-
-    //                 try {
-    //                     // $this->appointmentService->applyPromotion($appointment, $redeemedVoucher);
-    //                 } catch (\Exception $e) {
-    //                     Log::error('Error applying redeemed voucher: ' . $e->getMessage(), [
-    //                         'voucher_id' => $redeemedVoucher->id,
-    //                         'promotion_id' => $promotion->id,
-    //                         'user_id' => $user_id
-    //                     ]);
-    //                     session()->flash('error', 'Mã voucher không hợp lệ: ' . $e->getMessage());
-    //                     return response()->json([
-    //                         'success' => false,
-    //                         'message' => 'The selected voucher id is invalid.'
-    //                     ], 422);
-    //                 }
-    //             } else {
-    //                 // Trường hợp voucher công khai
-    //                 $promotion = Promotion::where('code', $code)
-    //                     ->where(function ($q) {
-    //                         $q->whereNull('required_points')->orWhere('required_points', 0);
-    //                     })
-    //                     ->where('is_active', true)
-    //                     ->where('quantity', '>', 0)
-    //                     ->where('start_date', '<=', now())
-    //                     ->where('end_date', '>=', now())
-    //                     ->first();
-
-    //                 if ($promotion) {
-    //                     // Kiểm tra usage_limit
-    //                     $usage_count = Appointment::where('user_id', $user_id)
-    //                         ->where('promotion_id', $promotion->id)
-    //                         ->whereIn('status', ['pending', 'confirmed', 'completed'])
-    //                         ->count();
-
-    //                     if ($promotion->usage_limit !== null && $usage_count >= $promotion->usage_limit) {
-    //                         session()->flash('error', 'Bạn đã sử dụng voucher công khai này quá số lần cho phép.');
-    //                         return response()->json([
-    //                             'success' => false,
-    //                             'message' => 'Bạn đã sử dụng voucher công khai này quá số lần cho phép.'
-    //                         ], 422);
-    //                     }
-
-    //                     // Kiểm tra min_order_value
-    //                     if ($promotion->min_order_value !== null && $totalAmount < $promotion->min_order_value) {
-    //                         session()->flash('error', "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher.");
-    //                         return response()->json([
-    //                             'success' => false,
-    //                             'message' => "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher."
-    //                         ], 422);
-    //                     }
-
-    //                     try {
-    //                         // $this->appointmentService->applyPromotion($appointment, null, $promotion);
-    //                     } catch (\Exception $e) {
-    //                         Log::error('Error applying public promotion: ' . $e->getMessage(), [
-    //                             'promotion_id' => $promotion->id,
-    //                             'user_id' => $user_id
-    //                         ]);
-    //                         session()->flash('error', 'Mã voucher công khai không hợp lệ: ' . $e->getMessage());
-    //                         return response()->json([
-    //                             'success' => false,
-    //                             'message' => 'The selected voucher id is invalid.'
-    //                         ], 422);
-    //                     }
-    //                 } else {
-    //                     session()->flash('error', 'Mã voucher không tồn tại hoặc đã hết hạn.');
-    //                     return response()->json([
-    //                         'success' => false,
-    //                         'message' => 'The selected voucher id is invalid.'
-    //                     ], 422);
-    //                 }
-    //             }
-    //         }
-
-    //         // Kiểm tra trùng lặp chính xác
-    //         $exactMatch = Appointment::where('barber_id', $request->barber_id)
-    //             ->where('branch_id', $request->branch_id)
-    //             ->where('appointment_time', $datetime)
-    //             ->whereIn('status', ['pending', 'confirmed', 'pending_cancellation'])
-    //             ->exists();
-
-    //         if ($exactMatch) {
-    //             session()->flash('error', 'Thời gian này đã được đặt.');
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Thời gian này đã được đặt.'
-    //             ], 422);
-    //         }
-
-    //         // Create appointment
-    //         $appointment = Appointment::create([
-    //             'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
-    //             'user_id' => Auth::id(),
-    //             'barber_id' => $request->barber_id,
-    //             'branch_id' => $request->branch_id,
-    //             'service_id' => $request->service_id,
-    //             'appointment_time' => $datetime,
-    //             'status' => 'pending',
-    //             'payment_method' => $request->payment_method,
-    //             'payment_status' => 'unpaid',
-    //             'note' => $request->note,
-    //             'name' => $name,
-    //             'phone' => $phone,
-    //             'email' => $email,
-    //             'cancellation_reason' => null,
-    //             'rejection_reason' => null,
-    //             'status_before_cancellation' => null,
-    //             'promotion_id' => $promotion ? $promotion->id : null,
-    //             'discount_amount' => $discountAmount,
-    //             'total_amount' => $totalAmount,
-    //             'additional_services' => json_encode($additionalServices),
-    //         ]);
-
-
-    //         // Xử lý voucher
-    //         if ($promotion && $redeemedVoucher) {
-    //             $this->appointmentService->applyPromotion($appointment, $redeemedVoucher);
-    //         } elseif ($promotion) {
-    //             $this->appointmentService->applyPromotion($appointment, null, $promotion);
-    //         }
-
-    //         // Gửi thông báo
-    //         try {
-    //             event(new NewAppointment($appointment));
-    //             // Phát sự kiện Pusher
-    //             event(new AppointmentCreated($appointment));
-    //             Mail::to($appointment->email)->send(new PendingBookingMail($appointment));
-    //         } catch (\Exception $e) {
-    //             Log::error('Lỗi khi gửi sự kiện NewAppointment hoặc email', ['error' => $e->getMessage()]);
-    //         }
-
-    //         // Nếu chọn VNPay, trả về appointment_id để chuyển hướng
-    //         if ($request->payment_method === 'vnpay') {
-    //             if ($request->ajax() || $request->wantsJson()) {
-    //                 return response()->json([
-    //                     'success' => true,
-    //                     'message' => 'Lịch hẹn đã được tạo, đang chuyển hướng đến thanh toán VNPay.',
-    //                     'appointment_id' => $appointment->id,
-    //                 ]);
-    //             }
-    //         }
-
-
-
-    //         // Nếu không phải VNPay, trả về thông báo thành công
-    //         if ($request->ajax() || $request->wantsJson()) {
-    //             return response()->json([
-    //                 'success' => true,
-    //                 'message' => 'Đặt lịch thành công!'
-    //             ]);
-    //         }
-    //         return redirect()->route('appointments.index')->with('success', 'Đặt lịch thành công!');
-    //     } catch (\Exception $e) {
-    //         Log::error('Booking error: ' . $e->getMessage());
-    //         session()->flash('error', 'Lỗi khi đặt lịch: ' . $e->getMessage());
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Lỗi khi đặt lịch: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
     protected function handleVoucher($request, $service)
     {
         $totalAmount = $service->price ?? 0;

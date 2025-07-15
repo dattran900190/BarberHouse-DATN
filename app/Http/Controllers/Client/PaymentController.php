@@ -25,6 +25,11 @@ class PaymentController extends Controller
             return redirect()->back()->with('error', 'Bạn không có quyền thanh toán lịch hẹn này.');
         }
 
+        // Kiểm tra số tiền thanh toán
+        if ($appointment->total_amount <= 0) {
+            return redirect()->back()->with('error', 'Số tiền thanh toán không hợp lệ.');
+        }
+
         // Cấu hình VNPay
         $vnp_TmnCode = config('payment.vnpay.tmn_code');
         $vnp_HashSecret = config('payment.vnpay.hash_secret');

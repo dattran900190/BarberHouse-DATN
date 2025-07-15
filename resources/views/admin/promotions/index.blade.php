@@ -96,6 +96,12 @@
                                         <ul class="dropdown-menu">
                                             <li>
                                                 <a class="dropdown-item"
+                                                    href="{{ route('promotions.show', ['promotion' => $promo->id]) }}">
+                                                    <i class="fas fa-eye me-1"></i>Xem
+                                                </a>    
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item"
                                                     href="{{ route('promotions.edit', ['promotion' => $promo->id, 'page' => request('page', 1)]) }}">
                                                     <i class="fas fa-edit me-1"></i>Sửa
                                                 </a>

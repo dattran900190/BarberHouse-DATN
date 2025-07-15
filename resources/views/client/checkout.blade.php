@@ -79,8 +79,8 @@
                         <h3>Vận chuyển</h3>
                         @php
                             $shippingOptions = [
-                                ['label' => 'Giao hàng tiêu chuẩn (2-4 ngày)', 'value' => 'standard', 'fee' => 25000],
-                                ['label' => 'Giao hàng nhanh (1 ngày)', 'value' => 'express', 'fee' => 100000],
+                                ['label' => 'Tiêu chuẩn (2-4 ngày)', 'value' => 'standard', 'fee' => 25000],
+                                ['label' => 'Giao nhanh (1 ngày)', 'value' => 'express', 'fee' => 100000],
                             ];
                         @endphp
                         @php
@@ -90,12 +90,11 @@
                         <input type="hidden" name="delivery_method" value="standard" />
 
                         @foreach ($shippingOptions as $option)
-                            <div class="form-check"
-                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div class="form-check" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                                 <div class="chon">
                                     <input class="form-check-input" type="radio" name="delivery_method"
                                         id="delivery_{{ $option['value'] }}" value="{{ $option['value'] }}"
-                                        data-fee="{{ $option['fee'] }}" {{ $loop->first ? 'checked' : '' }} />
+                                        data-fee="{{ $option['fee'] }}" {{ $loop->first ? 'checked' : '' }} /> 
                                     <label class="form-check-label" for="delivery_{{ $option['value'] }}">
                                         {{ $option['label'] }}
                                     </label>
@@ -184,7 +183,7 @@
                         <div class="dat-hang">
                             <a href="{{ route('cart.show') }}"><i class="fa-solid fa-angle-left"></i> Quay về giỏ
                                 hàng</a>
-                            <button class="btn btn-info" type="submit" style="padding: 10px 20px; font-size: 16px">
+                            <button class="btn-outline-buy" type="submit" style="padding: 6px 14px;">
                                 <i class="fa-solid fa-check"></i> Đặt hàng
                             </button>
                         </div>
