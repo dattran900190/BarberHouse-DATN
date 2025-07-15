@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-
+use App\Events\NewOrderCreated;
 
 
 class CartController extends Controller
@@ -392,10 +392,18 @@ class CartController extends Controller
 
                 $cart = $this->getOrCreateCart($request->user());
                 $cart->items()->whereIn('id', $cartItemIds)->delete();
+                // Cập nhật lại số lượng còn lại trong giỏ
+                $cart_count = $cart->items()->sum('quantity');
+                Session::put('cart_count', $cart_count);
                 if ($cart->items()->count() == 0) {
                     Session::forget('cart_id');
                 }
             });
+
+            // Phát event realtime khi có đơn hàng mới
+            if ($order) {
+                event(new NewOrderCreated($order));
+            }
 
             // Nếu chọn VNPay, chuyển hướng đến thanh toán
             if ($paymentMethod === 'vnpay' && $order) {

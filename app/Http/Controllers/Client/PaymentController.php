@@ -8,6 +8,7 @@ use App\Models\Appointment;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Events\OrderPaymentStatusUpdated;
 
 class PaymentController extends Controller
 {
@@ -172,6 +173,7 @@ class PaymentController extends Controller
             $order->payment_status = 'paid';
             $order->payment_method = 'vnpay';
             $order->save();
+            event(new OrderPaymentStatusUpdated($order));
             return redirect()->route('client.orderHistory')->with('success', 'Thanh toán thành công!');
         } else {
             if ($order) {
