@@ -87,7 +87,7 @@
                     <label class="form-label">Ngày đặt lịch <span class="required">*</span></label>
                     <div class="date-input">
                         <input type="text" class="form-control" id="appointment_date" name="appointment_date"
-                            placeholder="Chọn thời điểm" readonly>
+                            placeholder="Chọn thời điểm" style=" background-color: #fff;" readonly >
                     </div>
                     @error('appointment_date')
                         <small class="text-danger">{{ $message }}</small>
@@ -100,7 +100,7 @@
                         <input type="hidden" id="branch_input" name="branch_id" value="{{ old('branch_id') }}">
                         @foreach ($branches as $branch)
                             <div class="branch-item {{ old('branch_id') == $branch->id ? 'active' : '' }}"
-                                data-id="{{ $branch->id }}" style="border: 2px solid #000;">
+                                data-id="{{ $branch->id }}">
                                 <i class="fas fa-map-marker-alt branch-icon"
                                     data-value="{{ $branch->google_map_url }}"></i>
                                 <span class="branch-name">{{ $branch->name }}</span>
@@ -138,7 +138,7 @@
 
                     <div id="additionalServicesContainer" class="mt-2"></div>
                     <input type="hidden" name="additional_services" id="additionalServicesInput">
-                    <button class="btn-outline-booking" style="margin-top: 10px" type="button" id="addServiceBtn">Thêm
+                    <button class="add-service-btn" style="margin-top: 10px" type="button" id="addServiceBtn">Thêm
                         dịch vụ</button>
                 </div>
 
@@ -147,30 +147,30 @@
                     <input type="hidden" name="appointment_time" id="appointment_time"
                         value="{{ old('appointment_time') }}">
                     <div class="time-grid" id="timeGrid">
-                        <span class="time-slot" style="border: 2px solid #000" data-value="08:00">08:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="08:30">08:30</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="09:00">09:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="09:30">09:30</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="10:00">10:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="10:30">10:30</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="11:00">11:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="11:30">11:30</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="12:00">12:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="12:30">12:30</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="13:00">13:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="13:30">13:30</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="14:00">14:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="14:30">14:30</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="15:00">15:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="15:30">15:30</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="16:00">16:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="16:30">16:30</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="17:00">17:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="17:30">17:30</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="18:00">18:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="18:30">18:30</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="19:00">19:00</span>
-                        <span class="time-slot" style="border: 2px solid #000" data-value="19:30">19:30</span>
+                        <span class="time-slot" data-value="08:00">08:00</span>
+                        <span class="time-slot" data-value="08:30">08:30</span>
+                        <span class="time-slot" data-value="09:00">09:00</span>
+                        <span class="time-slot" data-value="09:30">09:30</span>
+                        <span class="time-slot" data-value="10:00">10:00</span>
+                        <span class="time-slot" data-value="10:30">10:30</span>
+                        <span class="time-slot" data-value="11:00">11:00</span>
+                        <span class="time-slot" data-value="11:30">11:30</span>
+                        <span class="time-slot" data-value="12:00">12:00</span>
+                        <span class="time-slot" data-value="12:30">12:30</span>
+                        <span class="time-slot" data-value="13:00">13:00</span>
+                        <span class="time-slot" data-value="13:30">13:30</span>
+                        <span class="time-slot" data-value="14:00">14:00</span>
+                        <span class="time-slot" data-value="14:30">14:30</span>
+                        <span class="time-slot" data-value="15:00">15:00</span>
+                        <span class="time-slot" data-value="15:30">15:30</span>
+                        <span class="time-slot" data-value="16:00">16:00</span>
+                        <span class="time-slot" data-value="16:30">16:30</span>
+                        <span class="time-slot" data-value="17:00">17:00</span>
+                        <span class="time-slot" data-value="17:30">17:30</span>
+                        <span class="time-slot" data-value="18:00">18:00</span>
+                        <span class="time-slot" data-value="18:30">18:30</span>
+                        <span class="time-slot" data-value="19:00">19:00</span>
+                        <span class="time-slot" data-value="19:30">19:30</span>
                     </div>
                     @error('appointment_time')
                         <small class="text-danger">{{ $message }}</small>
@@ -269,52 +269,52 @@
             background-color: #000;
         }
 
-        #bookingForm .form-control,
-        #bookingForm .form-select {
-            border: 2px solid #000;
-            border-radius: 6px;
-            padding: 10px 14px;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            background-color: #fff;
-            color: #000;
-            box-shadow: none;
-        }
+        /* #bookingForm .form-control,
+            #bookingForm .form-select {
+                border: 2px solid #000;
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-size: 15px;
+                transition: all 0.3s ease;
+                background-color: #fff;
+                color: #000;
+                box-shadow: none;
+            }
 
-        #bookingForm .form-control:focus,
-        #bookingForm .form-select:focus {
-            outline: none;
-            border-color: #000;
-            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-        }
+            #bookingForm .form-control:focus,
+            #bookingForm .form-select:focus {
+                outline: none;
+                border-color: #000;
+                box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            }
 
-        #bookingForm .form-check-input {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #000;
-            margin-top: 3px;
-            cursor: pointer;
-        }
+            #bookingForm .form-check-input {
+                width: 18px;
+                height: 18px;
+                border: 2px solid #000;
+                margin-top: 3px;
+                cursor: pointer;
+            }
 
-        #bookingForm .form-check-input:checked {
-            background-color: #000;
-            border-color: #000;
-        }
+            #bookingForm .form-check-input:checked {
+                background-color: #000;
+                border-color: #000;
+            }
 
-        #bookingForm .notes-textarea {
-            border: 2px solid #000;
-            border-radius: 6px;
-            padding: 10px 14px;
-            font-size: 15px;
-            width: 100%;
-            resize: vertical;
-        }
+            #bookingForm .notes-textarea {
+                border: 2px solid #000;
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-size: 15px;
+                width: 100%;
+                resize: vertical;
+            } */
 
         /* Giao diện chính của select2 */
         .select2-container--default .select2-selection--single {
             height: 44px;
             padding: 8px 14px;
-            border: 2px solid #000;
+            /* border: 2px solid #000; */
             border-radius: 6px;
             background-color: #fff;
             font-size: 15px;
@@ -358,7 +358,7 @@
 
         .btn-icon-remove {
             background-color: transparent;
-            border: 2px solid #000;
+            border: 1px solid #ccc;
             color: #000;
             border-radius: 6px;
             width: 36px;
@@ -372,9 +372,9 @@
         }
 
         .btn-icon-remove:hover {
-                background-color: #000;
-                color: #fff;
-            }
+            background-color: #000;
+            color: #fff;
+        }
     </style>
 @endsection
 

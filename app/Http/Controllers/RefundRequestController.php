@@ -38,14 +38,29 @@ class RefundRequestController extends Controller
             });
         }
 
-        $refunds = $query->orderBy('created_at', 'desc')->get();
-        $activeTab = $status ?? 'pending';
+        // Áp dụng phân trang, mặc định 10 bản ghi mỗi trang
+        $refunds = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        // Logic để xác định activeTab dựa trên tìm kiếm
+        $activeTab = $status ?? 'pending'; 
+
+        if ($search && $refunds->isNotEmpty()) {
+            // Nếu có kết quả tìm kiếm, ưu tiên chuyển đến tab của kết quả đầu tiên
+            $activeTab = $refunds->first()->refund_status;
+        } elseif ($search && $refunds->isEmpty() && !$status) {
+            // Nếu tìm kiếm không có kết quả và không có tab cụ thể nào được chọn,
+            // có thể giữ nguyên tab hiện tại hoặc về mặc định (pending)
+        }
+
+        // Lấy số lượng yêu cầu chờ duyệt cho sidebar
+        $pendingRefundCount = RefundRequest::where('refund_status', 'pending')->count();
 
         return view('admin.refunds.index', [
             'refunds' => $refunds,
             'search' => $search,
             'activeTab' => $activeTab,
             'status' => $status,
+            'pendingRefundCount' => $pendingRefundCount,
         ]);
     }
 

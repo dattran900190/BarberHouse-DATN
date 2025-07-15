@@ -78,10 +78,12 @@ Route::post('/store-errors', function (Request $request) {
     session()->flash('errors', $request->input('errors'));
     return response()->json(['success' => true]);
 })->name('store.errors');
+
 // == Lịch sử đặt lịch ==
 Route::get('/lich-su-dat-lich', [ClientAppointmentController::class, 'appointmentHistory'])->name('client.appointmentHistory');
 Route::get('/lich-su-dat-lich/{id}', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
 Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
+Route::get('/lich-su-dat-lich/huy/{id}', [ClientAppointmentController::class, 'showCancelledAppointment'])->name('client.cancelledAppointment.show');
 
 
 // web.php
@@ -214,8 +216,12 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
 
     // ==== Người dùng ====
+    
+    Route::get('/users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
+    Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
+     Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::resource('users', UserController::class);
-    Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+   
 
     // ==== Mã giảm giá ====
     Route::resource('promotions', PromotionController::class);

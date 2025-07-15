@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <main class="container">
+    <main class="container-fluid">
         <section class="h-custom">
             <div class="padding-5vh">
                 <div class="flex-center">
@@ -54,7 +54,6 @@
                                                         </thead>
                                                         <tbody id="cart-items">
                                                             @foreach ($cart->items as $item)
-                                                                <!-- Thêm vào <tbody> mỗi sản phẩm -->
                                                                 <tr id="cart-item-{{ $item->id }}">
                                                                     <td>
                                                                         <input type="checkbox" class="cart-item-checkbox"
@@ -87,15 +86,12 @@
                                                                                 @endforeach
                                                                             </select>
                                                                         </form>
-
                                                                     </td>
-
                                                                     <td>
                                                                         <img src="{{ $item->productVariant->image ? Storage::url($item->productVariant->image) : asset('images/no-image.png') }}"
                                                                             alt="{{ $item->productVariant->product->name }}"
                                                                             class="img-fluid rounded-3"
                                                                             style="width: 100px;">
-
                                                                     </td>
                                                                     <td>
                                                                         <div class="quantity d-flex align-items-center">
@@ -107,6 +103,7 @@
                                                                                 class="form-control form-control-sm mx-2 quantity-input"
                                                                                 value="{{ $item->quantity }}"
                                                                                 min="1"
+                                                                                max="{{ $item->productVariant->stock }}"
                                                                                 data-item-id="{{ $item->id }}"
                                                                                 data-price="{{ $item->price }}"
                                                                                 style="width: 60px; text-align: center;" />
@@ -155,7 +152,6 @@
                                         <div class="p-5">
                                             <h3 class="fw-bold mb-5 mt-2 pt-1">Tổng</h3>
                                             <hr class="my-4">
-
                                             <div class="d-flex justify-content-between mb-4">
                                                 <h5 class="text-uppercase"><span
                                                         id="item-count-side">{{ $cart->items->count() }}</span> Sản phẩm
@@ -164,26 +160,19 @@
                                                     {{ number_format($cart->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', '.') }}
                                                     ₫</h5>
                                             </div>
-
-
-
-
-
                                             <hr class="my-4">
-
                                             <div class="d-flex justify-content-between mb-5">
                                                 <h5 class="text-uppercase">Tổng tiền</h5>
                                                 <h5 id="cart-total">
                                                     {{ number_format($cart->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', '.') }}
                                                     ₫</h5>
                                             </div>
-
                                             <form id="checkout-form" action="{{ route('cart.checkout') }}" method="GET">
                                                 @guest
                                                     <button type="button" class="btn btn-dark btn-block btn-lg"
                                                         id="btn-checkout-guest">Xác nhận</button>
                                                 @else
-                                                    <button type="submit" class="btn btn-dark btn-block btn-lg">Xác
+                                                    <button type="submit" class="btn-outline-buy">Xác
                                                         nhận</button>
                                                 @endguest
                                             </form>
@@ -199,57 +188,8 @@
         </section>
     </main>
     <style>
-        .table th {
-            white-space: nowrap;
-        }
-
         #mainNav {
             background-color: #000;
-        }
-
-        .padding-5vh {
-            padding: 5vh 0;
-        }
-
-        .flex-center {
-            display: flex;
-            justify-content: center;
-        }
-
-        .col-left-66 {
-            flex: 0 0 66.666667%;
-            max-width: 66.666667%;
-        }
-
-        .no-padding {
-            padding: 0 !important;
-        }
-
-        .no-gap {
-            gap: 0 !important;
-        }
-
-        .p-5vh {
-            padding: 5vh;
-        }
-
-        .quantity-input {
-            width: 60px;
-            text-align: center;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .table th,
-        .table td {
-            vertical-align: middle;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
     </style>
 @endsection
@@ -258,7 +198,6 @@
 @endsection
 
 @section('scripts')
-    <!-- SweetAlert2 CDN đặt bên ngoài -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         window.onload = function() {
@@ -317,7 +256,6 @@
                                 'content'),
                             'Accept': 'application/json'
                         },
-
                         body: JSON.stringify(d)
                     })
                     .then(r => r.ok ? r.json() : r.text().then(t => {
@@ -334,13 +272,69 @@
                     });
             };
 
+            function updateQuantity(id, quantity, btn = null) {
+                const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
+                const subtotalEl = document.querySelector(`#cart-item-${id} .subtotal`);
+                const priceEl = document.querySelector(`#cart-item-${id} .unit-price`);
+                const maxStock = parseInt(input.getAttribute('max')) || Infinity;
+
+                if (quantity > maxStock) {
+                    quantity = maxStock;
+                    input.value = quantity;
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Vượt quá tồn kho',
+                        text: `Chỉ còn ${maxStock} sản phẩm trong kho.`,
+                    });
+                }
+
+                ajax(`/gio-hang/update/${id}`, 'PUT', {
+                    quantity
+                }, btn, d => {
+                    if (d.success) {
+                        input.dataset.price = d.unit_price;
+                        priceEl.textContent = formatVND(d.unit_price);
+                        subtotalEl.textContent = formatVND(d.subtotal);
+
+                        updateTotal();
+                        if (typeof d.cart_count !== 'undefined') {
+                            document.getElementById('cartCount').textContent = d.cart_count;
+                        }
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Cập nhật thất bại',
+                            text: d.message || 'Có lỗi xảy ra.',
+                        });
+
+                        if (typeof d.available_stock !== 'undefined') {
+                            input.value = d.available_stock;
+                            updateQuantity(id, d.available_stock, btn);
+                        } else {
+                            input.value = 1;
+                            updateQuantity(id, 1, btn);
+                        }
+                    }
+                });
+            }
+
             document.querySelectorAll('.quantity-plus').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const id = btn.dataset.itemId;
                     const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
                     let value = parseInt(input.value) || 1;
-                    input.value = ++value;
-                    updateQuantity(id, value, btn);
+                    const max = parseInt(input.getAttribute('max')) || Infinity;
+
+                    if (value < max) {
+                        input.value = ++value;
+                        updateQuantity(id, value, btn);
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Tối đa trong kho',
+                            text: `Chỉ còn ${max} sản phẩm trong kho.`,
+                        });
+                    }
                 });
             });
 
@@ -356,7 +350,6 @@
                 });
             });
 
-            // Thêm debounce
             function debounce(func, wait) {
                 let timeout;
                 return function(...args) {
@@ -369,12 +362,22 @@
                 input.addEventListener('input', debounce(function() {
                     const id = this.dataset.itemId;
                     let value = parseInt(this.value) || 1;
+                    const max = parseInt(this.getAttribute('max')) || Infinity;
+
                     if (value < 1) value = 1;
+                    if (value > max) {
+                        value = max;
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Vượt quá tồn kho',
+                            text: `Chỉ còn lại ${max} sản phẩm.`,
+                        });
+                    }
+
                     this.value = value;
                     updateQuantity(id, value);
-                }, 500)); // 500ms debounce
+                }, 500));
             });
-
 
             document.querySelectorAll('.cart-item-checkbox').forEach(box => {
                 box.addEventListener('change', updateTotal);
@@ -386,25 +389,6 @@
                     const checked = this.checked;
                     document.querySelectorAll('.cart-item-checkbox').forEach(box => box.checked = checked);
                     updateTotal();
-                });
-            }
-
-            function updateQuantity(id, quantity, btn = null) {
-                const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
-                const subtotalEl = document.querySelector(`#cart-item-${id} .subtotal`);
-                const priceEl = document.querySelector(`#cart-item-${id} .unit-price`);
-
-                ajax(`/gio-hang/update/${id}`, 'PUT', {
-                    quantity
-                }, btn, d => {
-                    if (d.success) {
-                        input.dataset.price = d.unit_price;
-                        priceEl.textContent = formatVND(d.unit_price);
-                        subtotalEl.textContent = formatVND(d.subtotal);
-                        updateTotal();
-                    } else {
-                        showMsg(d.message || 'Cập nhật thất bại.');
-                    }
                 });
             }
 
@@ -441,7 +425,6 @@
 
             updateTotal();
 
-            // SWEETALERT2 CHO KHÁCH
             const btnGuest = document.getElementById('btn-checkout-guest');
             if (btnGuest) {
                 btnGuest.addEventListener('click', function() {
@@ -459,5 +442,52 @@
                 });
             }
         };
+    </script>
+    <script>
+        $(document).on('submit', '.add-to-cart-form', function(e) {
+            e.preventDefault();
+            const $form = $(this);
+            const url = $form.attr('action');
+            const method = $form.attr('method');
+            const formData = $form.serialize();
+
+            $.ajax({
+                url: url,
+                method: method,
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        $('#cartCount').text(response.cart_count);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: response.message || 'Đã thêm sản phẩm vào giỏ hàng.',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        if (response.cart_count !== undefined) {
+                            $('#cartCount').text(response.cart_count);
+                        }
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Cảnh báo!',
+                            text: response.message || 'Đã xảy ra lỗi!',
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let message = 'Có lỗi xảy ra, vui lòng thử lại!';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: message,
+                    });
+                }
+            });
+        });
     </script>
 @endsection

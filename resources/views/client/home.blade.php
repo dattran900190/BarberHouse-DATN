@@ -170,13 +170,25 @@
                             $('#cartCount').text(res.cart_count);
                         }
                     },
-                    error: function() {
+                    error: function(xhr) {
+                        let message = 'Có lỗi xảy ra, vui lòng thử lại!';
+                        if (xhr.status === 400 && xhr.responseJSON) {
+                            const res = xhr.responseJSON;
+                            if (res.reached_max) {
+                                message = res.message ||
+                                    'Bạn đã thêm tối đa số lượng sản phẩm.';
+                            } else if (res.message) {
+                                message = res.message;
+                            }
+                        }
+
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi!',
-                            text: 'Có lỗi xảy ra, vui lòng thử lại!'
+                            icon: 'warning',
+                            title: 'Cảnh báo!',
+                            text: message,
                         });
                     }
+
                 });
                 return false;
             });

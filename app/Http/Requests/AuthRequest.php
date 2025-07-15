@@ -28,8 +28,8 @@ class AuthRequest extends FormRequest
             'phone' => [
                 'required',
                 'string',
-                'max:15',
                 'regex:/^(0|\+84)[0-9]{9}$/',
+                'max:15',
                 'unique:users,phone'
             ],
             'password' => 'required|string|min:8|confirmed',
@@ -54,6 +54,7 @@ class AuthRequest extends FormRequest
             'phone.required' => 'Số điện thoại không được để trống',
             'phone.unique' => 'Số điện thoại đã được đăng ký',
             'phone.regex' => 'Số điện thoại không hợp lệ',
+            'phone.max' => 'Số điện thoại không được quá 15 ký tự',
 
             // 'gender.required' => 'Vui lòng chọn giới tính',
             // 'gender.in' => 'Giới tính không hợp lệ',

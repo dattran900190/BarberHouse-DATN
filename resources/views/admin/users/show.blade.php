@@ -18,19 +18,19 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Quản lý chung</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
                 <a href="{{ route('users.index') }}">Quản lý người dùng</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/users?role=' . $role) }}">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</a>
-            </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="#">Chi tiết người dùng</a>
+                <a href="#">Chi tiết</a>
             </li>
         </ul>
     </div>
@@ -64,7 +64,9 @@
                     </div>
                     <div class="col-md-6">
                         <p><strong>Địa chỉ:</strong> {{ $user->address ?? 'Không có' }}</p>
-                        <p><strong>Vai trò:</strong> {{ $user->role == 'user' ? 'Người dùng' : ($user->role == 'admin' ? 'Quản trị viên' : 'Quản lý chi nhánh') }}</p>
+                        <p><strong>Vai trò:</strong>
+                            {{ $user->role == 'user' ? 'Người dùng' : ($user->role == 'admin' ? 'Quản trị viên' : 'Quản lý chi nhánh') }}
+                        </p>
                         <p><strong>Trạng thái:</strong>
                             <span
                                 class="badge 
@@ -77,9 +79,9 @@
                             </span>
                         </p>
                         @if ($role === 'admin')
-                        <p><strong>Chi nhánh:</strong> {{ $user->branch->name ?? 'Không có' }}    </p>
+                            <p><strong>Chi nhánh:</strong> {{ $user->branch->name ?? 'Không có' }} </p>
                         @else
-                        <p><strong>Số điểm:</strong> {{ $user->points_balance }}</p>
+                            <p><strong>Số điểm:</strong> {{ $user->points_balance }}</p>
                         @endif
                         <p><strong>Ngày tạo:</strong> {{ $user->created_at->format('d/m/Y H:i') }}</p>
                         <p><strong>Ngày cập nhật:</strong> {{ $user->updated_at->format('d/m/Y H:i') }}</p>

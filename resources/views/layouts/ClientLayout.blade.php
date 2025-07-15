@@ -23,7 +23,6 @@
             display: flex;
             justify-content: center;
             gap: 16px;
-            /* điều chỉnh khoảng cách tại đây */
             margin-top: 12px;
         }
 
@@ -34,7 +33,6 @@
             background-color: transparent;
             font-weight: bold;
             text-transform: uppercase;
-            font-family: Arial, sans-serif;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -55,8 +53,23 @@
             background-color: transparent;
             font-weight: bold;
             text-transform: uppercase;
-            font-family: Arial, sans-serif;
             font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #000;
+        }
+
+        .btn-outline-show {
+            padding: 13px 24px;
+            border: 2px solid #000;
+            border-radius: 6px;
+            background-color: transparent;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-flex;
@@ -72,14 +85,11 @@
             background-color: transparent;
             font-weight: bold;
             text-transform: uppercase;
-            font-family: Arial, sans-serif;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
-            /* display: inline-flex; */
             align-items: center;
-            text-align: center
-            gap: 10px;
+            text-align: center gap: 10px;
             color: #000;
             width: 100%;
         }
@@ -89,10 +99,34 @@
         }
 
         .btn-outline-buy:hover,
+        .btn-outline-show:hover,
         .btn-outline-booking:hover,
         .btn-outline-cart:hover {
             background-color: #000;
             color: #fff;
+        }
+
+        .page-link {
+            color: #000;
+            border-radius: 5px;
+            /* border: 1px solid #000; */
+        }
+
+        .page-link:hover {
+            background-color: #000;
+            color: #fff
+        }
+
+        .page-item.active .page-link {
+            background-color: #000;
+            color: white;
+            border: 1px solid #000;
+        }
+
+        .active .page-link {
+            background-color: #000;
+            color: white;
+            border: 1px solid #000;
         }
     </style>
 </head>

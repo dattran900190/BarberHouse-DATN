@@ -8,21 +8,19 @@
     <main class="container">
         <section class="h-100 h-custom">
             <div class="mainCheckout">
-                @if (session('success'))
-                    <div class="alert alert-success mt-3">
-                        {{ session('success') }}
-                    </div>
-                @endif
                 <form method="POST" action="{{ route('cart.checkout.process') }}" class="mainCheckout">
-                    @csrf
+                    @if (isset($buyNow) && $buyNow)
+                        <input type="hidden" name="buy_now" value="1">
+                    @endif
 
+                    @csrf
                     {{-- Thông tin người dùng --}}
                     <div class="informationUser">
                         <h3>Thông tin nhận hàng</h3>
                         <div class="mb-3">
                             <label for="name" class="form-label">Tên người nhận</label>
                             <input type="text" class="form-control" id="name" name="name"
-                                value="{{ old('name', $userInfo['name']) }}" />
+                                value="{{ old('name', $userInfo['name']) }}"  />
                             @error('name')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -30,7 +28,7 @@
                         <div class="mb-3">
                             <label for="email" class="form-label">Địa chỉ Email</label>
                             <input type="email" class="form-control" id="email" name="email"
-                                value="{{ old('email', $userInfo['email']) }}" readonly />
+                                value="{{ old('email', $userInfo['email']) }}" readonly required />
                             @error('email')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -65,14 +63,12 @@
                         <h3>Vận chuyển</h3>
                         @php
                             $shippingOptions = [
-                                ['label' => 'Giao hàng tiêu chuẩn (2-4 ngày)', 'value' => 'standard', 'fee' => 25000],
-                                ['label' => 'Giao hàng nhanh (1 ngày)', 'value' => 'express', 'fee' => 100000],
+                                ['label' => 'Tiêu chuẩn (2-4 ngày)', 'value' => 'standard', 'fee' => 25000],
+                                ['label' => 'Giao nhanh (1 ngày)', 'value' => 'express', 'fee' => 100000],
                             ];
+                            $shippingFee = old('shipping_fee', 25000);
                         @endphp
-                        @php
-                            $shippingFee = old('shipping_fee', 25000); // Mặc định là phí giao hàng tiêu chuẩn
-                        @endphp
-                        <input type="hidden" name="shipping_fee" value="{{ $shippingFee }}" />
+                        <input type="hidden" id="shipping_fee_input" name="shipping_fee" value="{{ $shippingFee }}" />
                         <input type="hidden" name="delivery_method" value="standard" />
 
                         @foreach ($shippingOptions as $option)
@@ -89,13 +85,12 @@
                                 <div class="ship">{{ number_format($option['fee'], 0, ',', '.') }} VNĐ</div>
                             </div>
                         @endforeach
-                        <input type="hidden" id="shipping_fee_input" name="shipping_fee" value="{{ $shippingFee }}">
 
                         <h3>Thanh toán</h3>
                         <div class="form-check" style="display: flex; justify-content: space-between">
                             <div class="chon">
                                 <input class="form-check-input" value="1" type="radio"
-                                    name="phuong_thuc_thanh_toan_id" id="paymentMethodCOD" checked />
+                                    name="phuong_thuc_thanh_toan_id" id="paymentMethodCOD" checked required />
                                 <label class="form-check-label" for="paymentMethodCOD">Thanh toán khi giao hàng
                                     (COD)</label>
                             </div>
@@ -108,16 +103,6 @@
                                 <input class="form-check-input" value="2" type="radio"
                                     name="phuong_thuc_thanh_toan_id" id="paymentMethodVNPAY" />
                                 <label class="form-check-label" for="paymentMethodVNPAY">Thanh toán qua VNPAY-QR</label>
-                            </div>
-                            <div class="icon-bank">
-                                <i class="fa-solid fa-qrcode"></i>
-                            </div>
-                        </div>
-                        <div class="form-check" style="display: flex; justify-content: space-between">
-                            <div class="chon">
-                                <input class="form-check-input" value="3" type="radio"
-                                    name="phuong_thuc_thanh_toan_id" id="paymentMethodMOMO" />
-                                <label class="form-check-label" for="paymentMethodMOMO">Thanh toán qua MOMO</label>
                             </div>
                             <div class="icon-bank">
                                 <i class="fa-solid fa-qrcode"></i>
@@ -162,7 +147,7 @@
                             </div>
                             <div class="phi-van-chuyen">
                                 <p>Phí vận chuyển</p>
-                                <span>{{ number_format($shippingFee, 0, ',', '.') }} VNĐ</span>
+                                <span id="shipping-fee-display">{{ number_format($shippingFee, 0, ',', '.') }} VNĐ</span>
                             </div>
                         </div>
 
@@ -179,7 +164,7 @@
                         <div class="dat-hang">
                             <a href="{{ route('cart.show') }}"><i class="fa-solid fa-angle-left"></i> Quay về giỏ
                                 hàng</a>
-                            <button class="btn btn-info" type="submit" style="padding: 10px 20px; font-size: 16px">
+                            <button class="btn-outline-buy" type="submit" style="padding: 6px 14px;">
                                 <i class="fa-solid fa-check"></i> Đặt hàng
                             </button>
                         </div>
@@ -199,30 +184,90 @@
 @section('scripts')
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Chọn phương thức thanh toán
-            document.querySelectorAll('input[name="phuong_thuc_thanh_toan_id"]').forEach(method => {
-                method.addEventListener('change', function() {
-                    console.log('Phương thức thanh toán đã chọn:', this.value);
-                });
-            });
-
-            // Cập nhật phí vận chuyển + tổng tiền khi chọn phương thức giao hàng
+            // Cập nhật phí vận chuyển và tổng tiền khi thay đổi phương thức giao hàng
             const radios = document.querySelectorAll('input[name="delivery_method"]');
             const shippingFeeInput = document.getElementById('shipping_fee_input');
             const totalInput = document.getElementById('total-input');
             const totalDisplay = document.getElementById('total-display');
-            const productTotal = {{ $total }}; // Dữ liệu tổng tiền sản phẩm
+            const shippingFeeDisplay = document.getElementById('shipping-fee-display');
+            const productTotal = {{ $total }};
 
             radios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    const selectedFee = parseInt(this.getAttribute('data-fee'));
+                    const selectedFee = parseInt(this.dataset.fee);
                     shippingFeeInput.value = selectedFee;
-
-                    // Cập nhật lại tổng tiền
                     const total = productTotal + selectedFee;
                     totalInput.value = total;
-                    totalDisplay.textContent = total.toLocaleString('vi-VN', {
-                        maximumFractionDigits: 0
+                    totalDisplay.textContent = total.toLocaleString('vi-VN');
+                    shippingFeeDisplay.textContent = selectedFee.toLocaleString('vi-VN') + ' VNĐ';
+                });
+            });
+
+            // Xử lý sự kiện submit form
+            document.querySelector('form.mainCheckout').addEventListener('submit', function(e) {
+                e.preventDefault(); // Ngăn submit mặc định để kiểm tra
+
+                // Lấy giá trị các trường bắt buộc
+                const name = document.getElementById('name').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const address = document.getElementById('address').value.trim();
+
+                // Mảng chứa các lỗi
+                let errors = [];
+
+                // Kiểm tra các trường bắt buộc
+                if (!name) {
+                    errors.push("Vui lòng nhập tên người nhận.");
+                }
+                if (!phone) {
+                    errors.push("Vui lòng nhập số điện thoại.");
+                } else if (!/^\d{10,11}$/.test(phone)) { // Kiểm tra định dạng số điện thoại (10-11 số)
+                    errors.push("Số điện thoại không hợp lệ. Vui lòng nhập 10 hoặc 11 số.");
+                }
+                if (!address) {
+                    errors.push("Vui lòng nhập địa chỉ.");
+                }
+
+                // Nếu có lỗi client-side, hiển thị thông báo
+                if (errors.length > 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Thiếu thông tin',
+                        html: errors.join('<br>'),
+                    });
+                    return; // Dừng lại, không submit form
+                }
+
+                // Nếu không có lỗi client-side, submit form qua AJAX để kiểm tra lỗi server
+                const form = this;
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                    }
+                })
+                .then(response => response.json()) // Giả sử server trả về JSON
+                .then(data => {
+                    if (data.error) {
+                        // Hiển thị lỗi từ server (session)
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Thông báo',
+                            text: data.error
+                        });
+                    } else {
+                        // Nếu không có lỗi, submit form bình thường
+                        form.submit();
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng thử lại.'
                     });
                 });
             });
@@ -231,4 +276,5 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection

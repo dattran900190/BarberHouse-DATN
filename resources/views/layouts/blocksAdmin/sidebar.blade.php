@@ -56,25 +56,26 @@
                     <a href="{{ asset('admin/orders') }}">
                         <i class="fas fa-shopping-cart"></i>
                         <p>Danh sách Đơn hàng</p>
-                        @if($pendingOrderCount > 0)
-                            <span style="background:#F55A5A;color:#fff;border-radius:8px;padding:2px 8px;font-size:13px;margin-left:8px;display:inline-block;">
-                                {{ $pendingOrderCount }}
-                            </span>
-                        @endif
+
+                        <span id="pending-order-count" class="badge badge-danger"
+                              style="{{ $pendingOrderCount > 0 ? '' : 'display: none;' }}">
+                            {{ $pendingOrderCount }}
+                        </span>
+
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ asset('admin/refunds') }}">
-                        <i class="fas fa-exchange-alt"></i>
+                    <a href="{{ route('refunds.index') }}">
+                        <i class="icon-docs"></i> {{-- Biểu tượng phù hợp với hoàn tiền --}}
                         <p>Danh sách Hoàn tiền</p>
-                        {{-- <span id="pending-appointment-count" class="badge badge-danger"
-                            style="{{ $pendingCount > 0 ? '' : 'display: none;' }}">
-                            {{ $pendingCount }}
-                        </span> --}}
+                        <span class="badge badge-count-refunds ms-2 bg-danger" id="sidebar-pending-refund-count"
+                            style="{{ $pendingRefundCount > 0 ? '' : 'display: none;' }}">
+                            {{ $pendingRefundCount }}
+                        </span>
                     </a>
                 </li>
-             
+
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#base">
                         <i class="fas fa-cut"></i>

@@ -48,8 +48,8 @@
                             <p><strong>Chi nhánh:</strong> {{ $appointment->branch?->name ?? 'N/A' }}</p>
                             @if ($appointment->status === 'cancelled' && $appointment->cancellation_reason)
                                 <div class="form-group">
-                                    <label>Lý do hủy:</label>
-                                    <p>{{ $appointment->cancellation_reason }}</p>
+                                    <p><strong>Lý do huỷ: </strong>{{ $appointment->cancellation_reason }}
+
                                 </div>
                             @endif
                         </div>
@@ -72,7 +72,10 @@
                 <div class="card-footer d-flex justify-content-between align-items-center border-0">
                     <h5 class="fw-bold">Tổng tiền: {{ number_format($appointment->total_amount) }}đ</h5>
                     <div>
-                        @if ($appointment->status != 'completed')
+                        @if (
+                            !($appointment instanceof \App\Models\CancelledAppointment) &&
+                                $appointment->status != 'completed' &&
+                                $appointment->status != 'cancelled')
                             <a href="#" class="btn btn-outline-danger btn-sm me-2">Hủy đặt lịch</a>
                         @endif
                         <a href="{{ route('client.appointmentHistory') }}" class="btn btn-outline-secondary btn-sm">Quay

@@ -3,7 +3,25 @@
 
 @section('title', 'Quản lý Sản phẩm')
 @section('content')
+
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Sản phẩm</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
+        <li class="separator"><i class="icon-arrow-right"></i></li>
+        <li class="nav-item">
+            <a href="{{ url('admin/dashboard') }}">Danh sách sản phẩm</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url('admin/products/' . $product->id) }}">Chi tiết sản phẩm</a>
+        </li>
+    </ul>
+</div>
     <div class="container">
+
         <h1>Chi tiết sản phẩm: {{ $product->name }}</h1>
         <div class="card">
             <div class="card-body">

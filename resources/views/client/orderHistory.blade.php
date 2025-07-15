@@ -21,7 +21,7 @@
                 <div class="d-flex justify-content-between align-items-center border-0 m-3">
                     <h3 class="mb-0 fw-bold">Lịch sử đặt hàng của tôi</h3>
                     <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="filterDropdown"
+                        <button class="btn-outline-show dropdown-toggle" type="button" style="padding: 5px 10px" id="filterDropdown"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             Lọc lịch sử
                         </button>
@@ -33,9 +33,15 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form class="d-flex mb-4">
-                        <input type="text" class="form-control me-2" placeholder="Tìm kiếm đơn hàng">
-                        <button type="submit" class="btn btn-primary">Tìm</button>
+                    <form method="GET" action="{{ route('client.orderHistory') }}" id="searchForm" class="mb-3">
+                        <div class="position-relative">
+                            <input type="text" class="form-control me-2" name="search" placeholder="Tìm kiếm đặt lịch"
+                            value="{{ request('search') }}">
+                            <button type="submit"
+                                class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
                     </form>
                     @foreach ($orders as $order)
                         <div class="order-item mb-3 p-3 rounded-3 shadow-sm">
@@ -58,14 +64,14 @@
                                 </div>
                                 <div class="col-md-3 text-center">
                                     <div class="d-flex justify-content-center">
-                                        <a class="btn btn-outline-primary btn-sm me-1"
+                                        <a class="btn-outline-show"
                                             href="{{ route('client.detailOrderHistory', $order->id) }}">Xem chi tiết</a>
                                         @if ($order->status === 'pending')
                                             <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
                                                 style="display:inline-block;"
                                                 onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
                                                 @csrf
-                                                <button type="submit" class="btn btn-outline-danger btn-sm">Hủy đơn
+                                                <button type="submit" class="btn-outline-show">Hủy đơn
                                                     hàng</button>
                                             </form>
                                         @endif
@@ -74,7 +80,7 @@
                                                 $order->payment_status == 'paid' &&
                                                 !$order->refundRequests()->whereIn('refund_status', ['pending', 'processing'])->exists())
                                             <a href="{{ route('client.wallet', ['refundable_type' => 'order', 'refundable_id' => $order->id]) }}"
-                                                class="btn btn-outline-warning btn-sm me-1 refund-btn"
+                                                class="btn-outline-show refund-btn"
                                                 data-order-id="{{ $order->id }}">
                                                 Yêu cầu hoàn tiền
                                             </a>

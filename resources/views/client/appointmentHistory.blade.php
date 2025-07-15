@@ -10,35 +10,47 @@
             <div class="card order-history mt-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center border-0 m-3">
                     <h3 class="mb-0 fw-bold">Lịch sử đặt lịch của tôi</h3>
+                    @php
+                        $statusLabels = [
+                            '' => 'Tất cả',
+                            'completed' => 'Đã hoàn thành',
+                            'pending' => 'Đang chờ',
+                            'confirmed' => 'Đã xác nhận',
+                            'cancelled' => 'Đã hủy',
+                        ];
+
+                        $currentStatus = request('status', '');
+                        $currentStatusLabel = $statusLabels[$currentStatus] ?? $currentStatus;
+                    @endphp
+
                     <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="filterDropdown"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ request('status', 'Tất cả') }}
+                        <button class="btn-outline-show dropdown-toggle" style="padding: 5px 10px" type="button"
+                            id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ $currentStatusLabel }}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
-                            <li><a class="dropdown-item"
-                                    href="{{ route('client.appointmentHistory', array_merge(request()->except('status'), ['status' => ''])) }}">Tất
-                                    cả</a></li>
-                            <li><a class="dropdown-item"
-                                    href="{{ route('client.appointmentHistory', array_merge(request()->except('status'), ['status' => 'completed'])) }}">Đã
-                                    hoàn thành</a></li>
-                            <li><a class="dropdown-item"
-                                    href="{{ route('client.appointmentHistory', array_merge(request()->except('status'), ['status' => 'pending'])) }}">Đang
-                                    chờ</a></li>
-                            <li><a class="dropdown-item"
-                                    href="{{ route('client.appointmentHistory', array_merge(request()->except('status'), ['status' => 'confirmed'])) }}">Đã
-                                    xác nhận</a></li>
-                            <li><a class="dropdown-item"
-                                    href="{{ route('client.appointmentHistory', array_merge(request()->except('status'), ['status' => 'cancelled'])) }}">Đã
-                                    hủy</a></li>
+                            @foreach ($statusLabels as $key => $label)
+                                <li>
+                                    <a class="dropdown-item"
+                                        href="{{ route('client.appointmentHistory', array_merge(request()->except('status'), ['status' => $key])) }}">
+                                        {{ $label }}
+                                    </a>
+                                </li>
+                            @endforeach
                         </ul>
                     </div>
+
                 </div>
                 <div class="card-body">
-                    <form class="d-flex mb-4" method="GET" action="{{ route('client.appointmentHistory') }}">
-                        <input type="text" class="form-control me-2" name="search" placeholder="Tìm kiếm đặt lịch"
-                            value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-primary">Tìm</button>
+                    <form method="GET" action="{{ route('client.appointmentHistory') }}" id="searchForm" class="mb-3">
+                        <div class="position-relative">
+                            <input type="text" class="form-control me-2" name="search" placeholder="Tìm kiếm đặt lịch"
+                                value="{{ request('search') }}">
+                            <button type="submit"
+                                class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
                     </form>
                     @forelse ($appointments as $appointment)
                         <div class="order-item mb-3 p-3 rounded-3">
@@ -82,18 +94,26 @@
                                 </div>
                                 <div class="col-md-3 text-center">
                                     <div class="d-flex justify-content-center gap-2">
-                                        <a class="btn btn-outline-primary btn-sm"
-                                            href="{{ route('client.detailAppointmentHistory', $appointment->id) }}">
-                                            Xem chi tiết
-                                        </a>
+
+                                        @if ($appointment instanceof \App\Models\CancelledAppointment)
+                                            <a href="{{ route('client.cancelledAppointment.show', $appointment->id) }}"
+                                                class="btn-outline-show">
+                                                Xem chi tiết
+                                            </a>
+                                        @else
+                                            <a href="{{ route('client.detailAppointmentHistory', $appointment->id) }}"
+                                                class="btn-outline-show">
+                                                Xem chi tiết
+                                            </a>
+                                        @endif
+
                                         @if ($appointment->status === 'completed' && !$appointment->review)
-                                            <button class="btn btn-sm btn-warning review-btn"
-                                                data-id="{{ $appointment->id }}">
+                                            <button class="btn-outline-show review-btn" data-id="{{ $appointment->id }}">
                                                 Đánh giá
                                             </button>
                                         @endif
                                         @if (in_array($appointment->status, ['pending', 'confirmed']))
-                                            <button type="button" class="btn btn-outline-danger btn-sm cancel-btn"
+                                            <button type="button" class="btn-outline-show cancel-btn"
                                                 data-swal-toggle="modal" data-id="{{ $appointment->id }}">Hủy đặt
                                                 lịch</button>
                                         @endif
@@ -103,7 +123,7 @@
                                                 $appointment->payment_status == 'paid' &&
                                                 !$appointment->refundRequests()->whereIn('refund_status', ['pending', 'processing'])->exists())
                                             <a href="{{ route('client.wallet', ['refundable_type' => 'appointment', 'refundable_id' => $appointment->id]) }}"
-                                                class="btn btn-outline-warning btn-sm refund-btn"
+                                                class="btn-outline-show refund-btn"
                                                 data-appointment-id="{{ $appointment->id }}">Yêu cầu hoàn tiền</a>
                                         @endif
                                     </div>
@@ -116,7 +136,7 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex justify-content-center mt-3">
+        <div class="d-flex justify-content-center mt-3" style="color: #000;">
             {{ $appointments->links() }}
         </div>
     </main>
@@ -127,7 +147,7 @@
 
         .status-label {
             padding: 5px 10px;
-            border-radius: 12px;
+            border-radius: 6px;
             font-size: 14px;
         }
 

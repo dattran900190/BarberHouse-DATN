@@ -8,6 +8,7 @@ use App\Models\Appointment;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Events\OrderPaymentStatusUpdated;
 
 class PaymentController extends Controller
 {
@@ -22,6 +23,11 @@ class PaymentController extends Controller
         // Kiểm tra người dùng có quyền thanh toán lịch hẹn này
         if ($appointment->user_id !== Auth::id()) {
             return redirect()->back()->with('error', 'Bạn không có quyền thanh toán lịch hẹn này.');
+        }
+
+        // Kiểm tra số tiền thanh toán
+        if ($appointment->total_amount <= 0) {
+            return redirect()->back()->with('error', 'Số tiền thanh toán không hợp lệ.');
         }
 
         // Cấu hình VNPay
@@ -167,6 +173,7 @@ class PaymentController extends Controller
             $order->payment_status = 'paid';
             $order->payment_method = 'vnpay';
             $order->save();
+            event(new OrderPaymentStatusUpdated($order));
             return redirect()->route('client.orderHistory')->with('success', 'Thanh toán thành công!');
         } else {
             if ($order) {
