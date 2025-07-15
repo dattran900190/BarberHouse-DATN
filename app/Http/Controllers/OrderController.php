@@ -30,9 +30,7 @@ class OrderController extends Controller
                         ->orWhere('name', 'like', '%' . $search . '%');
                 });
             })
-            ->when($user->role === 'admin_branch', function ($q) use ($user) {
-                $q->where('branch_id', $user->branch_id);
-            })
+           
             ->orderBy('created_at', 'DESC');
         };
 

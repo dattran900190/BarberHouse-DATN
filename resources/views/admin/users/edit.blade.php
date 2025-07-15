@@ -16,14 +16,13 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ route('users.index') }}">Quản lý người dùng</a>
+                <a href="{{ route('users.index') }}">Quản lý chung</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
-            <li class="nav-item">
-                <a
-                    href="{{ route('users.index', ['role' => $role]) }}">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</a>
+             <li class="nav-item">
+                <a href="{{ route('users.index') }}">Quản lý người dùng</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
