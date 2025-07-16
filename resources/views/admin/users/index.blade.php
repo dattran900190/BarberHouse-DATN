@@ -165,15 +165,17 @@
                                                                 <i class="fas fa-eye"></i> Xem
                                                             </a>
                                                             @if ($currentRole === 'admin')
-                                                                <div class="dropdown-divider"></div>
-                                                                <button type="button"
-                                                                    class="dropdown-item toggle-status-btn d-inline-flex align-items-center"
-                                                                    data-id="{{ $user->id }}"
-                                                                    data-status="{{ $user->status }}"
-                                                                    data-role="{{ $user->role }}">
-                                                                    <i class="fas fa-ban mr-1"></i>
-                                                                    <span>{{ $user->status === 'active' ? 'Chặn' : 'Bỏ chặn' }}</span>
-                                                                </button>
+                                                                <form
+                                                                    action="{{ route('users.destroy', ['user' => $user->id, 'role' => $role]) }}"
+                                                                    method="POST" style="display:inline;"
+                                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit"
+                                                                        class="dropdown-item text-danger">
+                                                                        <i class="fas fa-trash me-2"></i> Xoá
+                                                                    </button>
+                                                                </form>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -297,14 +299,16 @@
                                                             <i class="fas fa-eye"></i> Xem
                                                         </a>
                                                         @if ($currentRole === 'admin')
-                                                            <button type="button"
-                                                                class="dropdown-item toggle-status-btn d-inline-flex align-items-center"
-                                                                data-id="{{ $admin->id }}"
-                                                                data-status="{{ $admin->status }}"
-                                                                data-role="{{ $admin->role }}">
-                                                                <i class="fas fa-ban mr-1"></i>
-                                                                <span>{{ $admin->status === 'active' ? 'Chặn' : 'Bỏ chặn' }}</span>
-                                                            </button>
+                                                            <form
+                                                                action="{{ route('users.destroy', ['user' => $user->id, 'role' => $role]) }}"
+                                                                method="POST" style="display:inline;"
+                                                                onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="dropdown-item text-danger">
+                                                                    <i class="fas fa-trash me-2"></i> Xoá
+                                                                </button>
+                                                            </form>
                                                         @endif
                                                     </div>
                                                 </div>

@@ -3,41 +3,93 @@
 @section('title', 'Chi tiết Check-in')
 
 @section('content')
-    <div class="card">
-        <div class="card-header bg-info text-white">
-            <h3 class="card-title">Chi tiết Check-in</h3>
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Checkin</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item">
+                <a href="#">Quản lý đặt lịch</a>
+            </li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item">
+                <a href="{{ route('checkins.index') }}">Checkin</a>
+            </li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item">
+                <a href="#">Chi tiết Checkin</a>
+            </li>
+        </ul>
+    </div>
 
+    <!-- Card 1: Thông tin Check-in -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white d-flex align-items-center">
+            <h4 class="card-title">Chi tiết Checkin</h4>
         </div>
         <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-3">Mã Check-in:</dt>
-                <dd class="col-sm-9"><strong>{{ $checkin->qr_code_value }}</strong></dd>
+            <div class="row gy-3">
+                <div class="col-md-12">
+                    <h4 class="fw-bold mb-3">
+                        <i class="fa fa-qrcode me-2 text-primary"></i>
+                        Mã Checkin: <strong>{{ $checkin->qr_code_value }}</strong>
+                    </h4>
 
-                <dt class="col-sm-3">Trạng thái:</dt>
-                <dd class="col-sm-9">
-                    @if($checkin->is_checked_in)
-                        <span class="badge bg-success">Đã Check-in</span>
-                    @else
-                        <span class="badge bg-warning text-dark">Chưa Check-in</span>
-                    @endif
-                </dd>
+                    <div class="d-flex flex-wrap gap-3 mb-3">
+                        <div>
+                            <i class="fa fa-toggle-on me-2 text-success"></i>
+                            <span class="fw-semibold">Trạng thái:</span>
+                            @if($checkin->is_checked_in)
+                                <span class="badge bg-success">Đã Checkin</span>
+                            @else
+                                <span class="badge bg-warning text-dark">Chưa Checkin</span>
+                            @endif
+                        </div>
+                        <div>
+                            <i class="fa fa-calendar-check me-2 text-info"></i>
+                            <span class="fw-semibold">Thời gian Checkin:</span>
+                            {{ $checkin->checkin_time ? \Carbon\Carbon::parse($checkin->checkin_time)->format('d/m/Y H:i') : '-' }}
+                        </div>
+                        <div>
+                            <i class="fa fa-user me-2 text-primary"></i>
+                            <span class="fw-semibold">Khách hàng:</span>
+                            {{ optional($checkin->appointment->user)->name ?? '-' }}
+                        </div>
+                        <div>
+                            <i class="fa fa-clock me-2 text-warning"></i>
+                            <span class="fw-semibold">Thời gian hẹn:</span>
+                            {{ optional($checkin->appointment)->appointment_time ? \Carbon\Carbon::parse($checkin->appointment->appointment_time)->format('d/m/Y H:i') : '-' }}
+                        </div>
+                    </div>
 
-                <dt class="col-sm-3">Thời gian Check-in:</dt>
-                <dd class="col-sm-9">{{ $checkin->checkin_time ? \Carbon\Carbon::parse($checkin->checkin_time)->format(' d/m/Y H:i') : '-' }}</dd>
+                    <div class="text-muted mb-2">
+                        <i class="fa fa-calendar-alt me-2 text-muted"></i>
+                        <span class="fw-semibold">Ngày tạo:</span>
+                        {{ $checkin->created_at->format('d/m/Y H:i') }}
+                    </div>
+                    <div class="text-muted">
+                        <i class="fa fa-calendar-check me-2 text-muted"></i>
+                        <span class="fw-semibold">Ngày cập nhật:</span>
+                        {{ $checkin->updated_at->format('d/m/Y H:i') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <dt class="col-sm-3">Khách hàng:</dt>
-                <dd class="col-sm-9">{{ optional($checkin->appointment->user)->name ?? '-' }}</dd>
-
-                <dt class="col-sm-3">Thời gian hẹn:</dt>
-                <dd class="col-sm-9">{{ optional($checkin->appointment)->appointment_time ? \Carbon\Carbon::parse($checkin->appointment->appointment_time)->format('d/m/Y H:i') : '-' }}</dd>
-
-                <dt class="col-sm-3">Ngày tạo:</dt>
-                <dd class="col-sm-9">{{ $checkin->created_at->format('d/m/Y H:i') }}</dd>
-            </dl>
-             <a href="{{ route('checkins.index') }}" class="btn btn-secondary float-end">
-                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+    <!-- Card 2: Hành động -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white d-flex align-items-center">
+            <h4 class="card-title">Hành động</h4>
+        </div>
+        <div class="card-body">
+            <a href="{{ route('checkins.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fa fa-arrow-left me-1"></i> Quay lại danh sách
             </a>
         </div>
-
     </div>
 @endsection
