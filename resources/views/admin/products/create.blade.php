@@ -151,7 +151,7 @@
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-danger">Xóa biến thể</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-variant">Xóa biến thể</button>
                         </div>
                     @endforeach
                 </div>
@@ -192,7 +192,7 @@
                 <label for="variants[${variantIndex}][image]" class="form-label">Ảnh biến thể</label>
                 <input type="file" name="variants[${variantIndex}][image]" class="form-control" accept="image/jpeg,image/png,image/jpg">
             </div>
-            <button type="button" class="btn btn-danger remove-variant">Xóa biến thể</button>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-variant">Xóa biến thể</button>
         `;
         document.getElementById('variants').appendChild(variantDiv);
         variantIndex++;
