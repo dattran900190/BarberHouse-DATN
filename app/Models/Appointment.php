@@ -17,9 +17,9 @@ class Appointment extends Model
         'appointment_code',
         'user_id',
         'barber_id',
-        'branch_id',
         'service_id',
         'additional_services',
+        'branch_id',
         'appointment_time',
         'status',
         'payment_method',
@@ -44,14 +44,13 @@ class Appointment extends Model
 
     public function service()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(Service::class)->withTrashed();
     }
 
     public function branch()
     {
         return $this->belongsTo(Branch::class);
     }
-
 
     public function promotion()
     {
@@ -69,5 +68,11 @@ class Appointment extends Model
     public function refundRequests()
     {
         return $this->hasMany(RefundRequest::class, 'appointment_id');
+    }
+
+    public function getAdditionalServiceObjectsAttribute()
+    {
+        $ids = json_decode($this->additional_services, true) ?? [];
+        return Service::withTrashed()->whereIn('id', $ids)->get();
     }
 }

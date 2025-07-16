@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Review;
 use App\Models\Checkin;
 use App\Models\Service;
 use App\Models\Appointment;
@@ -9,13 +10,13 @@ use App\Mail\CustomerNoShow;
 use Illuminate\Http\Request;
 use App\Mail\CheckinCodeMail;
 use App\Mail\CancelBookingMail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Events\AppointmentConfirmed;
 use App\Models\CancelledAppointment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\AppointmentRequest;
-use App\Models\Review;
 
 class AppointmentController extends Controller
 {
@@ -128,10 +129,15 @@ class AppointmentController extends Controller
             CancelledAppointment::create(array_merge($appointment->toArray(), [
                 'status' => 'cancelled',
                 'payment_status' => $appointment->payment_status,
+                'payment_method' => $appointment->payment_method,
                 'cancellation_type' => 'no-show',
                 'status_before_cancellation' => $appointment->status,
+                'additional_services' => $appointment->additional_services,
                 'cancellation_reason' => $request->input('no_show_reason', 'Khách hàng không đến'),
             ]));
+
+            // Xóa bản ghi liên quan trong bảng checkins (nếu có)
+            DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
 
             // Xóa bản ghi khỏi bảng appointments
             $appointment->delete();
@@ -172,7 +178,7 @@ class AppointmentController extends Controller
             $appointment->save();
 
             // Tạo mã QR check-in
-            $qrCode = rand(100000, 999999);
+            $qrCode = rand(100000, 999999); // Mã QR duy nhất
             Checkin::create([
                 'appointment_id' => $appointment->id,
                 'qr_code_value' => $qrCode,
@@ -247,12 +253,17 @@ class AppointmentController extends Controller
             // Lưu bản ghi vào bảng cancelled_appointments
             CancelledAppointment::create(array_merge($appointment->toArray(), [
                 'status' => 'cancelled',
-                'payment_status' => 'failed',
+                'payment_status' => $appointment,
                 'cancellation_type' => 'no-show',
                 'status_before_cancellation' => $appointment->status,
+                'additional_services' => $appointment->additional_services,
+                'payment_method' => $appointment->payment_method,
                 'note' => $appointment->note,
                 'cancellation_reason' => $request->input('no_show_reason', 'Khách hàng không đến'),
             ]));
+
+            // Xóa bản ghi liên quan trong bảng checkins (nếu có)
+            DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
 
             // Xóa bản ghi khỏi bảng appointments
             $appointment->delete();
@@ -292,7 +303,9 @@ class AppointmentController extends Controller
             ->get();
 
         $additionalServicesIds = json_decode($appointment->additional_services, true) ?? [];
-        $additionalServices = Service::whereIn('id', $additionalServicesIds)->get();
+        $additionalServices = Service::whereIn('id', $additionalServicesIds)
+            ->withTrashed() // cho phép lấy cả dịch vụ đã xóa mềm
+            ->get();
         $review = Review::where('appointment_id', $appointment->id)->first();
 
         return view('admin.appointments.show', compact(
@@ -311,23 +324,28 @@ class AppointmentController extends Controller
         $appointment->load(['user', 'barber', 'service', 'branch', 'promotion']);
         $isCancelled = true;
 
+        $additionalServicesIds = json_decode($appointment->additional_services, true) ?? [];
+        $additionalServices = Service::whereIn('id', $additionalServicesIds)
+            ->withTrashed() // cho phép lấy cả dịch vụ đã xóa mềm
+            ->get();
+
         $otherBarberAppointments = Appointment::where('barber_id', $appointment->barber_id)
-            ->where('id', '!=', $appointment->id)
             ->latest('appointment_time')
             ->limit(5)
             ->get();
 
         $otherUserAppointments = Appointment::where('user_id', $appointment->user_id)
-            ->where('id', '!=', $appointment->id)
             ->latest('appointment_time')
             ->limit(5)
             ->get();
+
 
         return view('admin.appointments.show', compact(
             'appointment',
             'otherBarberAppointments',
             'otherUserAppointments',
-            'isCancelled'
+            'isCancelled',
+            'additionalServices'
         ));
     }
 
@@ -335,7 +353,7 @@ class AppointmentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-     public function edit(Appointment $appointment)
+    public function edit(Appointment $appointment)
     {
         $appointments = Appointment::all();
         $services = Service::all();
@@ -373,7 +391,7 @@ class AppointmentController extends Controller
             // Nếu trạng thái là 'pending', gửi email thông báo
             if ($appointment->status === 'confirmed') {
                 // Tạo mã QR check-in
-                $qrCode = rand(100000, 999999);
+                $qrCode = rand(100000, 999999); // Mã QR duy nhất;
                 Checkin::create([
                     'appointment_id' => $appointment->id,
                     'qr_code_value' => $qrCode,
@@ -391,12 +409,17 @@ class AppointmentController extends Controller
                 // Lưu bản ghi vào bảng cancelled_appointments
                 CancelledAppointment::create(array_merge($appointment->toArray(), [
                     'status' => 'cancelled',
-                    'payment_status' => 'failed',
+                    'payment_status' => $appointment->payment_status,
+                    'payment_method' => $appointment->payment_method,
                     'cancellation_type' => 'no-show',
                     'status_before_cancellation' => $appointment->status,
+                    'additional_services' => $appointment->additional_services,
                     'note' => $appointment->note,
                     'cancellation_reason' => $request->input('no_show_reason', 'Khách hàng không đến'),
                 ]));
+
+                // Xóa bản ghi liên quan trong bảng checkins (nếu có)
+                DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
 
                 // Xóa bản ghi khỏi bảng appointments
                 $appointment->delete();

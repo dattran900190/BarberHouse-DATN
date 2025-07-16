@@ -3,7 +3,7 @@
 @section('title', 'Quản lý lịch hẹn')
 
 @section('content')
-    @if (session('success'))
+    {{-- @if (session('success'))
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>
         </button>
@@ -13,6 +13,24 @@
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>
         </button>
+    @endif --}}
+
+     @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
     @endif
 
     @php
@@ -239,6 +257,11 @@
             }
         };
 
+        const paymentMethodMap = {
+            cash: 'Thanh toán tại tiệm',
+            vnpay: 'Thanh toán VNPAY'
+        };
+
         // 1. Lắng nghe sự kiện click các nút confirm-btn
         document.addEventListener('click', function(e) {
             const confirmBtn = e.target.closest('.confirm-btn');
@@ -303,60 +326,133 @@
         });
 
         const channel = pusher.subscribe('appointments');
+        // channel.bind('App\\Events\\AppointmentCreated', function(data) {
+        //     const tableBody = document.querySelector('#pending tbody');
+        //     if (tableBody) {
+
+        //         const paymentInfo = paymentMap[data.payment_status] || {
+        //             class: 'secondary',
+        //             text: data.payment_status
+        //         };
+
+        //         // const paymentMethod = paymentMethodMap[data.payment_method] || data.payment_method;
+
+        //         // Xử lý danh sách dịch vụ thêm (nếu có)
+        //         const additionalServices = data.additional_services && data.additional_services.length ?
+        //             `<br><small class="text-muted">+ ${data.additional_services.join(', ')}</small>` :
+        //             '';
+
+        //         const actionDropdown = `
+        //         <div class="dropdown">
+        //             <button class="btn btn-sm btn-outline-secondary" type="button" id="actionMenu${data.id}"
+        //                 data-bs-toggle="dropdown" aria-expanded="false">
+        //                 <i class="fas fa-ellipsis-v"></i>
+        //             </button>
+        //             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionMenu${data.id}">
+        //                 <li>
+        //                     <a href="admin/appointments/${data.id}" class="dropdown-item">
+        //                         <i class="fas fa-eye me-2"></i> Xem
+        //                     </a>
+        //                 </li>
+        //                 <li>
+        //                     <a href="admin/appointments/${data.id}/edit" class="dropdown-item">
+        //                         <i class="fas fa-edit me-2"></i> Sửa
+        //                     </a>
+        //                 </li>
+        //                 <li><hr class="dropdown-divider"></li>
+        //                 <li>
+        //                     <button type="button" class="dropdown-item text-success confirm-btn" data-id="${data.id}">
+        //                         <i class="fas fa-check me-2"></i> Xác nhận
+        //                     </button>
+        //                 </li>
+        //             </ul>
+        //         </div>
+        //     `;
+
+        //         const row = `
+        //         <tr>
+        //             <td>Mới</td>
+        //             <td>${data.appointment_code}</td>
+        //             <td>${data.user_name}</td>
+        //             <td>${data.phone}</td>
+        //             <td>${data.barber_name}</td>
+        //             <td>
+        //                 ${data.service_name}
+        //                 ${additionalServices}
+        //             </td>
+        //             <td>${data.payment_method || ''}</td>
+        //             <td>${data.created_at}</td>
+        //             <td><span class="badge bg-warning">Chờ xác nhận</span></td>
+        //             <td><span class="badge bg-${paymentInfo.class}">${paymentInfo.text}</span></td>
+        //             <td class="text-center">${actionDropdown}</td>
+        //         </tr>
+        //     `;
+        //         tableBody.insertAdjacentHTML('afterbegin', row);
+        //     } else {
+        //         console.warn('Không tìm thấy bảng #pending tbody!');
+        //     }
+        // });
         channel.bind('App\\Events\\AppointmentCreated', function(data) {
-            const tableBody = document.querySelector('#pending tbody');
-            if (tableBody) {
-                const paymentInfo = paymentMap[data.payment_status] || {
-                    class: 'secondary',
-                    text: data.payment_status
-                };
+    console.log('Pusher data:', JSON.stringify(data, null, 2));
+    console.log('payment_method raw:', data.payment_method);
+    console.log('payment_method mapped:', paymentMethodMap[data.payment_method] || 'Không xác định');
 
-                const actionDropdown = `
-                <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-secondary" type="button" id="actionMenu${data.id}"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionMenu${data.id}">
-                        <li>
-                            <a href="admin/appointments/${data.id}" class="dropdown-item">
-                                <i class="fas fa-eye me-2"></i> Xem
-                            </a>
-                        </li>
-                        <li>
-                            <a href="admin/appointments/${data.id}/edit" class="dropdown-item">
-                                <i class="fas fa-edit me-2"></i> Sửa
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <button type="button" class="dropdown-item text-success confirm-btn" data-id="${data.id}">
-                                <i class="fas fa-check me-2"></i> Xác nhận
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-            `;
+    const paymentInfo = paymentMap[data.payment_status] || {
+        class: 'secondary',
+        text: data.payment_status || 'N/A'
+    };
 
-                const row = `
-                <tr>
-                    <td>Mới</td>
-                    <td>${data.appointment_code}</td>
-                    <td>${data.user_name}</td>
-                    <td>${data.phone}</td>
-                    <td>${data.barber_name}</td>
-                    <td>${data.service_name}</td>
-                    <td>${data.created_at}</td>
-                    <td><span class="badge bg-warning">Chờ xác nhận</span></td>
-                    <td><span class="badge bg-${paymentInfo.class}">${paymentInfo.text}</span></td>
-                    <td class="text-center">${actionDropdown}</td>
-                </tr>
-            `;
-                tableBody.insertAdjacentHTML('afterbegin', row);
-            } else {
-                console.warn('Không tìm thấy bảng #pending tbody!');
-            }
-        });
+    const paymentMethod = paymentMethodMap[data.payment_method] || 'Không xác định';
+
+    const additionalServices = data.additional_services && data.additional_services.length ?
+        `<div class="mt-2">
+            <strong class="text-muted">Dịch vụ thêm:</strong>
+            <ul class="mb-0 mt-1 ps-3 text-muted">
+                ${data.additional_services.map(service => `<li>${service}</li>`).join('')}
+            </ul>
+        </div>` :
+        '';
+
+    const actionDropdown = `
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary" type="button" id="actionMenu${data.id}"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionMenu${data.id}">
+                <li><a href="appointments/${data.id}" class="dropdown-item"><i class="fas fa-eye me-2"></i> Xem</a></li>
+                <li><a href="appointments/${data.id}/edit" class="dropdown-item"><i class="fas fa-edit me-2"></i> Sửa</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><button type="button" class="dropdown-item text-success confirm-btn" data-id="${data.id}"><i class="fas fa-check me-2"></i> Xác nhận</button></li>
+            </ul>
+        </div>
+    `;
+
+    const row = `
+        <tr>
+            <td>Mới</td>
+            <td>${data.appointment_code}</td>
+            <td>${data.user_name}</td>
+            <td>${data.phone}</td>
+            <td>${data.barber_name}</td>
+            <td>
+                ${data.service_name}
+                ${additionalServices}
+            </td>
+            <td>${paymentMethod}</td>
+            <td>${data.created_at}</td>
+            <td><span class="badge bg-warning">Chờ xác nhận</span></td>
+            <td><span class="badge bg-${paymentInfo.class}">${paymentInfo.text}</span></td>
+            <td class="text-center">${actionDropdown}</td>
+        </tr>
+    `;
+    const tableBody = document.querySelector('#pending tbody');
+    if (tableBody) {
+        tableBody.insertAdjacentHTML('afterbegin', row);
+    } else {
+        console.warn('Không tìm thấy bảng #pending tbody!');
+    }
+});
     </script>
 
     <script>

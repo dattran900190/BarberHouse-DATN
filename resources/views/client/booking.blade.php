@@ -6,7 +6,7 @@
 
 @section('content')
     <main class="container" style="padding: 10% 0;">
-        {{-- 
+{{-- 
         @if (session('success'))
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>
@@ -87,7 +87,7 @@
                     <label class="form-label">Ngày đặt lịch <span class="required">*</span></label>
                     <div class="date-input">
                         <input type="text" class="form-control" id="appointment_date" name="appointment_date"
-                            placeholder="Chọn thời điểm" style=" background-color: #fff;" readonly >
+                            placeholder="Chọn thời điểm" style="background-color: #fff" readonly>
                     </div>
                     @error('appointment_date')
                         <small class="text-danger">{{ $message }}</small>
@@ -111,35 +111,6 @@
                     @error('branch_id')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Dịch vụ <span class="required">*</span></label>
-                    <div id="servicesList">
-                        <div class="service-item" data-service-index="0">
-                            <div class="position-relative">
-                                <select id="service" name="service_id" class="form-select service-select" data-index="0"
-                                    required>
-                                    <option value="">Chọn dịch vụ chính</option>
-                                    @foreach ($services as $service)
-                                        <option value="{{ $service->id }}" data-name="{{ $service->name }}"
-                                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
-                                            {{ old('service_id') == $service->id ? 'selected' : '' }}>
-                                            {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('service_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="additionalServicesContainer" class="mt-2"></div>
-                    <input type="hidden" name="additional_services" id="additionalServicesInput">
-                    <button class="add-service-btn" style="margin-top: 10px" type="button" id="addServiceBtn">Thêm
-                        dịch vụ</button>
                 </div>
 
                 <div class="form-group">
@@ -175,6 +146,35 @@
                     @error('appointment_time')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
+                </div>
+
+
+                <div class="form-group">
+                    <label class="form-label">Dịch vụ <span class="required">*</span></label>
+                    <div id="servicesList">
+                        <div class="service-item" data-service-index="0">
+                            <div class="position-relative">
+                                <select id="service" name="service_id" class="form-select service-select"
+                                    data-index="0" required>
+                                    <option value="">Chọn dịch vụ chính</option>
+                                    @foreach ($services as $service)
+                                        <option value="{{ $service->id }}" data-name="{{ $service->name }}"
+                                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
+                                            {{ old('service_id') == $service->id ? 'selected' : '' }}>
+                                            {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('service_id')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="additionalServicesContainer" class="mt-2"></div>
+                    <input type="hidden" name="additional_services" id="additionalServicesInput">
+                    <button class="add-service-btn mt-2" type="button" id="addServiceBtn">Thêm dịch vụ</button>
                 </div>
 
                 <div class="form-group">
@@ -232,9 +232,9 @@
                     <p>Thời lượng dự kiến: <strong id="totalDuration">0 Phút</strong></p>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Phương thức thanh toán <span class="required">*</span></label>
-
+                {{-- <div class="form-group">
+                    <label class="form-label">Phương thức thanh toán <span class="required">*</span></label><br>
+                    
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="payment_method" id="payment_cash"
                             value="cash" {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
@@ -250,10 +250,25 @@
                     @error('payment_method')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
-                </div>
+                </div> --}}
+
+                <div class="form-group">
+    <label class="form-label">Phương thức thanh toán <span class="required">*</span></label><br>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="payment_method" id="payment_cash" value="cash" required {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
+        <label class="form-check-label" for="payment_cash">Tiền mặt</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="payment_method" id="payment_vnpay" value="vnpay" required {{ old('payment_method') == 'vnpay' ? 'checked' : '' }}>
+        <label class="form-check-label" for="payment_vnpay">VNPay</label>
+    </div>
+    @error('payment_method')
+        <div class="text-danger">{{ $message }}</div>
+    @enderror
+</div>
 
                 <div class="form-btn mt-3">
-                    <button type="submit" class=" btn-outline-booking booking-btn" data-id="{{ $service->id }}">
+                    <button type="submit" class="submit-btn book-btn booking-btn" data-id="{{ $service->id }}">
                         Đặt lịch
                     </button>
                 </div>
@@ -269,53 +284,12 @@
             background-color: #000;
         }
 
-        /* #bookingForm .form-control,
-            #bookingForm .form-select {
-                border: 2px solid #000;
-                border-radius: 6px;
-                padding: 10px 14px;
-                font-size: 15px;
-                transition: all 0.3s ease;
-                background-color: #fff;
-                color: #000;
-                box-shadow: none;
-            }
-
-            #bookingForm .form-control:focus,
-            #bookingForm .form-select:focus {
-                outline: none;
-                border-color: #000;
-                box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-            }
-
-            #bookingForm .form-check-input {
-                width: 18px;
-                height: 18px;
-                border: 2px solid #000;
-                margin-top: 3px;
-                cursor: pointer;
-            }
-
-            #bookingForm .form-check-input:checked {
-                background-color: #000;
-                border-color: #000;
-            }
-
-            #bookingForm .notes-textarea {
-                border: 2px solid #000;
-                border-radius: 6px;
-                padding: 10px 14px;
-                font-size: 15px;
-                width: 100%;
-                resize: vertical;
-            } */
-
         /* Giao diện chính của select2 */
         .select2-container--default .select2-selection--single {
             height: 44px;
             padding: 8px 14px;
             /* border: 2px solid #000; */
-            border-radius: 6px;
+            border-radius: 4px;
             background-color: #fff;
             font-size: 15px;
             font-weight: 500;
@@ -456,9 +430,8 @@
                 // Tạo nút "Xóa" bên ngoài select
                 const removeBtn = document.createElement('button');
                 removeBtn.type = 'button';
-                removeBtn.className = 'btn-icon-remove ms-2';
-                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-                // removeBtn.textContent = 'Xóa';
+                removeBtn.className = 'btn btn-sm btn-danger remove-service ms-2';
+                removeBtn.textContent = 'Xóa';
                 removeBtn.addEventListener('click', function() {
                     additionalServicesContainer.removeChild(serviceWrapper);
                     updateAdditionalServicesInput();
@@ -467,20 +440,9 @@
                 // Thêm select và nút "Xóa" vào wrapper
                 serviceWrapper.appendChild(serviceSelect);
                 serviceWrapper.appendChild(removeBtn);
+
+                // Thêm wrapper vào container
                 additionalServicesContainer.appendChild(serviceWrapper);
-
-                // Khởi tạo Select2 cho select vừa tạo
-                $(serviceSelect).select2({
-                    placeholder: 'Chọn dịch vụ bổ sung',
-                    allowClear: true,
-                    width: '100%',
-                    language: {
-                        noResults: function() {
-                            return "Không tìm thấy dịch vụ phù hợp";
-                        }
-                    }
-                });
-
                 updateAdditionalServicesInput();
             }
 
@@ -670,8 +632,6 @@
                 filterVouchersByDate();
             }
         });
-
-        // mã khuyến mãi
         $(document).ready(function() {
             $('#voucher_id').select2({
                 placeholder: 'Chọn hoặc tìm mã khuyến mãi',
@@ -683,18 +643,6 @@
                     }
                 }
             });
-        });
-
-        // Chọn dịch vụ 
-        $('#service').select2({
-            placeholder: 'Chọn dịch vụ chính',
-            allowClear: true,
-            width: '100%',
-            language: {
-                noResults: function() {
-                    return "Không tìm thấy dịch vụ phù hợp";
-                }
-            }
         });
 
         function getServiceInfo(opt) {

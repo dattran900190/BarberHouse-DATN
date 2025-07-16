@@ -70,6 +70,9 @@ class BookingRequest extends FormRequest
             'phone.regex' => 'Số điện thoại không hợp lệ. Phải có 10 chữ số và bắt đầu bằng 0.',
             'email.required_if' => 'Vui lòng nhập email khi đặt cho người khác.',
             'email.email' => 'Email không hợp lệ.',
+            'payment_method.required' => 'Vui lòng chọn phương thức thanh toán.',
+            'payment_method.in' => 'Phương thức thanh toán không hợp lệ.',
+            'additional_services.*.exists' => 'Dịch vụ bổ sung không hợp lệ.',
         ];
     }
 
