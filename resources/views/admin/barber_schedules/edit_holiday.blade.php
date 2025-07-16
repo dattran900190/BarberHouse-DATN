@@ -15,6 +15,10 @@
     </div>
 
     <div class="card shadow-sm border">
+        <div class="card-header text-white align-items-center">
+            <div class="card-title">Sửa lịch nghỉ lễ
+            </div>
+        </div>
         <form action="{{ route('barber_schedules.updateHoliday', $id) }}" method="POST">
             @csrf
             @method('PUT')

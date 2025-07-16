@@ -5,15 +5,9 @@
 @section('content')
 
     <div class="card">
-        <div class="page-header mb-4">
-            <div class="d-flex align-items-center flex-wrap gap-2">
-                <h3 class="fw-bold mb-0">
-                    {{ isset($schedule) ? 'Chỉnh sửa Lịch Thợ Cắt Tóc' : 'Tạo Lịch Thợ Cắt Tóc' }}
-                </h3>
-                @if (isset($branch))
-                    <span class="fw-normal ms-2" style="font-size: 1.2rem; color: #333;">
-                        - Chi nhánh: {{ $branch->name }}
-                    </span>
+        <div class="card-header text-white align-items-center">
+            <div class="card-title">Sửa lịch cho thợ @if (isset($branch))
+                    - Chi nhánh: {{ $branch->name }}
                 @endif
             </div>
         </div>
