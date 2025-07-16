@@ -14,24 +14,24 @@ class UserRequest extends FormRequest
 
 
     public function rules()
-{
-    $userId = $this->user ? $this->user->id : null;
-    $role = $this->input('role'); // <-- lấy giá trị role từ input
+    {
+        $userId = $this->user ? $this->user->id : null;
+        $role = $this->input('role') ?? optional($this->user)->role;
 
-    return [
-        'name' => 'required|string|max:100',
-        'email' => 'required|email|max:255|unique:users,email,' . $userId,
-        'password' => $this->isMethod('post') ? 'required|string|min:8|max:255' : 'nullable|string|min:8|max:255',
-        'phone' => 'required|string|max:20|unique:users,phone,' . $userId,
-        'gender' => 'required|in:male,female,other',
-        'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'address' => 'nullable|string',
-        'role' => 'required|in:user,admin,super_admin,admin_branch',
-        'status' => 'required|in:active,inactive,banned',
-        'points_balance' => 'nullable|integer|min:0',
-        'branch_id' => $role === 'admin_branch' ? 'required|exists:branches,id' : 'nullable|exists:branches,id',
-    ];
-}
+        return [
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|max:255|unique:users,email,' . $userId,
+            'password' => $this->isMethod('post') ? 'required|string|min:8|max:255' : 'nullable|string|min:8|max:255',
+            'phone' => 'required|string|max:20|unique:users,phone,' . $userId,
+            'gender' => 'required|in:male,female,other',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'address' => 'nullable|string',
+            'role' => 'required|in:user,admin,super_admin,admin_branch',
+            'status' => 'required|in:active,inactive,banned',
+            'points_balance' => 'nullable|integer|min:0',
+            'branch_id' => $role === 'admin_branch' ? 'required|exists:branches,id' : 'nullable|exists:branches,id',
+        ];
+    }
 
 
 
@@ -47,6 +47,7 @@ class UserRequest extends FormRequest
             'password.required' => 'Mật khẩu là bắt buộc khi tạo mới.',
             'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự.',
             'password.max' => 'Mật khẩu không được vượt quá 255 ký tự.',
+            'phone.required' => 'Vui lòng nhập số điện thoại.',
             'phone.max' => 'Số điện thoại không được vượt quá 20 ký tự.',
             'phone.unique' => 'Số điện thoại đã tồn tại.',
             'gender.required' => 'Bắt buộc phải chọn giới tính.',
