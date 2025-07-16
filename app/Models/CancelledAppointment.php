@@ -18,6 +18,7 @@ class CancelledAppointment extends Model
         'user_id',
         'barber_id',
         'service_id',
+        'additional_services',
         'branch_id',
         'appointment_time',
         'status',
@@ -41,7 +42,7 @@ class CancelledAppointment extends Model
 
     public function service()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(Service::class)->withTrashed();
     }
 
     public function branch()

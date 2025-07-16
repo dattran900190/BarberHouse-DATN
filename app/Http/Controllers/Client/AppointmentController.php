@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use Pusher\Pusher;
 use App\Models\Barber;
 use App\Models\Branch;
 use App\Models\Review;
@@ -16,6 +17,7 @@ use App\Events\NewAppointment;
 use Illuminate\Support\Carbon;
 use App\Mail\PendingBookingMail;
 use App\Events\AppointmentCreated;
+use Illuminate\Support\Facades\DB;
 use App\Models\UserRedeemedVoucher;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -234,12 +236,20 @@ class AppointmentController extends Controller
         ]);
 
         // Tạo bản ghi trong cancelled_appointments
+
         CancelledAppointment::create(array_merge($appointment->toArray(), [
             'status' => 'cancelled',
+            'payment_status' => $appointment,
+            'cancellation_type' => 'no-show',
             'status_before_cancellation' => $appointment->status,
-            'cancellation_type' => 'Khách hàng huỷ',
-            'cancellation_reason' => $request->input('cancellation_reason'),
+            'additional_services' => $appointment->additional_services,
+            'payment_method' => $appointment->payment_method,
+            'note' => $appointment->note,
+            'cancellation_reason' => $request->input('no_show_reason', 'Khách hàng không đến'),
         ]));
+
+        // Xóa bản ghi liên quan trong bảng checkins (nếu có)
+        DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
 
         // Xóa bản ghi khỏi bảng appointments
         $appointment->delete();
@@ -360,6 +370,37 @@ class AppointmentController extends Controller
 
         return [$totalAmount, $discountAmount, $promotion, $redeemedVoucher, $additionalServices];
     }
+
+    protected function triggerPusher(Appointment $appointment)
+    {
+        $additionalServiceIds = json_decode($appointment->additional_services ?? '[]', true);
+        $additionalServicesNames = Service::whereIn('id', $additionalServiceIds)->pluck('name')->toArray();
+
+        $pusherData = [
+            'id' => $appointment->id,
+            'appointment_code' => $appointment->appointment_code,
+            'user_name' => $appointment->name ?? 'N/A',
+            'phone' => $appointment->phone ?? 'N/A',
+            'barber_name' => $appointment->barber->name ?? 'N/A',
+            'service_name' => $appointment->service->name ?? 'N/A',
+            'status' => $appointment->status,
+            'payment_status' => $appointment->payment_status,
+            'created_at' => $appointment->created_at->format('d/m/Y H:i'),
+            'additional_services' => $additionalServicesNames ?? [],
+            'payment_method' => $appointment->payment_method ?? 'cash',
+        ];
+
+        $pusher = new Pusher(
+            env('PUSHER_APP_KEY'),
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'),
+            ['cluster' => env('PUSHER_APP_CLUSTER'), 'useTLS' => true]
+        );
+
+        $pusher->trigger('appointments', 'App\\Events\\AppointmentCreated', $pusherData);
+    }
+
+
     public function store(BookingRequest $request)
     {
         try {
@@ -404,7 +445,6 @@ class AppointmentController extends Controller
                 ], 422);
             }
 
-
             // Lấy thông tin người đặt
             $name = $request->other_person ? $request->name : Auth::user()->name;
             $phone = $request->other_person ? $request->phone : Auth::user()->phone;
@@ -437,27 +477,15 @@ class AppointmentController extends Controller
                 'additional_services' => json_encode($additionalServices),
             ]);
 
+            // Load quan hệ
+            $appointment->load(['barber', 'service']);
+            $this->triggerPusher($appointment);
+
             // Xử lý voucher
             if ($promotion && $redeemedVoucher) {
                 $this->appointmentService->applyPromotion($appointment, $redeemedVoucher);
             } elseif ($promotion) {
                 $this->appointmentService->applyPromotion($appointment, null, $promotion);
-            }
-
-            // Gửi thông báo
-            try {
-                event(new NewAppointment($appointment));
-                Mail::to($appointment->email)->send(new PendingBookingMail($appointment));
-            } catch (\Exception $e) {
-                Log::error('Lỗi khi gửi sự kiện NewAppointment hoặc email', ['error' => $e->getMessage()]);
-            }
-
-            try {
-                Log::info('Sắp phát event AppointmentCreated', ['appointment_id' => $appointment->id]);
-                event(new AppointmentCreated($appointment));
-                Log::info('Đã phát event AppointmentCreated', ['appointment_id' => $appointment->id]);
-            } catch (\Exception $e) {
-                Log::error('Lỗi khi gửi sự kiện NewAppointment hoặc email', ['error' => $e->getMessage()]);
             }
 
             // Nếu chọn VNPay, trả về appointment_id để chuyển hướng
@@ -470,6 +498,13 @@ class AppointmentController extends Controller
                     ]);
                 }
             }
+
+            // Gửi thông báo sự kiện AppointmentCreated
+            //     event(new AppointmentCreated($appointment));
+
+            // Gửi sự kiện thông bao NewAppointment và email
+            event(new NewAppointment($appointment));
+            Mail::to($appointment->email)->send(new PendingBookingMail($appointment));
 
             // Phản hồi thành công
             if ($request->ajax() || $request->wantsJson()) {
@@ -488,7 +523,6 @@ class AppointmentController extends Controller
             ], 500);
         }
     }
-
     public function getAvailableBarbersByDate($branch_id, $date, $time = null, $service_id = null)
     {
         // 1. Validate branch
