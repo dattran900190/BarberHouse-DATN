@@ -80,7 +80,7 @@ class OrderController extends Controller
                     Mail::to($order->email)->send(new OrderSuccessMail($order));
                 }
             } catch (\Exception $e) {
-                \Log::error('Lỗi gửi email xác nhận đơn hàng (admin): ' . $e->getMessage());
+                Log::error('Lỗi gửi email xác nhận đơn hàng (admin): ' . $e->getMessage());
             }
             return back()->with('success', 'Đã xác nhận đơn hàng.');
         }

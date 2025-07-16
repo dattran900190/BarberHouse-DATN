@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Client;
 
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
     public function index(Request $request)
     {
         $orders = Order::with('items')
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->orderByDesc('created_at')
             ->get();
 
@@ -23,7 +24,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         // Kiểm tra quyền truy cập
-        if ($order->user_id !== auth()->id()) {
+        if ($order->user_id !== Auth::id()) {
             abort(403, 'Không có quyền truy cập đơn hàng này.');
         }
 
@@ -38,7 +39,7 @@ class OrderController extends Controller
 
     public function cancel(Order $order)
     {
-        if ($order->user_id !== auth()->id()) {
+        if ($order->user_id !== Auth::id()) {
             abort(403, 'Không có quyền truy cập đơn hàng này.');
         }
         if ($order->status === 'cancelled') {
