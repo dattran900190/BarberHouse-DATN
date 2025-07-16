@@ -15,7 +15,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="#">Quản lý nhân sự</a>
+                <a href="{{ url('admin/dashboard') }}">Quản lý chi nhánh</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
