@@ -15,8 +15,7 @@
     <main>
         <div class="login">
             <div class="image-login">
-                <img src="https://file.hstatic.net/200000503583/file/barber-la-nghe-gi__4__54d8d1f24560403b9b5929af8c54f9c1.jpg"
-                    alt="">
+                <img src="{{ asset('storage/' . ($imageSettings['anh_danh_ky'] ?? 'default-images/no-banggia.png')) }}" alt="Bảng đăng ký" />
             </div>
 
             <div class="form-login">
