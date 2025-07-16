@@ -17,7 +17,7 @@
                 </a>
             </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
-            <li class="nav-item"><a href="#">Quản lý nhân sự</a></li>
+            <li class="nav-item"><a href="{{ url('admin/dashboard') }}">Quản lý chi nhánh</a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item"><a href="{{ url('admin/barbers') }}">Thợ cắt tóc</a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
@@ -130,7 +130,7 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-sm btn-outline-warning">
+                <button type="submit" class="btn btn-sm btn-outline-primary">
                     <i class="fa fa-edit me-1"></i> Cập nhật
                 </button>
                 <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}"

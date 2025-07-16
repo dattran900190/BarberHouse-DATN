@@ -14,7 +14,11 @@
         </ul>
     </div>
 
-    <div class="card shadow-sm border">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white align-items-center">
+            <div class="card-title">Tạo lịch nghỉ lễ
+            </div>
+        </div>
         <form action="{{ route('barber_schedules.store') }}" method="POST">
             @csrf
             <input type="hidden" name="status" value="holiday">
@@ -31,7 +35,6 @@
                 @endif
 
                 <div class="row g-4">
-                    {{-- Cột trái: Ngày bắt đầu và kết thúc --}}
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="holiday_start_date" class="form-label">Ngày bắt đầu nghỉ</label>
@@ -54,7 +57,6 @@
                         </div>
                     </div>
 
-                    {{-- Cột phải: Tên dịp nghỉ --}}
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="note" class="form-label">Tên dịp nghỉ lễ</label>
@@ -68,13 +70,12 @@
                     </div>
                 </div>
 
-                {{-- Nút submit (căn TRÁI) --}}
-                <div class="d-flex justify-content-start mt-4 gap-2">
-                    <button type="submit" class="btn btn-sm btn-outline-success">
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-outline-success btn-sm">
                         <i class="fas fa-plus me-1"></i> Tạo lịch nghỉ lễ
                     </button>
-                    <a href="{{ route('barber_schedules.index') }}" class="btn btn-sm btn-outline-secondary">
-                        Huỷ
+                    <a href="{{ route('barber_schedules.index') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> Quay lại
                     </a>
                 </div>
             </div>

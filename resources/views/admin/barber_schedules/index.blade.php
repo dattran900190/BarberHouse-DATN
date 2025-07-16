@@ -88,7 +88,7 @@
 
             {{-- Danh sách chi nhánh --}}
             <div class="table-responsive">
-                <table class="table table-borderless align-middle mb-0">
+                <table class="table table-bordered table-hover align-middle text-center">
                     <thead>
                         <tr>
                             <th class="fw-semibold" style="color: #232b43;">Tên chi nhánh</th>
@@ -103,11 +103,23 @@
                                 <td>{{ $branch->name }}</td>
                                 <td>{{ $branch->address }}</td>
                                 <td>{{ $branch->phone }}</td>
-                                <td class="text-center">
-                                    <a href="{{ route('barber_schedules.showBranch', $branch->id) }}"
-                                        class="btn btn-outline-primary btn-sm uniform-btn">
-                                        <i class="fas fa-eye"></i> Xem lịch
-                                    </a>
+                                <td class="text-center align-middle" style="width: 70px;">
+                                    <div class="dropdown d-inline-block">
+                                        <button
+                                            class="btn btn-light btn-sm d-flex align-items-center justify-content-center"
+                                            type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                            style="border: 1px solid #ddd; width: 38px; height: 38px; padding: 0;">
+                                            <i class="fa fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center"
+                                                    href="{{ route('barber_schedules.showBranch', $branch->id) }}">
+                                                    <i class="fas fa-eye me-2"></i> Xem lịch
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -120,6 +132,11 @@
             </div>
         </div>
     </div>
+    @if ($branches instanceof \Illuminate\Pagination\LengthAwarePaginator)
+        <div class="mt-3 d-flex justify-content-center">
+            {{ $branches->links('pagination::bootstrap-5') }}
+        </div>
+    @endif
 @endsection
 
 @section('css')
