@@ -81,8 +81,7 @@
                                         <input type="hidden" name="product_variant_id"
                                             value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
                                         <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn-outline-cart"
-                                            title="Thêm vào giỏ hàng">
+                                        <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
                                             <i class="fas fa-cart-plus"></i>
                                         </button>
                                     </form>
@@ -166,11 +165,22 @@
                             $('#cartCount').text(res.cart_count);
                         }
                     },
-                    error: function() {
+                    error: function(xhr) {
+                        let message = 'Có lỗi xảy ra, vui lòng thử lại!';
+                        if (xhr.status === 400 && xhr.responseJSON) {
+                            const res = xhr.responseJSON;
+                            if (res.reached_max) {
+                                message = res.message ||
+                                    'Bạn đã thêm tối đa số lượng sản phẩm.';
+                            } else if (res.message) {
+                                message = res.message;
+                            }
+                        }
+
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi!',
-                            text: 'Có lỗi xảy ra, vui lòng thử lại!'
+                            icon: 'warning',
+                            title: 'Cảnh báo!',
+                            text: message,
                         });
                     }
                 });

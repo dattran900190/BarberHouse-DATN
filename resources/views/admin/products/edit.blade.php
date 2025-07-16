@@ -3,6 +3,22 @@
 @section('title', 'Chỉnh sửa sản phẩm')
 
 @section('content')
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Sản phẩm</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
+        <li class="separator"><i class="icon-arrow-right"></i></li>
+        <li class="nav-item">
+            <a href="{{ url('admin/dashboard') }}">Danh sách sản phẩm</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url('admin/products/' . $product->id .'/edit') }}">Chỉnh sửa sản phẩm</a>
+        </li>
+    </ul>
+</div>
 <div class="container-fluid px-4">
     <h1 class="mb-4">Chỉnh sửa sản phẩm</h1>
     <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
@@ -126,16 +142,16 @@
                                 @error("variants.$index.image") <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
-                            <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa khỏi giao diện</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger">Xóa khỏi giao diện</button>
                         </div>
                     @endforeach
                 </div>
-                <button type="button" class="btn btn-secondary btn-sm" id="add-variant">Thêm biến thể</button>
+                <button type="button" class="btn btn-sm btn-outline-success" id="add-variant">Thêm biến thể</button>
             </div>
         </div>
 
         <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Cập nhật</button>
+            <button type="submit" class="btn btn-sm btn-outline-primary">Cập nhật</button>
         </div>
     </form>
 </div>

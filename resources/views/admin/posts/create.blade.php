@@ -11,11 +11,17 @@
                     <i class="icon-home"></i>
                 </a>
             </li>
+             <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Quản lý chung</a>
+            </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/posts') }}">Tin tức</a>
+                <a href="{{ url('admin/posts') }}">Bài viết</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>

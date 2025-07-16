@@ -220,8 +220,12 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
 
     // ==== Người dùng ====
+    
+    Route::get('/users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
+    Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
+     Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::resource('users', UserController::class);
-    Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+   
 
     // ==== Mã giảm giá ====
     Route::resource('promotions', PromotionController::class);

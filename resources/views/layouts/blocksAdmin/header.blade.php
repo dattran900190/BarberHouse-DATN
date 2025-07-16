@@ -99,7 +99,7 @@
                  <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button"
                      data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                      <i class="fa fa-bell"></i>
-                     <span id="pending-appointment-count"  class="notification">{{ $pendingCount }}</span>
+                     <span id="pending-appointment-count" class="notification">{{ $pendingCount }}</span>
                  </a>
                  <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
                      <li>
@@ -228,15 +228,14 @@
              </li> --}}
 
              <li class="nav-item topbar-user dropdown hidden-caret">
-                 <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#"
-                     aria-expanded="false">
+                 <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
                      <div class="avatar-sm">
-                         <img src="{{ asset('kaiadmin-lite-1.2.0/assets/img/profile.jpg') }} " alt="..."
+                        <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
                              class="avatar-img rounded-circle" />
                      </div>
                      <span class="profile-username">
                          <span class="op-7">Hi,</span>
-                         <span class="fw-bold">Hizrian</span>
+                         <span class="fw-bold">{{ Auth::user()->name }}</span>
                      </span>
                  </a>
                  <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -244,12 +243,12 @@
                          <li>
                              <div class="user-box">
                                  <div class="avatar-lg">
-                                     <img src="{{ asset('kaiadmin-lite-1.2.0/assets/img/profile.jpg') }} "
-                                         alt="image profile" class="avatar-img rounded" />
+                                    <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
+                                     class="avatar-img rounded" />
                                  </div>
                                  <div class="u-text">
-                                     <h4>Hizrian</h4>
-                                     <p class="text-muted">hello@example.com</p>
+                                     <h4>{{ Auth::user()->name }}</h4>
+                                     <p class="text-muted">{{ Auth::user()->email }}</p>
                                      <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">View Profile</a>
                                  </div>
                              </div>
@@ -262,7 +261,10 @@
                              <div class="dropdown-divider"></div>
                              <a class="dropdown-item" href="#">Account Setting</a>
                              <div class="dropdown-divider"></div>
-                             <a class="dropdown-item" href="#">Logout</a>
+                             <form action="{{ route('logout') }}" method="POST">
+                                 @csrf
+                                 <button class="dropdown-item" type="submit">Đăng xuất</button>
+                             </form>
                          </li>
                      </div>
                  </ul>

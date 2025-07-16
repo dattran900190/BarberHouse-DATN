@@ -15,6 +15,12 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
+                <a href="">Quản lý đặt hàng</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
                 <a href="{{ route('product_categories.index') }}">Danh mục</a>
             </li>
             <li class="separator">

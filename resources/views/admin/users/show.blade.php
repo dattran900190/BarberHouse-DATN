@@ -18,19 +18,19 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Quản lý chung</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
                 <a href="{{ route('users.index') }}">Quản lý người dùng</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/users?role=' . $role) }}">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</a>
-            </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="#">Chi tiết người dùng</a>
+                <a href="#">Chi tiết</a>
             </li>
         </ul>
     </div>
@@ -64,7 +64,9 @@
                     </div>
                     <div class="col-md-6">
                         <p><strong>Địa chỉ:</strong> {{ $user->address ?? 'Không có' }}</p>
-                        <p><strong>Vai trò:</strong> {{ $user->role == 'user' ? 'Người dùng' : ($user->role == 'admin' ? 'Quản trị viên' : 'Quản lý chi nhánh') }}</p>
+                        <p><strong>Vai trò:</strong>
+                            {{ $user->role == 'user' ? 'Người dùng' : ($user->role == 'admin' ? 'Quản trị viên' : 'Quản lý chi nhánh') }}
+                        </p>
                         <p><strong>Trạng thái:</strong>
                             <span
                                 class="badge 
@@ -73,19 +75,21 @@
                                     : ($user->status == 'inactive'
                                         ? 'badge-warning'
                                         : 'badge-danger') }}">
-                                {{ $user->status == 'active' ? 'Hoạt động' : ($user->status == 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
+                                {{ $user->status == 'active' ? 'Đang hoạt động' : ($user->status == 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
                             </span>
                         </p>
                         @if ($role === 'admin')
-                        <p><strong>Chi nhánh:</strong> {{ $user->branch->name ?? 'Không có' }}    </p>
+                            <p><strong>Chi nhánh:</strong> {{ $user->branch->name ?? 'Không có' }} </p>
                         @else
-                        <p><strong>Số điểm:</strong> {{ $user->points_balance }}</p>
+                            <p><strong>Số điểm:</strong> {{ $user->points_balance }}</p>
                         @endif
                         <p><strong>Ngày tạo:</strong> {{ $user->created_at->format('d/m/Y H:i') }}</p>
                         <p><strong>Ngày cập nhật:</strong> {{ $user->updated_at->format('d/m/Y H:i') }}</p>
                         <div class="text-left mt-auto" style="position: absolute; bottom: 15px; left: 15px;">
-                            <a href="{{ route('users.index', ['page' => request('page', 1)]) }}"
-                                class="btn btn-outline-secondary btn-sm"><i class="fa fa-arrow-left me-1"></i> Quay lại</a>
+                            <a href="{{ route('users.index', ['page' => request('page', 1), 'role' => request('role')]) }}"
+                                class="btn btn-sm btn-outline-secondary">
+                                <i class="fa fa-arrow-left me-1"></i> Quay lại
+                            </a>
                             @if ($currentRole === 'admin')
                                 <form action="{{ route('users.destroy', ['user' => $user->id, 'role' => $role]) }}"
                                     method="POST" style="display:inline;"

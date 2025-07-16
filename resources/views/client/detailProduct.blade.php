@@ -81,8 +81,7 @@
 
                                 {{-- Icon giỏ hàng --}}
                                 <div class="col-auto">
-                                    <button type="submit" class="btn btn-dark icon-button"
-                                        title="Thêm vào giỏ hàng">
+                                    <button type="submit" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng">
                                         <i class="fas fa-cart-plus"></i>
                                     </button>
                                 </div>
@@ -131,11 +130,13 @@
                 <p>{{ $product->details ?? 'Đang cập nhật...' }}</p>
             </div>
             {{-- Sản phẩm liên quan --}}
+            {{-- Sản phẩm liên quan --}}
             <div class="orther-product mt-5">
                 <h2 class="mb-4 text-center">Sản phẩm khác</h2>
                 <div class="container">
                     <div class="row justify-content-center">
                         @forelse ($relatedProducts as $item)
+                            @php $itemVariant = $item->variants->first(); @endphp
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
                                 <div class="card text-center h-100">
                                     <a href="{{ route('client.product.detail', $item->id) }}"
@@ -146,37 +147,25 @@
                                             <h6 class="card-title">{{ $item->name }}</h6>
                                             <p class="card-text text-danger fw-bold">{{ number_format($item->price) }} đ
                                             </p>
-
                                         </div>
                                     </a>
-                                    <form action="{{ route('cart.add') }}" method="POST"
-                                        class="related-add-to-cart-form m-0 p-0">
-                                        @csrf
-                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn-add-to-cart icon-button"
-                                            title="Thêm vào giỏ hàng">
-                                            <i class="fa-solid fa-cart-plus"></i>
-                                        </button>
-                                    </form>
-                                    <div class="action-buttons mt-auto mb-3 d-flex justify-content-center gap-2">
-                                        @php $variant = $item->variants->first(); @endphp
-                                        @if ($variant)
-                                            <form action="{{ route('cart.add') }}" method="POST" class="m-0 p-0">
-                                                @csrf
-                                                <input type="hidden" name="product_variant_id"
-                                                    value="{{ $variant->id }}">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn-add-to-cart icon-button"
-                                                    title="Thêm vào giỏ hàng">
-
-                                                </button>
-                                            </form>
+                                    @if ($itemVariant)
+                                        <form action="{{ route('cart.add') }}" method="POST"
+                                            class="related-add-to-cart-form m-0 p-0">
+                                            @csrf
+                                            <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn-add-to-cart icon-button"
+                                                title="Thêm vào giỏ hàng">
+                                                <i class="fa-solid fa-cart-plus"></i>
+                                            </button>
+                                        </form>
+                                        <div class="action-buttons mt-auto mb-3 d-flex justify-content-center gap-2">
                                             <form action="{{ route('cart.buyNow') }}" method="POST"
                                                 class="m-0 p-0 buy-now-form-related">
                                                 @csrf
                                                 <input type="hidden" name="product_variant_id"
-                                                    value="{{ $variant->id }}">
+                                                    value="{{ $itemVariant->id }}">
                                                 <input type="hidden" name="quantity" value="1">
                                                 @guest
                                                     <button type="button" class="btn btn-success btn-buy-now"
@@ -186,8 +175,10 @@
                                                         style="margin-top: 20px">Mua Ngay</button>
                                                 @endguest
                                             </form>
-                                        @endif
-                                    </div>
+                                        </div>
+                                    @else
+                                        <p class="text-danger">Không có phiên bản để mua</p>
+                                    @endif
                                 </div>
                             </div>
                         @empty
@@ -196,6 +187,7 @@
                     </div>
                 </div>
             </div>
+
 
 
         </section>
@@ -294,10 +286,21 @@
                         }
                     },
                     error: function(xhr) {
+                        let message = 'Có lỗi xảy ra, vui lòng thử lại!';
+                        if (xhr.status === 400 && xhr.responseJSON) {
+                            const res = xhr.responseJSON;
+                            if (res.reached_max) {
+                                message = res.message ||
+                                    'Bạn đã thêm tối đa số lượng sản phẩm.';
+                            } else if (res.message) {
+                                message = res.message;
+                            }
+                        }
+
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi',
-                            text: 'Không thể thêm vào giỏ hàng. Vui lòng thử lại!'
+                            icon: 'warning',
+                            title: 'Cảnh báo!',
+                            text: message,
                         });
                     }
                 });
@@ -326,10 +329,20 @@
                         }
                     },
                     error: function(xhr) {
+                        let message = 'Có lỗi xảy ra, vui lòng thử lại!';
+                        if (xhr.status === 400 && xhr.responseJSON) {
+                            const res = xhr.responseJSON;
+                            if (res.reached_max) {
+                                message = res.message ||
+                                    'Bạn đã thêm tối đa số lượng sản phẩm.';
+                            } else if (res.message) {
+                                message = res.message;
+                            }
+                        }
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi',
-                            text: 'Không thể thêm vào giỏ hàng. Vui lòng thử lại!'
+                            icon: 'warning',
+                            title: 'Cảnh báo!',
+                            text: message,
                         });
                     }
                 });

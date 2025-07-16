@@ -72,6 +72,28 @@
                 </div>
             </form>
 
+
+
+            <form action="{{ route('checkins.store') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label for="code" class="form-label fw-bold">Nhập mã Checkin (6 chữ số)</label>
+                    <input type="text" name="code" id="code"
+                        class="form-control @error('code') is-invalid @enderror" maxlength="6" required
+                        placeholder="Ví dụ: 123456">
+                    @error('code')
+                        <span class="invalid-feedback d-block mt-1"><strong>{{ $message }}</strong></span>
+                    @enderror
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check-circle"></i> Xác nhận
+                    </button>
+                </div>
+            </form>
+
+
+
             @if ($search && trim($search) && $allAppointments->isEmpty())
                 <div class="alert alert-warning">
                     Không tìm thấy lịch hẹn nào khớp với "{{ $search }}".

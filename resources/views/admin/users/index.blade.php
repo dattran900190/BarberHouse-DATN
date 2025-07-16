@@ -36,13 +36,13 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ route('users.index') }}">Quản lý người dùng</a>
+                <a href="{{ url('admin/dashboard') }}">Quản lý chung</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/users?role=' . $role) }}">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</a>
+                <a href="{{ route('users.index') }}">Quản lý người dùng</a>
             </li>
         </ul>
     </div>
@@ -70,14 +70,22 @@
                 <!-- Người dùng Tab -->
                 <div class="tab-pane fade {{ $role == 'user' ? 'show active' : '' }}" id="users" role="tabpanel"
                     aria-labelledby="users-tab">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
                         <h4 class="mb-0">Danh sách Người dùng</h4>
-                        <a href="{{ route('users.create', ['role' => 'user']) }}"
-                            class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
-                            <i class="fas fa-plus"></i>
-                            <span class="ms-2">Thêm người dùng</span>
-                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('users.create', ['role' => 'user']) }}"
+                                class="btn btn-sm btn-outline-success d-flex align-items-center">
+                                <i class="fas fa-plus"></i>
+                                <span class="ms-2">Thêm người dùng</span>
+                            </a>
+                            <a class="btn btn-sm btn-outline-danger d-flex align-items-center"
+                                href="{{ route('users.trashed', ['role' => 'user']) }}">
+                                <i class="fas fa-trash"></i>
+                                <span class="ms-2">Người dùng đã xoá</span>
+                            </a>
+                        </div>
                     </div>
+
 
                     <form action="{{ route('users.index', ['role' => 'user']) }}" method="GET" class="mb-4">
                         <input type="hidden" name="role_filter" value="user">
@@ -157,15 +165,17 @@
                                                                 <i class="fas fa-eye"></i> Xem
                                                             </a>
                                                             @if ($currentRole === 'admin')
-                                                                <div class="dropdown-divider"></div>
-                                                                <button type="button"
-                                                                    class="dropdown-item toggle-status-btn d-inline-flex align-items-center"
-                                                                    data-id="{{ $user->id }}"
-                                                                    data-status="{{ $user->status }}"
-                                                                    data-role="{{ $user->role }}">
-                                                                    <i class="fas fa-ban mr-1"></i>
-                                                                    <span>{{ $user->status === 'active' ? 'Chặn' : 'Bỏ chặn' }}</span>
-                                                                </button>
+                                                                <form
+                                                                    action="{{ route('users.destroy', ['user' => $user->id, 'role' => $role]) }}"
+                                                                    method="POST" style="display:inline;"
+                                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit"
+                                                                        class="dropdown-item text-danger">
+                                                                        <i class="fas fa-trash me-2"></i> Xoá
+                                                                    </button>
+                                                                </form>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -183,7 +193,7 @@
                         </table>
                     </div>
 
-                  <div class="d-flex justify-content-center mt-3">
+                    <div class="d-flex justify-content-center mt-3">
                         {{ $users->appends(['role' => 'user', 'role_filter' => 'user', 'search' => $role == 'user' ? $search : null])->links() }}
                     </div>
                 </div>
@@ -191,14 +201,22 @@
                 <!-- Quản trị viên Tab -->
                 <div class="tab-pane fade {{ $role == 'admin' ? 'show active' : '' }}" id="admins" role="tabpanel"
                     aria-labelledby="admins-tab">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
                         <h4 class="mb-0">Danh sách Quản trị viên</h4>
-                        <a href="{{ route('users.create', ['role' => 'admin']) }}"
-                            class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
-                            <i class="fas fa-plus"></i>
-                            <span class="ms-2">Thêm quản trị viên</span>
-                        </a>
+                        <div class="d-flex gap-2 ms-auto">
+                            <a href="{{ route('users.create', ['role' => 'admin']) }}"
+                                class="btn btn-sm btn-outline-success d-flex align-items-center">
+                                <i class="fas fa-plus"></i>
+                                <span class="ms-2">Thêm quản trị viên</span>
+                            </a>
+                            <a class="btn btn-sm btn-outline-danger d-flex align-items-center"
+                                href="{{ route('users.trashed', ['role' => 'admin']) }}">
+                                <i class="fas fa-trash"></i>
+                                <span class="ms-2">Quản trị viên đã xoá</span>
+                            </a>
+                        </div>
                     </div>
+
 
                     <form action="{{ route('users.index', ['role' => 'admin']) }}" method="GET" class="mb-4">
                         <input type="hidden" name="role_filter" value="admin">
@@ -282,24 +300,16 @@
                                                         </a>
                                                         @if ($currentRole === 'admin')
                                                             <form
-                                                                action="{{ route('users.destroy', ['user' => $admin->id, 'role' => 'admin', 'page' => request('page', 1)]) }}"
+                                                                action="{{ route('users.destroy', ['user' => $user->id, 'role' => $role]) }}"
                                                                 method="POST" style="display:inline;"
                                                                 onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
                                                                 @csrf
                                                                 @method('DELETE')
-                                                                <button type="submit" class="dropdown-item">
-                                                                    <i class="fas fa-trash me-1"></i> Xóa
+                                                                <button type="submit" class="dropdown-item text-danger">
+                                                                    <i class="fas fa-trash me-2"></i> Xoá
                                                                 </button>
                                                             </form>
                                                         @endif
-                                                        <button type="button"
-                                                            class="dropdown-item toggle-status-btn d-inline-flex align-items-center"
-                                                            data-id="{{ $admin->id }}"
-                                                            data-status="{{ $admin->status }}"
-                                                            data-role="{{ $admin->role }}">
-                                                            <i class="fas fa-ban mr-1"></i>
-                                                            <span>{{ $admin->status === 'active' ? 'Chặn' : 'Bỏ chặn' }}</span>
-                                                        </button>
                                                     </div>
                                                 </div>
                                         </td>

@@ -8,10 +8,6 @@
             <h3 class="fw-bold mb-3">Bảng điều khiển</h3>
             <h6 class="op-7 mb-2">Trang quản trị hệ thống tiệm & bán hàng</h6>
         </div>
-        {{-- <div class="ms-md-auto py-2 py-md-0">
-            <a href="#" class="btn btn-label-info btn-round me-2">Quản lý</a>
-            <a href="#" class="btn btn-primary btn-round">Thêm khách hàng</a>
-        </div> --}}
     </div>
 
     <div class="row">
@@ -99,7 +95,20 @@
                 <div class="card-header">
                     <div class="card-head-row">
                         <div class="card-title">Thống kê người dùng</div>
-                        <div class="card-tools">
+                        <div class="card-tools d-flex align-items-center gap-2">
+                            <form method="GET" class="d-flex align-items-center gap-2 mb-0">
+                                <label for="month" class="mb-0 me-2">Chọn tháng:</label>
+                                <select name="month" id="month" class="form-select w-auto"
+                                    onchange="this.form.submit()">
+                                    <option value="">Cả năm</option>
+                                    @for ($i = 1; $i <= 12; $i++)
+                                        <option value="{{ $i }}"
+                                            {{ isset($month) && $month == $i ? 'selected' : '' }}>
+                                            Tháng {{ $i }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </form>
                             <a href="#" class="btn btn-label-success btn-round btn-sm me-2">
                                 <i class="fa fa-file-export btn-label"></i> Export
                             </a>
@@ -113,7 +122,7 @@
                     <div class="chart-container" style="min-height: 375px;">
                         <canvas id="statisticsChart"></canvas>
                     </div>
-                    <div id="myChartLegend" class="mt-2 text-center">[Chart Legend]</div>
+                    <div id="myChartLegend" class="mt-2 text-center"></div>
                 </div>
             </div>
         </div>
@@ -218,8 +227,6 @@
                                 <span class="badge bg-primary rounded-pill">{{ $item->total_sold }} sp</span>
                             </li>
                         @endforeach
-
-
                     </ul>
                 </div>
             </div>
@@ -277,6 +284,68 @@
 @endsection
 
 @section('js')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const labels = @json($labels);
+        const dataSubscribers = @json($subscribers);
+        const dataNewVisitors = @json($newVisitors);
+        const dataActiveUsers = @json($activeUsers);
+
+        const ctx = document.getElementById('statisticsChart').getContext('2d');
+        const statisticsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                        label: 'Subscribers',
+                        data: dataSubscribers,
+                        backgroundColor: 'rgba(255,99,132,0.2)',
+                        borderColor: '#f25767',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'New Visitors',
+                        data: dataNewVisitors,
+                        backgroundColor: 'rgba(255,193,7,0.2)',
+                        borderColor: '#f59e42',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Active Users',
+                        data: dataActiveUsers,
+                        backgroundColor: 'rgba(52,144,255,0.2)',
+                        borderColor: '#3490ff',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 @endsection
 
 @section('css')
