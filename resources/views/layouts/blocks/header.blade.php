@@ -33,12 +33,29 @@
 
 
                 {{-- ICON ADMIN CHO BRANCH ADMIN --}}
-                <li class="nav-item mx-2"><a class="nav-link" href="#"><i class="fa-brands fa-facebook"></i></a>
+                {{-- <li class="nav-item mx-2"><a class="nav-link" href="#"><i class="fa-brands fa-facebook"></i></a>
                 </li>
                 <li class="nav-item mx-2"><a class="nav-link" href="#"><i class="fa-brands fa-instagram"></i></a>
                 </li>
                 <li class="nav-item mx-2"><a class="nav-link" href="#"><i class="fa-brands fa-youtube"></i></a>
-                </li>
+                </li> --}}
+                @foreach ($social_links as $key => $url)
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="{{ $url }}" target="_blank">
+                            @if (str_contains($key, 'facebook'))
+                                <i class="fa-brands fa-facebook"></i>
+                            @elseif (str_contains($key, 'instagram'))
+                                <i class="fa-brands fa-instagram"></i>
+                            @elseif (str_contains($key, 'youtube'))
+                                <i class="fa-brands fa-youtube"></i>
+                            @elseif (str_contains($key, 'tiktok'))
+                                <i class="fa-brands fa-tiktok"></i>
+                            @else
+                                <i class="fa-solid fa-link"></i>
+                            @endif
+                        </a>
+                    </li>
+                @endforeach
                 <li class="nav-item dropdown mx-2">
                     <a class="nav-link" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown"
                         aria-expanded="false">

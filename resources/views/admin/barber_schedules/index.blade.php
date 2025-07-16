@@ -19,7 +19,7 @@
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-white d-flex justify-content-between align-items-center rounded-top border-bottom-0"
             style="border-radius: 16px 16px 0 0;">
-            <h4 class="mb-0 fw-bold" style="color: #232b43;">Danh sách chi nhánh</h4>
+            <h4 class="mb-0 fw-bold">Danh sách chi nhánh</h4>
             <a href="{{ route('barber_schedules.createHoliday') }}"
                 class="btn btn-outline-success btn-sm d-flex align-items-center">
                 <i class="fas fa-plus me-1"></i> Tạo lịch nghỉ lễ
@@ -31,7 +31,10 @@
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Tìm theo tên chi nhánh..."
                         value="{{ request()->get('search') }}">
-                    <button class="btn btn-outline-primary" type="submit">Tìm</button>
+                    <button type="submit"
+                        class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent text-dark">
+                        <i class="fa fa-search"></i>
+                    </button>
                 </div>
             </form>
             {{-- Thông báo lịch nghỉ lễ --}}
@@ -88,13 +91,13 @@
 
             {{-- Danh sách chi nhánh --}}
             <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle text-center">
-                    <thead>
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-light">
                         <tr>
-                            <th class="fw-semibold" style="color: #232b43;">Tên chi nhánh</th>
-                            <th class="fw-semibold" style="color: #232b43;">Địa chỉ</th>
-                            <th class="fw-semibold" style="color: #232b43;">Điện thoại</th>
-                            <th class="fw-semibold text-center" style="color: #232b43;">Hành động</th>
+                            <th class="fw-semibold">Tên chi nhánh</th>
+                            <th class="fw-semibold">Địa chỉ</th>
+                            <th class="fw-semibold">Điện thoại</th>
+                            <th class="fw-semibold text-center">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -106,9 +109,8 @@
                                 <td class="text-center align-middle" style="width: 70px;">
                                     <div class="dropdown d-inline-block">
                                         <button
-                                            class="btn btn-light btn-sm d-flex align-items-center justify-content-center"
-                                            type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                            style="border: 1px solid #ddd; width: 38px; height: 38px; padding: 0;">
+                                            class="btn btn-sm btn-outline-secondary"
+                                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fa fa-ellipsis-v"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
