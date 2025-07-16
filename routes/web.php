@@ -177,6 +177,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
+    Route::get('/user_redeemed_vouchers/{id}', [UserRedeemedVoucherController::class, 'show'])->name('admin.user_redeemed_vouchers.show');
 
 
     // ==== Đặt lịch ====

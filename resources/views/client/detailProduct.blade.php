@@ -136,7 +136,7 @@
                 <div class="product-wrapper">
                     <div class="products">
                         @forelse ($relatedProducts as $item)
-                            <div class="product">
+                            <div class="product" style="border: 1px solid #d2d2d2">
                                 <div class="image-product">
                                     <a href="{{ route('client.product.detail', $item->id) }}">
                                         <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" />
@@ -300,7 +300,7 @@
             });
         });
         $(function() {
-            $('.related-add-to-cart-form').on('submit', function(e) {
+            $('.add-to-cart-form').on('submit', function(e) {
                 e.preventDefault();
                 var form = $(this);
                 $.ajax({

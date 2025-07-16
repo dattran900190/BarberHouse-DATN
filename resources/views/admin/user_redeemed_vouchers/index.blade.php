@@ -54,35 +54,51 @@
                             <th>Ngày đổi</th>
                             <th>Trạng thái</th>
                             <th>Ngày sử dụng</th>
+                            <th>Hành động</th>
                           
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($items as $item)
-                            <tr>
-                                <td>{{ $item->id }}</td>
-                                <td>{{ $item->user->name ?? 'Không rõ' }}</td>
-                                <td>{{ $item->promotion->code ?? 'Không rõ' }}</td>
-                                <td>{{ $item->redeemed_at ? \Carbon\Carbon::parse($item->redeemed_at)->format('d/m/Y H:i') : '-' }}</td>
-                                <td>
-                                    <span class="badge badge-{{ $item->is_used ? 'success' : 'secondary' }}">
-                                        {{ $item->is_used ? 'Đã dùng' : 'Chưa dùng' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    {{ $item->used_at ? \Carbon\Carbon::parse($item->used_at)->format('d/m/Y H:i') : '-' }}
-                                </td>
-                                  
-                                     
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
+                        @if (count($items) > 0)
+                            @foreach($items as $item)
+                                <tr>
+                                    <td>{{ $item->id }}</td>
+                                    <td>{{ $item->user->name ?? 'Không rõ' }}</td>
+                                    <td>{{ $item->promotion->code ?? 'Không rõ' }}</td>
+                                    <td>{{ $item->redeemed_at ? \Carbon\Carbon::parse($item->redeemed_at)->format('d/m/Y H:i') : '-' }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ $item->is_used ? 'success' : 'secondary' }}">
+                                            {{ $item->is_used ? 'Đã dùng' : 'Chưa dùng' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {{ $item->used_at ? \Carbon\Carbon::parse($item->used_at)->format('d/m/Y H:i') : '-' }}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                                id="actionMenu{{ $item->id }}" data-bs-toggle="dropdown"
+                                                                aria-expanded="false">
+                                                                <i class="fas fa-ellipsis-v"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu dropdown-menu-end"
+                                                            aria-labelledby="actionMenu{{ $item->id }}">
+                                                            <li> <a href="{{ route('admin.user_redeemed_vouchers.show', $item->id) }}"
+                                                                class="dropdown-item">
+                                                                <i class="fas fa-eye me-2"></i> Xem
+                                                            </a></li>
+                                            
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
                             <tr>
                                 <td colspan="7" class="text-muted">Không có dữ liệu</td>
                             </tr>
-                        @endforelse
+                        @endif
                     </tbody>
+                    
                 </table>
             </div>
 
