@@ -52,7 +52,7 @@
                         <div class="mb-3">
                             <label for="note" class="form-label">Ghi chú</label>
                             <textarea name="note" class="form-control" id="note" rows="5">{{ old('note') }}</textarea>
-                            @error('note')
+@error('note')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
@@ -99,7 +99,7 @@
                             </div>
                         </div>
                         <div class="form-check" style="display: flex; justify-content: space-between">
-                            <div class="chon">
+<div class="chon">
                                 <input class="form-check-input" value="2" type="radio"
                                     name="phuong_thuc_thanh_toan_id" id="paymentMethodVNPAY" />
                                 <label class="form-check-label" for="paymentMethodVNPAY">Thanh toán qua VNPAY-QR</label>
@@ -147,7 +147,7 @@
                             </div>
                             <div class="phi-van-chuyen">
                                 <p>Phí vận chuyển</p>
-                                <span id="shipping-fee-display">{{ number_format($shippingFee, 0, ',', '.') }} VNĐ</span>
+<span id="shipping-fee-display">{{ number_format($shippingFee, 0, ',', '.') }} VNĐ</span>
                             </div>
                         </div>
 
@@ -208,7 +208,7 @@
                 e.preventDefault(); // Ngăn submit mặc định để kiểm tra
 
                 // Lấy giá trị các trường bắt buộc
-                const name = document.getElementById('name').value.trim();
+const name = document.getElementById('name').value.trim();
                 const phone = document.getElementById('phone').value.trim();
                 const address = document.getElementById('address').value.trim();
 
@@ -276,5 +276,5 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection
