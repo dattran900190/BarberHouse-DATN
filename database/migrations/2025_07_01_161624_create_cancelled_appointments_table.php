@@ -18,9 +18,11 @@ return new class extends Migration
             $table->unsignedBigInteger('barber_id');
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('service_id');
+            $table->json('additional_services')->nullable();
             $table->dateTime('appointment_time');
             $table->string('status')->default('cancelled');
             $table->string('payment_status')->nullable();
+            $table->enum('payment_method', ['cash', 'vnpay'])->nullable();
             $table->text('note')->nullable();
             $table->string('name')->nullable();
             $table->string('phone')->nullable();

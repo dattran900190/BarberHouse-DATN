@@ -2,14 +2,15 @@
 
 namespace App\Events;
 
+use App\Models\Service;
 use App\Models\Appointment;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 class AppointmentCreated implements ShouldBroadcast
 {
@@ -39,6 +40,11 @@ class AppointmentCreated implements ShouldBroadcast
             'status' => $this->appointment->status,
             'payment_status' => $this->appointment->payment_status,
             'created_at' => $this->appointment->created_at->format('d/m/Y H:i'),
+            'additional_services' => Service::whereIn(
+                json_decode($this->appointment->additional_services ?? '[]'),
+                []
+            )->pluck('name'),
+            'payment_method' => $this->appointment->payment_method ?? 'undefined',
         ];
     }
 }

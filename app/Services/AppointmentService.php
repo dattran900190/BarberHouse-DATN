@@ -37,10 +37,10 @@ class AppointmentService
         // Kiểm tra điều kiện đơn hàng tối thiểu
         $service = $appointment->service;
 
-        // Tính tổng giá dịch vụ chính + dịch vụ bổ sung
+        // Tính tổng giá dịch vụ + dịch vụ thêm
         $totalServicePrice = $service->price;
 
-        // Nếu có dịch vụ bổ sung, cộng thêm giá
+        // Nếu có dịch vụ thêm, cộng thêm giá
         if (!empty($appointment->additional_services)) {
             // Nếu lưu dạng JSON
             $additionalServiceIds = is_array($appointment->additional_services)
