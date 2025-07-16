@@ -48,7 +48,8 @@
         <div class="card-header text-white d-flex justify-content-between align-items-center">
             <div class="card-title">Danh sách bài viết</div>
 
-            <a href="{{ route('posts.create') }}" class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
+            <a href="{{ route('posts.create') }}"
+                class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
                 <i class="fas fa-plus"></i>
                 <span class="ms-2">Thêm bài viết</span>
             </a>
@@ -57,7 +58,8 @@
         <div class="card-body">
             <form action="{{ route('posts.index') }}" method="GET" class="mb-3">
                 <div class="position-relative">
-                    <input type="text" name="search" placeholder="Tìm kiếm theo tiêu đề..." class="form-control pe-5" value="{{ request()->get('search') }}">
+                    <input type="text" name="search" placeholder="Tìm kiếm theo tiêu đề..." class="form-control pe-5"
+                        value="{{ request()->get('search') }}">
                     <button type="submit" class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
                         <i class="fa fa-search"></i>
                     </button>
@@ -93,7 +95,8 @@
                                 </td>
                                 <td class="text-center">
                                     @if ($post->image)
-                                        <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh" width="80" class="img-thumbnail">
+                                        <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh" width="80"
+                                            class="img-thumbnail">
                                     @else
                                         <span class="text-muted">Không có ảnh</span>
                                     @endif
@@ -110,10 +113,13 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-secondary" type="button" id="actionMenu{{ $post->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                            id="actionMenu{{ $post->id }}" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionMenu{{ $post->id }}">
+                                        <ul class="dropdown-menu dropdown-menu-end"
+                                            aria-labelledby="actionMenu{{ $post->id }}">
                                             <li>
                                                 <a class="dropdown-item" href="{{ route('posts.show', $post->id) }}">
                                                     <i class="fas fa-eye me-2"></i> Xem
@@ -124,9 +130,12 @@
                                                     <i class="fas fa-edit me-2"></i> Sửa
                                                 </a>
                                             </li>
-                                            <li><hr class="dropdown-divider"></li>
                                             <li>
-                                                <form action="{{ route('posts.destroy', $post->id) }}" method="POST" onsubmit="return confirm('Xác nhận xoá bài viết?');">
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('posts.destroy', $post->id) }}" method="POST"
+                                                    onsubmit="return confirm('Xác nhận xoá bài viết?');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="dropdown-item text-danger">

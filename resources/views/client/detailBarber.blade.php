@@ -7,141 +7,296 @@
 @section('content')
     <main class="container py-5">
         <div class="main-detail-barber">
-            <section class=" py-5">
+            <section class="py-3">
                 <div class="container">
-                    <div class="row">
-                        <div class="col-lg-12 mb-5">
-                            <div class="card ">
-                                <div class="card-body p-4 p-md-5 p-lg-6">
-                                    <div class="row align-items-center">
-                                        <div class="col-lg-6 mb-4 mb-lg-0">
-                                            <img src="{{ $barber->avatar ?? 'https://bootdey.com/img/Content/avatar/avatar7.png' }}"
-                                                alt="{{ $barber->name }}" class="img-fluid rounded">
-                                        </div>
-                                        <div class="col-lg-6 px-xl-10">
-                                            <div class="bg-white p-4 mb-4 rounded">
-                                                <h3 class="h2 text-dark mb-0">{{ $barber->name }}</h3>
-                                                <span class="text-dark">Thợ cắt tóc tại
-                                                    {{ $barber->branch->name ?? 'chưa có chi nhánh' }}</span>
+                    <!-- Barber Profile Card -->
+                    <div class="row mb-5">
+                        <div class="col-lg-12">
+                            <div class="barber-card shadow-lg rounded-4 overflow-hidden bg-white">
+                                <div class="row g-0">
+                                    <!-- Barber Image -->
+                                    <div class="col-md-4 p-4 d-flex align-items-center justify-content-center bg-light">
+                                        <div class="position-relative">
+                                            <img src="{{ $barber->avatar ? asset('storage/' . $barber->avatar) : 'https://bootdey.com/img/Content/avatar/avatar7.png' }}"
+                                                alt="{{ $barber->name }}" class="img-fluid rounded-circle shadow"
+                                                style="width: 250px; height: 250px; object-fit: cover; border: 5px solid white;">
+                                            <div
+                                                class="rating-badge position-absolute top-0 end-0 bg-warning text-white rounded-circle p-2 shadow">
+                                                {{ number_format($barber->rating_avg ?? 0, 1) }} <i
+                                                    class="fa-solid fa-star"></i>
                                             </div>
-                                            <ul class="list-unstyled mb-4">
-                                                <li class="mb-3">
-                                                    <span class="text-secondary me-2 font-weight-600">Chi nhánh:</span>
-                                                    {{ $barber->branch->address ?? 'Chưa cập nhật' }}
-                                                </li>
-                                                <li class="mb-3">
-                                                    <span class="text-secondary me-2 font-weight-600">Trình độ kỹ
-                                                        năng:</span>
-                                                    {{ $barber->skill_level ?? 'Chưa cập nhật' }}
-                                                </li>
-                                                <li class="mb-3">
-                                                    <span class="text-secondary me-2 font-weight-600">Đánh giá trung
-                                                        bình:</span>
-                                                    {{ number_format($barber->rating_avg ?? 0, 1) }}
-                                                    <i class="fa-solid fa-star text-warning"></i>
-                                                </li>
-                                            </ul>
-                                            <a href="{{ route('dat-lich', $barber->id) }}" class="btn-outline-buy">Đặt lịch
-                                                hẹn</a>
+                                        </div>
+                                    </div>
+
+                                    <!-- Barber Info -->
+                                    <div class="col-md-8 p-4 position-relative">
+                                        <div class="d-flex flex-column h-100">
+                                            <div class="mb-3">
+                                                <h1 class="text-dark fw-bold mb-2">{{ $barber->name }}</h1>
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                                    <span class="text-muted"> Chi Nhánh:
+                                                        {{ $barber->branch->name ?? 'Chưa có chi nhánh' }}</span>
+                                                </div>
+
+                                                <div class="skills mb-3">
+                                                    <span class="badge bg-primary me-2 mb-2"><i class="fas fa-cut me-1"></i>
+                                                        {{ $barber->skill_level ?? 'Chuyên nghiệp' }}</span>
+                                                </div>
+
+                                                <!-- Contact Information -->
+                                                <div class="contact-info mb-4">
+                                                    <h5 class="fw-bold mb-3">Thông tin liên hệ</h5>
+                                                    <ul class="list-unstyled">
+                                                        <li class="mb-2 d-flex">
+                                                            <i class="fas fa-map-marker-alt text-primary mt-1 me-2"></i>
+                                                            <span>{{ $barber->branch->address ?? 'Chưa cập nhật địa chỉ' }}</span>
+                                                        </li>
+                                                        <li class="d-flex">
+                                                            <i class="fas fa-phone-alt text-primary mt-1 me-2"></i>
+                                                            <span>{{ $barber->branch->phone ?? 'Chưa cập nhật số điện thoại' }}</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-auto">
+                                                <a href="{{ route('dat-lich', $barber->id) }}"
+                                                    class="btn btn-book btn-lg px-4 py-2">
+                                                    <i class="fa-solid fa-calendar-check me-2"></i>Đặt lịch ngay
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-12 mb-5">
-                            <div>
-                                <h4 class="text-dark mb-4">Hồ sơ</h4>
-                                <p>{!! $barber->profile ?? 'Chưa có thông tin hồ sơ.' !!}</p>
+                    </div>
+
+                    <!-- Profile Section -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0 rounded-4">
+                                <div class="card-body p-4">
+                                    <h4 class="mb-4 text-dark fw-bold border-bottom pb-3"><i
+                                            class="fas fa-user-tie me-2"></i>Hồ sơ thợ cắt</h4>
+                                    <div class="profile-content">
+                                        {!! $barber->profile ? e($barber->profile) : '<p class="text-muted">Chưa có thông tin hồ sơ.</p>' !!}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-12">
-                            <h4 class="text-dark mb-4">Đánh giá</h4>
-                            @if ($barber->reviews->where('is_visible', true)->isEmpty())
-                                <p class="text-muted">Chưa có đánh giá nào.</p>
-                            @else
-                                <div class="py-2">
-                                    @foreach ($barber->reviews->where('is_visible', true) as $review)
-                                        <div class="media mb-4">
-                                            <div style="background-image: url({{ $review->user->avatar ?? 'https://bootdey.com/img/Content/avatar/avatar2.png' }})"
-                                                class="media-object avatar avatar-md mr-3 rounded-circle"></div>
-                                            <div class="media-body">
-                                                <div class="media-heading">
-                                                    <small
-                                                        class="float-right text-muted">{{ $review->created_at->format('d/m/Y') }}</small>
-                                                    <h5>{{ $review->user->name ?? 'Khách hàng ẩn danh' }}</h5>
+                    </div>
+
+                    <!-- Reviews Section -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0 rounded-4">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <h4 class="mb-0 text-dark fw-bold"><i class="fas fa-star me-2"></i>Đánh giá</h4>
+                                        <div>
+                                            <span class="badge bg-warning text-dark">
+                                                {{ $reviews->total() }} đánh giá
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    @if ($reviews->isEmpty())
+                                        <div class="text-center py-5">
+                                            <i class="far fa-comment-dots fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">Chưa có đánh giá nào.</p>
+                                        </div>
+                                    @else
+                                        <div class="review-section">
+                                            @foreach ($reviews as $review)
+                                                <div class="review-item p-3 mb-3 rounded-3 border bg-white">
+                                                    <div class="d-flex">
+                                                        <div class="review-avatar me-3"
+                                                            style="background-image: url('{{ $review->user && $review->user->avatar ? asset('storage/' . $review->user->avatar) : 'https://bootdey.com/img/Content/avatar/avatar2.png' }}')">
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div
+                                                                class="d-flex justify-content-between align-items-start mb-2">
+                                                                <div>
+                                                                    <h6 class="mb-0 fw-bold">
+                                                                        {{ $review->user->name ?? 'Khách hàng ẩn danh' }}
+                                                                    </h6>
+                                                                    <small
+                                                                        class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
+                                                                </div>
+                                                                <div class="text-warning">
+                                                                    @for ($i = 1; $i <= 5; $i++)
+                                                                        <i
+                                                                            class="fa{{ $i <= $review->rating ? 's' : 'r' }} fa-star"></i>
+                                                                    @endfor
+                                                                </div>
+                                                            </div>
+                                                            <p class="mb-0">
+                                                                {{ $review->comment ?? 'Không có bình luận.' }}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="text-muted mb-2">
-                                                    {{ $review->comment ?? 'Không có bình luận.' }}</div>
-                                                <div class="text-warning">
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        <i
-                                                            class="fa-solid fa-star {{ $i <= $review->rating ? '' : 'fa-regular' }}"></i>
-                                                    @endfor
-                                                </div>
+                                            @endforeach
+
+                                            <div class="pagination mt-4 d-flex justify-content-center">
+                                                {{ $reviews->links() }}
                                             </div>
                                         </div>
-                                        <hr>
-                                    @endforeach
-                                    <nav class="pagination mt-4" aria-label="Page navigation">
-                                        {{ $reviews->links() }}
-                                    </nav>
+                                    @endif
                                 </div>
-                            @endif
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
         </div>
     </main>
+
     <style>
+        /* Main Styles */
+        body {
+            background-color: #f8f9fa;
+        }
+
         #mainNav {
             background-color: #000;
         }
+
+        /* Barber Card */
+        .barber-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+        }
+
+        .barber-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .rating-badge {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Book Button */
+        .btn-book {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #fff;
+            background: linear-gradient(135deg, #000000, #f5c518);
+            border: none;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-book:hover {
+            background: linear-gradient(135deg, #f5c518, #000000);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 197, 24, 0.4);
+        }
+
+
+        /* Review Section */
+        .review-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-item {
+            transition: transform 0.2s ease;
+        }
+
+        .review-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Skills Badges */
+        .skills .badge {
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        /* Profile Content */
+        .profile-content {
+            line-height: 1.8;
+        }
+
+        .profile-content p {
+            margin-bottom: 1rem;
+        }
+
+        /* Pagination */
+        .pagination .page-item.active .page-link {
+            background-color: #000;
+            border-color: #000;
+        }
+
+        .pagination .page-link {
+            color: #000;
+            border-radius: 50% !important;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 3px;
+            border: 1px solid #dee2e6;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Card Styles */
+        .card {
+            border: none;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .breadcrumb-item a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #000;
+            font-weight: 500;
+        }
+
+        /* Contact Info */
+        .contact-info {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
     </style>
 @endsection
-
-@section('card-footer')
-@endsection
-
-<style>
-    .main-detail-barber .card {
-        transition: transform 0.3s;
-    }
-
-    /* .main-detail-barber .card:hover {
-        transform: translateY(-5px);
-    } */
-
-    .avatar {
-        width: 50px;
-        height: 50px;
-        background-size: cover;
-        background-position: center;
-    }
-
-    .pagination .page-link {
-        color: #007bff;
-        margin: 0 5px;
-        border-radius: 5px;
-    }
-
-    .pagination .page-link:hover {
-        background-color: #f8f9fa;
-    }
-
-    .pagination .active .page-link {
-        background-color: #007bff;
-        color: white;
-    }
-
-    /* .btn-datext-dark {
-        background-color: #007bff;
-        border-color: #007bff;
-        transition: background-color 0.3s;
-    }
-
-    .btn-datext-dark:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-    } */
-</style>
