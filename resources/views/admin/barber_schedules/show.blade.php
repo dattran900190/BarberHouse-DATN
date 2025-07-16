@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-header mb-4">
-        <h3 class="fw-bold">Lịch Làm Việc Đặc Biệt - Chi Nhánh: {{ $branch->name }}</h3>
+        <h3 class="fw-bold">Lịch Làm Việc Đặc Biệt: {{ $branch->name }}</h3>
         <ul class="breadcrumbs">
             <li class="nav-home"><a href="{{ url('admin/dashboard') }}"><i class="icon-home"></i></a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
@@ -17,19 +17,23 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <form method="GET" class="row g-3 align-items-end mb-4">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label for="filter" class="form-label">Lọc theo loại lịch</label>
-                    <select name="filter" id="filter" class="form-select">
-                        <option value="">-- Tất cả --</option>
+                    <select name="filter" id="filter" class="form-select p-3 bg-body">
+                        <option value="">Tất cả</option>
                         <option value="off" {{ request('filter') === 'off' ? 'selected' : '' }}>Nghỉ cả ngày</option>
                         <option value="custom" {{ request('filter') === 'custom' ? 'selected' : '' }}>Thay đổi giờ làm
                         </option>
                     </select>
                 </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i> Lọc</button>
+                <div class="col-md-2">
+                    <label class="form-label d-none d-md-block">&nbsp;</label> {{-- để giữ chỗ với label ở trên --}}
+                    <button type="submit" class="btn btn-primary w-100 p-3">
+                        <i class="fas fa-filter me-1"></i> Lọc
+                    </button>
                 </div>
             </form>
+
 
             @if ($barbers->count())
                 @foreach ($barbers as $barber)
@@ -43,7 +47,7 @@
                     <div class="card mb-4 border">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center"
                             style="border-radius: 12px 12px 0 0;">
-                            <h5 class="mb-0 fw-semibold" style="color: #232b43;">Thợ: {{ $barber->name }}</h5>
+                            <h5 class="mb-0 fw-semibold" q>Thợ: {{ $barber->name }}</h5>
                         </div>
 
                         <div class="card-body p-0">
@@ -117,7 +121,8 @@
                                     * Những ngày khác, {{ $barber->name }} làm việc như bình thường.
                                 </div>
                             @else
-                                <div class="alert alert-secondary mb-0 p-3">Không có lịch đặc biệt nào cho thợ này theo bộ
+                                <div class=" p-3 mb-5 bg-body rounded text-muted">Không có lịch đặc biệt nào cho thợ này
+                                    theo bộ
                                     lọc.</div>
                             @endif
                         </div>
@@ -125,11 +130,11 @@
                 @endforeach
 
                 <div class="d-flex justify-content-between">
-                    <a href="{{ route('barber_schedules.index') }}" class="btn btn-outline-secondary ">
+                    <a href="{{ route('barber_schedules.index') }}" class="btn btn-outline-secondary btn-sm">
                         <i class="fas fa-arrow-left me-1"></i> Quay lại
                     </a>
                     <a href="{{ route('barber_schedules.createForBranch', $branch->id) }}"
-                        class="btn btn-sm btn-outline-success">
+                        class="btn btn-outline-success btn-sm">
                         <i class="fas fa-plus me-1"></i> Chỉnh sửa lịch trình
                     </a>
                 </div>
