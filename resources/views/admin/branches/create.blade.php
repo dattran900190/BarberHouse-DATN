@@ -11,24 +11,12 @@
                     <i class="icon-home"></i>
                 </a>
             </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="#">Quản lý chi nhánh</a>
-            </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('branches.index') }}">Danh sách chi nhánh</a>
-            </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="#">Thêm chi nhánh</a>
-            </li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="#">Quản lý chi nhánh</a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="{{ route('branches.index') }}">Danh sách chi nhánh</a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="#">Thêm chi nhánh</a></li>
         </ul>
     </div>
 
@@ -41,30 +29,43 @@
             <form action="{{ route('branches.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
-                <div class="mb-3">
-                    <label for="name" class="form-label">Tên chi nhánh</label>
-                    <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
-                        name="name" value="{{ old('name') }}">
-                    @error('name')
-                        <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Tên chi nhánh</label>
+                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
+                            name="name" value="{{ old('name') }}">
+                        @error('name')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone"
+                            name="phone" value="{{ old('phone') }}">
+                        @error('phone')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="address" class="form-label">Địa chỉ</label>
-                    <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="2">{{ old('address') }}</textarea>
-                    @error('address')
-                        <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="address" class="form-label">Địa chỉ</label>
+                        <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="3">{{ old('address') }}</textarea>
+                        @error('address')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Số điện thoại</label>
-                    <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone"
-                        name="phone" value="{{ old('phone') }}">
-                    @error('phone')
-                        <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
+                    <div class="col-md-6 mb-3">
+                        <label for="google_map_url" class="form-label">Link Google Maps</label>
+                        <input type="text" class="form-control @error('google_map_url') is-invalid @enderror"
+                            id="google_map_url" name="google_map_url" value="{{ old('google_map_url') }}">
+                        @error('google_map_url')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -72,24 +73,15 @@
                     <input type="file" class="form-control @error('image') is-invalid @enderror" id="image"
                         name="image" accept="image/*">
                     @error('image')
-                        <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="google_map_url" class="form-label">Link Google Maps</label>
-                    <input type="text" class="form-control @error('google_map_url') is-invalid @enderror"
-                        id="google_map_url" name="google_map_url" value="{{ old('google_map_url') }}">
-                    @error('google_map_url')
-                        <div class="text-danger mt-1">{{ $message }}</div>
+                        <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="content" class="form-label">Giới thiệu</label>
-                    <textarea id="content" name="content" class="form-control @error('content') is-invalid @enderror" rows="6">{{ old('content') }}</textarea>
+                    <textarea id="content" name="content" class="form-control @error('content') is-invalid @enderror" rows="10">{{ old('content') }}</textarea>
                     @error('content')
-                        <div class="text-danger mt-1">{{ $message }}</div>
+                        <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
