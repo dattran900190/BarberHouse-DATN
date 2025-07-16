@@ -21,7 +21,7 @@
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
-             <li class="nav-item">
+            <li class="nav-item">
                 <a href="{{ route('users.index') }}">Quản lý người dùng</a>
             </li>
             <li class="separator">
@@ -68,15 +68,16 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="phone" class="form-label">Số điện thoại</label>
-                          @if ($role == 'admin')
-                        <input type="text" class="form-control" name="phone" value="{{ old('phone', $user->phone) }}">
+                        @if ($role == 'admin')
+                            <input type="text" class="form-control" name="phone"
+                                value="{{ old('phone', $user->phone) }}">
                         @else
-                         <input type="text" class="form-control" name="phone" value="{{ old('phone', $user->phone) }}"
-                            readonly>
+                            <input type="text" class="form-control" name="phone"
+                                value="{{ old('phone', $user->phone) }}" readonly>
+                        @endif
                         @error('phone')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
-                        @endif
                     </div>
                     <div class="col-md-6">
                         <label for="gender" class="form-label">Giới tính</label>
@@ -95,52 +96,7 @@
                     </div>
                 </div>
 
-                {{-- Hàng 3 --}}
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        @if ($role == 'admin')
-                        <label for="" class="form-label">Chi nhánh</label>
-                        <select name="" id="" class="form-control" selected>
-                            <option value="">Chọn chi nhánh</option>
-                            @foreach ($branches as $branch)
-                                <option value="{{ $branch->id }}"
-                                    {{ old('branch_id', $user->branch_id) == $branch->id ? 'selected' : '' }}>
-                                    {{ $branch->name }}</option>
-                            @endforeach
-                        </select>
-                        @else
-                        <label for="points_balance" class="form-label">Số điểm</label>
-                        <input type="number" class="form-control" name="points_balance"
-                            value="{{ old('points_balance', $user->points_balance) }}" readonly>
-                        @error('points_balance')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                        @endif
-                    </div>
-                    <div class="col-md-6">
-                        <label for="role" class="form-label">Vai trò</label>
-                        <select class="form-control" name="role">
-                            <option value="">Chọn vai trò</option>
-                            @if ($role == 'user')
-                                <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>Người dùng
-                                </option>
-                            @else
-                                <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Quản trị viên
-                                </option>
-                                <option value="admin_branch"
-                                    {{ old('role', $user->role) == 'admin_branch' ? 'selected' : '' }}>Quản lý chi nhánh
-                                </option>
-                                
-                            @endif
-                        </select>
-                        @error('role')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                {{-- Hàng 4 --}}
-                <div class="row mb-3">
+                  <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="address" class="form-label">Địa chỉ</label>
                         <textarea class="form-control" name="address" rows="1" disabled>{{ old('address', $user->address) }}</textarea>
@@ -152,11 +108,11 @@
                         <label for="status" class="form-label">Trạng thái</label>
                         <select class="form-control" name="status">
                             <option value="">Chọn trạng thái</option>
-                            <option value="active" {{ old('status', $user->status) == 'active' ? 'selected' : '' }}>Active
+                            <option value="active" {{ old('status', $user->status) == 'active' ? 'selected' : '' }}>Đang
+                                hoạt động
                             </option>
-                            <option value="inactive" {{ old('status', $user->status) == 'inactive' ? 'selected' : '' }}>
-                                Inactive</option>
-                            <option value="banned" {{ old('status', $user->status) == 'banned' ? 'selected' : '' }}>Banned
+                            <option value="banned" {{ old('status', $user->status) == 'banned' ? 'selected' : '' }}>Bị
+                                khóa
                             </option>
                         </select>
                         @error('status')
@@ -165,12 +121,68 @@
                     </div>
                 </div>
 
+                {{-- Hàng 3 --}}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="role" class="form-label">Vai trò</label>
+                        <select class="form-control" name="role" id="role">
+                            <option value="">Chọn vai trò</option>
+                            @if ($role == 'user')
+                                <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>Người
+                                    dùng</option>
+                            @else
+                                <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Quản trị
+                                    viên</option>
+                                <option value="admin_branch"
+                                    {{ old('role', $user->role) == 'admin_branch' ? 'selected' : '' }}>Quản lý chi nhánh
+                                </option>
+                            @endif
+                        </select>
+                        @error('role')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        {{-- Chi nhánh (hiện khi role là admin_branch) --}}
+                        <div id="branch-id-group" style="display: none;">
+                            <label for="branch_id" class="form-label">Chi nhánh</label>
+                            <select name="branch_id" id="branch_id" class="form-control">
+                                <option value="">Chọn chi nhánh</option>
+                                @foreach ($branches as $branch)
+                                    <option value="{{ $branch->id }}"
+                                        {{ old('branch_id', $user->branch_id) == $branch->id ? 'selected' : '' }}>
+                                        {{ $branch->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('branch_id')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Số điểm (chỉ hiện nếu là user) --}}
+                        @if ($role == 'user')
+                            <label for="points_balance" class="form-label">Số điểm</label>
+                            <input type="number" class="form-control" name="points_balance"
+                                value="{{ old('points_balance', $user->points_balance) }}" readonly>
+                        @endif
+                        @error('points_balance')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    
+                </div>
+
+
+                {{-- Hàng 4 --}}
+              
+
                 {{-- Nút --}}
                 <div class="d-flex gap-2 mt-3">
                     <button type="submit" class="btn btn-sm btn-outline-primary">
                         <i class="fa fa-edit me-1"></i> Cập nhật
                     </button>
-                    <a href="{{ route('users.index', ['page' => request('page', 1)]) }}"
+                    <a href="{{ route('users.index', ['page' => request('page', 1), 'role' => request('role')]) }}"
                         class="btn btn-sm btn-outline-secondary">
                         <i class="fa fa-arrow-left me-1"></i> Quay lại
                     </a>
@@ -346,4 +358,22 @@
             }
         });
     </script>
+    <script>
+        function toggleBranchField() {
+            const role = document.querySelector('select[name="role"]').value;
+            const branchField = document.getElementById('branch-id-group');
+            if (role === 'admin_branch') {
+                branchField.style.display = 'block';
+            } else {
+                branchField.style.display = 'none';
+            }
+        }
+
+        // Gọi khi trang vừa load
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleBranchField();
+            document.querySelector('select[name="role"]').addEventListener('change', toggleBranchField);
+        });
+    </script>
+
 @endsection

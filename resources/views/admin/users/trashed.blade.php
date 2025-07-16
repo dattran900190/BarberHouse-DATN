@@ -3,7 +3,7 @@
 @section('title', 'Người dùng đã xoá')
 
 @section('content')
- @if (session('success'))
+    @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -22,7 +22,7 @@
         </div>
     @endif
     <div class="page-header mb-3">
-         <h3 class="fw-bold mb-3">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
+        <h3 class="fw-bold mb-3">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -38,7 +38,7 @@
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
-             <li class="nav-item">
+            <li class="nav-item">
                 <a href="{{ route('users.index') }}">Quản lý người dùng</a>
             </li>
             <li class="separator">
@@ -128,6 +128,10 @@
                     Không có người dùng nào đã xoá.
                 </div>
             @endif
+            <a href="{{ route('users.index', ['page' => request('page', 1), 'role' => request('role')]) }}"
+                class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-arrow-left me-1"></i> Quay lại
+            </a>
         </div>
     </div>
 @endsection
