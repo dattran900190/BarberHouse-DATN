@@ -363,66 +363,87 @@ class CartController extends Controller
 
     public function processCheckout(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:15',
-            'address' => 'required|string|max:255',
-            'delivery_method' => 'required|in:standard,express',
-            'phuong_thuc_thanh_toan_id' => 'required|in:1,2',
-            'items' => 'required|array|min:1',
-            'tong_tien' => 'required|numeric|min:0',
-        ], [
-            'name.required' => 'Vui lòng nhập tên.',
-            'phone.required' => 'Vui lòng nhập số điện thoại.',
-            'address.required' => 'Vui lòng nhập địa chỉ.',
-            'delivery_method.required' => 'Vui lòng chọn phương thức giao hàng.',
-            'phuong_thuc_thanh_toan_id.required' => 'Vui lòng chọn phương thức thanh toán.',
-            'items.required' => 'Giỏ hàng không được để trống.',
-            'tong_tien.required' => 'Tổng tiền không được để trống.',
-        ]);
-        $user = $request->user();
-
-        // Cập nhật lại thông tin user nếu còn thiếu
-        $needUpdate = false;
-        if (empty($user->phone) && $request->filled('phone')) {
-            $user->phone = $request->phone;
-            $needUpdate = true;
-        }
-        if (empty($user->address) && $request->filled('address')) {
-            $user->address = $request->address;
-            $needUpdate = true;
-        }
-        if ($needUpdate) {
-            $user->save();
-        }
-
-        // Tính lại tổng tiền sản phẩm
-        $productTotal = collect($request->items)->sum(function ($item) {
-            return $item['price'] * $item['quantity'];
-        });
-
-        // Tính phí vận chuyển
-        $shippingFee = $request->shipping_fee;
-
-        // Tính tổng tiền
-        $expectedTotal = $productTotal + $shippingFee;
-
-        // So sánh tổng tiền
-        if (round($request->tong_tien, 2) != round($expectedTotal, 2)) {
-            return back()->with('error', 'Tổng tiền không khớp. Vui lòng thử lại.');
-        }
-
-        // Chọn phương thức thanh toán
-        $paymentMethod = match ((int)$request->phuong_thuc_thanh_toan_id) {
-            1 => 'cash',
-            2 => 'vnpay',
-            default => 'cash',
-        };
-
-        // Tạo mã đơn hàng
-        $orderCode = 'ORD' . now()->format('Ymd') . strtoupper(Str::random(4));
-
         try {
+            // Validation
+            $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'phone' => 'required|string|regex:/^\d{10,11}$/',
+                'address' => 'required|string|max:255',
+                'delivery_method' => 'required|in:standard,express',
+                'phuong_thuc_thanh_toan_id' => 'required|in:1,2',
+                'items' => 'required|array|min:1',
+                'tong_tien' => 'required|numeric|min:0',
+            ], [
+                'name.required' => 'Vui lòng nhập tên.',
+                'phone.required' => 'Vui lòng nhập số điện thoại.',
+                'phone.regex' => 'Số điện thoại không hợp lệ. Vui lòng nhập 10 hoặc 11 số.',
+                'address.required' => 'Vui lòng nhập địa chỉ.',
+                'delivery_method.required' => 'Vui lòng chọn phương thức giao hàng.',
+                'phuong_thuc_thanh_toan_id.required' => 'Vui lòng chọn phương thức thanh toán.',
+                'items.required' => 'Giỏ hàng không được để trống.',
+                'tong_tien.required' => 'Tổng tiền không được để trống.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            // Kiểm tra đăng nhập
+            if (!Auth::check()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn cần đăng nhập để đặt hàng.',
+                ], 401);
+            }
+
+            $user = $request->user();
+
+            // Cập nhật lại thông tin user nếu còn thiếu
+            $needUpdate = false;
+            if (empty($user->phone) && $request->filled('phone')) {
+                $user->phone = $request->phone;
+                $needUpdate = true;
+            }
+            if (empty($user->address) && $request->filled('address')) {
+                $user->address = $request->address;
+                $needUpdate = true;
+            }
+            if ($needUpdate) {
+                $user->save();
+            }
+
+            // Tính lại tổng tiền sản phẩm
+            $productTotal = collect($request->items)->sum(function ($item) {
+                return $item['price'] * $item['quantity'];
+            });
+
+            // Tính phí vận chuyển
+            $shippingFee = $request->shipping_fee;
+
+            // Tính tổng tiền
+            $expectedTotal = $productTotal + $shippingFee;
+
+            // So sánh tổng tiền
+            if (round($request->tong_tien, 2) != round($expectedTotal, 2)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tổng tiền không khớp. Vui lòng thử lại.',
+                ], 422);
+            }
+
+            // Chọn phương thức thanh toán
+            $paymentMethod = match ((int)$request->phuong_thuc_thanh_toan_id) {
+                1 => 'cash',
+                2 => 'vnpay',
+                default => 'cash',
+            };
+
+            // Tạo mã đơn hàng
+            $orderCode = 'ORD' . now()->format('Ymd') . strtoupper(Str::random(4));
+
             $order = null;
             DB::transaction(function () use ($request, $paymentMethod, $shippingFee, $expectedTotal, $orderCode, &$order) {
                 // Tạo đơn hàng
@@ -492,16 +513,19 @@ class CartController extends Controller
                 }
             }
 
-            // Nếu chọn VNPay, chuyển hướng đến thanh toán
-            if ($paymentMethod === 'vnpay' && $order) {
-                return redirect()->route('client.payment.vnpay.order', ['order_id' => $order->id]);
-            }
-
-            return redirect()->route('order.success')->with('success', 'Đặt hàng thành công!');
-            Session::forget('buy_now_product');
-
+            // Trả về JSON khi thành công
+            return response()->json([
+                'success' => true,
+                'message' => 'Đặt hàng thành công!',
+                'order_id' => $order->id,
+                'payment_method' => $paymentMethod,
+                'redirect_url' => $paymentMethod === 'vnpay' ? route('client.payment.vnpay.order', ['order_id' => $order->id]) : route('home'),
+            ], 200);
         } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã có lỗi xảy ra: ' . $e->getMessage(),
+            ], 500);
         }
     }
     public function buyNow(Request $request)
@@ -564,7 +588,7 @@ class CartController extends Controller
         $shippingFee = 25000;
 
         // Nếu thiếu SĐT hoặc địa chỉ thì cảnh báo
-       
+
 
         return view('client.checkout', [
             'userInfo' => $userInfo,
