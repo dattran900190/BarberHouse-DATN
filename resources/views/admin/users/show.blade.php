@@ -75,7 +75,7 @@
                                     : ($user->status == 'inactive'
                                         ? 'badge-warning'
                                         : 'badge-danger') }}">
-                                {{ $user->status == 'active' ? 'Hoạt động' : ($user->status == 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
+                                {{ $user->status == 'active' ? 'Đang hoạt động' : ($user->status == 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
                             </span>
                         </p>
                         @if ($role === 'admin')
@@ -86,8 +86,10 @@
                         <p><strong>Ngày tạo:</strong> {{ $user->created_at->format('d/m/Y H:i') }}</p>
                         <p><strong>Ngày cập nhật:</strong> {{ $user->updated_at->format('d/m/Y H:i') }}</p>
                         <div class="text-left mt-auto" style="position: absolute; bottom: 15px; left: 15px;">
-                            <a href="{{ route('users.index', ['page' => request('page', 1)]) }}"
-                                class="btn btn-outline-secondary btn-sm"><i class="fa fa-arrow-left me-1"></i> Quay lại</a>
+                            <a href="{{ route('users.index', ['page' => request('page', 1), 'role' => request('role')]) }}"
+                                class="btn btn-sm btn-outline-secondary">
+                                <i class="fa fa-arrow-left me-1"></i> Quay lại
+                            </a>
                             @if ($currentRole === 'admin')
                                 <form action="{{ route('users.destroy', ['user' => $user->id, 'role' => $role]) }}"
                                     method="POST" style="display:inline;"

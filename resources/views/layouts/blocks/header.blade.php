@@ -61,7 +61,7 @@
                                     lịch</a></li>
 
                             {{-- THÊM LINK ADMIN VÀO DROPDOWN CHO BRANCH ADMIN --}}
-                            @if (Auth::user()->role === 'branch_admin')
+                            @if (Auth::user()->role === 'admin_branch')
                                 <li><a class="dropdown-item" href="{{ route('dashboard') }}">
                                         <i class="fa-solid fa-cogs me-2"></i>Quản lý chi nhánh
                                     </a></li>
