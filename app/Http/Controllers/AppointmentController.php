@@ -178,7 +178,7 @@ class AppointmentController extends Controller
             $appointment->save();
 
             // Tạo mã QR check-in
-            $qrCode = date('YmdHis') . rand(1000, 9999); // Mã QR duy nhất
+            $qrCode = rand(100000, 999999); // Mã QR duy nhất
             Checkin::create([
                 'appointment_id' => $appointment->id,
                 'qr_code_value' => $qrCode,
@@ -391,7 +391,7 @@ class AppointmentController extends Controller
             // Nếu trạng thái là 'pending', gửi email thông báo
             if ($appointment->status === 'confirmed') {
                 // Tạo mã QR check-in
-                $qrCode = date('YmdHis') . rand(1000, 9999); // Mã QR duy nhất;
+                $qrCode = rand(100000, 999999); // Mã QR duy nhất;
                 Checkin::create([
                     'appointment_id' => $appointment->id,
                     'qr_code_value' => $qrCode,
