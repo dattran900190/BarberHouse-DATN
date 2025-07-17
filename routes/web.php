@@ -150,7 +150,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Admin Dashboard ====
     Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
-    
+
     // Hiển thị giao diện Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -230,7 +230,12 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
-
+    Route::patch('admin/branches/{id}/soft-delete', [\App\Http\Controllers\BranchController::class, 'softDelete'])
+        ->name('branches.softDelete');
+    Route::post('admin/branches/{id}/restore', [\App\Http\Controllers\BranchController::class, 'restore'])
+        ->name('branches.restore');
+    Route::delete('admin/branches/{id}/force-delete', [\App\Http\Controllers\BranchController::class, 'forceDelete'])
+        ->name('branches.destroy');
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);
     Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])->name('barber_schedules.showBranch');
