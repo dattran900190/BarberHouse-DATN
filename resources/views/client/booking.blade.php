@@ -204,7 +204,8 @@
                                 data-discount-type="{{ $voucher->promotion->discount_type }}"
                                 data-discount-value="{{ $voucher->promotion->discount_value }}"
                                 data-expired-at="{{ $voucher->promotion->end_date }}"
-                                data-voucher-id="{{ $voucher->id }}">
+                                data-voucher-id="{{ $voucher->id }}"
+                                data-max-discount="{{ $voucher->promotion->max_discount_amount ?? 0 }}">
                                 {{ $voucher->promotion->code }}
                                 ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
                             </option>
@@ -213,7 +214,8 @@
                             <option value="{{ $promotion->code }}" data-discount-type="{{ $promotion->discount_type }}"
                                 data-discount-value="{{ $promotion->discount_value }}"
                                 data-expired-at="{{ $promotion->end_date }}"
-                                data-promotion-id="public_{{ $promotion->id }}">
+                                data-promotion-id="public_{{ $promotion->id }}"
+                                data-max-discount="{{ $promotion->max_discount_amount ?? 0 }}">
                                 {{ $promotion->code }}
                                 ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
                             </option>
@@ -689,6 +691,7 @@
             const voucherOpt = $('#voucher_id option:selected');
             const discountType = voucherOpt.data('discount-type');
             const discountValue = parseFloat(voucherOpt.data('discount-value')) || 0;
+            const maxDiscount = parseFloat(voucherOpt.data('max-discount')) || 0;
 
             let discount = 0;
             let discountText = '';
@@ -698,7 +701,12 @@
                     discountText = '- ' + discount.toLocaleString('vi-VN') + ' vnđ';
                 } else if (discountType === 'percent') {
                     discount = Math.round(totalPrice * discountValue / 100);
-                    discountText = '- ' + discountValue + '% (' + discount.toLocaleString('vi-VN') + ' vnđ)';
+                    if (maxDiscount > 0 && discount > maxDiscount) {
+                        discount = maxDiscount;
+                        discountText = discount.toLocaleString('vi-VN') + ' vnđ';
+                    } else {
+                        discountText = '- ' + discountValue + '% (' + discount.toLocaleString('vi-VN') + ' vnđ)';
+                    }
                 }
             }
 
