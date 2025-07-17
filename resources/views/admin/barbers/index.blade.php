@@ -33,6 +33,12 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Quản lý chi nhánh</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
                 <a href="{{ url('admin/barbers') }}">Quản lý thợ</a>
             </li>
         </ul>
@@ -81,12 +87,13 @@
                                 <td class="text-center">
                                     @if ($barber->avatar)
                                         <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar"
-                                            class="img-fluid rounded-circle" style="max-width: 100px; max-height: 70px;">
+                                            class="img-thumbnail" style="max-width: 100px; max-height: 70px;">
                                     @else
                                         <img src="{{ asset('uploads/avatars/default-avatar.png') }}" alt="Avatar"
-                                            class="img-fluid rounded-circle" style="max-width: 100px; max-height: 70px;">
+                                            class="img-thumbnail" style="max-width: 100px; max-height: 70px;">
                                     @endif
                                 </td>
+
                                 <td>{{ $barber->name }}</td>
                                 <td>{{ $barber->skill_level }}</td>
                                 <td>{{ $barber->rating_avg }}</td>

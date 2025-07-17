@@ -6,14 +6,14 @@
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>×</span></button>
         </div>
     @endif
 
     @if (session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ session('error') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>×</span></button>
         </div>
     @endif
 
@@ -50,13 +50,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Quản lý đơn hàng</a>
-            </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url('admin/orders') }}">Đơn hàng</a>
+                <a href="{{ url('admin/orders') }}">Danh sách đơn hàng</a>
             </li>
         </ul>
     </div>
@@ -69,12 +63,10 @@
         <div class="card-body">
             <form action="{{ route('admin.orders.index') }}" method="GET" class="mb-3" style="position: relative;">
                 <input type="text" name="search" class="form-control pe-5"
-                       placeholder="Tìm theo mã đơn hoặc tên người nhận..."
-                       value="{{ request('search') }}">
+                    placeholder="Tìm theo mã đơn hoặc tên người nhận..." value="{{ request('search') }}">
                 <input type="hidden" name="tab" value="{{ $activeTab }}">
-                <button type="submit"
-                        class="btn position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent"
-                        style="padding-right: 15px;">
+                <button type="submit" class="btn position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent"
+                    style="padding-right: 15px;">
                     <i class="fa fa-search"></i>
                 </button>
             </form>
@@ -86,7 +78,8 @@
                         href="#pending" role="tab">Chờ xác nhận
                         @if (!empty($pendingOrderCount) && $pendingOrderCount > 0)
                             <span class="position-relative">
-                                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
                                     <span class="visually-hidden">New alerts</span>
                                 </span>
                             </span>
@@ -94,26 +87,27 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ $activeTab == 'processing' ? 'active' : '' }}" id="processing-tab" data-toggle="tab"
-                        href="#processing" role="tab">Đang xử lý</a>
+                    <a class="nav-link {{ $activeTab == 'processing' ? 'active' : '' }}" id="processing-tab"
+                        data-toggle="tab" href="#processing" role="tab">Đang xử lý</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ $activeTab == 'shipping' ? 'active' : '' }}" id="shipping-tab" data-toggle="tab"
                         href="#shipping" role="tab">Đang giao hàng</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ $activeTab == 'completed' ? 'active' : '' }}" id="completed-tab" data-toggle="tab"
-                        href="#completed" role="tab">Hoàn thành</a>
+                    <a class="nav-link {{ $activeTab == 'completed' ? 'active' : '' }}" id="completed-tab"
+                        data-toggle="tab" href="#completed" role="tab">Hoàn thành</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ $activeTab == 'cancelled' ? 'active' : '' }}" id="cancelled-tab" data-toggle="tab"
-                        href="#cancelled" role="tab">Đã hủy</a>
+                    <a class="nav-link {{ $activeTab == 'cancelled' ? 'active' : '' }}" id="cancelled-tab"
+                        data-toggle="tab" href="#cancelled" role="tab">Đã hủy</a>
                 </li>
             </ul>
 
             <div class="tab-content" id="orderTabsContent">
                 <!-- Tab Chờ xác nhận -->
-                <div class="tab-pane fade {{ $activeTab == 'pending' ? 'show active' : '' }}" id="pending" role="tabpanel">
+                <div class="tab-pane fade {{ $activeTab == 'pending' ? 'show active' : '' }}" id="pending"
+                    role="tabpanel">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead class="thead-light">
@@ -127,7 +121,6 @@
                                     <th>Phương thức</th>
                                     <th>Ngày đặt hàng</th>
                                     <th>Trạng thái thanh toán</th>
-                                    
                                     <th>Trạng thái</th>
                                     @if ($currentRole == 'admin')
                                         <th class="text-center">Hành động</th>
@@ -144,11 +137,12 @@
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
                                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                                            <td >
-                                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
+                                            <td>
+                                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
+                                            </td>
                                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                             <td>
-                                                @if(isset($paymentMap[$order->payment_status]))
+                                                @if (isset($paymentMap[$order->payment_status]))
                                                     <span class="badge {{ $paymentMap[$order->payment_status]['class'] }}">
                                                         {{ $paymentMap[$order->payment_status]['text'] }}
                                                     </span>
@@ -157,54 +151,51 @@
                                                 @endif
                                             </td>
                                             <td><span class="badge bg-warning">Chờ xác nhận</span></td>
-                                            
                                             @if ($currentRole == 'admin')
-                                            <td class="text-center">
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-outline-secondary" type="button"
-                                                        id="actionMenuOrder{{ $order->id }}"
-                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </button>
-                                            
-                                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionMenuOrder{{ $order->id }}">
-                                            
-                                                        {{-- Xem --}}
-                                                        <li>
-                                                            <a href="{{ route('admin.orders.show', $order->id) }}" class="dropdown-item">
-                                                                <i class="fas fa-eye me-2"></i> Xem
-                                                            </a>
-                                                        </li>
-                                            
-                                                        {{-- Xác nhận --}}
-                                                        <li>
-                                                            <form action="{{ route('admin.orders.confirm', $order->id) }}" method="POST"
-                                                                onsubmit="return confirm('Bạn có chắc muốn xác nhận đơn này không?');">
-                                                                @csrf
-                                                                <button type="submit" class="dropdown-item text-success">
-                                                                    <i class="fas fa-check-circle me-2"></i> Xác nhận
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                            
-                                                        <li><hr class="dropdown-divider"></li>
-                                            
-                                                        {{-- Hủy --}}
-                                                        <li>
-                                                            <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST"
-                                                                onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="dropdown-item text-danger">
-                                                                    <i class="fas fa-times-circle me-2"></i> Hủy
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                            
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                            
+                                                <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                            id="actionMenuOrder{{ $order->id }}"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end"
+                                                            aria-labelledby="actionMenuOrder{{ $order->id }}">
+                                                            <li>
+                                                                <a href="{{ route('admin.orders.show', $order->id) }}"
+                                                                    class="dropdown-item">
+                                                                    <i class="fas fa-eye me-2"></i> Xem
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <form
+                                                                    action="{{ route('admin.orders.confirm', $order->id) }}"
+                                                                    method="POST"
+                                                                    onsubmit="return confirm('Bạn có chắc muốn xác nhận đơn này không?');">
+                                                                    @csrf
+                                                                    <button type="submit"
+                                                                        class="dropdown-item text-success">
+                                                                        <i class="fas fa-check-circle me-2"></i> Xác nhận
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                            <li><hr class="dropdown-divider"></li>
+                                                            <li>
+                                                                <form
+                                                                    action="{{ route('admin.orders.destroy', $order->id) }}"
+                                                                    method="POST"
+                                                                    onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit"
+                                                                        class="dropdown-item text-danger">
+                                                                        <i class="fas fa-times-circle me-2"></i> Hủy
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
                                             @endif
                                         </tr>
                                     @endforeach
@@ -222,7 +213,8 @@
                 </div>
 
                 <!-- Tab Đang xử lý -->
-                <div class="tab-pane fade {{ $activeTab == 'processing' ? 'show active' : '' }}" id="processing" role="tabpanel">
+                <div class="tab-pane fade {{ $activeTab == 'processing' ? 'show active' : '' }}" id="processing"
+                    role="tabpanel">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead class="thead-light">
@@ -251,20 +243,64 @@
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
                                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                                            <td >
-                                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
+                                            <td>
+                                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
+                                            </td>
                                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                             <td><span class="badge bg-primary">Đang xử lý</span></td>
                                             @if ($currentRole == 'admin')
                                                 <td class="text-center">
-                                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-info btn-sm">Xem</a>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                            id="actionMenuOrder{{ $order->id }}"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end"
+                                                            aria-labelledby="actionMenuOrder{{ $order->id }}">
+                                                            <li>
+                                                                <a href="{{ route('admin.orders.show', $order->id) }}"
+                                                                    class="dropdown-item">
+                                                                    <i class="fas fa-eye me-2"></i> Xem
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <form
+                                                                    action="{{ route('admin.orders.update', $order->id) }}"
+                                                                    method="POST"
+                                                                    onsubmit="return confirm('Bạn có chắc muốn cập nhật trạng thái đơn hàng này không?');">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <input type="hidden" name="status" value="shipping">
+                                                                    <button type="submit"
+                                                                        class="dropdown-item text-success">
+                                                                        <i class="fas fa-truck me-2"></i> Chuyển sang giao hàng
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                            <li><hr class="dropdown-divider"></li>
+                                                            <li>
+                                                                <form
+                                                                    action="{{ route('admin.orders.destroy', $order->id) }}"
+                                                                    method="POST"
+                                                                    onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit"
+                                                                        class="dropdown-item text-danger">
+                                                                        <i class="fas fa-times-circle me-2"></i> Hủy
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </td>
                                             @endif
                                         </tr>
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="11" class="text-center text-muted">Không có đơn hàng đang xử lý.</td>
+                                        <td colspan="10" class="text-center text-muted">Không có đơn hàng đang xử lý.</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -276,7 +312,8 @@
                 </div>
 
                 <!-- Tab Đang giao hàng -->
-                <div class="tab-pane fade {{ $activeTab == 'shipping' ? 'show active' : '' }}" id="shipping" role="tabpanel">
+                <div class="tab-pane fade {{ $activeTab == 'shipping' ? 'show active' : '' }}" id="shipping"
+                    role="tabpanel">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead class="thead-light">
@@ -305,20 +342,64 @@
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
                                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                                            <td >
-                                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
+                                            <td>
+                                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
+                                            </td>
                                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                             <td><span class="badge bg-info">Đang giao hàng</span></td>
                                             @if ($currentRole == 'admin')
                                                 <td class="text-center">
-                                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-info btn-sm">Xem</a>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                            id="actionMenuOrder{{ $order->id }}"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end"
+                                                            aria-labelledby="actionMenuOrder{{ $order->id }}">
+                                                            <li>
+                                                                <a href="{{ route('admin.orders.show', $order->id) }}"
+                                                                    class="dropdown-item">
+                                                                    <i class="fas fa-eye me-2"></i> Xem
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <form
+                                                                    action="{{ route('admin.orders.update', $order->id) }}"
+                                                                    method="POST"
+                                                                    onsubmit="return confirm('Bạn có chắc muốn hoàn thành đơn hàng này không?');">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <input type="hidden" name="status" value="completed">
+                                                                    <button type="submit"
+                                                                        class="dropdown-item text-success">
+                                                                        <i class="fas fa-check-circle me-2"></i> Hoàn thành
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                            <li><hr class="dropdown-divider"></li>
+                                                            <li>
+                                                                <form
+                                                                    action="{{ route('admin.orders.destroy', $order->id) }}"
+                                                                    method="POST"
+                                                                    onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit"
+                                                                        class="dropdown-item text-danger">
+                                                                        <i class="fas fa-times-circle me-2"></i> Hủy
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </td>
                                             @endif
                                         </tr>
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="11" class="text-center text-muted">Không có đơn hàng đang giao.</td>
+                                        <td colspan="10" class="text-center text-muted">Không có đơn hàng đang giao.</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -330,7 +411,8 @@
                 </div>
 
                 <!-- Tab Hoàn thành -->
-                <div class="tab-pane fade {{ $activeTab == 'completed' ? 'show active' : '' }}" id="completed" role="tabpanel">
+                <div class="tab-pane fade {{ $activeTab == 'completed' ? 'show active' : '' }}" id="completed"
+                    role="tabpanel">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead class="thead-light">
@@ -359,20 +441,36 @@
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
                                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                                            <td >
-                                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
+                                            <td>
+                                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
+                                            </td>
                                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                             <td><span class="badge bg-success">Hoàn thành</span></td>
                                             @if ($currentRole == 'admin')
                                                 <td class="text-center">
-                                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-info btn-sm">Xem</a>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                            id="actionMenuOrder{{ $order->id }}"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end"
+                                                            aria-labelledby="actionMenuOrder{{ $order->id }}">
+                                                            <li>
+                                                                <a href="{{ route('admin.orders.show', $order->id) }}"
+                                                                    class="dropdown-item">
+                                                                    <i class="fas fa-eye me-2"></i> Xem
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </td>
                                             @endif
                                         </tr>
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="11" class="text-center text-muted">Không có đơn hàng hoàn thành.</td>
+                                        <td colspan="10" class="text-center text-muted">Không có đơn hàng hoàn thành.</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -384,7 +482,8 @@
                 </div>
 
                 <!-- Tab Đã hủy -->
-                <div class="tab-pane fade {{ $activeTab == 'cancelled' ? 'show active' : '' }}" id="cancelled" role="tabpanel">
+                <div class="tab-pane fade {{ $activeTab == 'cancelled' ? 'show active' : '' }}" id="cancelled"
+                    role="tabpanel">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead class="thead-light">
@@ -413,20 +512,36 @@
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
                                             <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
-                                            <td >
-                                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
+                                            <td>
+                                                {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
+                                            </td>
                                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                             <td><span class="badge bg-danger">Đã hủy</span></td>
                                             @if ($currentRole == 'admin')
                                                 <td class="text-center">
-                                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-info btn-sm">Xem</a>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                            id="actionMenuOrder{{ $order->id }}"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end"
+                                                            aria-labelledby="actionMenuOrder{{ $order->id }}">
+                                                            <li>
+                                                                <a href="{{ route('admin.orders.show', $order->id) }}"
+                                                                    class="dropdown-item">
+                                                                    <i class="fas fa-eye me-2"></i> Xem
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </td>
                                             @endif
                                         </tr>
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="11" class="text-center text-muted">Không có đơn hàng đã hủy.</td>
+                                        <td colspan="10" class="text-center text-muted">Không có đơn hàng đã hủy.</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -446,13 +561,13 @@
             const tabs = document.querySelectorAll('[data-toggle="tab"]');
             const searchInput = document.querySelector('input[name="search"]');
             const tabInput = document.querySelector('input[name="tab"]');
-            
+
             tabs.forEach(tab => {
                 tab.addEventListener('click', function(e) {
                     e.preventDefault();
                     const targetTab = this.getAttribute('href').substring(1);
                     tabInput.value = targetTab;
-                    
+
                     // Cập nhật URL với tham số tab
                     const url = new URL(window.location);
                     url.searchParams.set('tab', targetTab);
@@ -460,7 +575,7 @@
                         url.searchParams.set('search', searchInput.value);
                     }
                     window.history.pushState({}, '', url);
-                    
+
                     // Hiển thị tab được chọn
                     document.querySelectorAll('.tab-pane').forEach(pane => {
                         pane.classList.remove('show', 'active');
@@ -468,7 +583,7 @@
                     document.querySelectorAll('.nav-link').forEach(link => {
                         link.classList.remove('active');
                     });
-                    
+
                     this.classList.add('active');
                     document.getElementById(targetTab).classList.add('show', 'active');
                 });
@@ -503,7 +618,6 @@
             const tableBody = document.querySelector('#pending tbody');
             if (tableBody) {
                 const paymentInfo = paymentMap[data.payment_status] || { class: 'bg-secondary', text: data.payment_status };
-                // Sử dụng tiếng Việt cho phương thức thanh toán
                 const paymentMethodText = paymentMethodMap[data.payment_method] || data.payment_method || '';
                 let actionButtons = `
                     <li>
@@ -544,7 +658,7 @@
                         <td>${data.phone || ''}</td>
                         <td>${data.address ? data.address.substring(0, 30) : ''}</td>
                         <td>${data.total_money ? Number(data.total_money).toLocaleString('vi-VN') + ' đ' : ''}</td>
-                        <td >${paymentMethodText}</td>
+                        <td>${paymentMethodText}</td>
                         <td>${data.created_at || ''}</td>
                         <td><span class="badge ${paymentInfo.class}">${paymentInfo.text}</span></td>
                         <td><span class="badge bg-warning">Chờ xác nhận</span></td>
@@ -569,13 +683,11 @@
         });
 
         orderChannel.bind('App\\Events\\OrderPaymentStatusUpdated', function(data) {
-            // Tìm dòng có mã đơn hàng tương ứng
             const rows = document.querySelectorAll('#pending tbody tr');
             rows.forEach(row => {
-                const codeCell = row.children[1]; // cột mã đơn
+                const codeCell = row.children[1];
                 if (codeCell && codeCell.textContent.trim() === data.order_code) {
-                    // Cập nhật badge trạng thái thanh toán
-                    const paymentCell = row.children[8]; // cột trạng thái thanh toán
+                    const paymentCell = row.children[8];
                     if (paymentCell) {
                         let badgeClass = 'bg-secondary', badgeText = data.payment_status;
                         if (data.payment_status === 'paid') { badgeClass = 'bg-success'; badgeText = 'Đã thanh toán'; }
