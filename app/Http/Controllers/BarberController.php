@@ -15,27 +15,29 @@ class BarberController extends Controller
     {
         $user = Auth::user();
         $search = $request->input('search');
+        $filter = $request->input('filter', 'all');
 
-        $barbers = Barber::with('branch')
-            ->when($user->role === 'admin_branch', function ($query) use ($user) {
-                return $query->where('branch_id', $user->branch_id);
-            })
-            ->when($search, function ($query, $search) {
-                return $query->where('name', 'like', '%' . $search . '%');
-            })
+        $query = match ($filter) {
+            'deleted' => Barber::onlyTrashed(),
+            'active' => Barber::query(),
+            default => Barber::withTrashed(),
+        };
+
+        $barbers = $query->with('branch')
+            ->when($user->role === 'admin_branch', fn($q) => $q->where('branch_id', $user->branch_id))
+            ->when($search, fn($q) => $q->where('name', 'like', "%$search%"))
             ->orderByDesc('id')
             ->paginate(5);
 
-        return view('admin.barbers.index', compact('barbers', 'search'));
+        return view('admin.barbers.index', compact('barbers', 'search', 'filter'));
     }
-
 
     public function create()
     {
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('barbers.index')->with('error', 'Bạn không có quyền thêm thợ cắt tóc.');
         }
-        $branches = Branch::all(); // Lấy danh sách chi nhánh
+        $branches = Branch::all();
         return view('admin.barbers.create', compact('branches'));
     }
 
@@ -44,8 +46,8 @@ class BarberController extends Controller
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('barbers.index')->with('error', 'Bạn không có quyền thêm thợ cắt tóc.');
         }
+
         $data = $request->validated();
-        // dd($data);
 
         if ($request->hasFile('avatar')) {
             $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
@@ -59,14 +61,13 @@ class BarberController extends Controller
 
     public function show(Barber $barber)
     {
-        $barber->load('branch'); // Nạp chi nhánh
+        $barber->load('branch');
         return view('admin.barbers.show', compact('barber'));
     }
 
-
     public function edit(Barber $barber)
     {
-        $branches = Branch::all(); // Lấy danh sách chi nhánh
+        $branches = Branch::all();
         return view('admin.barbers.edit', compact('barber', 'branches'));
     }
 
@@ -83,7 +84,6 @@ class BarberController extends Controller
                 ->withErrors(['status' => 'Không thể thay đổi trạng thái khi thợ đã nghỉ việc.']);
         }
 
-        // Xử lý ảnh đại diện
         if ($request->hasFile('avatar')) {
             if ($barber->avatar && Storage::disk('public')->exists($barber->avatar)) {
                 Storage::disk('public')->delete($barber->avatar);
@@ -99,14 +99,10 @@ class BarberController extends Controller
             ->with('success', 'Cập nhật thành công');
     }
 
-
-
     public function destroy(Barber $barber)
     {
-        // Lấy lại số trang hiện tại từ form
         $page = request('page', 1);
 
-        // Kiểm tra lịch hẹn còn hoạt động
         $hasActiveAppointments = $barber->appointments()
             ->whereNotIn('status', ['cancelled', 'completed'])
             ->exists();
@@ -121,5 +117,50 @@ class BarberController extends Controller
 
         return redirect()->route('barbers.index', ['page' => $page])
             ->with('success', 'Thợ đã nghỉ việc.');
+    }
+
+    public function softDelete($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xoá thợ.'
+            ]);
+        }
+
+        $barber = Barber::findOrFail($id);
+
+        if ($barber->status !== 'retired') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ thợ đã nghỉ việc mới được xoá mềm.'
+            ]);
+        }
+
+        $barber->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã xoá mềm thợ.'
+        ]);
+    }
+
+
+    public function restore($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền khôi phục thợ.'
+            ]);
+        }
+
+        $barber = Barber::withTrashed()->findOrFail($id);
+        $barber->restore();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Khôi phục thợ thành công.'
+        ]);
     }
 }

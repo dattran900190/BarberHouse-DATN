@@ -151,9 +151,15 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
+    // Xóa mềm (chỉ thợ "retired" mới được xóa)
+    Route::patch('/barbers/{id}/soft-delete', [BarberController::class, 'softDelete'])->name('barbers.softDelete');
+    Route::post('admin/barbers/{id}/restore', [BarberController::class, 'restore'])->name('barbers.restore');
 
     // Hoàn tiền
     Route::resource('refunds', RefundRequestController::class);
+    Route::patch('/refunds/{id}/soft-delete', [RefundRequestController::class, 'softDelete'])->name('refunds.softDelete');
+    Route::post('/refunds/{id}/restore', [RefundRequestController::class, 'restore'])->name('refunds.restore');
+
     // Route::put('/refunds/{refund}', [RefundRequestController::class, 'update'])->name('refunds.update');
 
     // ==== Đơn hàng ====
@@ -174,6 +180,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Bình luận ====
     Route::resource('reviews', ReviewController::class);
+    Route::patch('/reviews/{id}/soft-delete', [ReviewController::class, 'softDelete'])->name('reviews.softDelete');
+    Route::post('/reviews/{id}/restore', [ReviewController::class, 'restore'])->name('reviews.restore');
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+
 
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
@@ -220,12 +230,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
 
     // ==== Người dùng ====
-    
-    Route::get('/users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
-    Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
-     Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::resource('users', UserController::class);
-   
+    Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
 
     // ==== Mã giảm giá ====
     Route::resource('promotions', PromotionController::class);
