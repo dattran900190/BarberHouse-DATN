@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\Appointment;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -22,9 +22,11 @@ use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\Client\WalletController;
 use App\Http\Controllers\RefundRequestController;
 use App\Http\Controllers\BarberScheduleController;
+use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\Client\ClientPostController;
@@ -33,9 +35,9 @@ use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
-use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
-use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ReviewController as ClientReviewController;
+use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+use App\Http\Controllers\CustomerImageController;
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -160,7 +162,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
 
-
     // ==== Lịch sử điểm ====
     Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');
     Route::get('/point_histories/user/{id}', [PointHistoryController::class, 'userHistory'])->name('point_histories.user');
@@ -171,14 +172,19 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::delete('admin/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
     Route::post('/services/{id}/restore', [ServiceController::class, 'restore'])->name('services.restore');
 
+    // ==== settings ====
+    Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('settings/save', [SettingController::class, 'saveSettings'])->name('client.settings.save');
 
     // ==== Bình luận ====
     Route::resource('reviews', ReviewController::class);
 
+    // ==== Ảnh khách hàng ====
+    Route::resource('customer-images', CustomerImageController::class);
+
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
     Route::get('/user_redeemed_vouchers/{id}', [UserRedeemedVoucherController::class, 'show'])->name('admin.user_redeemed_vouchers.show');
-
 
     // ==== Đặt lịch ====
     Route::resource('appointments', AppointmentController::class);
@@ -221,12 +227,12 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
 
     // ==== Người dùng ====
-    
+
     Route::get('/users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
     Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
-     Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::resource('users', UserController::class);
-   
+
 
     // ==== Mã giảm giá ====
     Route::resource('promotions', PromotionController::class);

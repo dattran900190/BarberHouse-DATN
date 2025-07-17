@@ -20,92 +20,86 @@
         </ul>
     </div>
 
-    <div class="card">
-        <div class="card-header text-white align-items-center">
-            <div class="card-title">Chi tiết Chi nhánh</div>
+    <!-- Card: Thông tin chi nhánh -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white d-flex align-items-center">
+            <h4 class="card-title">Chi tiết chi nhánh</h4>
         </div>
-
         <div class="card-body">
             <div class="row">
-                <!-- Cột ảnh -->
-                <div class="col-md-4 text-center mb-3">
-                    @if ($branch->image)
-                        <img src="{{ asset('storage/' . $branch->image) }}" alt="Ảnh chi nhánh" class="img-fluid rounded"
-                            style="max-height: 300px;">
-                    @else
-                        <p>Không có ảnh</p>
-                    @endif
-                </div>
-
-                <!-- Cột thông tin -->
-                <div class="col-md-8">
-                    <div class="mb-3">
-                        <label class="form-label">Tên chi nhánh</label>
-                        <div class="form-control-plaintext">{{ $branch->name }}</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Địa chỉ</label>
-                        <div class="form-control-plaintext">{{ $branch->address }}</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Số điện thoại</label>
-                        <div class="form-control-plaintext">{{ $branch->phone }}</div>
-                    </div>
-
+                <div class="col-md-{{ $branch->image ? '8' : '12' }}">
+                    <h4 class="fw-bold mb-3">{{ $branch->name }}</h4>
+                    <p class="text-muted mb-2">
+                        <i class="fa fa-map-marker-alt me-2 text-primary"></i>
+                        <strong>Địa chỉ:</strong> {{ $branch->address }}
+                    </p>
+                    <p class="text-muted mb-2">
+                        <i class="fa fa-phone me-2 text-info"></i>
+                        <strong>Số điện thoại:</strong> {{ $branch->phone }}
+                    </p>
                     @if ($branch->google_map_url)
-                        <div class="mb-3">
-                            <label class="form-label">Google Map</label>
-                            <div class="form-control-plaintext">
-                                <a href="{{ $branch->google_map_url }}" target="_blank">Xem bản đồ</a>
-                            </div>
+                        <p class="text-muted mb-2">
+                            <i class="fa fa-map me-2 text-success"></i>
+                            <strong>Google Map:</strong>
+                            <a href="{{ $branch->google_map_url }}" target="_blank">Xem bản đồ</a>
+                        </p>
+                    @endif
+                    <p class="text-muted mb-2">
+                        <i class="fa fa-calendar me-2 text-muted"></i>
+                        <strong>Ngày tạo:</strong> {{ $branch->created_at->format('d/m/Y H:i') }}
+                    </p>
+                    @if ($branch->image)
+                        <div class="col-md-4 mb-3">
+                            <i class="fa fa-image me-2 text-success"></i>
+                            <strong class="text-muted mb-2">Ảnh chi nhánh:</strong>
+                            <img src="{{ asset('storage/' . $branch->image) }}" alt="Ảnh chi nhánh"
+                                class="img-fluid rounded mb-3"
+                                style="max-height: 250px; object-fit: cover; border: 1px solid #dee2e6;">
                         </div>
                     @endif
-
                     @if ($branch->content)
-                        <div class="mb-3">
-                            <label class="form-label">Giới thiệu</label>
-                            <div class="border rounded p-3 bg-light">
-                                {!! $branch->content !!}
-                            </div>
+                        <div class="mt-3">
+                            <p class="fa fa-info-circle text-muted mb-2"><strong> Giới thiệu:</strong></p>
+                            <div>{!! $branch->content !!}</div>
                         </div>
                     @endif
-
-                    <div class="mb-3">
-                        <label class="form-label">Ngày tạo</label>
-                        <div class="form-control-plaintext">{{ $branch->created_at->format('d/m/Y H:i') }}</div>
-                    </div>
-
-                    <a href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"
-                        class="btn btn-sm btn-outline-warning me-2">
-                        <i class="fa fa-edit me-1"></i> Sửa
-                    </a>
-                    <a href="{{ route('branches.index', ['page' => request('page', 1)]) }}"
-                        class="btn btn-sm btn-outline-secondary">
-                        <i class="fa fa-arrow-left me-1"></i> Quay lại
-                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Danh sách thợ cắt tóc --}}
-    <div class="card mt-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-            <h3 class="card-title mb-0">Danh sách Thợ Cắt Tóc tại Chi nhánh</h3>
-            {{-- <a href="{{ route('barbers.create') }}" class="btn btn-sm btn-outline-light d-flex align-items-center">
-                <i class="fas fa-plus"></i>
-                <span class="ms-2">Thêm thợ</span>
-            </a> --}}
+    <!-- Card: Hành động -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white d-flex align-items-center">
+            <h4 class="card-title">Hành động</h4>
         </div>
-
         <div class="card-body">
+            <div class="d-flex gap-2">
+                <a href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"
+                    class="btn btn-outline-primary btn-sm">
+                    <i class="fa fa-edit me-1"></i> Sửa
+                </a>
+                <a href="{{ route('branches.index', ['page' => request('page', 1)]) }}"
+                    class="btn btn-outline-secondary btn-sm">
+                    <i class="fa fa-arrow-left me-1"></i> Quay lại
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header px-4 py-3">
+            <h4 class="card-title">Danh sách Thợ Cắt Tóc tại Chi nhánh</h4>
+        </div>
+        <div class="card-body" style="border-radius: 0 0 12px 12px;">
             @if ($branch->barbers->isEmpty())
-                <div class="text-center text-muted">Hiện chưa có thợ cắt tóc nào thuộc chi nhánh này.</div>
+                <div class="text-center text-muted py-4" style="font-size: 17px;">
+                    Hiện chưa có thợ cắt tóc nào thuộc chi nhánh này.
+                </div>
             @else
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover text-center align-middle">
+                    <table class="table table-bordered table-hover align-middle mb-0">
                         <thead class="thead-light">
                             <tr>
                                 <th>STT</th>
@@ -125,11 +119,11 @@
                                     <td class="text-center">
                                         @if ($barber->avatar)
                                             <img src="{{ asset('storage/' . $barber->avatar) }}"
-                                                class="img-fluid rounded-circle" style="max-width: 100px; max-height: 70px;"
+                                                class="img-fluid rounded-circle" style="max-width: 80px; max-height: 60px;"
                                                 alt="Avatar">
                                         @else
                                             <img src="{{ asset('uploads/avatars/default-avatar.png') }}"
-                                                class="img-fluid rounded-circle" style="max-width: 100px; max-height: 70px;"
+                                                class="img-fluid rounded-circle" style="max-width: 80px; max-height: 60px;"
                                                 alt="Avatar">
                                         @endif
                                     </td>
@@ -146,16 +140,24 @@
                                             <span class="badge bg-secondary">Đã nghỉ việc</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        <div class="d-inline-flex gap-1">
-                                            <a href="{{ route('barbers.show', ['barber' => $barber->id]) }}"
-                                                class="btn btn-info btn-sm d-inline-flex align-items-center">
-                                                <i class="fas fa-eye me-1"></i> Xem
-                                            </a>
-                                            <a href="{{ route('barbers.edit', ['barber' => $barber->id]) }}"
-                                                class="btn btn-warning btn-sm d-inline-flex align-items-center">
-                                                <i class="fas fa-edit me-1"></i> Sửa
-                                            </a>
+                                    <td class="text-center align-middle" style="width: 70px;">
+                                        <div class="dropdown d-inline-block">
+                                            <button
+                                                class="btn btn-light btn-sm d-flex align-items-center justify-content-center"
+                                                type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                                style="border: 1px solid #ddd; width: 38px; height: 38px; padding: 0;">
+                                                <i class="fa fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item d-flex align-items-center"
+                                                        href="{{ route('barbers.show', ['barber' => $barber->id]) }}">
+                                                        <i class="fa fa-eye me-2"></i> Xem
+                                                    </a>
+                                                </li>
+
+
+                                            </ul>
                                         </div>
                                     </td>
                                 </tr>
@@ -166,6 +168,4 @@
             @endif
         </div>
     </div>
-
-
 @endsection
