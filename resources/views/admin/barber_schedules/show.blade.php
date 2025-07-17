@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-header mb-4">
-        <h3 class="fw-bold">Lịch Làm Việc Đặc Biệt - Chi Nhánh: {{ $branch->name }}</h3>
+        <h3 class="fw-bold">Lịch Làm Việc Đặc Biệt: {{ $branch->name }}</h3>
         <ul class="breadcrumbs">
             <li class="nav-home"><a href="{{ url('admin/dashboard') }}"><i class="icon-home"></i></a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
@@ -17,19 +17,23 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <form method="GET" class="row g-3 align-items-end mb-4">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label for="filter" class="form-label">Lọc theo loại lịch</label>
-                    <select name="filter" id="filter" class="form-select">
-                        <option value="">-- Tất cả --</option>
+                    <select name="filter" id="filter" class="form-select p-3 bg-body">
+                        <option value="">Tất cả</option>
                         <option value="off" {{ request('filter') === 'off' ? 'selected' : '' }}>Nghỉ cả ngày</option>
                         <option value="custom" {{ request('filter') === 'custom' ? 'selected' : '' }}>Thay đổi giờ làm
                         </option>
                     </select>
                 </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i> Lọc</button>
+                <div class="col-md-2">
+                    <label class="form-label d-none d-md-block">&nbsp;</label> {{-- để giữ chỗ với label ở trên --}}
+                    <button type="submit" class="btn btn-primary w-100 p-3">
+                        <i class="fas fa-filter me-1"></i> Lọc
+                    </button>
                 </div>
             </form>
+
 
             @if ($barbers->count())
                 @foreach ($barbers as $barber)
@@ -43,53 +47,53 @@
                     <div class="card mb-4 border">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center"
                             style="border-radius: 12px 12px 0 0;">
-                            <h5 class="mb-0 fw-semibold" style="color: #232b43;">Thợ: {{ $barber->name }}</h5>
+                            <h5 class="mb-0 fw-semibold" q>Thợ: {{ $barber->name }}</h5>
                         </div>
 
                         <div class="card-body p-0">
                             @if ($schedules->count())
                                 <div class="table-responsive">
-                                    <table class="table table-bordered mb-0 align-middle text-center"
-                                        style="border-radius: 0 0 12px 12px; overflow: hidden;">
-                                        <thead class="table-light">
+                                    <table class="table table-bordered table-hover align-middle mb-0">
+                                        <thead>
                                             <tr>
-                                                <th class="fw-normal" style="color: #232b43;">Ngày</th>
-                                                <th class="fw-normal" style="color: #232b43;">Giờ bắt đầu</th>
-                                                <th class="fw-normal" style="color: #232b43;">Giờ kết thúc</th>
-                                                <th class="fw-normal" style="color: #232b43;">Ghi chú</th>
-                                                <th class="fw-normal" style="color: #232b43;">Hành động</th>
+                                                <th class="stt-col">STT</th>
+                                                <th>Ngày</th>
+                                                <th>Giờ bắt đầu</th>
+                                                <th>Giờ kết thúc</th>
+                                                <th>Ghi chú</th>
+                                                <th>Hành động</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($schedules as $schedule)
+                                            @foreach ($schedules as $index => $schedule)
                                                 <tr>
+                                                    <td>{{ $index + 1 }}</td>
                                                     <td>{{ \Carbon\Carbon::parse($schedule->schedule_date)->format('d/m/Y') }}
                                                     </td>
                                                     @if ($schedule->status === 'off')
-                                                        <td colspan="2" class="text-danger fw-normal"
-                                                            style="color:#ff6b6b !important;">Nghỉ cả ngày</td>
-                                                        <td class="text-danger fw-normal" style="color:#ff6b6b !important;">
-                                                            Nghỉ phép cá nhân</td>
+                                                        <td colspan="2" class="text-danger fw-normal">Nghỉ cả ngày</td>
+                                                        <td class="text-danger fw-normal">Nghỉ phép cá nhân</td>
                                                     @else
-                                                        <td class="fw-normal">
-                                                            {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }}
+                                                        <td>{{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }}
                                                         </td>
-                                                        <td class="fw-normal">
-                                                            {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}
+                                                        <td>{{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}
                                                         </td>
                                                         <td class="text-warning fw-normal">Thay đổi giờ làm</td>
                                                     @endif
-                                                    <td>
-                                                        <div class="dropdown">
-                                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                                                type="button" data-bs-toggle="dropdown">
-                                                                <i class="fas fa-ellipsis-v"></i>
+                                                    <td class="text-center align-middle" style="width: 70px;">
+                                                        <div class="dropdown d-inline-block">
+                                                            <button
+                                                                class="btn btn-light btn-sm d-flex align-items-center justify-content-center"
+                                                                type="button" data-bs-toggle="dropdown"
+                                                                aria-expanded="false"
+                                                                style="border: 1px solid #ddd; width: 38px; height: 38px; padding: 0;">
+                                                                <i class="fa fa-ellipsis-v"></i>
                                                             </button>
                                                             <ul class="dropdown-menu dropdown-menu-end">
                                                                 <li>
-                                                                    <a href="{{ route('barber_schedules.edit', $schedule->id) }}"
-                                                                        class="dropdown-item text-warning">
-                                                                        <i class="fas fa-edit me-1"></i> Sửa
+                                                                    <a class="dropdown-item d-flex align-items-center"
+                                                                        href="{{ route('barber_schedules.edit', $schedule->id) }}">
+                                                                        <i class="fa fa-edit me-2"></i> Sửa
                                                                     </a>
                                                                 </li>
                                                                 <li>
@@ -100,8 +104,8 @@
                                                                         @csrf
                                                                         @method('DELETE')
                                                                         <button type="submit"
-                                                                            class="dropdown-item text-danger">
-                                                                            <i class="fas fa-trash-alt me-1"></i> Xoá
+                                                                            class="dropdown-item d-flex align-items-center">
+                                                                            <i class="fa fa-trash me-2"></i> Xoá
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -117,7 +121,8 @@
                                     * Những ngày khác, {{ $barber->name }} làm việc như bình thường.
                                 </div>
                             @else
-                                <div class="alert alert-secondary mb-0 p-3">Không có lịch đặc biệt nào cho thợ này theo bộ
+                                <div class=" p-3 mb-5 bg-body rounded text-muted">Không có lịch đặc biệt nào cho thợ này
+                                    theo bộ
                                     lọc.</div>
                             @endif
                         </div>
@@ -125,11 +130,11 @@
                 @endforeach
 
                 <div class="d-flex justify-content-between">
-                    <a href="{{ route('barber_schedules.index') }}" class="btn btn-outline-secondary ">
+                    <a href="{{ route('barber_schedules.index') }}" class="btn btn-outline-secondary btn-sm">
                         <i class="fas fa-arrow-left me-1"></i> Quay lại
                     </a>
                     <a href="{{ route('barber_schedules.createForBranch', $branch->id) }}"
-                        class="btn btn-sm btn-outline-success">
+                        class="btn btn-outline-success btn-sm">
                         <i class="fas fa-plus me-1"></i> Chỉnh sửa lịch trình
                     </a>
                 </div>

@@ -16,6 +16,94 @@ body a:hover {
   color: #444;
 }
 
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.btn-outline-buy {
+  padding: 10px 24px;
+  border: 2px solid #000;
+  border-radius: 6px;
+  background-color: transparent;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #000;
+}
+
+
+
+.btn-outline-cart {
+  padding: 13px 24px;
+  border: 2px solid #000;
+  border-radius: 6px;
+  background-color: transparent;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #000;
+}
+
+.btn-outline-show {
+  padding: 13px 24px;
+  border: 2px solid #000;
+  border-radius: 6px;
+  background-color: transparent;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #000;
+}
+
+.btn-outline-booking {
+  padding: 13px 24px;
+  border: 2px solid #000;
+  border-radius: 6px;
+  background-color: transparent;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  color: #000;
+  width: 100%;
+}
+
+.btn-outline-buy i {
+  font-size: 16px;
+}
+
+.btn-outline-buy:hover,
+.btn-outline-show:hover,
+.btn-outline-booking:hover,
+.btn-outline-cart:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+
+
 .custom-swal-popup {
   width: 550px !important;
   max-width: 550px !important;
@@ -739,7 +827,7 @@ footer {
 }
 
 .booking-container .branch-item.selected .branch-radio {
- background-color: #000;
+  background-color: #000;
   color: #fff;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
@@ -1402,6 +1490,7 @@ footer {
 .form-login {
   width: 500px;
   justify-content: center;
+  padding-right: 3%;
 }
 
 .form-login .image {
@@ -2069,9 +2158,11 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 
 .order-history .order-item .col-md-7 {
   border-right: 1px solid #e9ecef;
+  border-left: 1px solid #e9ecef;
 }
 
 .order-history .order-item .col-md-2 {
+  border-left: 1px solid #e9ecef;
   border-right: 1px solid #e9ecef;
 }
 
@@ -2111,6 +2202,12 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
   background-color: #d1ecf1;
   color: #0d6efd;
   border-color: #0d6efd;
+}
+
+.status-info {
+  background-color: #d1ecf1;
+  color: #003585;
+  border-color: #003585;
 }
 
 .status-completed {

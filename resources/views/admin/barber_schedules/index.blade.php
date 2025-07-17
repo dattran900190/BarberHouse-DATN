@@ -19,7 +19,7 @@
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-white d-flex justify-content-between align-items-center rounded-top border-bottom-0"
             style="border-radius: 16px 16px 0 0;">
-            <h4 class="mb-0 fw-bold" style="color: #232b43;">Danh sách chi nhánh</h4>
+            <h4 class="mb-0 fw-bold">Danh sách chi nhánh</h4>
             <a href="{{ route('barber_schedules.createHoliday') }}"
                 class="btn btn-outline-success btn-sm d-flex align-items-center">
                 <i class="fas fa-plus me-1"></i> Tạo lịch nghỉ lễ
@@ -31,7 +31,10 @@
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Tìm theo tên chi nhánh..."
                         value="{{ request()->get('search') }}">
-                    <button class="btn btn-outline-primary" type="submit">Tìm</button>
+                    <button type="submit"
+                        class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent text-dark">
+                        <i class="fa fa-search"></i>
+                    </button>
                 </div>
             </form>
             {{-- Thông báo lịch nghỉ lễ --}}
@@ -88,13 +91,13 @@
 
             {{-- Danh sách chi nhánh --}}
             <div class="table-responsive">
-                <table class="table table-borderless align-middle mb-0">
-                    <thead>
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-light">
                         <tr>
-                            <th class="fw-semibold" style="color: #232b43;">Tên chi nhánh</th>
-                            <th class="fw-semibold" style="color: #232b43;">Địa chỉ</th>
-                            <th class="fw-semibold" style="color: #232b43;">Điện thoại</th>
-                            <th class="fw-semibold text-center" style="color: #232b43;">Hành động</th>
+                            <th class="fw-semibold">Tên chi nhánh</th>
+                            <th class="fw-semibold">Địa chỉ</th>
+                            <th class="fw-semibold">Điện thoại</th>
+                            <th class="fw-semibold text-center">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -103,11 +106,22 @@
                                 <td>{{ $branch->name }}</td>
                                 <td>{{ $branch->address }}</td>
                                 <td>{{ $branch->phone }}</td>
-                                <td class="text-center">
-                                    <a href="{{ route('barber_schedules.showBranch', $branch->id) }}"
-                                        class="btn btn-outline-primary btn-sm uniform-btn">
-                                        <i class="fas fa-eye"></i> Xem lịch
-                                    </a>
+                                <td class="text-center align-middle" style="width: 70px;">
+                                    <div class="dropdown d-inline-block">
+                                        <button
+                                            class="btn btn-sm btn-outline-secondary"
+                                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center"
+                                                    href="{{ route('barber_schedules.showBranch', $branch->id) }}">
+                                                    <i class="fas fa-eye me-2"></i> Xem lịch
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -120,6 +134,11 @@
             </div>
         </div>
     </div>
+    @if ($branches instanceof \Illuminate\Pagination\LengthAwarePaginator)
+        <div class="mt-3 d-flex justify-content-center">
+            {{ $branches->links('pagination::bootstrap-5') }}
+        </div>
+    @endif
 @endsection
 
 @section('css')
