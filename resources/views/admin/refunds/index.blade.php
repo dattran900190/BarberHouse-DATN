@@ -42,14 +42,19 @@
         </div>
 
         <div class="card-body">
-            <form method="GET" action="{{ route('refunds.index') }}" class="mb-3">
-                <div class="position-relative">
+            <form method="GET" action="{{ route('refunds.index') }}" class="mb-3 d-flex gap-2 flex-wrap">
+                <div class="position-relative" style="flex: 1; min-width: 200px">
                     <input type="text" name="search" class="form-control pe-5" placeholder="Tìm kiếm yêu cầu hoàn..."
                         value="{{ request()->get('search') }}">
                     <button type="submit" class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
                         <i class="fa fa-search"></i>
                     </button>
                 </div>
+                <select name="filter" class="form-select" style="max-width: 200px;" onchange="this.form.submit()">
+                    <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả</option>
+                    <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Còn hoạt động</option>
+                    <option value="deleted" {{ request('filter') == 'deleted' ? 'selected' : '' }}>Đã xoá</option>
+                </select>
             </form>
 
             @php
@@ -65,15 +70,8 @@
                 @foreach ($tabs as $key => $label)
                     <li class="nav-item">
                         <a class="nav-link {{ $activeTab == $key ? 'active' : '' }}" id="{{ $key }}-tab"
-                            href="{{ route('refunds.index', ['status' => $key, 'search' => request('search')]) }}">
+                            href="{{ route('refunds.index', ['status' => $key, 'search' => request('search'), 'filter' => request('filter')]) }}">
                             {{ $label }}
-                            @if ($key == 'pending' && $pendingRefundCount > 0)
-                                <span class="position-relative">
-                                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                                        <span class="visually-hidden">New alerts</span>
-                                    </span>
-                                </span>
-                            @endif
                         </a>
                     </li>
                 @endforeach
@@ -86,7 +84,7 @@
                             $filteredRefundsForTab = $refunds->where('refund_status', $key);
                         @endphp
 
-                        @if ($search && $filteredRefundsForTab->isEmpty() && $activeTab == $key)
+                        @if ($search && $filteredRefundsForTab->isEmpty())
                             <div class="alert alert-warning mt-3">
                                 Không tìm thấy yêu cầu nào khớp với "{{ $search }}" trong tab này.
                             </div>
@@ -102,6 +100,7 @@
                                         <th>Số tiền hoàn</th>
                                         <th>Trạng thái</th>
                                         <th>Ngày tạo</th>
+                                        <th>Tình trạng</th>
                                         <th>Hành động</th>
                                     </tr>
                                 </thead>
@@ -110,9 +109,9 @@
                                         <tr data-refund-id="{{ $refund->id }}">
                                             <td>{{ $refunds->firstItem() + $index }}</td>
                                             <td>{{ $refund->user->name ?? 'N/A' }}</td>
-                                            <td>{{ $refund->order->order_code ?? ($refund->appointment->appointment_code ?? 'Không có') }}</td>
-                                            <td class="text-end">
-                                                {{ number_format($refund->refund_amount, 0, ',', '.') }} đ
+                                            <td>{{ $refund->order->order_code ?? ($refund->appointment->appointment_code ?? 'Không có') }}
+                                            </td>
+                                            <td class="text-end">{{ number_format($refund->refund_amount, 0, ',', '.') }} đ
                                             </td>
                                             <td class="text-center">
                                                 @php
@@ -122,11 +121,21 @@
                                                         'refunded' => ['label' => 'Đã hoàn tiền', 'class' => 'success'],
                                                         'rejected' => ['label' => 'Từ chối', 'class' => 'danger'],
                                                     ];
-                                                    $info = $map[$refund->refund_status] ?? ['label' => $refund->refund_status, 'class' => 'secondary'];
+                                                    $info = $map[$refund->refund_status] ?? [
+                                                        'label' => $refund->refund_status,
+                                                        'class' => 'secondary',
+                                                    ];
                                                 @endphp
                                                 <span class="badge bg-{{ $info['class'] }}">{{ $info['label'] }}</span>
                                             </td>
                                             <td>{{ $refund->created_at->format('d/m/Y H:i') }}</td>
+                                            <td class="text-center">
+                                                @if ($refund->trashed())
+                                                    <span class="badge bg-danger">Đã xoá</span>
+                                                @else
+                                                    <span class="badge bg-success">Hoạt động</span>
+                                                @endif
+                                            </td>
                                             <td class="text-center">
                                                 <div class="dropdown">
                                                     <button class="btn btn-sm btn-outline-secondary" type="button"
@@ -140,20 +149,19 @@
                                                                 <i class="fas fa-eye me-2"></i> Xem
                                                             </a>
                                                         </li>
-                                                        @if ($key === 'pending')
+                                                        @if ($refund->trashed())
                                                             <li>
-                                                                <form action="{{ route('refunds.update', $refund->id) }}"
-                                                                    method="POST"
-                                                                    onsubmit="return confirm('Chuyển trạng thái sang đang xử lý?')">
-                                                                    @csrf
-                                                                    @method('PUT')
-                                                                    <input type="hidden" name="refund_status"
-                                                                        value="processing">
-                                                                    <button class="dropdown-item text-success"
-                                                                        type="submit">
-                                                                        <i class="fas fa-check-circle me-2"></i> Xác nhận
-                                                                    </button>
-                                                                </form>
+                                                                <button class="dropdown-item text-success restore-btn"
+                                                                    data-id="{{ $refund->id }}">
+                                                                    <i class="fas fa-undo me-2"></i> Khôi phục
+                                                                </button>
+                                                            </li>
+                                                        @else
+                                                            <li>
+                                                                <button class="dropdown-item text-danger soft-delete-btn"
+                                                                    data-id="{{ $refund->id }}">
+                                                                    <i class="fas fa-times me-2"></i> Xoá mềm
+                                                                </button>
                                                             </li>
                                                         @endif
                                                     </ul>
@@ -161,8 +169,8 @@
                                             </td>
                                         </tr>
                                     @empty
-                                        <tr class="no-data-row">
-                                            <td colspan="7" class="text-center text-muted">Không có yêu cầu nào.</td>
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">Không có yêu cầu nào.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -170,7 +178,7 @@
                         </div>
 
                         <div class="d-flex justify-content-center mt-3">
-                            {{ $refunds->appends(['status' => $status, 'search' => $search])->links() }}
+                            {{ $refunds->appends(request()->query())->links() }}
                         </div>
                     </div>
                 @endforeach
@@ -179,41 +187,122 @@
     </div>
 @endsection
 
-@section('css')
-    <style>
-        .dot-indicator {
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            display: inline-block;
-            margin-left: 4px;
-            vertical-align: middle;
-        }
+@section('js')
+<script>
+    function handleSwalAction({
+        selector,
+        title,
+        text,
+        route,
+        method = 'POST',
+        withInput = false,
+        inputPlaceholder = '',
+        inputValidator = null,
+        onSuccess = () => location.reload()
+    }) {
+        document.querySelectorAll(selector).forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const id = this.getAttribute('data-id');
 
-        .rounded-circle {
-            width: 10px;
-            height: 10px;
-            line-height: 10px;
-            text-align: center;
-            font-size: 0.7em;
-        }
+                const swalOptions = {
+                    title,
+                    text,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy',
+                    width: '400px',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
+                };
 
-        .toast {
-            max-width: 350px;
-        }
+                if (withInput) {
+                    swalOptions.input = 'textarea';
+                    swalOptions.inputPlaceholder = inputPlaceholder;
+                    if (inputValidator) {
+                        swalOptions.inputValidator = inputValidator;
+                    }
+                }
 
-        .new-refund-row {
-            animation: highlight 2s ease-in-out;
-        }
+                Swal.fire(swalOptions).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
 
-        @keyframes highlight {
-            0% {
-                background-color: #fff3cd;
-            }
-            100% {
-                background-color: transparent;
-            }
-        }
-    </style>
+                        const body = withInput ? JSON.stringify({
+                            input: result.value || ''
+                        }) : undefined;
+
+                        fetch(route.replace(':id', id), {
+                                method,
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body
+                            })
+                            .then(response => {
+                                if (!response.ok) throw new Error('Lỗi xử lý phía máy chủ.');
+                                return response.json();
+                            })
+                            .then(data => {
+                                Swal.close();
+                                Swal.fire({
+                                    title: data.success ? 'Thành công!' : 'Lỗi!',
+                                    text: data.message,
+                                    icon: data.success ? 'success' : 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                }).then(() => {
+                                    if (data.success) onSuccess();
+                                });
+                            })
+                            .catch(error => {
+                                Swal.close();
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: error.message,
+                                    icon: 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                });
+                            });
+                    }
+                });
+            });
+        });
+    }
+
+    // Xoá mềm yêu cầu hoàn tiền
+    handleSwalAction({
+        selector: '.soft-delete-btn',
+        title: 'Xoá mềm yêu cầu hoàn tiền',
+        text: 'Bạn có chắc chắn muốn xoá mềm yêu cầu này?',
+        route: '{{ route('refunds.softDelete', ':id') }}',
+        method: 'PATCH'
+    });
+
+    // Khôi phục yêu cầu hoàn tiền
+    handleSwalAction({
+        selector: '.restore-btn',
+        title: 'Khôi phục yêu cầu hoàn tiền',
+        text: 'Bạn có chắc chắn muốn khôi phục yêu cầu này?',
+        route: '{{ route('refunds.restore', ':id') }}',
+        method: 'POST'
+    });
+</script>
 @endsection
+
