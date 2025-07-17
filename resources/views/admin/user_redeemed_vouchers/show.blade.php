@@ -13,6 +13,7 @@
         <li class="nav-item"><a href="{{ url('admin/user_redeemed_vouchers') }}">Danh sách voucher đã đổi</a></li>
         <li class="separator"><i class="icon-arrow-right"></i></li>
         <li class="nav-item"><a href="{{ url('admin/user_redeemed_vouchers/'.$item->id) }}">Chi tiết voucher đã đổi</a></li>
+
     </ul>
 </div>
 
@@ -20,12 +21,13 @@
     <!-- Card: Thông tin voucher đã đổi -->
     <div class="card shadow-sm mb-4">
         <div class="card-header d-flex align-items-center">
-            <h4 class="card-title mb-0">Chi tiết voucher đã đổi</h4>
+            
+            <h4 class="card-title mb-0">Chi tiết voucher {{ $item->promotion->code ?? 'Không rõ' }} đã đổi</h4>
         </div>
         <div class="card-body">
             <div class="row gy-3">
                 <div class="col-md-12">
-                    <h5 class="fw-bold mb-3">{{ $item->voucher->name ?? 'Voucher không xác định' }}</h5>
+                
                     <div class="mb-2">
                         <i class="fa fa-user me-2 text-primary"></i>
                         <span class="fw-semibold">Người dùng:</span>
