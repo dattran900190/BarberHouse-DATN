@@ -94,7 +94,8 @@
             <div class="card card-round h-100 d-flex flex-column">
                 <div class="card-header">
                     <div class="card-head-row">
-                        <div class="card-title">Thống kê người dùng</div>
+                        <div class="card-title">Thống kê doanh thu dịch vụ & sản phẩm</div>
+
                         <div class="card-tools d-flex align-items-center gap-2">
                             <form method="GET" class="d-flex align-items-center gap-2 mb-0">
                                 <label for="month" class="mb-0 me-2">Chọn tháng:</label>
@@ -109,12 +110,7 @@
                                     @endfor
                                 </select>
                             </form>
-                            <a href="#" class="btn btn-label-success btn-round btn-sm me-2">
-                                <i class="fa fa-file-export btn-label"></i> Export
-                            </a>
-                            <a href="#" class="btn btn-label-info btn-round btn-sm">
-                                <i class="fa fa-print btn-label"></i> Print
-                            </a>
+
                         </div>
                     </div>
                 </div>
@@ -159,7 +155,7 @@
         </div>
     </div>
 
-    <div class="col-md-12">
+    {{-- <div class="col-md-12">
         <div class="card card-primary card-round">
             <div class="card-header">
                 <div class="card-head-row">
@@ -191,7 +187,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <div class="row">
         <div class="col-md-6">
@@ -287,9 +283,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const labels = @json($labels);
-        const dataSubscribers = @json($subscribers);
-        const dataNewVisitors = @json($newVisitors);
-        const dataActiveUsers = @json($activeUsers);
+        const serviceRevenue = @json($serviceRevenuePerMonth);
+        const productRevenue = @json($productRevenuePerMonth);
 
         const ctx = document.getElementById('statisticsChart').getContext('2d');
         const statisticsChart = new Chart(ctx, {
@@ -297,26 +292,18 @@
             data: {
                 labels: labels,
                 datasets: [{
-                        label: 'Subscribers',
-                        data: dataSubscribers,
-                        backgroundColor: 'rgba(255,99,132,0.2)',
-                        borderColor: '#f25767',
+                        label: 'Doanh thu dịch vụ',
+                        data: serviceRevenue,
+                        backgroundColor: 'rgba(0, 204, 102, 0.2)',
+                        borderColor: '#00cc66',
                         fill: true,
                         tension: 0.4
                     },
                     {
-                        label: 'New Visitors',
-                        data: dataNewVisitors,
-                        backgroundColor: 'rgba(255,193,7,0.2)',
-                        borderColor: '#f59e42',
-                        fill: true,
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Active Users',
-                        data: dataActiveUsers,
-                        backgroundColor: 'rgba(52,144,255,0.2)',
-                        borderColor: '#3490ff',
+                        label: 'Doanh thu sản phẩm',
+                        data: productRevenue,
+                        backgroundColor: 'rgba(52, 144, 220, 0.2)',
+                        borderColor: '#3490dc',
                         fill: true,
                         tension: 0.4
                     }
@@ -340,12 +327,18 @@
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₫' + value.toLocaleString();
+                            }
+                        }
                     }
                 }
             }
         });
     </script>
+
 @endsection
 
 @section('css')

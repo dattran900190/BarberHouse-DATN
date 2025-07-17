@@ -12,19 +12,25 @@ class BranchController extends Controller
     // Hiển thị danh sách chi nhánh
     public function index(Request $request)
     {
-        $user = Auth::user();
         $search = $request->input('search');
+        $filter = $request->input('filter', 'all');
 
-        $branches = Branch::when($user->role === 'admin_branch', function ($query) use ($user) {
-            return $query->where('id', $user->branch_id);
-        })
-            ->when($search, function ($query, $search) {
-                return $query->where('name', 'like', '%' . $search . '%');
-            })
-            ->latest()
-            ->paginate(10);
+        $query = Branch::query();
 
-        return view('admin.branches.index', compact('branches', 'search'));
+        if ($filter === 'deleted') {
+            $query->onlyTrashed();
+        } elseif ($filter === 'all') {
+            $query->withTrashed();
+        }
+        // Nếu muốn chỉ hiện chi nhánh hoạt động khi không chọn gì, thì bỏ else if trên và để mặc định
+
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $branches = $query->latest()->paginate(10);
+
+        return view('admin.branches.index', compact('branches'));
     }
 
     // Hiển thị form tạo chi nhánh
@@ -114,5 +120,25 @@ class BranchController extends Controller
         }
         $branch->delete();
         return redirect()->route('branches.index')->with('success', 'Xoá chi nhánh thành công');
+    }
+    public function softDelete($id)
+    {
+        $branch = Branch::findOrFail($id);
+        $branch->delete();
+        return response()->json(['success' => true, 'message' => 'Đã xoá mềm chi nhánh!']);
+    }
+
+    public function restore($id)
+    {
+        $branch = Branch::withTrashed()->findOrFail($id);
+        $branch->restore();
+        return response()->json(['success' => true, 'message' => 'Đã khôi phục chi nhánh!']);
+    }
+
+    public function forceDelete($id)
+    {
+        $branch = Branch::withTrashed()->findOrFail($id);
+        $branch->forceDelete();
+        return response()->json(['success' => true, 'message' => 'Đã xoá vĩnh viễn chi nhánh!']);
     }
 }
