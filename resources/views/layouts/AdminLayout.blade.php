@@ -8,7 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @include('layouts.blocksAdmin.includes.link-head')
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     {{-- <script src="https://js.pusher.com/8.2/pusher.min.js"></script> --}}
 </head>
