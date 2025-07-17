@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\ProcessRefundRequest;
 use App\Models\RefundRequest;
 use App\Models\Order;
@@ -12,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 
 class RefundRequestController extends Controller
 {
@@ -19,8 +19,13 @@ class RefundRequestController extends Controller
     {
         $status = $request->query('status');
         $search = $request->query('search');
+        $filter = $request->query('filter', 'all'); // 'all', 'active', 'deleted'
 
-        $query = RefundRequest::with(['user', 'order', 'appointment']);
+        $query = match ($filter) {
+            'deleted' => RefundRequest::onlyTrashed()->with(['user', 'order', 'appointment']),
+            'active' => RefundRequest::query()->with(['user', 'order', 'appointment']),
+            default => RefundRequest::withTrashed()->with(['user', 'order', 'appointment']),
+        };
 
         if ($status) {
             $query->where('refund_status', $status);
@@ -38,21 +43,14 @@ class RefundRequestController extends Controller
             });
         }
 
-        // Áp dụng phân trang, mặc định 10 bản ghi mỗi trang
         $refunds = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        // Logic để xác định activeTab dựa trên tìm kiếm
-        $activeTab = $status ?? 'pending'; 
+        $activeTab = $status ?? 'pending';
 
         if ($search && $refunds->isNotEmpty()) {
-            // Nếu có kết quả tìm kiếm, ưu tiên chuyển đến tab của kết quả đầu tiên
             $activeTab = $refunds->first()->refund_status;
-        } elseif ($search && $refunds->isEmpty() && !$status) {
-            // Nếu tìm kiếm không có kết quả và không có tab cụ thể nào được chọn,
-            // có thể giữ nguyên tab hiện tại hoặc về mặc định (pending)
         }
 
-        // Lấy số lượng yêu cầu chờ duyệt cho sidebar
         $pendingRefundCount = RefundRequest::where('refund_status', 'pending')->count();
 
         return view('admin.refunds.index', [
@@ -60,6 +58,7 @@ class RefundRequestController extends Controller
             'search' => $search,
             'activeTab' => $activeTab,
             'status' => $status,
+            'filter' => $filter,
             'pendingRefundCount' => $pendingRefundCount,
         ]);
     }
@@ -73,6 +72,7 @@ class RefundRequestController extends Controller
             'appointment.barber',
             'appointment.branch',
         ]);
+
         return view('admin.refunds.show', compact('refund'));
     }
 
@@ -83,23 +83,11 @@ class RefundRequestController extends Controller
             $newStatus = $request->input('refund_status');
             $currentStatus = $refund->refund_status;
 
-            Log::info('Cập nhật trạng thái:', [
-                'refund_id' => $refund->id,
-                'order_id' => $refund->order_id,
-                'appointment_id' => $refund->appointment_id,
-                'current' => $currentStatus,
-                'new' => $newStatus,
-            ]);
-
             if (in_array($currentStatus, ['refunded', 'rejected'])) {
                 return back()->withErrors(['error' => 'Không thể cập nhật yêu cầu đã ' . ($currentStatus === 'refunded' ? 'hoàn tiền' : 'từ chối') . '.']);
             }
 
             $statusOrder = ['pending' => 1, 'processing' => 2, 'refunded' => 3, 'rejected' => 3];
-            Log::info('So sánh cấp độ:', [
-                'current_order' => $statusOrder[$currentStatus],
-                'new_order' => $statusOrder[$newStatus],
-            ]);
 
             if ($statusOrder[$newStatus] < $statusOrder[$currentStatus]) {
                 return back()->withErrors(['error' => 'Không thể quay lại trạng thái trước đó.']);
@@ -108,20 +96,16 @@ class RefundRequestController extends Controller
             if ($newStatus === 'refunded') {
                 if ($refund->order_id) {
                     $order = Order::findOrFail($refund->order_id);
-                    Log::info('Đã tìm thấy đơn hàng', ['order' => $order->toArray()]);
 
                     if ($order->payment_status !== 'paid') {
-                        Log::warning('Thanh toán không hợp lệ', ['payment_status' => $order->payment_status]);
                         return back()->withErrors(['error' => 'Không thể hoàn tiền. Trạng thái thanh toán hiện tại: ' . $order->payment_status]);
                     }
 
                     $order->update(['status' => 'cancelled']);
                 } elseif ($refund->appointment_id) {
                     $appointment = Appointment::findOrFail($refund->appointment_id);
-                    Log::info('Đã tìm thấy đặt lịch', ['appointment' => $appointment->toArray()]);
 
                     if ($appointment->payment_status !== 'paid') {
-                        Log::warning('Thanh toán không hợp lệ', ['payment_status' => $appointment->payment_status]);
                         return back()->withErrors(['error' => 'Không thể hoàn tiền. Trạng thái thanh toán hiện tại: ' . $appointment->payment_status]);
                     }
 
@@ -135,9 +119,7 @@ class RefundRequestController extends Controller
 
                 Mail::to($refund->user->email)->send(new RefundStatusMail($refund, 'refunded'));
             } else {
-                $refund->update([
-                    'refund_status' => $newStatus,
-                ]);
+                $refund->update(['refund_status' => $newStatus]);
 
                 if ($newStatus === 'rejected') {
                     Mail::to($refund->user->email)->send(new RefundStatusMail($refund, 'rejected'));
@@ -145,16 +127,66 @@ class RefundRequestController extends Controller
             }
 
             DB::commit();
-            Log::info('Cập nhật trạng thái hoàn tiền thành công', ['refund_id' => $refund->id]);
             return redirect()->route('refunds.index')->with('success', 'Cập nhật trạng thái hoàn tiền thành công.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Lỗi khi cập nhật trạng thái hoàn tiền', [
                 'refund_id' => $refund->id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
             return back()->withErrors(['error' => 'Lỗi xảy ra: ' . $e->getMessage()]);
         }
+    }
+
+    public function softDelete($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xoá yêu cầu hoàn tiền.'
+            ]);
+        }
+
+        $refund = RefundRequest::findOrFail($id);
+
+        if (!in_array($refund->refund_status, ['refunded', 'rejected'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ được xoá mềm các yêu cầu đã hoàn tiền hoặc từ chối.'
+            ]);
+        }
+
+        $refund->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã xoá mềm yêu cầu hoàn tiền.'
+        ]);
+    }
+
+    public function restore($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền khôi phục yêu cầu hoàn tiền.'
+            ]);
+        }
+
+        $refund = RefundRequest::withTrashed()->findOrFail($id);
+
+        if (!$refund->trashed()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Yêu cầu hoàn tiền chưa bị xoá.'
+            ]);
+        }
+
+        $refund->restore();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã khôi phục yêu cầu hoàn tiền.'
+        ]);
     }
 }
