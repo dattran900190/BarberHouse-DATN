@@ -24,4 +24,9 @@ class UserRedeemedVoucherController extends Controller
     return view('admin.user_redeemed_vouchers.index', compact('items'));
 }
 
+public function show($id)
+{
+    $item = UserRedeemedVoucher::find($id);
+    return view('admin.user_redeemed_vouchers.show', compact('item'));
+}
 }

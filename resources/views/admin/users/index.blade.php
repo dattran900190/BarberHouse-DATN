@@ -173,7 +173,7 @@
                                                                     @method('DELETE')
                                                                     <button type="submit"
                                                                         class="dropdown-item text-danger">
-                                                                        <i class="fas fa-trash me-2"></i> Xoá
+                                                                        <i class="fa fa-trash me-1"></i> Xóa
                                                                     </button>
                                                                 </form>
                                                             @endif
@@ -300,7 +300,7 @@
                                                         </a>
                                                         @if ($currentRole === 'admin')
                                                             <form
-                                                                action="{{ route('users.destroy', ['user' => $user->id, 'role' => $role]) }}"
+                                                                action="{{ route('users.destroy', ['user' => $admin->id, 'role' => $role]) }}"
                                                                 method="POST" style="display:inline;"
                                                                 onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
                                                                 @csrf

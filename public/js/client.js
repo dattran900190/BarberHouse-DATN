@@ -299,62 +299,62 @@ if (timeGrid) {
     return { totalPrice, totalDuration };
   }
 
-  function updateTotal() {
-    // Lấy thông tin dịch vụ
-    const mainOpt = serviceSelect.options[serviceSelect.selectedIndex];
-    const mainInfo = getServiceInfo(mainOpt);
+  // function updateTotal() {
+  //   // Lấy thông tin dịch vụ
+  //   const mainOpt = serviceSelect.options[serviceSelect.selectedIndex];
+  //   const mainInfo = getServiceInfo(mainOpt);
 
-    // Lấy thông tin các dịch vụ phụ
-    const addInfo = getAdditionalServicesInfo();
+  //   // Lấy thông tin các dịch vụ phụ
+  //   const addInfo = getAdditionalServicesInfo();
 
-    // Tính tổng giá và tổng thời gian trước khi giảm giá
-    const totalPrice = mainInfo.price + addInfo.totalPrice;
-    const totalDuration = mainInfo.duration + addInfo.totalDuration;
+  //   // Tính tổng giá và tổng thời gian trước khi giảm giá
+  //   const totalPrice = mainInfo.price + addInfo.totalPrice;
+  //   const totalDuration = mainInfo.duration + addInfo.totalDuration;
 
-    // Lấy thông tin voucher
-    const voucherOpt = voucherSelect.options[voucherSelect.selectedIndex];
-    const discountType = voucherOpt?.getAttribute('data-discount-type') || '';
-    const discountValue = parseFloat(voucherOpt?.getAttribute('data-discount-value')) || 0;
+  //   // Lấy thông tin voucher
+  //   const voucherOpt = voucherSelect.options[voucherSelect.selectedIndex];
+  //   const discountType = voucherOpt?.getAttribute('data-discount-type') || '';
+  //   const discountValue = parseFloat(voucherOpt?.getAttribute('data-discount-value')) || 0;
 
-    // Tính giảm giá
-    let discount = 0;
-    let discountText = '';
-    if (voucherSelect.value && totalPrice > 0 && discountType) {
-      if (discountType === 'fixed') {
-        discount = discountValue;
-        discountText = `Đã giảm: <span>${discount.toLocaleString('vi-VN')} VNĐ</span>`;
-      } else if (discountType === 'percent') {
-        discount = Math.round(totalPrice * discountValue / 100);
-        discountText = `Đã giảm: <span>${discountValue}%</span> (<span>${discount.toLocaleString('vi-VN')} VNĐ</span>)`;
-      }
-    }
+  //   // Tính giảm giá
+  //   let discount = 0;
+  //   let discountText = '';
+  //   if (voucherSelect.value && totalPrice > 0 && discountType) {
+  //     if (discountType === 'fixed') {
+  //       discount = discountValue;
+  //       discountText = `Đã giảm: <span>${discount.toLocaleString('vi-VN')} VNĐ</span>`;
+  //     } else if (discountType === 'percent') {
+  //       discount = Math.round(totalPrice * discountValue / 100);
+  //       discountText = `Đã giảm: <span>${discountValue}%</span> (<span>${discount.toLocaleString('vi-VN')} VNĐ</span>)`;
+  //     }
+  //   }
 
-    // Tính tổng sau giảm giá
-    let totalAfter = totalPrice - discount;
-    if (totalAfter < 0) totalAfter = 0;
+  //   // Tính tổng sau giảm giá
+  //   let totalAfter = totalPrice - discount;
+  //   if (totalAfter < 0) totalAfter = 0;
 
-    // Cập nhật giao diện người dùng
-    priceOutput.textContent = totalAfter.toLocaleString('vi-VN') + ' vnđ';
-    durationOutput.textContent = totalDuration + ' Phút';
-    totalAfterDiscount.innerHTML = discount > 0
-      ? `<span class="text-success">${discountText}</span>`
-      : '';
-  }
+  //   // Cập nhật giao diện người dùng
+  //   priceOutput.textContent = totalAfter.toLocaleString('vi-VN') + ' vnđ';
+  //   durationOutput.textContent = totalDuration + ' Phút';
+  //   totalAfterDiscount.innerHTML = discount > 0
+  //     ? `<span class="text-success">${discountText}</span>`
+  //     : '';
+  // }
 
-  // Listen for changes
-  serviceSelect.addEventListener('change', updateTotal);
-  voucherSelect.addEventListener('change', updateTotal);
+  // // Listen for changes
+  // serviceSelect.addEventListener('change', updateTotal);
+  // voucherSelect.addEventListener('change', updateTotal);
 
-  // Listen for changes in additional services
-  if (additionalServicesContainer) {
-    additionalServicesContainer.addEventListener('change', function (e) {
-      if (e.target.classList.contains('additional-service-select')) {
-        updateTotal();
-      }
-    });
-    // Also update when add/remove additional service
-    new MutationObserver(updateTotal).observe(additionalServicesContainer, { childList: true, subtree: true });
-  }
+  // // Listen for changes in additional services
+  // if (additionalServicesContainer) {
+  //   additionalServicesContainer.addEventListener('change', function (e) {
+  //     if (e.target.classList.contains('additional-service-select')) {
+  //       updateTotal();
+  //     }
+  //   });
+  //   // Also update when add/remove additional service
+  //   new MutationObserver(updateTotal).observe(additionalServicesContainer, { childList: true, subtree: true });
+  // }
 
 });
 

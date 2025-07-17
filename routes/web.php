@@ -33,6 +33,7 @@ use App\Http\Controllers\Client\ClientPostController;
 use App\Http\Controllers\Client\ClientBranchController;
 use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\Client\ClientProductController;
+use App\Http\Controllers\ProfileController as AdminProfileController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\ReviewController as ClientReviewController;
@@ -153,6 +154,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // Hiển thị giao diện Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
+    Route::post('/profile/update', [AdminProfileController::class, 'update'])->name('admin.update');
+    Route::post('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('admin.password');
+
+
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
     Route::patch('/barbers/{id}/soft-delete', [BarberController::class, 'softDelete'])->name('barbers.softDelete');
@@ -195,6 +201,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
+    Route::get('/user_redeemed_vouchers/{id}', [UserRedeemedVoucherController::class, 'show'])->name('admin.user_redeemed_vouchers.show');
 
     // ==== Đặt lịch ====
     Route::resource('appointments', AppointmentController::class);

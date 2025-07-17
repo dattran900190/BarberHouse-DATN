@@ -113,6 +113,9 @@ class UserController extends Controller
             abort(403, 'Không có quyền truy cập');
         }
 
+        // Kiểm tra xem người dùng đang chỉnh sửa có phải là chính họ hay không
+        $isEditingSelf = Auth::user()->id === $user->id;
+
         // Lấy chi nhánh chưa gán cho admin_branch, nhưng giữ lại chi nhánh của user đang edit
         $branches = Branch::where(function ($query) use ($user) {
             $query->whereNotIn('id', function ($subQuery) {
@@ -124,7 +127,7 @@ class UserController extends Controller
                 ->orWhere('id', $user->branch_id); // giữ lại chi nhánh đã chọn nếu đang edit
         })->get();
 
-        return view('admin.users.edit', compact('user', 'role', 'branches'));
+        return view('admin.users.edit', compact('user', 'role', 'branches', 'isEditingSelf'));
     }
 
 
@@ -133,36 +136,55 @@ class UserController extends Controller
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('users.index')->with('error', 'Bạn không có quyền sửa người dùng.');
         }
+
         $currentPage = $request->input('page', 1);
         $role = $request->query('role', 'user');
+        $isEditingSelf = Auth::user()->id === $user->id;
+
+        // Kiểm tra quyền truy cập theo vai trò
         if (($role === 'user' && $user->role !== 'user') ||
             ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch']))
         ) {
             abort(403, 'Không có quyền truy cập');
         }
 
+        // Lấy dữ liệu hợp lệ từ request
         $data = $request->validated();
 
-        if ($role === 'admin' && !in_array($data['role'], ['admin', 'admin_branch'])) {
+        // Nếu không phải đang chỉnh sửa chính mình → chỉ cho phép cập nhật role và status
+        if (!$isEditingSelf) {
+            $data = array_intersect_key($data, array_flip(['status', 'role']));
+            // Gán lại gender thủ công nếu bị disabled trong form
+            if ($request->has('gender_hidden')) {
+                $data['gender'] = $request->input('gender_hidden');
+            }
+        }
+
+        // Kiểm tra role hợp lệ theo ngữ cảnh
+        if ($role === 'admin' && (!isset($data['role']) || !in_array($data['role'], ['admin', 'admin_branch']))) {
             return back()->withErrors(['role' => 'Vai trò không hợp lệ cho quản trị viên']);
         }
-        if ($role === 'user' && $data['role'] !== 'user') {
+
+        if ($role === 'user' && (isset($data['role']) && $data['role'] !== 'user')) {
             return back()->withErrors(['role' => 'Vai trò không hợp lệ cho người dùng']);
         }
 
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($data['password']);
+        // Xử lý mật khẩu nếu có và đang chỉnh sửa chính mình
+        if ($request->filled('password') && $isEditingSelf) {
+            $data['password'] = Hash::make($request->input('password'));
         } else {
             unset($data['password']);
         }
 
-        if ($request->hasFile('avatar')) {
+        // Xử lý ảnh đại diện nếu có
+        if ($request->hasFile('avatar') && $isEditingSelf) {
             if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
                 Storage::disk('public')->delete($user->avatar);
             }
             $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
 
+        // Cập nhật người dùng
         $user->update($data);
 
         return redirect()->route('users.index', [
@@ -171,14 +193,15 @@ class UserController extends Controller
         ])->with('success', 'Cập nhật ' . ($role === 'user' ? 'người dùng' : 'quản trị viên') . ' thành công');
     }
 
+
     public function destroy(User $user, Request $request)
     {
-        $role = $request->input('role', 'user');
-        if (($role === 'user' && $user->role !== 'user') ||
-            ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch']))
-        ) {
-            abort(403, 'Không có quyền truy cập');
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('users.index')->with('error', 'Bạn không có quyền xóa người dùng.');
         }
+
+        $role = $request->input('role', 'user');
+
 
         if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
             Storage::disk('public')->delete($user->avatar);
@@ -217,13 +240,6 @@ class UserController extends Controller
         $role = $request->input('role', 'user');
 
         $user = User::onlyTrashed()->findOrFail($id);
-
-        // Kiểm tra vai trò
-        if (($role === 'user' && $user->role !== 'user') ||
-            ($role === 'admin' && !in_array($user->role, ['admin']))
-        ) {
-            abort(403, 'Không có quyền khôi phục người dùng này.');
-        }
 
         $user->restore();
 

@@ -12,7 +12,7 @@
             'pending' => 'Chờ xử lý',
             'processing' => 'Đang xử lý',
             'shipping' => 'Đang giao hàng',
-            'completed' => 'Hoàn thành',
+            'completed' => 'Đã giao hàng',
             'cancelled' => 'Đã hủy',
         ];
 
@@ -30,10 +30,10 @@
                             {{ $currentStatusLabel }}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
-                             @foreach ($statusLabels as $key => $label)
+                            @foreach ($statusLabels as $key => $label)
                                 <li>
                                     <a class="dropdown-item"
-                                        href="{{ route('client.appointmentHistory', array_merge(request()->except('status'), ['status' => $key])) }}">
+                                        href="{{ route('client.orderHistory', array_merge(request()->except('status'), ['status' => $key])) }}">
                                         {{ $label }}
                                     </a>
                                 </li>
@@ -44,21 +44,23 @@
                 <div class="card-body">
                     <form method="GET" action="{{ route('client.orderHistory') }}" id="searchForm" class="mb-3">
                         <div class="position-relative">
-                            <input type="text" class="form-control me-2" name="search" placeholder="Tìm kiếm đặt lịch"
-                                value="{{ request('search') }}">
+                            <input type="text" class="form-control me-2" name="search"
+                                placeholder="Tìm theo mã đơn hàng" value="{{ request('search') }}">
                             <button type="submit"
                                 class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>
                     </form>
-                    @foreach ($orders as $order)
+
+                    @forelse ($orders as $order)
                         <div class="order-item mb-3 p-3 rounded-3 shadow-sm">
                             <div class="row align-items-center justify-content-between">
                                 <div class="col-md-4">
                                     <span class="fw-bold">Đơn hàng: {{ $order->order_code }}</span><br>
                                     <span class="text-dark">
-                                        {{ $order->items->pluck('name')->join(', ') }}
+                                        {{ $order->items->pluck('name')->filter()->join(', ') }}
+
                                     </span><br>
                                     <span class="text-muted">Tổng số lượng: {{ $order->items->sum('quantity') }}</span><br>
                                     <span class="text-muted">Tổng tiền:
@@ -70,15 +72,15 @@
                                     @if ($order->status == 'pending')
                                         <span class="status-label status-processing">Đang chờ</span>
                                     @elseif ($order->status == 'shipping')
-                                        <span class="status-label status-confirmed">Đã xác nhận</span>
+                                        <span class="status-label status-confirmed">Đang giao hàng</span>
                                     @elseif ($order->status == 'processing')
-                                        <span class="status-label status-info">Đang làm tóc</span>
+                                        <span class="status-label status-info">Đang xử lý</span>
                                     @elseif ($order->status == 'cancelled')
                                         <span class="status-label status-cancelled">
                                             {{ $order->cancellation_type == 'no-show' ? 'Không đến' : 'Đã hủy' }}
                                         </span>
                                     @elseif ($order->status == 'completed')
-                                        <span class="status-label status-completed">Đã hoàn thành</span>
+                                        <span class="status-label status-completed">Đã giao hàng</span>
                                     @endif
                                 </div>
 
@@ -88,14 +90,17 @@
                                         <a class="btn-outline-show"
                                             href="{{ route('client.detailOrderHistory', $order->id) }}">Xem chi tiết</a>
                                         @if ($order->status === 'pending')
-                                            <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
-                                                style="display:inline-block;"
-                                                onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
+                                            <button type="button" class="btn-outline-show cancel-order-btn"
+                                                data-order-id="{{ $order->id }}">
+                                                Hủy đơn hàng
+                                            </button>
+                                            <form id="cancel-form-{{ $order->id }}"
+                                                action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
+                                                style="display: none;">
                                                 @csrf
-                                                <button type="submit" class="btn-outline-show">Hủy đơn
-                                                    hàng</button>
                                             </form>
                                         @endif
+
                                         @if (
                                             $order->status != 'cancelled' &&
                                                 $order->payment_status == 'paid' &&
@@ -109,10 +114,15 @@
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    @empty
+                        <div class="text-center text-muted p-3">Bạn chưa có đơn hàng nào.</div>
+                    @endforelse
 
                 </div>
             </div>
+        </div>
+        <div class="d-flex justify-content-center mt-3" style="color: #000;">
+            {{ $orders->links() }}
         </div>
     </main>
     <style>
@@ -126,4 +136,34 @@
 @endsection
 
 @section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cancelButtons = document.querySelectorAll('.cancel-order-btn');
+
+            cancelButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-order-id');
+
+                    Swal.fire({
+                        title: 'Bạn có chắc chắn?',
+                        text: 'Bạn có chắc chắn muốn hủy đơn hàng này không?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Có, hủy đơn hàng!',
+                        cancelButtonText: 'Không'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const form = document.getElementById(`cancel-form-${orderId}`);
+                            if (form) {
+                                form.submit();
+                            }
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 @endsection

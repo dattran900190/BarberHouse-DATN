@@ -442,7 +442,7 @@ class CartController extends Controller
             };
 
             // Tạo mã đơn hàng
-            $orderCode = 'ORD' . now()->format('Ymd') . strtoupper(Str::random(4));
+            $orderCode = 'ORD' . now()->format('Y') . strtoupper(Str::random(4));
 
             $order = null;
             DB::transaction(function () use ($request, $paymentMethod, $shippingFee, $expectedTotal, $orderCode, &$order) {
