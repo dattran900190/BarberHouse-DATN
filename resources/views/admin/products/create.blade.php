@@ -71,6 +71,13 @@
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
+                <div class="mb-3">
+                    <label for="long_description" class="form-label">Mô tả dài</label>
+                    <textarea name="long_description" id="long_description" class="form-control">{{ old('long_description') }}</textarea>
+                    @error('long_description')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
 
                 <div class="mb-3">
                     <label for="price" class="form-label">Giá</label>

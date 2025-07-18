@@ -32,6 +32,7 @@
                 <p><strong>Giá:</strong> {{ number_format($product->price) }} đ</p>
                 <p><strong>Tồn kho:</strong> {{ $product->stock }}</p>
                 <p><strong>Mô tả:</strong> {{ $product->description ?? 'Không có' }}</p>
+                <p><strong>Mô tả dài:</strong> {{ $product->long_description ?? 'Không có' }}</p>
 
                 <h5 class="mt-4">Ảnh chính</h5>
                 @if ($product->image)

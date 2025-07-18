@@ -127,7 +127,7 @@
             {{-- ✅ Thông tin chi tiết nằm dưới full-width --}}
             <div class="information-product mt-5 w-100">
                 <h4>Thông tin chi tiết</h4>
-                <p>{{ $product->details ?? 'Đang cập nhật...' }}</p>
+                <p>{{ $product->long_description ?? 'Đang cập nhật...' }}</p>
             </div>
             {{-- Sản phẩm liên quan --}}
             {{-- Sản phẩm liên quan --}}

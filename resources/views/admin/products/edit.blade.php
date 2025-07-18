@@ -51,6 +51,12 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="long_description" class="form-label">Mô tả dài</label>
+                    <textarea name="long_description" id="long_description" class="form-control">{{ old('long_description', $product->long_description) }}</textarea>
+                    @error('long_description') <div class="text-danger">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="mb-3">
                     <label for="price" class="form-label">Giá</label>
                     <input type="number" name="price" id="price" class="form-control" value="{{ old('price', $product->price) }}" step="0.01">
                     @error('price') <div class="text-danger">{{ $message }}</div> @enderror
@@ -142,7 +148,7 @@
                                 @error("variants.$index.image") <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
-                            <button type="button" class="btn btn-sm btn-outline-danger">Xóa khỏi giao diện</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-variant">Xóa khỏi giao diện</button>
                         </div>
                     @endforeach
                 </div>
@@ -185,7 +191,7 @@
                 <label class="form-label">Ảnh biến thể</label>
                 <input type="file" name="variants[${variantIndex}][image]" class="form-control" accept="image/*">
             </div>
-            <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa khỏi giao diện</button>
+            <button type="button" class="btn btn-sm btn-outline-danger btn-sm remove-variant">Xóa khỏi giao diện</button>
         `;
         document.getElementById('variants').appendChild(variantDiv);
         variantIndex++;
@@ -193,7 +199,19 @@
 
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-variant')) {
-            e.target.closest('.variant').remove();
+            const variantDiv = e.target.closest('.variant');
+            // Tìm checkbox xóa biến thể trong variantDiv
+            const checkbox = variantDiv.querySelector('input[type="checkbox"][name^="delete_variants"]');
+            if (checkbox) {
+                if (checkbox.checked) {
+                    variantDiv.style.display = 'none'; // Ẩn khỏi giao diện nếu đã tick checkbox
+                } else {
+                    alert('Bạn phải tick vào ô "Xóa biến thể" trước!');
+                }
+            } else {
+                // Biến thể mới thì xóa khỏi DOM luôn
+                variantDiv.remove();
+            }
         }
     });
 </script>
