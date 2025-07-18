@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name', 'email', 'password', 'phone', 'gender', 'avatar',
         'address', 'role', 'status', 'points_balance', 'branch_id',
     ];
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that should be hidden for serialization.

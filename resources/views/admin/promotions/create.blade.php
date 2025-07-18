@@ -144,24 +144,6 @@
                         @enderror
                     </div>
 
-                    {{-- Kích hoạt --}}
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label d-block">Kích hoạt mã giảm giá</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="is_active" id="active_yes"
-                                value="1" {{ old('is_active', 1) == 1 ? 'checked' : '' }}>
-                            <label class="form-check-label" for="active_yes">Có</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="is_active" id="active_no"
-                                value="0" {{ old('is_active', 1) == 0 ? 'checked' : '' }}>
-                            <label class="form-check-label" for="active_no">Không</label>
-                        </div>
-                        @error('is_active')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
                 </div>
 
                 <div class="mt-4 d-flex gap-2">

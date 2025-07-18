@@ -94,9 +94,9 @@
                     <div class="col-md-6">
                         <label for="status" class="form-label">Trạng thái</label>
                         <select class="form-control" name="status">
-                            <option value="">Chọn trạng thái</option>
-                            <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Đang hoạt động</option>
-                            <option value="banned" {{ old('status') == 'banned' ? 'selected' : '' }}>Bị khóa</option>
+                            {{-- <option value="">Chọn trạng thái</option> --}}
+                            <option value="active"  {{ old('status') == 'active' ? 'selected' : '' }}>Đang hoạt động</option>
+                            {{-- <option value="banned" {{ old('status') == 'banned' ? 'selected' : '' }}>Bị khóa</option> --}}
                         </select>
                         @error('status')<div class="text-danger">{{ $message }}</div>@enderror
                     </div>

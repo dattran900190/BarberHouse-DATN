@@ -30,7 +30,8 @@
 
                 <div class="col-md-6">
 
-                    <p> <strong>Loại giảm giá: </strong>{{ $promotion->discount_type === 'percent' ? 'Phần trăm' : 'Cố định' }}</p>
+                    <p> <strong>Loại giảm giá:
+                        </strong>{{ $promotion->discount_type === 'percent' ? 'Phần trăm' : 'Cố định' }}</p>
                 </div>
 
                 <div class="col-md-6">
@@ -46,7 +47,8 @@
 
                 <div class="col-md-6">
 
-                    <p> <strong>Giá trị đơn hàng tối thiểu: </strong>{{ number_format($promotion->min_order_value) }} VNĐ</p>
+                    <p> <strong>Giá trị đơn hàng tối thiểu: </strong>{{ number_format($promotion->min_order_value) }} VNĐ
+                    </p>
                 </div>
 
                 <div class="col-md-6">
@@ -61,7 +63,7 @@
 
                 <div class="col-md-6">
 
-                    <p> <strong>Điểm yêu cầu: </strong>{{ $promotion->required_point ?? 0}}</p>
+                    <p> <strong>Điểm yêu cầu: </strong>{{ $promotion->required_point ?? 0 }}</p>
                 </div>
 
                 <div class="col-md-6">
@@ -90,35 +92,14 @@
 
                 </div>
             </div>
+            <div class="mt-3">
+                <a href="{{ route('promotions.index') }}" class="btn btn-outline-secondary">
+                    <i class="fa fa-arrow-left me-1"></i> Quay lại danh sách
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- Card: Hành động -->
-    @if (Auth::user()->role !== 'admin_branch')
-        <div class="card shadow-sm mb-4">
-            <div class="card-header text-white d-flex align-items-center">
-                <h4 class="card-title">Hành động</h4>
-            </div>
-            <div class="card-body">
-                <div class="d-flex gap-2">
-                    <a href="{{ route('promotions.edit', $promotion->id) }}" class="btn btn-outline-primary btn-sm">
-                        <i class="fa fa-edit me-1"></i> Sửa
-                    </a>
-                    <form action="{{ route('promotions.destroy', $promotion->id) }}" method="POST"
-                        onsubmit="return confirm('Bạn có chắc chắn muốn xoá mã giảm giá này không?');">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="btn btn-outline-danger btn-sm">
-                            <i class="fas fa-trash me-2"></i> Xoá
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    @endif
 
-    <div class="mt-3">
-        <a href="{{ route('promotions.index') }}" class="btn btn-outline-secondary">
-            <i class="fa fa-arrow-left me-1"></i> Quay lại danh sách
-        </a>
-    </div>
+
 @endsection
