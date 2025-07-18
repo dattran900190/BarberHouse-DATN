@@ -62,7 +62,7 @@
                     style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
                     <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả mã giảm giá</option>
                     <option value="1" {{ request('filter') == '1' ? 'selected' : '' }}>Đang hoạt động</option>
-                    <option value="0" {{ request('filter') == '0' ? 'selected' : '' }}>Không hoạt động</option>
+                    <option value="0" {{ request('filter') == '0' ? 'selected' : '' }}>Đã xóa</option>
                 </select>
             </form>
 
@@ -96,8 +96,8 @@
                                 <td>{{ $promo->start_date?->format('d/m/Y') }}</td>
                                 <td>{{ $promo->end_date?->format('d/m/Y') }}</td>
                                 <td>
-                                    <span class="badge {{ $promo->is_active ? 'bg-success' : 'bg-secondary' }}">
-                                        {{ $promo->is_active ? 'Hoạt động' : 'Không hoạt động' }}
+                                    <span class="badge {{ $promo->is_active ? 'bg-success' : 'bg-danger' }}">
+                                        {{ $promo->is_active ? 'Hoạt động' : 'Đã xóa' }}
                                     </span>
                                 </td>
                                 <td>
@@ -140,7 +140,7 @@
                                                 <li>
                                                     <button type="button" class="dropdown-item text-danger soft-delete-btn"
                                                         data-id="{{ $promo->id }}">
-                                                        <i class="fas fa-times me-1"></i> Hủy kích hoạt
+                                                        <i class="fas fa-times me-1"></i> Xóa mềm
                                                     </button>
                                                 </li>
                                             @endif
@@ -242,8 +242,8 @@
         // ✅ Xoá mềm
         handleSwalAction({
             selector: '.soft-delete-btn',
-            title: 'Hủy kích hoạt mã giảm giá',
-            text: 'Bạn có chắc chắn muốn hủy kích hoạt mã này?',
+            title: 'Xóa mềm mã giảm giá',
+            text: 'Bạn có chắc chắn muốn xóa mềm mã này?',
             route: '{{ route('promotions.softDelete', ':id') }}',
             method: 'DELETE'
         });
