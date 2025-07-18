@@ -44,17 +44,6 @@
         </div>
 
         <div class="card-body">
-            {{-- Tìm kiếm --}}
-            <form action="{{ route('customer-images.index') }}" method="GET" class="mb-3">
-                <div class="position-relative">
-                    <input type="text" name="search" class="form-control pe-5"
-                        placeholder="Tìm kiếm (nếu có tiêu đề)"
-                        value="{{ request()->get('search') }}">
-                    <button type="submit" class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </div>
-            </form>
 
             {{-- Bảng --}}
             <div class="table-responsive">
