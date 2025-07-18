@@ -46,14 +46,24 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ route('branches.index') }}" method="GET" class="mb-3">
-                <div class="position-relative">
+            <form method="GET" action="{{ route('branches.index') }}"
+                class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+
+                <div class="position-relative" style="flex: 1; min-width: 200px">
                     <input type="text" name="search" placeholder="Tìm kiếm theo tên chi nhánh..."
-                        class="form-control pe-5" value="{{ request()->get('search') }}">
-                    <button type="submit" class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
+                        value="{{ request('search') }}" class="form-control pe-5">
+                    <button type="submit"
+                        class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent text-dark">
                         <i class="fa fa-search"></i>
                     </button>
                 </div>
+
+                <select name="filter" id="filter" class="form-select pe-5"
+                    style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
+                    <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả chi nhánh</option>
+                    <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Còn hoạt động</option>
+                    <option value="deleted" {{ request('filter') == 'deleted' ? 'selected' : '' }}>Đã xoá</option>
+                </select>
             </form>
 
             <div class="table-responsive">
@@ -65,6 +75,7 @@
                             <th>Tên chi nhánh</th>
                             <th>Địa chỉ</th>
                             <th>SĐT</th>
+                            <th>Trạng thái</th>
                             <th>Hành động</th>
                         </tr>
                     </thead>
@@ -83,6 +94,12 @@
                                 <td>{{ $branch->name }}</td>
                                 <td>{{ $branch->address }}</td>
                                 <td>{{ $branch->phone }}</td>
+                                <td>
+                                    @if ($branch->trashed())
+                                        <span class="badge bg-danger">Đã xoá</span>
+                                    @else
+                                        <span class="badge bg-success">Còn hoạt động</span>
+                                    @endif
                                 <td class="text-center">
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-outline-secondary" type="button"
@@ -95,27 +112,33 @@
                                             <li>
                                                 <a class="dropdown-item"
                                                     href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
-                                                    <i class="fas fa-eye me-2"></i> Xem
-                                                </a>
-                                            </li>
+
                                             <li>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
-                                                    <i class="fas fa-edit me-2"></i> Sửa
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                            <li>
-                                                <form action="{{ route('branches.destroy', $branch->id) }}" method="POST"
-                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xoá chi nhánh này không?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="dropdown-item text-danger">
-                                                        <i class="fas fa-trash me-2"></i> Xoá
+                                                @if ($branch->trashed())
+                                                    <button type="button" class="dropdown-item text-success restore-btn"
+                                                        data-id="{{ $branch->id }}">
+                                                        <i class="fas fa-undo me-2"></i> Khôi phục
                                                     </button>
-                                                </form>
+                                                    <button type="button"
+                                                        class="dropdown-item text-danger force-delete-btn"
+                                                        data-id="{{ $branch->id }}">
+                                                        <i class="fas fa-trash-alt me-2"></i> Xoá vĩnh viễn
+                                                    </button>
+                                                @else
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
+                                                        <i class="fas fa-eye me-2"></i> Xem
+                                                    </a>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
+                                                        <i class="fas fa-edit me-2"></i> Sửa
+                                                    </a>
+                                                    <hr class="dropdown-divider">
+                                                    <button type="button" class="dropdown-item text-danger soft-delete-btn"
+                                                        data-id="{{ $branch->id }}">
+                                                        <i class="fas fa-times me-2"></i> Xoá mềm
+                                                    </button>
+                                                @endif
                                             </li>
                                         </ul>
                                     </div>
@@ -153,4 +176,93 @@
             width: 20px;
         }
     </style>
+@endsection
+@section('js')
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const branchId = this.getAttribute('data-id');
+                    Swal.fire({
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        width: '400px'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                allowOutsideClick: false,
+                                didOpen: () => Swal.showLoading()
+                            });
+                            fetch(route.replace(':id', branchId), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error'
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error.message,
+                                        icon: 'error'
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        }
+
+        // Xoá mềm
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Xoá mềm chi nhánh',
+            text: 'Bạn có chắc chắn muốn xoá mềm chi nhánh này?',
+            route: '{{ route('branches.softDelete', ':id') }}',
+            method: 'PATCH'
+        });
+
+        // Xoá cứng
+        handleSwalAction({
+            selector: '.force-delete-btn',
+            title: 'Xoá vĩnh viễn',
+            text: 'Bạn có chắc chắn muốn xoá vĩnh viễn chi nhánh này? Hành động này không thể hoàn tác.',
+            route: '{{ route('branches.destroy', ':id') }}',
+            method: 'DELETE'
+        });
+
+        // Khôi phục
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục chi nhánh',
+            text: 'Bạn có chắc chắn muốn khôi phục chi nhánh này?',
+            route: '{{ route('branches.restore', ':id') }}',
+            method: 'POST'
+        });
+    </script>
 @endsection

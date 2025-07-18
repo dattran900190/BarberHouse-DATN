@@ -26,7 +26,7 @@ class ProductRequest extends FormRequest
             'name' => 'required|string|max:100',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
+            // 'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'additional_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'variants.*.volume_id' => 'required|exists:volumes,id',
@@ -51,9 +51,9 @@ class ProductRequest extends FormRequest
         'price.numeric' => 'Giá sản phẩm phải là số.',
         'price.min' => 'Giá sản phẩm phải lớn hơn hoặc bằng 0.',
 
-        'stock.required' => 'Số lượng tồn kho là bắt buộc.',
-        'stock.integer' => 'Số lượng tồn kho phải là số nguyên.',
-        'stock.min' => 'Số lượng tồn kho phải lớn hơn hoặc bằng 0.',
+        // 'stock.required' => 'Số lượng tồn kho là bắt buộc.',
+        // 'stock.integer' => 'Số lượng tồn kho phải là số nguyên.',
+        // 'stock.min' => 'Số lượng tồn kho phải lớn hơn hoặc bằng 0.',
 
         'image.image' => 'Ảnh đại diện phải là file ảnh.',
         'image.mimes' => 'Ảnh đại diện phải có định dạng jpeg, png, jpg.',

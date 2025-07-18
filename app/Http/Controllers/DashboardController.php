@@ -53,27 +53,23 @@ class DashboardController extends Controller
             ->get();
 
         $latestTransactions = Order::latest()->take(5)->get();
-
-        // --------- DỮ LIỆU BIỂU ĐỒ NGƯỜI DÙNG ---------
         $month = $request->input('month');
         $labels = [];
-        $subscribers = [];
-        $newVisitors = [];
-        $activeUsers = [];
+        $serviceRevenuePerMonth = [];
+        $productRevenuePerMonth = [];
 
-        if ($month) {
-            $labels[] = DateTime::createFromFormat('!m', $month)->format('M');
-            $subscribers[] = User::whereMonth('created_at', $month)->where('role', 'subscriber')->count();
-            $newVisitors[] = User::whereMonth('created_at', $month)->where('role', 'visitor')->count();
-            $activeUsers[] = User::whereMonth('created_at', $month)->count(); // Sửa ở đây
-        } else {
-            for ($i = 1; $i <= 12; $i++) {
-                $labels[] = DateTime::createFromFormat('!m', $i)->format('M');
-                $subscribers[] = User::whereMonth('created_at', $i)->where('role', 'subscriber')->count();
-                $newVisitors[] = User::whereMonth('created_at', $i)->where('role', 'visitor')->count();
-                $activeUsers[] = User::whereMonth('created_at', $i)->count(); // Sửa ở đây
-            }
+        for ($i = 1; $i <= 12; $i++) {
+            $labels[] = 'Tháng ' . $i;
+
+            $serviceRevenuePerMonth[] = Appointment::whereMonth('created_at', $i)
+                ->where('status', 'completed')
+                ->sum('total_amount');
+
+            $productRevenuePerMonth[] = Order::whereMonth('created_at', $i)
+                ->where('status', 'completed')
+                ->sum('total_money');
         }
+
 
         return view('admin.dashboard', compact(
             'totalBookings',
@@ -86,10 +82,8 @@ class DashboardController extends Controller
             'topProducts',
             'latestTransactions',
             'labels',
-            'subscribers',
-            'newVisitors',
-            'activeUsers',
-            'month'
+            'serviceRevenuePerMonth',
+            'productRevenuePerMonth'
         ));
     }
 }

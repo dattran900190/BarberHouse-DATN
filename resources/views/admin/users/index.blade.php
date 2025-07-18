@@ -3,27 +3,38 @@
 @section('title', 'Quản lý người dùng')
 
 @section('content')
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
-    @endif
+    <div id="alerts-container">
+        @if (session('success'))
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: '{{ session('success') }}',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
+                });
+            </script>
+        @endif
 
+        @if (session('error'))
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: '{{ session('error') }}',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
+                });
+            </script>
+        @endif
+    </div>
 
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
-    @endif
     @php
         $currentRole = Auth::user()->role;
     @endphp
+
     <div class="page-header">
         <h3 class="fw-bold mb-3">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
         <ul class="breadcrumbs mb-3">
@@ -47,10 +58,23 @@
         </ul>
     </div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-4">
+    <div class="card">
+        <div class="card-header text-white d-flex justify-content-between align-items-center">
+            <div class="card-title">Danh sách {{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</div>
+            <div class="d-flex gap-2 ms-auto">
+                @if ($currentRole == 'admin')
+                <a href="{{ route('users.create', ['role' => $role]) }}"
+                    class="btn btn-sm btn-outline-success d-flex align-items-center">
+                    <i class="fas fa-plus"></i>
+                    <span class="ms-2">Thêm {{ $role == 'user' ? 'người dùng' : 'quản trị viên' }}</span>
+                </a>
+                @endif
+            </div>
+        </div>
+
+        <div class="card-body">
             <!-- Tabs -->
-            <ul class="nav nav-tabs custom-tabs" id="userTabs" role="tablist">
+            <ul class="nav nav-tabs custom-tabs mb-4" id="userTabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link {{ $role == 'user' ? 'active' : '' }}"
                         href="{{ route('users.index', array_merge(request()->except('role', 'page'), ['role' => 'user'])) }}">
@@ -65,44 +89,34 @@
                 </li>
             </ul>
 
+            <!-- Search and Filter Form -->
+            <form method="GET" action="{{ route('users.index') }}"
+                class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+                <input type="hidden" name="role" value="{{ $role }}">
+
+                <div class="position-relative" style="flex: 1; min-width: 200px">
+                    <input type="text" name="search" placeholder="Tìm kiếm theo tên hoặc email..."
+                        value="{{ $search }}" class="form-control pe-5">
+                    <button type="submit"
+                        class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent text-dark">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+
+                <select name="filter" id="filter" class="form-select pe-5"
+                    style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
+                    <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả người dùng</option>
+                    <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Hoạt động</option>
+                    <option value="banned" {{ request('filter') == 'banned' ? 'selected' : '' }}>Bị khóa</option>
+                </select>
+            </form>
+
             <!-- Tab Content -->
-            <div class="tab-content mt-3" id="userTabsContent">
+            <div class="tab-content" id="userTabsContent">
                 <!-- Người dùng Tab -->
-                <div class="tab-pane fade {{ $role == 'user' ? 'show active' : '' }}" id="users" role="tabpanel"
-                    aria-labelledby="users-tab">
-                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                        <h4 class="mb-0">Danh sách Người dùng</h4>
-                        <div class="d-flex gap-2">
-                            <a href="{{ route('users.create', ['role' => 'user']) }}"
-                                class="btn btn-sm btn-outline-success d-flex align-items-center">
-                                <i class="fas fa-plus"></i>
-                                <span class="ms-2">Thêm người dùng</span>
-                            </a>
-                            <a class="btn btn-sm btn-outline-danger d-flex align-items-center"
-                                href="{{ route('users.trashed', ['role' => 'user']) }}">
-                                <i class="fas fa-trash"></i>
-                                <span class="ms-2">Người dùng đã xoá</span>
-                            </a>
-                        </div>
-                    </div>
-
-
-                    <form action="{{ route('users.index', ['role' => 'user']) }}" method="GET" class="mb-4">
-                        <input type="hidden" name="role_filter" value="user">
-                        <div class="input-group">
-                            <input type="text" name="search" class="form-control rounded-left"
-                                placeholder="Tìm kiếm theo tên hoặc email..." value="{{ $role == 'user' ? $search : '' }}">
-                            <div class="input-group-append">
-                                <button type="submit"
-                                    class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
+                <div class="tab-pane fade {{ $role == 'user' ? 'show active' : '' }}" id="users" role="tabpanel">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover custom-table">
+                        <table class="table table-bordered table-hover">
                             <thead class="thead-light text-center align-middle">
                                 <tr>
                                     <th>STT</th>
@@ -113,7 +127,9 @@
                                     <th>Giới tính</th>
                                     <th>Địa chỉ</th>
                                     <th>Trạng thái</th>
-                                    <th>Hành động</th>
+                                    @if ($currentRole == 'admin')
+                                        <th class="text-center">Hành động</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -140,101 +156,87 @@
                                             </td>
                                             <td>{{ $user->address ?? 'Không có' }}</td>
                                             <td>
-                                                <span
-                                                    class="badge badge-pill badge-status-fixed
-                                                    {{ $user->status === 'active' ? 'badge-success' : ($user->status === 'inactive' ? 'badge-warning' : 'badge-danger') }}">
-                                                    {{ $user->status === 'active' ? 'Hoạt động' : ($user->status === 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
-                                                </span>
+                                                @if ($user->trashed())
+                                                    <span class="badge bg-danger">Đã khóa</span>
+                                                @else
+                                                    <span
+                                                        class="badge {{ $user->status === 'active' ? 'bg-success' : ($user->status === 'inactive' ? 'bg-warning' : 'bg-danger') }}">
+                                                        {{ $user->status === 'active' ? 'Hoạt động' : ($user->status === 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
+                                                    </span>
+                                                @endif
                                             </td>
+                                            @if ($currentRole == 'admin')
                                             <td class="text-center">
-                                                <div class="d-inline-flex gap-1">
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-sm btn-outline-secondary" type="button"
-                                                            id="actionMenu{{ $user->id }}" data-bs-toggle="dropdown"
-                                                            aria-expanded="false">
-                                                            <i class="fas fa-ellipsis-v"></i>
-                                                        </button>
-                                                        <div class="dropdown-menu"
-                                                            aria-labelledby="dropdownMenuButton{{ $user->id }}">
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('users.edit', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
-                                                                <i class="fas fa-edit"></i> Sửa
-                                                            </a>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('users.show', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
-                                                                <i class="fas fa-eye"></i> Xem
-                                                            </a>
-                                                            @if ($currentRole === 'admin')
-                                                                <form
-                                                                    action="{{ route('users.destroy', ['user' => $user->id, 'role' => $role]) }}"
-                                                                    method="POST" style="display:inline;"
-                                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit"
-                                                                        class="dropdown-item text-danger">
-                                                                        <i class="fa fa-trash me-1"></i> Xóa
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                        id="actionMenu{{ $user->id }}" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end"
+                                                        aria-labelledby="actionMenu{{ $user->id }}">
+
+                                                        @if ($currentRole === 'admin')
+                                                            @if ($user->trashed())
+                                                                <li>
+                                                                    <button type="button"
+                                                                        class="dropdown-item text-success restore-btn"
+                                                                        data-id="{{ $user->id }}">
+                                                                        <i class="fas fa-undo me-2"></i> Khôi phục
                                                                     </button>
-                                                                </form>
+                                                                    <button type="button"
+                                                                        class="dropdown-item text-danger force-delete-btn"
+                                                                        data-id="{{ $user->id }}"
+                                                                        data-role="{{ $currentRole }}">
+                                                                        <i class="fas fa-trash-alt me-2"></i> Xóa vĩnh viễn
+                                                                    </button>
+                                                                </li>
+                                                            @else
+                                                                <li>
+                                                                    <a class="dropdown-item"
+                                                                        href="{{ route('users.show', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
+                                                                        <i class="fas fa-eye me-2"></i> Xem
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a class="dropdown-item"
+                                                                        href="{{ route('users.edit', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
+                                                                        <i class="fas fa-edit me-2"></i> Sửa
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <button type="button"
+                                                                        class="dropdown-item text-danger soft-delete-btn"
+                                                                        data-id="{{ $user->id }}">
+                                                                        <i class="fas fa-times me-2"></i> Khóa tài khoản
+                                                                    </button>
+                                                                </li>
                                                             @endif
-                                                        </div>
-                                                    </div>
+                                                        @endif
+                                                    </ul>
                                                 </div>
                                             </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="10" class="text-center text-muted">Không tìm thấy người dùng nào
+                                        <td colspan="9" class="text-center text-muted">Không tìm thấy người dùng nào
                                             phù hợp.</td>
                                     </tr>
                                 @endif
                             </tbody>
                         </table>
                     </div>
-
                     <div class="d-flex justify-content-center mt-3">
-                        {{ $users->appends(['role' => 'user', 'role_filter' => 'user', 'search' => $role == 'user' ? $search : null])->links() }}
+                        {{ $users->appends(['role' => 'user', 'role_filter' => 'user', 'search' => $search])->links() }}
                     </div>
                 </div>
 
                 <!-- Quản trị viên Tab -->
-                <div class="tab-pane fade {{ $role == 'admin' ? 'show active' : '' }}" id="admins" role="tabpanel"
-                    aria-labelledby="admins-tab">
-                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                        <h4 class="mb-0">Danh sách Quản trị viên</h4>
-                        <div class="d-flex gap-2 ms-auto">
-                            <a href="{{ route('users.create', ['role' => 'admin']) }}"
-                                class="btn btn-sm btn-outline-success d-flex align-items-center">
-                                <i class="fas fa-plus"></i>
-                                <span class="ms-2">Thêm quản trị viên</span>
-                            </a>
-                            <a class="btn btn-sm btn-outline-danger d-flex align-items-center"
-                                href="{{ route('users.trashed', ['role' => 'admin']) }}">
-                                <i class="fas fa-trash"></i>
-                                <span class="ms-2">Quản trị viên đã xoá</span>
-                            </a>
-                        </div>
-                    </div>
-
-
-                    <form action="{{ route('users.index', ['role' => 'admin']) }}" method="GET" class="mb-4">
-                        <input type="hidden" name="role_filter" value="admin">
-                        <div class="input-group">
-                            <input type="text" name="search" class="form-control rounded-left"
-                                placeholder="Tìm kiếm theo tên hoặc email..."
-                                value="{{ $role == 'admin' ? $search : '' }}">
-                            <div class="input-group-append">
-                                <button type="submit"
-                                    class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
+                <div class="tab-pane fade {{ $role == 'admin' ? 'show active' : '' }}" id="admins" role="tabpanel">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover custom-table">
+                        <table class="table table-bordered table-hover">
                             <thead class="thead-light text-center align-middle">
                                 <tr>
                                     <th>STT</th>
@@ -244,94 +246,117 @@
                                     <th>Số điện thoại</th>
                                     <th>Giới tính</th>
                                     <th>Địa chỉ</th>
-                                    <th>Vai trò</th>
                                     <th>Trạng thái</th>
-                                    <th>Hành động</th>
+                                    @if ($currentRole == 'admin')
+                                        <th class="text-center">Hành động</th>
+                                    @endif
+
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($admins as $index => $admin)
-                                    <tr>
-                                        <td>{{ $admins->firstItem() + $index }}</td>
-                                        <td class="text-center">
-                                            @if ($admin->avatar)
-                                                <img src="{{ asset('storage/' . $admin->avatar) }}" alt="Avatar"
-                                                    class="img-fluid avatar-img"
-                                                    style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
-                                            @else
-                                                <div class="bg-secondary d-flex align-items-center justify-content-center avatar-placeholder"
-                                                    style="width: 40px; height: 40px; border-radius: 5px;">
-                                                    <span class="text-white" style="font-size: 0.8rem;">N/A</span>
-                                                </div>
-                                            @endif
-                                        </td>
-                                        <td>{{ $admin->name }}</td>
-                                        <td>{{ $admin->email }}</td>
-                                        <td>{{ $admin->phone ?? 'Không có' }}</td>
-                                        <td>{{ $admin->gender == 'male' ? 'Nam' : ($admin->gender == 'female' ? 'Nữ' : 'Khác') }}
-                                        </td>
-                                        <td>{{ $admin->address ?? 'Không có' }}</td>
-                                        <td>{{ $admin->role == 'admin' ?? 'admin_branch' ? 'Quản trị viên' : 'Quản lý chi nhánh' }}
-                                        </td>
-                                        <td>
-                                            <span
-                                                class="badge badge-pill badge-status-fixed
-                                                {{ $admin->status === 'active' ? 'badge-success' : ($admin->status === 'inactive' ? 'badge-warning' : 'badge-danger') }}">
-                                                {{ $admin->status === 'active' ? 'Hoạt động' : ($admin->status === 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="d-flex justify-content-center flex-wrap btn-group-sm">
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-outline-secondary" type="button"
-                                                        id="actionMenu{{ $admin->id }}" data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu"
-                                                        aria-labelledby="dropdownMenuButton{{ $admin->id }}">
-                                                        <a class="dropdown-item"
-                                                            href="{{ route('users.edit', ['user' => $admin->id, 'role' => 'admin', 'page' => request('page', 1)]) }}">
-                                                            <i class="fas fa-edit"></i> Sửa
-                                                        </a>
-                                                        <a class="dropdown-item"
-                                                            href="{{ route('users.show', ['user' => $admin->id, 'role' => 'admin', 'page' => request('page', 1)]) }}">
-                                                            <i class="fas fa-eye"></i> Xem
-                                                        </a>
-                                                        @if ($currentRole === 'admin')
-                                                            <form
-                                                                action="{{ route('users.destroy', ['user' => $admin->id, 'role' => $role]) }}"
-                                                                method="POST" style="display:inline;"
-                                                                onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="dropdown-item text-danger">
-                                                                    <i class="fas fa-trash me-2"></i> Xoá
-                                                                </button>
-                                                            </form>
-                                                        @endif
+                                @if ($admins->count())
+                                    @foreach ($admins as $index => $admin)
+                                        <tr>
+                                            <td>{{ $admins->firstItem() + $index }}</td>
+                                            <td class="text-center">
+                                                @if ($admin->avatar)
+                                                    <img src="{{ asset('storage/' . $admin->avatar) }}" alt="Avatar"
+                                                        class="img-fluid avatar-img"
+                                                        style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
+                                                @else
+                                                    <div class="bg-secondary d-flex align-items-center justify-content-center avatar-placeholder"
+                                                        style="width: 40px; height: 40px; border-radius: 5px;">
+                                                        <span class="text-white" style="font-size: 0.8rem;">N/A</span>
                                                     </div>
-                                                </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                @if ($admins->isEmpty())
+                                                @endif
+                                            </td>
+                                            <td>{{ $admin->name }}</td>
+                                            <td>{{ $admin->email }}</td>
+                                            <td>{{ $admin->phone ?? 'Không có' }}</td>
+                                            <td>{{ $admin->gender == 'male' ? 'Nam' : ($admin->gender == 'female' ? 'Nữ' : 'Khác') }}
+                                            </td>
+                                            <td>{{ $admin->address ?? 'Không có' }}</td>
+                                            <td>
+                                                @if ($admin->trashed())
+                                                    <span class="badge bg-danger">Đã khóa</span>
+                                                @else
+                                                    <span
+                                                        class="badge {{ $admin->status === 'active' ? 'bg-success' : ($admin->status === 'inactive' ? 'bg-warning' : 'bg-danger') }}">
+                                                        {{ $admin->status === 'active' ? 'Hoạt động' : ($admin->status === 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            @if ($currentRole == 'admin')
+                                                <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                            id="actionMenu{{ $admin->id }}" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end"
+                                                            aria-labelledby="actionMenu{{ $admin->id }}">
+
+                                                            @if ($currentRole === 'admin')
+                                                                @if ($admin->trashed())
+                                                                    <li>
+                                                                        <button type="button"
+                                                                            class="dropdown-item text-success restore-btn"
+                                                                            data-id="{{ $admin->id }}">
+                                                                            <i class="fas fa-undo me-2"></i> Khôi phục
+                                                                        </button>
+                                                                    </li>
+                                                                @else
+                                                                    <li>
+                                                                        <a class="dropdown-item"
+                                                                            href="{{ route('users.show', ['user' => $admin->id, 'role' => 'admin', 'page' => request('page', 1)]) }}">
+                                                                            <i class="fas fa-eye me-2"></i> Xem
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="dropdown-item"
+                                                                            href="{{ route('users.edit', ['user' => $admin->id, 'role' => 'admin', 'page' => request('page', 1)]) }}">
+                                                                            <i class="fas fa-edit me-2"></i> Sửa
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <button type="button"
+                                                                            class="dropdown-item text-danger soft-delete-btn"
+                                                                            data-id="{{ $admin->id }}">
+                                                                            <i class="fas fa-times me-2"></i> Khóa tài
+                                                                            khoản
+                                                                        </button>
+                                                                    </li>
+                                                                @endif
+                                                            @endif
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                @else
                                     <tr>
-                                        <td colspan="10" class="text-center text-muted py-3">Không có dữ liệu</td>
+                                        <td colspan="9" class="text-center text-muted py-3">Không có dữ liệu</td>
                                     </tr>
                                 @endif
                             </tbody>
                         </table>
                     </div>
-
                     <div class="d-flex justify-content-center mt-3">
-                        {{ $admins->appends(['role' => 'admin', 'role_filter' => 'admin', 'search' => $role == 'admin' ? $search : null])->links() }}
+                        {{ $admins->appends(['role' => 'admin', 'role_filter' => 'admin', 'search' => $search])->links() }}
                     </div>
-
                 </div>
+
             </div>
         </div>
     </div>
+
+    <form id="forceDeleteForm" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
 @endsection
 
 @section('css')
@@ -351,81 +376,143 @@
             font-size: 0.8rem;
         }
 
-        .badge-status-fixed {
-            display: inline-block;
-            min-width: 80px;
-            text-align: center;
-            white-space: nowrap;
+        .btn-icon-toggle .btn-text {
+            display: none;
+            transition: opacity 0.3s ease;
         }
 
-        .toggle-status-btn {
-            min-width: 75px;
-            text-align: center;
-            white-space: nowrap;
-            padding: 6px 10px;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease-in-out;
-        }
-
-        .toggle-status-btn i {
-            margin-right: 6px;
+        .btn-icon-toggle:hover .btn-text {
+            display: inline;
         }
     </style>
 @endsection
 
 @section('js')
     <script>
-        // Cập nhật URL khi chuyển tab mà không tải lại trang
-        document.querySelectorAll('#userTabs .nav-link').forEach(tab => {
-            tab.addEventListener('shown.bs.tab', function(event) {
-                const role = event.target.id === 'users-tab' ? 'user' : 'admin';
-                const url = new URL(window.location);
-                url.searchParams.set('role', role);
-                window.history.pushState({}, '', url);
-            });
-        });
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const userId = this.getAttribute('data-id');
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Gắn sự kiện cho tất cả các nút toggle trạng thái
-            document.querySelectorAll('.toggle-status-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const userId = this.dataset.id;
-                    const btn = this;
+                    Swal.fire({
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Vui lòng chờ...',
+                                allowOutsideClick: false,
+                                didOpen: () => Swal.showLoading(),
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                            });
 
-                    fetch(`/admin/users/${userId}/toggle-status`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector(
-                                    'meta[name="csrf-token"]').getAttribute('content'),
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(res => {
-                            if (!res.ok) throw new Error("Server trả về lỗi");
-                            return res.json();
-                        })
-                        .then(data => {
-                            const row = btn.closest('tr');
-                            const badge = row.querySelector('.badge');
+                            fetch(route.replace(':id', userId), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json'
+                                    }
+                                })
+                                .then(async response => {
+                                    const contentType = response.headers.get(
+                                        'content-type');
 
-                            badge.textContent = data.status_label;
+                                    let data = {};
+                                    if (contentType && contentType.includes(
+                                            'application/json')) {
+                                        data = await response.json();
+                                    } else {
+                                        const text = await response.text();
+                                        data.message = text ||
+                                            'Lỗi không xác định từ server.';
+                                    }
 
-                            badge.className = 'badge badge-pill badge-status-fixed ' + data
-                                .badge_class;
+                                    Swal.close();
 
-                            btn.querySelector('span').textContent = data.button_label;
-                            btn.dataset.status = data.status;
-                        })
-                        .catch(err => {
-                            console.error('Lỗi cập nhật trạng thái:', err);
-                            alert('Cập nhật thất bại. Vui lòng thử lại.');
-                        });
+                                    if (response.ok) {
+                                        Swal.fire({
+                                            icon: data.success ? 'success' :
+                                                'error',
+                                            title: data.success ? 'Thành công' :
+                                                'Thất bại',
+                                            text: data.message ||
+                                                'Thao tác đã hoàn tất.',
+                                            customClass: {
+                                                popup: 'custom-swal-popup'
+                                            }
+                                        }).then(() => {
+                                            if (data.success) onSuccess();
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: `Lỗi ${response.status}`,
+                                            text: data.message ||
+                                                'Đã xảy ra lỗi không xác định.',
+                                            customClass: {
+                                                popup: 'custom-swal-popup'
+                                            }
+                                        });
+                                    }
+                                })
+                                .catch(error => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Lỗi',
+                                        text: error.message ||
+                                            'Đã xảy ra lỗi không xác định.',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
+                        }
+                    });
                 });
             });
+        }
+
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Khóa tài khoản',
+            text: 'Bạn có chắc chắn muốn khóa người dùng này?',
+            route: '{{ route('users.softDelete', ':id') }}',
+            method: 'DELETE'
+        });
+
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục tài khoản',
+            text: 'Khôi phục người dùng này?',
+            route: '{{ route('users.restore', ':id') }}',
+            method: 'POST'
+        });
+
+        handleSwalAction({
+            selector: '.force-delete-btn',
+            title: 'Xóa vĩnh viễn',
+            text: 'Hành động này sẽ xóa vĩnh viễn người dùng. Không thể khôi phục.',
+            route: '{{ route('users.destroy', ':id') }}',
+            method: 'DELETE'
         });
     </script>
 @endsection
