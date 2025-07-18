@@ -91,20 +91,20 @@
                 <thead class="table-light">
                     <tr>
                         <th>Tên sản phẩm</th>
-                        <th>Dung lượng</th>
+                        <th>Dung tích</th>
                         <th>Số lượng</th>
                         <th>Giá</th>
-                        <th>Tổng</th>
+                     
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($order->items as $item)
                         <tr>
                             <td>{{ $item->productVariant->product->name ?? '-' }}</td>
-                            <td>{{ $item->productVariant->volume_id ?? '-' }}</td>
+                            <td>{{ $item->volume_name ?? '-' }}</td>
                             <td>{{ $item->quantity }}</td>
                             <td>{{ number_format($item->price_at_time, 0, ',', '.') }} đ</td>
-                            <td>{{ number_format($item->total_price, 0, ',', '.') }} đ</td>
+                           
                         </tr>
                     @endforeach
                 </tbody>
