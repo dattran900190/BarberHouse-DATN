@@ -70,6 +70,7 @@
                                         @endforeach
                                     </select>
                                 </div>
+                             
 
                                 <div class="col-auto">
                                     <label for="quantity">Số lượng:</label>
@@ -85,6 +86,10 @@
                                         <i class="fas fa-cart-plus"></i>
                                     </button>
                                 </div>
+                            </div>
+                            <div class="w-100"></div>
+                            <div class="col-12" id="variant-image-wrapper" style="text-align:center; margin-top:3px;">
+                                <img id="variant-image" src="{{ $variants->first() && $variants->first()->image ? asset('storage/' . $variants->first()->image) : '' }}" alt="Ảnh biến thể" style="max-width:150px; display:{{ $variants->first() && $variants->first()->image ? 'inline-block' : 'none' }};">
                             </div>
                         </form>
 
@@ -236,6 +241,23 @@
             if (quantityInput && buyNowQuantity) {
                 quantityInput.addEventListener('input', function() {
                     buyNowQuantity.value = this.value;
+                });
+            }
+
+            // Hiển thị ảnh biến thể khi chọn thể tích
+            const variantImage = document.getElementById('variant-image');
+            const variantImages = @json($variantImages ?? []);
+            if (variantSelect && variantImage) {
+                variantSelect.addEventListener('change', function() {
+                    const selectedId = this.value;
+                    const imgUrl = variantImages[selectedId];
+                    if (imgUrl) {
+                        variantImage.src = imgUrl;
+                        variantImage.style.display = 'inline-block';
+                    } else {
+                        variantImage.src = '';
+                        variantImage.style.display = 'none';
+                    }
                 });
             }
         });
