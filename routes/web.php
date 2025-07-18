@@ -75,7 +75,13 @@ Route::post('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])-
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
 Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('dat-lich.store');
 Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::class, 'getBarbersByBranch'])->name('getBarbersByBranch');
-Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}', [ClientAppointmentController::class, 'getAvailableBarbersByDate']);
+// Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}', [ClientAppointmentController::class, 'getAvailableBarbersByDate']);
+// Route::get(
+//   '/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}',
+//   [ClientAppointmentController::class, 'getAvailableBarbersByDate']
+// );
+Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time}/{service_id}', [ClientAppointmentController::class, 'getAvailableBarbersByDate'])->name('getAvailableBarbersByDate');
+
 Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
 Route::post('/store-errors', function (Request $request) {
     session()->flash('errors', $request->input('errors'));
