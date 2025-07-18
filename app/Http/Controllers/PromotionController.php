@@ -12,7 +12,7 @@ class PromotionController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $filter = $request->input('filter', 'all'); // all, active, deleted
+        $filter = $request->input('filter', 'all'); 
 
         $query = match ($filter) {
             '1' => Promotion::query(),
@@ -103,7 +103,7 @@ class PromotionController extends Controller
     if (!$promotion->trashed()) {
         return response()->json([
             'success' => false,
-            'message' => 'Bạn cần hủy kích hoạt trước khi xoá .'
+            'message' => 'Bạn cần xóa mềm trước khi xoá vĩnh viễn.'
         ]);
     }
 
@@ -139,7 +139,7 @@ class PromotionController extends Controller
         if (Auth::user()->role === 'admin_branch') {
             return response()->json([
                 'success' => false,
-                'message' => 'Bạn không có quyền hủy mã giảm giá.'
+                'message' => 'Bạn không có quyền xóa mềm mã giảm giá.'
             ]);
         }
 
@@ -152,7 +152,7 @@ class PromotionController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Đã hủy kích hoạt mã giảm giá.'
+            'message' => 'Đã xóa mềm mã giảm giá.'
         ]);
     }
 
