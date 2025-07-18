@@ -57,16 +57,16 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="price" class="form-label">Giá</label>
+                    <label for="price" class="form-label">Giá đại diện</label>
                     <input type="number" name="price" id="price" class="form-control" value="{{ old('price', $product->price) }}" step="0.01">
                     @error('price') <div class="text-danger">{{ $message }}</div> @enderror
                 </div>
 
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                     <label for="stock" class="form-label">Tồn kho</label>
                     <input type="number" name="stock" id="stock" class="form-control" value="{{ old('stock', $product->stock) }}">
                     @error('stock') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
+                </div> --}}
 
                 <div class="mb-3">
                     <label for="image" class="form-label">Ảnh chính sản phẩm</label>
@@ -158,7 +158,9 @@
 
         <div class="mt-4">
             <button type="submit" class="btn btn-sm btn-outline-primary">Cập nhật</button>
+            <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-sm">Quay lại</a>
         </div>
+      
     </form>
 </div>
 
@@ -199,6 +201,12 @@
 
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-variant')) {
+            const variantsContainer = document.getElementById('variants');
+            const visibleVariants = Array.from(variantsContainer.querySelectorAll('.variant')).filter(v => v.style.display !== 'none');
+            if (visibleVariants.length <= 1) {
+                alert('Phải có ít nhất 1 biến thể!');
+                return;
+            }
             const variantDiv = e.target.closest('.variant');
             // Tìm checkbox xóa biến thể trong variantDiv
             const checkbox = variantDiv.querySelector('input[type="checkbox"][name^="delete_variants"]');

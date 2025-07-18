@@ -85,7 +85,8 @@ class ProductController extends Controller
                 ]);
             }
         }
-
+        $totalStock = ProductVariant::where('product_id', $product->id)->sum('stock');
+        $product->update(['stock' => $totalStock]);
         return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được thêm thành công!');
     }
 
@@ -202,6 +203,10 @@ class ProductController extends Controller
                     ]);
                 }
             }
+
+            // 6. Cập nhật tổng tồn kho sản phẩm dựa trên các biến thể còn lại
+            $totalStock = ProductVariant::where('product_id', $product->id)->sum('stock');
+            $product->update(['stock' => $totalStock]);
         });
 
         return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được cập nhật thành công!');
