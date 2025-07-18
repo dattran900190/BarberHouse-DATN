@@ -75,7 +75,7 @@
                     </div>
                     <div class="col-md-6">
                         <label for="gender" class="form-label">Giới tính</label>
-                        <select class="form-control" name="gender" {{ $isEditingSelf ? '' : 'disabled' }}>
+                        <select class="form-control readonly-select" name="gender">
                             <option value="">Chọn giới tính</option>
                             <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : '' }}>Nam
                             </option>
@@ -84,6 +84,25 @@
                             <option value="other" {{ old('gender', $user->gender) == 'other' ? 'selected' : '' }}>Khác
                             </option>
                         </select>
+
+                        @if (!$isEditingSelf)
+                            <style>
+                                .readonly-select {
+                                    pointer-events: none;
+                                    /* Không cho người dùng tương tác */
+                                    background-color: #e9ecef;
+                                    /* Màu nền giống input readonly */
+                                    color: #495057;
+                                }
+
+                                .readonly-select option {
+                                    background-color: white;
+                                    /* Đảm bảo text đọc được */
+                                }
+                            </style>
+                        @endif
+
+
 
                         {{-- Nếu bị disable thì thêm hidden input --}}
                         @if (!$isEditingSelf)
