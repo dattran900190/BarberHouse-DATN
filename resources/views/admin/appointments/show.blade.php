@@ -143,6 +143,12 @@
                     <i class="fa fa-sticky-note me-2 text-muted"></i>
                     <strong>Ghi chú:</strong> {{ $appointment->note ?? 'N/A' }}
                 </div>
+
+                <div class="col-md-6">
+                    <i class="far fa-calendar me-2 text-muted"></i>
+                    <strong>Thời gian:</strong> {{ $appointment->duration ?? 'N/A' }} phút
+                </div>
+
                 <div class="col-md-6">
                     <i class="fa fa-comment-dots me-2 text-primary"></i>
                     <strong>Bình luận:</strong>

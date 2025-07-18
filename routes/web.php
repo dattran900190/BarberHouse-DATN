@@ -236,11 +236,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
-    Route::patch('admin/branches/{id}/soft-delete', [\App\Http\Controllers\BranchController::class, 'softDelete'])
+    Route::patch('admin/branches/{id}/soft-delete', [BranchController::class, 'softDelete'])
         ->name('branches.softDelete');
-    Route::post('admin/branches/{id}/restore', [\App\Http\Controllers\BranchController::class, 'restore'])
+    Route::post('admin/branches/{id}/restore', [BranchController::class, 'restore'])
         ->name('branches.restore');
-    Route::delete('admin/branches/{id}/force-delete', [\App\Http\Controllers\BranchController::class, 'forceDelete'])
+    Route::delete('admin/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])
         ->name('branches.destroy');
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);
