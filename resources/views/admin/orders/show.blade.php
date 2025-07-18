@@ -91,7 +91,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>Tên sản phẩm</th>
-                        <th>Dung lượng</th>
+                        <th>Dung tích</th>
                         <th>Số lượng</th>
                         <th>Giá</th>
                      
