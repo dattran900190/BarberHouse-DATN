@@ -60,7 +60,7 @@
                         <p><strong>Họ tên:</strong> {{ $user->name }}</p>
                         <p><strong>Email:</strong> {{ $user->email }}</p>
                         <p><strong>Số điện thoại:</strong> {{ $user->phone ?? 'Không có' }}</p>
-                        <p><strong>Giới tính:</strong> {{ $user->gender ?? 'Không xác định' }}</p>
+                        <p><strong>Giới tính:</strong> {{ $user->gender ? ($user->gender == 'male' ? 'Nam' : ($user->gender == 'female' ? 'Nữ' : 'Khác')) : 'Không có' }}</p>
                     </div>
                     <div class="col-md-6">
                         <p><strong>Địa chỉ:</strong> {{ $user->address ?? 'Không có' }}</p>
@@ -90,17 +90,6 @@
                                 class="btn btn-sm btn-outline-secondary">
                                 <i class="fa fa-arrow-left me-1"></i> Quay lại
                             </a>
-                            @if ($currentRole === 'admin')
-                                <form action="{{ route('users.destroy', ['user' => $user->id, 'role' => $role]) }}"
-                                    method="POST" style="display:inline;"
-                                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">
-                                        <i class="fa fa-trash me-1"></i> Xóa
-                                    </button>
-                                </form>
-                            @endif
 
                         </div>
                     </div>

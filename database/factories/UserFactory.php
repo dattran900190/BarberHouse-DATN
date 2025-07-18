@@ -30,6 +30,10 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'role' => 'user', // Thêm role mặc định là user
+            'address' => fake()->address(),
+            'phone' => fake()->phoneNumber(),
+            'gender' => fake()->randomElement(['male', 'female']),
+            'status' => 'active'
         ];
     }
 
@@ -38,7 +42,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

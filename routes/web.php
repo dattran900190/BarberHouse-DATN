@@ -249,16 +249,17 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
 
     // ==== Người dùng ====
-
-    Route::get('/users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
-    Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
-    Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::resource('users', UserController::class);
+    Route::delete('users/{user}/soft-delete', [UserController::class, 'softDelete'])->name('users.softDelete');
+    Route::post('users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
+
 
 
     // ==== Mã giảm giá ====
     Route::resource('promotions', PromotionController::class);
-
+    Route::delete('/{id}/soft-delete', [PromotionController::class, 'softDelete'])->name('promotions.softDelete');
+    Route::put('/{id}/restore', [PromotionController::class, 'restore'])->name('promotions.restore');
     // ==== Sản phẩm ====
     Route::get('/products', [ProductController::class, 'index'])->name('admin.products.index');
     Route::get('/products/create', [ProductController::class, 'create'])->name('admin.products.create');
