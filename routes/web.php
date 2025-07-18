@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\Appointment;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -22,9 +22,11 @@ use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\Client\WalletController;
 use App\Http\Controllers\RefundRequestController;
 use App\Http\Controllers\BarberScheduleController;
+use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\Client\ClientPostController;
@@ -33,9 +35,9 @@ use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\Client\ClientProductController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
-use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
-use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ReviewController as ClientReviewController;
+use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+use App\Http\Controllers\CustomerImageController;
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -147,19 +149,25 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Admin Dashboard ====
     Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+
     // Hiển thị giao diện Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
+    Route::patch('/barbers/{id}/soft-delete', [BarberController::class, 'softDelete'])->name('barbers.softDelete');
+    Route::post('admin/barbers/{id}/restore', [BarberController::class, 'restore'])->name('barbers.restore');
 
     // Hoàn tiền
     Route::resource('refunds', RefundRequestController::class);
+    Route::patch('/refunds/{id}/soft-delete', [RefundRequestController::class, 'softDelete'])->name('refunds.softDelete');
+    Route::post('/refunds/{id}/restore', [RefundRequestController::class, 'restore'])->name('refunds.restore');
+
     // Route::put('/refunds/{refund}', [RefundRequestController::class, 'update'])->name('refunds.update');
 
     // ==== Đơn hàng ====
     Route::resource('orders', OrderController::class)->names('admin.orders');
     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
-
 
     // ==== Lịch sử điểm ====
     Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');
@@ -167,13 +175,26 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
+    Route::patch('admin/services/{id}/soft-delete', [ServiceController::class, 'softDelete'])->name('services.softDelete');
+    Route::delete('admin/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
+    Route::post('/services/{id}/restore', [ServiceController::class, 'restore'])->name('services.restore');
+
+    // ==== settings ====
+    Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('settings/save', [SettingController::class, 'saveSettings'])->name('client.settings.save');
 
     // ==== Bình luận ====
     Route::resource('reviews', ReviewController::class);
+    Route::patch('/reviews/{id}/soft-delete', [ReviewController::class, 'softDelete'])->name('reviews.softDelete');
+    Route::post('/reviews/{id}/restore', [ReviewController::class, 'restore'])->name('reviews.restore');
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+
+
+    // ==== Ảnh khách hàng ====
+    Route::resource('customer-images', CustomerImageController::class);
 
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
-
 
     // ==== Đặt lịch ====
     Route::resource('appointments', AppointmentController::class);
@@ -187,10 +208,15 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);
+    Route::patch('posts/{id}/soft-delete', [PostController::class, 'softDelete'])->name('posts.softDelete');
+    Route::post('posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
+    Route::delete('posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
 
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
-
+    Route::patch('product_categories/{id}/soft-delete', [ProductCategoryController::class, 'softDelete'])->name('product_categories.softDelete');
+    Route::post('product_categories/{id}/restore', [ProductCategoryController::class, 'restore'])->name('product_categories.restore');
+    Route::delete('product_categories/{id}/force-delete', [ProductCategoryController::class, 'destroy'])->name('product_categories.destroy');
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
 
@@ -199,6 +225,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Banner ====
     Route::resource('banners', BannerController::class);
+    Route::patch('banners/{id}/soft-delete', [BannerController::class, 'softDelete'])->name('banners.softDelete');
+    Route::post('banners/{id}/restore', [BannerController::class, 'restore'])->name('banners.restore');
+    Route::delete('banners/{id}', [BannerController::class, 'destroy'])->name('banners.destroy');
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
@@ -216,12 +245,12 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
 
     // ==== Người dùng ====
-    
+
     Route::get('/users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
     Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
-     Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::resource('users', UserController::class);
-   
+
 
     // ==== Mã giảm giá ====
     Route::resource('promotions', PromotionController::class);

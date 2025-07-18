@@ -3,14 +3,15 @@
 namespace App\Providers;
 
 use App\Models\Banner;
+use App\Models\Setting;
 use App\Models\Appointment;
+use App\Models\RefundRequest;
 use App\Models\ProductCategory;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use App\Observers\AppointmentObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use App\Models\RefundRequest;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-   public function boot(): void
+    public function boot(): void
     {
         // Kích hoạt phân trang dùng Bootstrap
         Paginator::useBootstrap();
@@ -50,14 +51,26 @@ class AppServiceProvider extends ServiceProvider
             $pendingOrderCount = \App\Models\Order::where('status', 'pending')->count();
             $view->with('pendingOrderCount', $pendingOrderCount);
         });
-         // banners
 
+        // banners
         View::composer('client.*', function ($view) {
             $banners = Banner::where('is_active', 1)
                 ->orderBy('id', 'desc')
                 ->get();
 
             $view->with('banners', $banners);
+        });
+
+        // Chia sẻ các liên kết mạng xã hội với tất cả các view
+        View::composer('*', function ($view) {
+            $social_links = Setting::where('type', 'url')->get()->pluck('value', 'key');
+
+            $imageSettings = Setting::where('type', 'image')->pluck('value', 'key');
+
+            $view->with([
+                'social_links' => $social_links,
+                'imageSettings' => $imageSettings,
+            ]);
         });
     }
 }

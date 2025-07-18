@@ -300,7 +300,7 @@ if (timeGrid) {
   }
 
   function updateTotal() {
-    // Lấy thông tin dịch vụ chính
+    // Lấy thông tin dịch vụ
     const mainOpt = serviceSelect.options[serviceSelect.selectedIndex];
     const mainInfo = getServiceInfo(mainOpt);
 

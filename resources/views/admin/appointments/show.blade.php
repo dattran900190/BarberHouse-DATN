@@ -79,7 +79,6 @@
         </div>
         <div class="card-body">
             <div class="row gy-3">
-
                 {{-- Dòng 1 --}}
                 <div class="col-md-6">
                     <i class="fa fa-barcode me-2 text-muted"></i>
@@ -95,13 +94,13 @@
                     <i class="fa fa-map-marker-alt me-2 text-success"></i>
                     <strong>Chi nhánh:</strong> {{ $appointment->branch->name ?? 'N/A' }}
                 </div>
-
-                {{-- Dòng 3 --}}
                 <div class="col-md-6">
                     <i class="fa fa-clock me-2 text-warning"></i>
                     <strong>Thời gian:</strong>
                     {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}
                 </div>
+
+                {{-- Dòng 3 --}}
                 <div class="col-md-6">
                     <i class="fa fa-info-circle me-2 text-warning"></i>
                     <strong>Trạng thái:</strong>
@@ -109,14 +108,19 @@
                         {{ $statusTexts[$appointment->status] ?? ucfirst($appointment->status) }}
                     </span>
                 </div>
-
-                {{-- Dòng 4 --}}
                 <div class="col-md-6">
                     <i class="fa fa-wallet me-2 text-info"></i>
                     <strong>Thanh toán:</strong>
                     <span class="badge bg-{{ $paymentColors[$appointment->payment_status] ?? 'secondary' }}">
                         {{ $paymentTexts[$appointment->payment_status] ?? ucfirst($appointment->payment_status) }}
                     </span>
+                </div>
+
+                {{-- Dòng 4 --}}
+                <div class="col-md-6">
+                    <i class="fas fa-money-check-alt me-2 text-success"></i>
+                    <strong>Phương thức thanh toán:</strong>
+                    {{ $appointment->payment_method === 'cash' ? 'Thanh toán tại tiệm' : 'Thanh toán VNPAY' }}
                 </div>
                 <div class="col-md-6">
                     <i class="fa fa-percentage me-2 text-success"></i>
@@ -134,56 +138,64 @@
                     {{ $appointment->created_at ? $appointment->created_at->format('d/m/Y H:i') : 'N/A' }}
                 </div>
 
-                {{-- Ghi chú (nguyên dòng) --}}
+                {{-- Dòng 6 --}}
                 <div class="col-md-6">
                     <i class="fa fa-sticky-note me-2 text-muted"></i>
                     <strong>Ghi chú:</strong> {{ $appointment->note ?? 'N/A' }}
                 </div>
-
                 <div class="col-md-6">
-                    <div class="mb-3">
-                        <i class="fa fa-comment-dots me-2 text-primary"></i>
-                        <strong>Bình luận:</strong>
-                        <span class="text-muted">{{ $review->comment ?? 'Chưa có bình luận' }}</span>
-                    </div>
+                    <i class="fa fa-comment-dots me-2 text-primary"></i>
+                    <strong>Bình luận:</strong>
+                    <span class="text-muted">{{ $review->comment ?? 'Chưa có bình luận' }}</span>
 
                     @if (isset($review->rating))
-                        <div>
+                        <div class="mt-2">
                             <i class="fa fa-star me-2 text-warning"></i>
                             <strong>Đánh giá:</strong>
                             @for ($i = 1; $i <= 5; $i++)
-                                @if ($i <= $review->rating)
-                                    <i class="fa fa-star text-warning"></i>
-                                @else
-                                    <i class="fa fa-star text-secondary"></i>
-                                @endif
+                                <i class="fa fa-star {{ $i <= $review->rating ? 'text-warning' : 'text-secondary' }}"></i>
                             @endfor
                             <span class="ms-2 text-muted">({{ $review->rating }}/5)</span>
                         </div>
                     @endif
                 </div>
 
+                {{-- Dòng 7: Dịch vụ --}}
                 <div class="col-md-6">
                     <i class="fas fa-concierge-bell me-2 text-success"></i>
                     <strong>Dịch vụ:</strong> {{ $appointment->service->name ?? 'N/A' }}
 
-                    <div class="mt-2">
-                        <i class="fas fa-plus-circle text-primary me-2"></i>
-                        <strong>Dịch vụ bổ sung:</strong>
-                        @if ($additionalServices->isNotEmpty())
-                            <ul class="m-3 mt-0 ps-3">
-                                @foreach ($additionalServices as $service)
-                                    <li>{{ $service->name }}</li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <p class="text-muted fst-italic mt-1">Không có dịch vụ bổ sung</p>
+                    @if ($appointment->service)
+                        @if ($appointment->service->trashed())
+                            <span class="badge bg-danger ms-1">Đã xoá mềm</span>
                         @endif
-                    </div>
+                    @else
+                        <span class="text-muted">Dịch vụ không tồn tại</span>
+                    @endif
+
+                </div>
+                <div class="col-md-6">
+                    <i class="fas fa-plus-circle text-primary me-2"></i>
+                    <strong>Dịch vụ thêm:</strong>
+                    @if ($additionalServices->isNotEmpty())
+                        <ul class="m-2 mt-1 ps-3">
+                            @foreach ($additionalServices as $service)
+                                <li>
+                                    {{ $service->name }}
+                                    @if ($service->trashed())
+                                        <span class="badge bg-danger ms-1">Đã xoá mềm</span>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p class="text-muted fst-italic mt-1">Không có dịch vụ thêm</p>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
+
 
 
     <!-- Card 3: Thông tin hủy (nếu có) -->

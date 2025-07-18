@@ -75,8 +75,8 @@
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Trạng thái</label>
                         <select name="status" class="form-control @error('status') is-invalid @enderror">
-                            <option value="0" {{ old('status', $post->status) == '0' ? 'selected' : '' }}>Bản nháp</option>
-                            <option value="1" {{ old('status', $post->status) == '1' ? 'selected' : '' }}>Đã xuất bản</option>
+                            <option value="0" {{ old('status', $post->status) == '0' ? 'selected' : '' }}>Không hoạt động</option>
+                            <option value="1" {{ old('status', $post->status) == '1' ? 'selected' : '' }}>Đang hoạt động</option>
                         </select>
                         @error('status') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>

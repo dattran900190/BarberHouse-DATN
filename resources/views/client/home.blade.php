@@ -117,26 +117,23 @@
 
         <section id="price">
             <h2>Bảng giá</h2>
-            <img src="{{ asset('images/bang_gia.png') }}" alt="" />
+            <img src="{{ asset('storage/' . ($imageSettings['bang_gia'] ?? 'default-images/no-banggia.png')) }}"
+                alt="Bảng giá" />
         </section>
 
         <section id="instagram">
             <h2>Instagram</h2>
             <div class="images">
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
-                <div class="image-item"><img src="/img/post2.png" alt="" /></div>
+                @forelse ($customerImages as $image)
+                    <div class="image-item">
+                        <img src="{{ asset('storage/' . $image->image) }}" loading="lazy" alt="Ảnh khách hàng">
+                    </div>
+                @empty
+                    <p class="text-muted">Chưa có ảnh khách hàng nào.</p>
+                @endforelse
             </div>
         </section>
+
     </main>
 @endsection
 @section('css')

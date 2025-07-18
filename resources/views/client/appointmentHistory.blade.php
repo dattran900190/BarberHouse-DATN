@@ -15,6 +15,7 @@
                             '' => 'Tất cả',
                             'completed' => 'Đã hoàn thành',
                             'pending' => 'Đang chờ',
+                            'progress' => 'Đang làm tóc',
                             'confirmed' => 'Đã xác nhận',
                             'cancelled' => 'Đã hủy',
                         ];
@@ -54,8 +55,8 @@
                     </form>
                     @forelse ($appointments as $appointment)
                         <div class="order-item mb-3 p-3 rounded-3">
-                            <div class="row align-items-center">
-                                <div class="col-md-7">
+                            <div class="row align-items-center justify-content-between">
+                                <div class="col-md-4">
                                     <span class="fw-bold">Mã đặt lịch: {{ $appointment->appointment_code }}</span>
                                     <br>
                                     <span class="text-dark">Dịch vụ: {{ $appointment->service?->name ?? 'N/A' }}</span>
@@ -84,6 +85,8 @@
                                         <span class="status-label status-processing">Đang chờ</span>
                                     @elseif ($appointment->status == 'confirmed')
                                         <span class="status-label status-confirmed">Đã xác nhận</span>
+                                    @elseif ($appointment->status == 'progress')
+                                        <span class="status-label status-info">Đang làm tóc</span>
                                     @elseif ($appointment->status == 'cancelled')
                                         <span class="status-label status-cancelled">
                                             {{ $appointment->cancellation_type == 'no-show' ? 'Không đến' : 'Đã hủy' }}
@@ -92,7 +95,8 @@
                                         <span class="status-label status-completed">Đã hoàn thành</span>
                                     @endif
                                 </div>
-                                <div class="col-md-3 text-center">
+                                
+                                <div class="col-md-4 text-center">
                                     <div class="d-flex justify-content-center gap-2">
 
                                         @if ($appointment instanceof \App\Models\CancelledAppointment)

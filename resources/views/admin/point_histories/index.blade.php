@@ -1,6 +1,6 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Danh sách người dùng - Lịch sử điểm')
+@section('title', 'Quản lý Lịch sử điểm')
 
 @section('content')
     @if (session('success'))
@@ -22,7 +22,7 @@
     @endif
 
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Danh sách người dùng</h3>
+        <h3 class="fw-bold mb-3">Lịch sử điểm người dùng</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -33,21 +33,27 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="#">Lịch sử điểm</a>
+                <a href="{{ url('admin/dashboard') }}">Quản lý đặt lịch</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/point_histories') }}">Lịch sử điểm</a>
             </li>
         </ul>
     </div>
 
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card-header text-white d-flex justify-content-between align-items-center">
             <div class="card-title">Danh sách người dùng</div>
         </div>
 
         <div class="card-body">
             <form action="{{ route('point_histories.index') }}" method="GET" class="mb-3">
                 <div class="position-relative">
-                    <input type="text" name="search" class="form-control pe-5"
-                        placeholder="Tìm kiếm theo tên người dùng..." value="{{ request()->get('search') }}">
+                    <input type="text" name="search" placeholder="Tìm kiếm theo tên người dùng..."
+                        class="form-control pe-5" value="{{ request('search') }}">
                     <button type="submit" class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
                         <i class="fa fa-search"></i>
                     </button>
@@ -62,7 +68,7 @@
                             <th>Tên người dùng</th>
                             <th>Email</th>
                             <th>Điểm hiện có</th>
-                            <th>Hành động</th>
+                            <th class="text-center">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -72,15 +78,25 @@
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>
-                                    <span class="badge bg-success">
-                                        {{ $user->points_balance }} điểm
-                                    </span>
+                                    <span class="badge bg-success">{{ $user->points_balance }} điểm</span>
                                 </td>
-                                <td>
-                                    <a href="{{ route('point_histories.user', ['id' => $user->id, 'page' => request('page', 1)]) }}"
-                                        class="btn btn-sm btn-info d-inline-flex align-items-center">
-                                        <i class="fas fa-eye me-1"></i> <span>Xem chi tiết</span>
-                                    </a>
+                                <td class="text-center">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                            id="actionMenu{{ $user->id }}" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end"
+                                            aria-labelledby="actionMenu{{ $user->id }}">
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ route('point_histories.user', ['id' => $user->id, 'page' => request('page', 1)]) }}">
+                                                    <i class="fas fa-eye me-2"></i> Xem chi tiết
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

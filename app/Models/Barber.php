@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Barber extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'barbers';
 
@@ -20,6 +21,8 @@ class Barber extends Model
         'rating_avg',
         'status'
     ];
+    
+    protected $dates = ['deleted_at'];
 
     public function branch()
     {

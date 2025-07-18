@@ -197,21 +197,18 @@
                                     <span class="sub-item">Banner</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ asset('admin/customer-images') }}">
+                                    <span class="sub-item">Ảnh khách hàng</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a href="widgets.html">
+                    <a href="{{ url('admin/settings') }}">
                         <i class="fas fa-desktop"></i>
-                        <p>Widgets</p>
-                        <span class="badge badge-success">4</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="../../documentation/index.html">
-                        <i class="fas fa-file"></i>
-                        <p>Documentation</p>
-                        <span class="badge badge-secondary">1</span>
+                        <p>Cài đặt</p>
                     </a>
                 </li>
             </ul>

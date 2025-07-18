@@ -142,6 +142,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login')->with('messageError', 'Đăng xuất thành công');
+        return redirect()->route('home')->with('messageError', 'Đăng xuất thành công');
     }
 }

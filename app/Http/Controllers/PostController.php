@@ -17,6 +17,14 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $query = Post::query();
+        $filter = $request->input('filter', 'all'); // Mặc định là 'all'
+
+        // Bắt đầu với builder phù hợp theo filter
+        $query = match ($filter) {
+            'active' => Post::query(),
+            'deleted' => Post::onlyTrashed(),
+            default => Post::withTrashed(),
+        };
         // Bài viết nổi bật (hiển thị trước)
         $featuredPosts = Post::where('is_featured', true)
             ->where('status', 'published')
@@ -36,7 +44,7 @@ class PostController extends Controller
 
         $posts = $query->orderBy('created_at', 'desc')->paginate(5); // Phân trang 10 bài mỗi trang
 
-        return view('admin.posts.index', compact('posts', 'featuredPosts', 'normalPosts'));
+        return view('admin.posts.index', compact('posts', 'featuredPosts', 'normalPosts', 'filter'));
     }
 
 
@@ -114,20 +122,68 @@ class PostController extends Controller
         return redirect()->route('posts.index')->with('success', 'Bài viết đã được cập nhật thành công!');
     }
 
-    public function destroy(Post $post)
+    public function destroy($id)
     {
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('posts.index')->with('error', 'Bạn không có quyền xóa bài viết.');
+        }
+        $post = Post::withTrashed()->findOrFail($id);
+
+        // Kiểm tra liên kết phụ (nếu có, ví dụ comment)
+        if ($post->comments()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xoá vĩnh viễn vì bài viết đã có bình luận.'
+            ]);
         }
         // Xóa hình ảnh nếu có
         if ($post->image && \Storage::disk('public')->exists($post->image)) {
             \Storage::disk('public')->delete($post->image);
         }
 
-        // Xóa bài viết
-        $post->delete();
 
-        return redirect()->route('posts.index')->with('success', 'Xóa bài viết thành công!');
+        // Xóa bài viết
+        $post->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã xoá vĩnh viễn bài viết.'
+        ]);
     }
+    public function softDelete($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xoá bài viết.'
+            ]);
+        }
+
+        $post = Post::findOrFail($id);
+        $post->delete(); // gán deleted_at
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã xoá mềm bài viết.'
+        ]);
+    }
+    public function restore($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền khôi phục bài viết.'
+            ]);
+        }
+
+        $post = Post::withTrashed()->findOrFail($id);
+        $post->restore();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Khôi phục bài viết thành công.'
+        ]);
+    }
+
 
 }

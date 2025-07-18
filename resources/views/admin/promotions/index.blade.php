@@ -48,7 +48,8 @@
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Tìm theo mã..."
                         value="{{ request('search') }}">
-                    <button class="btn btn-outline-primary" type="submit">
+                    <button type="submit"
+                        class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent text-dark">
                         <i class="fa fa-search"></i>
                     </button>
                 </div>
