@@ -51,16 +51,22 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="price" class="form-label">Giá</label>
+                    <label for="long_description" class="form-label">Mô tả dài</label>
+                    <textarea name="long_description" id="long_description" class="form-control">{{ old('long_description', $product->long_description) }}</textarea>
+                    @error('long_description') <div class="text-danger">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="price" class="form-label">Giá đại diện</label>
                     <input type="number" name="price" id="price" class="form-control" value="{{ old('price', $product->price) }}" step="0.01">
                     @error('price') <div class="text-danger">{{ $message }}</div> @enderror
                 </div>
 
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                     <label for="stock" class="form-label">Tồn kho</label>
                     <input type="number" name="stock" id="stock" class="form-control" value="{{ old('stock', $product->stock) }}">
                     @error('stock') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
+                </div> --}}
 
                 <div class="mb-3">
                     <label for="image" class="form-label">Ảnh chính sản phẩm</label>
@@ -142,7 +148,7 @@
                                 @error("variants.$index.image") <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
-                            <button type="button" class="btn btn-sm btn-outline-danger">Xóa khỏi giao diện</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-variant">Xóa khỏi giao diện</button>
                         </div>
                     @endforeach
                 </div>
@@ -152,7 +158,9 @@
 
         <div class="mt-4">
             <button type="submit" class="btn btn-sm btn-outline-primary">Cập nhật</button>
+            <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-sm">Quay lại</a>
         </div>
+      
     </form>
 </div>
 
@@ -185,7 +193,7 @@
                 <label class="form-label">Ảnh biến thể</label>
                 <input type="file" name="variants[${variantIndex}][image]" class="form-control" accept="image/*">
             </div>
-            <button type="button" class="btn btn-danger btn-sm remove-variant">Xóa khỏi giao diện</button>
+            <button type="button" class="btn btn-sm btn-outline-danger btn-sm remove-variant">Xóa khỏi giao diện</button>
         `;
         document.getElementById('variants').appendChild(variantDiv);
         variantIndex++;
@@ -193,7 +201,25 @@
 
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-variant')) {
-            e.target.closest('.variant').remove();
+            const variantsContainer = document.getElementById('variants');
+            const visibleVariants = Array.from(variantsContainer.querySelectorAll('.variant')).filter(v => v.style.display !== 'none');
+            if (visibleVariants.length <= 1) {
+                alert('Phải có ít nhất 1 biến thể!');
+                return;
+            }
+            const variantDiv = e.target.closest('.variant');
+            // Tìm checkbox xóa biến thể trong variantDiv
+            const checkbox = variantDiv.querySelector('input[type="checkbox"][name^="delete_variants"]');
+            if (checkbox) {
+                if (checkbox.checked) {
+                    variantDiv.style.display = 'none'; // Ẩn khỏi giao diện nếu đã tick checkbox
+                } else {
+                    alert('Bạn phải tick vào ô "Xóa biến thể" trước!');
+                }
+            } else {
+                // Biến thể mới thì xóa khỏi DOM luôn
+                variantDiv.remove();
+            }
         }
     });
 </script>

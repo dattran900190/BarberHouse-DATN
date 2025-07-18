@@ -38,7 +38,11 @@ class ClientProductController extends Controller
             ->take(8)
             ->get();
 
+        // Lấy map id => url ảnh của từng biến thể
+        $variantImages = $product->variants->mapWithKeys(function($variant) {
+            return [$variant->id => $variant->image ? asset('storage/' . $variant->image) : null];
+        });
 
-        return view('client.detailProduct', compact('product', 'relatedProducts'));
+        return view('client.detailProduct', compact('product', 'relatedProducts', 'variantImages'));
     }
 }

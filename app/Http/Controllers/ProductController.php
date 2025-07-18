@@ -51,6 +51,7 @@ class ProductController extends Controller
             'product_category_id' => $request->product_category_id,
             'name' => $request->name,
             'description' => $request->description,
+            'long_description' => $request->long_description,
             'price' => $request->price,
             'stock' => $request->stock,
             'image' => $imagePath,
@@ -84,7 +85,8 @@ class ProductController extends Controller
                 ]);
             }
         }
-
+        $totalStock = ProductVariant::where('product_id', $product->id)->sum('stock');
+        $product->update(['stock' => $totalStock]);
         return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được thêm thành công!');
     }
 
@@ -106,7 +108,7 @@ class ProductController extends Controller
     }
 
     public function update(ProductRequest $request, Product $product)
-    {
+    { 
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền sửa sản phẩm.');
         }
@@ -125,6 +127,7 @@ class ProductController extends Controller
                 'product_category_id' => $request->product_category_id,
                 'name' => $request->name,
                 'description' => $request->description,
+                'long_description' => $request->long_description,
                 'price' => $request->price,
                 'stock' => $request->stock,
                 'image' => $imagePath,
@@ -165,6 +168,10 @@ class ProductController extends Controller
 
             // 5. Cập nhật hoặc tạo mới biến thể
             foreach ($request->variants ?? [] as $index => $variantData) {
+                // Nếu biến thể này nằm trong danh sách xóa, bỏ qua
+                if (!empty($variantData['id']) && $request->has('delete_variants') && in_array($variantData['id'], $request->delete_variants)) {
+                    continue;
+                }
                 // Xử lý ảnh biến thể
                 $variantImagePath = isset($variantData['id']) ? ProductVariant::find($variantData['id'])?->image : null;
 
@@ -196,6 +203,10 @@ class ProductController extends Controller
                     ]);
                 }
             }
+
+            // 6. Cập nhật tổng tồn kho sản phẩm dựa trên các biến thể còn lại
+            $totalStock = ProductVariant::where('product_id', $product->id)->sum('stock');
+            $product->update(['stock' => $totalStock]);
         });
 
         return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được cập nhật thành công!');
