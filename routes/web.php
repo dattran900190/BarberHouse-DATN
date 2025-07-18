@@ -75,7 +75,13 @@ Route::post('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])-
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
 Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('dat-lich.store');
 Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::class, 'getBarbersByBranch'])->name('getBarbersByBranch');
-Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}', [ClientAppointmentController::class, 'getAvailableBarbersByDate']);
+// Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}', [ClientAppointmentController::class, 'getAvailableBarbersByDate']);
+// Route::get(
+//   '/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}',
+//   [ClientAppointmentController::class, 'getAvailableBarbersByDate']
+// );
+Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time}/{service_id}', [ClientAppointmentController::class, 'getAvailableBarbersByDate'])->name('getAvailableBarbersByDate');
+
 Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
 Route::post('/store-errors', function (Request $request) {
     session()->flash('errors', $request->input('errors'));
@@ -230,11 +236,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
-    Route::patch('admin/branches/{id}/soft-delete', [\App\Http\Controllers\BranchController::class, 'softDelete'])
+    Route::patch('admin/branches/{id}/soft-delete', [BranchController::class, 'softDelete'])
         ->name('branches.softDelete');
-    Route::post('admin/branches/{id}/restore', [\App\Http\Controllers\BranchController::class, 'restore'])
+    Route::post('admin/branches/{id}/restore', [BranchController::class, 'restore'])
         ->name('branches.restore');
-    Route::delete('admin/branches/{id}/force-delete', [\App\Http\Controllers\BranchController::class, 'forceDelete'])
+    Route::delete('admin/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])
         ->name('branches.destroy');
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);

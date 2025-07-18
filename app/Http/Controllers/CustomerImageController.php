@@ -35,10 +35,12 @@ class CustomerImageController extends Controller
             'image' => 'required|image|max:2048',
             'status' => 'boolean',
         ], [
+            'image.required' => 'Vui lòng chọn hình ảnh.',
             'image.image' => 'Tệp tải lên phải là hình ảnh.',
             'image.max' => 'Hình ảnh không được vượt quá 2MB.',
             'status.boolean' => 'Trạng thái không hợp lệ.',
         ]);
+
 
         if ($request->hasFile('image')) {
             // Xoá ảnh cũ nếu có
@@ -86,13 +88,15 @@ class CustomerImageController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'image' => 'nullable|image|max:2048',
+            'image' => 'required|image|max:2048',
             'status' => 'boolean',
         ], [
+            'image.required' => 'Vui lòng chọn hình ảnh.',
             'image.image' => 'Tệp tải lên phải là hình ảnh.',
             'image.max' => 'Hình ảnh không được vượt quá 2MB.',
             'status.boolean' => 'Trạng thái không hợp lệ.',
         ]);
+
 
         $customerImage = CustomerImage::findOrFail($id);
 

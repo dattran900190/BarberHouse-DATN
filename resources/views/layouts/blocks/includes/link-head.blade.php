@@ -47,4 +47,70 @@
          color: white;
          border: 1px solid #000;
      }
+
+     /* Giao diện chính của select2 */
+     .select2-container--default .select2-selection--single {
+         height: 44px;
+         padding: 8px 14px;
+         /* border: 2px solid #000; */
+         border-radius: 4px;
+         background-color: #fff;
+         font-size: 15px;
+         font-weight: 500;
+         color: #000;
+         transition: all 0.3s ease;
+     }
+
+     /* Khi focus */
+     .select2-container--default .select2-selection--single:focus,
+     .select2-container--default .select2-selection--single.select2-selection--focus {
+         border-color: #000;
+         box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+         outline: none;
+     }
+
+     /* Mũi tên chọn */
+     .select2-container--default .select2-selection--single .select2-selection__arrow {
+         top: 8px;
+         right: 8px;
+     }
+
+     /* Text hiển thị */
+     .select2-container--default .select2-selection--single .select2-selection__rendered {
+         color: #000;
+         line-height: 28px;
+     }
+
+     /* Dropdown list */
+     .select2-container--default .select2-results>.select2-results__options {
+         max-height: 240px;
+         border: 1px solid #000;
+         border-radius: 6px;
+         font-size: 15px;
+     }
+
+     .select2-container--default .select2-results__option--highlighted {
+         background-color: #000;
+         color: #fff;
+     }
+
+     .btn-icon-remove {
+         background-color: transparent;
+         border: 1px solid #ccc;
+         color: #000;
+         border-radius: 6px;
+         width: 36px;
+         height: 36px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         font-size: 14px;
+         transition: all 0.3s ease;
+         cursor: pointer;
+     }
+
+     .btn-icon-remove:hover {
+         background-color: #000;
+         color: #fff;
+     }
  </style>
