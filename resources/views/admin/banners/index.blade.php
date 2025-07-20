@@ -65,6 +65,7 @@
                     style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
                     <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả</option>
                     <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Còn hoạt động</option>
+                    <option value="inactive" {{ request('filter') == 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
                     <option value="deleted" {{ request('filter') == 'deleted' ? 'selected' : '' }}>Đã xoá</option>
                 </select>
 
@@ -77,8 +78,8 @@
                             <th>STT</th>
                             <th>Tiêu đề</th>
                             <th>Ảnh</th>
-                            <th>Trạng thái</th>
                             <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
                             <th class="text-center">Hành động</th>
                         </tr>
                     </thead>
@@ -95,6 +96,10 @@
                                         <span class="text-muted">Không có ảnh</span>
                                     @endif
                                 </td>
+
+                                <td class="text-center">
+                                    {{ $banner->created_at ? $banner->created_at->format('d/m/Y') : '' }}
+                                </td>
                                 <td class="text-center">
                                     @if ($banner->trashed())
                                         <span class="badge bg-danger">Đã xoá</span>
@@ -103,10 +108,6 @@
                                     @else
                                         <span class="badge bg-secondary">Không hoạt động</span>
                                     @endif
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $banner->created_at ? $banner->created_at->format('d/m/Y') : '' }}
                                 </td>
                                 <td class="text-center">
                                     <div class="dropdown">

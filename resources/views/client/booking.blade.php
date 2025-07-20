@@ -6,7 +6,7 @@
 
 @section('content')
     <main class="container" style="padding: 10% 0;">
-{{-- 
+        {{-- 
         @if (session('success'))
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>
@@ -204,7 +204,8 @@
                                 data-discount-type="{{ $voucher->promotion->discount_type }}"
                                 data-discount-value="{{ $voucher->promotion->discount_value }}"
                                 data-expired-at="{{ $voucher->promotion->end_date }}"
-                                data-voucher-id="{{ $voucher->id }}">
+                                data-voucher-id="{{ $voucher->id }}"
+                                data-max-discount="{{ $voucher->promotion->max_discount_amount ?? 0 }}">
                                 {{ $voucher->promotion->code }}
                                 ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
                             </option>
@@ -213,7 +214,8 @@
                             <option value="{{ $promotion->code }}" data-discount-type="{{ $promotion->discount_type }}"
                                 data-discount-value="{{ $promotion->discount_value }}"
                                 data-expired-at="{{ $promotion->end_date }}"
-                                data-promotion-id="public_{{ $promotion->id }}">
+                                data-promotion-id="public_{{ $promotion->id }}"
+                                data-max-discount="{{ $promotion->max_discount_amount ?? 0 }}">
                                 {{ $promotion->code }}
                                 ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
                             </option>
@@ -232,40 +234,22 @@
                     <p>Thời lượng dự kiến: <strong id="totalDuration">0 Phút</strong></p>
                 </div>
 
-                {{-- <div class="form-group">
+                <div class="form-group">
                     <label class="form-label">Phương thức thanh toán <span class="required">*</span></label><br>
-                    
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="payment_method" id="payment_cash"
-                            value="cash" {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
+                            value="cash" required {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
                         <label class="form-check-label" for="payment_cash">Tiền mặt</label>
                     </div>
-
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="payment_method" id="payment_vnpay"
-                            value="vnpay" {{ old('payment_method') == 'vnpay' ? 'checked' : '' }}>
+                            value="vnpay" required {{ old('payment_method') == 'vnpay' ? 'checked' : '' }}>
                         <label class="form-check-label" for="payment_vnpay">VNPay</label>
                     </div>
-
                     @error('payment_method')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
-                </div> --}}
-
-                <div class="form-group">
-    <label class="form-label">Phương thức thanh toán <span class="required">*</span></label><br>
-    <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="payment_method" id="payment_cash" value="cash" required {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
-        <label class="form-check-label" for="payment_cash">Tiền mặt</label>
-    </div>
-    <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="payment_method" id="payment_vnpay" value="vnpay" required {{ old('payment_method') == 'vnpay' ? 'checked' : '' }}>
-        <label class="form-check-label" for="payment_vnpay">VNPay</label>
-    </div>
-    @error('payment_method')
-        <div class="text-danger">{{ $message }}</div>
-    @enderror
-</div>
+                </div>
 
                 <div class="form-btn mt-3">
                     <button type="submit" class="submit-btn book-btn booking-btn" data-id="{{ $service->id }}">
@@ -282,72 +266,6 @@
     <style>
         #mainNav {
             background-color: #000;
-        }
-
-        /* Giao diện chính của select2 */
-        .select2-container--default .select2-selection--single {
-            height: 44px;
-            padding: 8px 14px;
-            /* border: 2px solid #000; */
-            border-radius: 4px;
-            background-color: #fff;
-            font-size: 15px;
-            font-weight: 500;
-            color: #000;
-            transition: all 0.3s ease;
-        }
-
-        /* Khi focus */
-        .select2-container--default .select2-selection--single:focus,
-        .select2-container--default .select2-selection--single.select2-selection--focus {
-            border-color: #000;
-            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-            outline: none;
-        }
-
-        /* Mũi tên chọn */
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            top: 8px;
-            right: 8px;
-        }
-
-        /* Text hiển thị */
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: #000;
-            line-height: 28px;
-        }
-
-        /* Dropdown list */
-        .select2-container--default .select2-results>.select2-results__options {
-            max-height: 240px;
-            border: 1px solid #000;
-            border-radius: 6px;
-            font-size: 15px;
-        }
-
-        .select2-container--default .select2-results__option--highlighted {
-            background-color: #000;
-            color: #fff;
-        }
-
-        .btn-icon-remove {
-            background-color: transparent;
-            border: 1px solid #ccc;
-            color: #000;
-            border-radius: 6px;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .btn-icon-remove:hover {
-            background-color: #000;
-            color: #fff;
         }
     </style>
 @endsection
@@ -400,7 +318,7 @@
             });
         }
     </script>
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const addServiceBtn = document.getElementById('addServiceBtn');
             const additionalServicesContainer = document.getElementById('additionalServicesContainer');
@@ -435,6 +353,12 @@
                 removeBtn.addEventListener('click', function() {
                     additionalServicesContainer.removeChild(serviceWrapper);
                     updateAdditionalServicesInput();
+                    updateBarbers(
+                        branchContainer.value,
+                        appointmentDate.value,
+                        appointmentTime.value,
+                        serviceSelect.value
+                    );
                 });
 
                 // Thêm select và nút "Xóa" vào wrapper
@@ -444,6 +368,12 @@
                 // Thêm wrapper vào container
                 additionalServicesContainer.appendChild(serviceWrapper);
                 updateAdditionalServicesInput();
+                updateBarbers(
+                    branchContainer.value,
+                    appointmentDate.value,
+                    appointmentTime.value,
+                    serviceSelect.value
+                );
             }
 
             // Sự kiện click để thêm dịch vụ bổ sung
@@ -461,8 +391,430 @@
             additionalServicesContainer.addEventListener('change', function(e) {
                 if (e.target.classList.contains('additional-service-select')) {
                     updateAdditionalServicesInput();
+                    updateBarbers(
+                        branchContainer.value,
+                        appointmentDate.value,
+                        appointmentTime.value,
+                        serviceSelect.value
+                    );
                 }
             });
+        });
+    </script> --}}
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const appointmentDate = document.getElementById('appointment_date');
+            const appointmentTime = document.getElementById('appointment_time');
+            const branchContainer = document.getElementById('branch');
+            const branchInput = document.getElementById('branch_input');
+            const barberSelect = document.getElementById('barber');
+            const serviceSelect = document.getElementById('service');
+
+            const timeGrid = document.getElementById('timeGrid');
+
+            // Xử lý sự kiện nhấp chuột trên các ô giờ
+            if (timeGrid) {
+                timeGrid.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.addEventListener('click', function() {
+                        // Xóa lớp 'selected' khỏi tất cả các ô giờ
+                        timeGrid.querySelectorAll('.time-slot').forEach(s => s.classList.remove(
+                            'selected'));
+                        // Thêm lớp 'selected' cho ô giờ được nhấp
+                        this.classList.add('selected');
+                        // Cập nhật giá trị input ẩn
+                        appointmentTime.value = this.getAttribute('data-value');
+                        updateBarbers(branchContainer.value, appointmentDate.value, appointmentTime
+                            .value, serviceSelect.value);
+                    });
+                });
+
+                // Đánh dấu ô giờ nếu có giá trị cũ (từ {{ old('appointment_time') }})
+                const oldTime = appointmentTime.value;
+                if (oldTime) {
+                    const slot = timeGrid.querySelector(`.time-slot[data-value="${oldTime}"]`);
+                    if (slot) slot.classList.add('selected');
+                }
+            }
+
+            let lastRequest = null;
+
+            function updateBarbers(branchId, date, time = null, serviceId = null) {
+                if (!serviceId) {
+                    barberSelect.innerHTML = '<option value="">Vui lòng chọn dịch vụ</option>';
+                    return;
+                }
+
+                if (!time) {
+                    barberSelect.innerHTML = '<option value="">Vui lòng chọn thời gian</option>';
+                    return;
+                }
+
+                // Lấy mảng additional
+                let additional = [];
+                try {
+                    additional = JSON.parse(additionalServicesInput.value);
+                } catch (e) {
+                    /* ignore nếu null */
+                }
+
+                // 1. Tạo key request mới bao gồm cả additional để không bị cache sai
+                const requestKey = `${branchId}|${date}|${time}|${serviceId}|${additional.sort().join(',')}`;
+                if (lastRequest === requestKey) return;
+                lastRequest = requestKey;
+
+                const prevBarber = barberSelect.value;
+                barberSelect.innerHTML = '<option value="">Chọn kĩ thuật viên</option>';
+
+                if (!branchId || !date) {
+                    barberSelect.innerHTML = '<option value="">Vui lòng chọn chi nhánh và ngày</option>';
+                    return;
+                }
+
+                // 2. Xây dựng URL đúng: ? chỉ 1 lần, tiếp theo dùng &
+                let url =
+                    `/get-available-barbers-by-date/${branchId}/${date}/${time ? encodeURIComponent(time) : 'null'}`;
+                if (serviceId) {
+                    url += `/${serviceId}`;
+                }
+
+                // chuỗi params
+                const params = new URLSearchParams();
+                additional.forEach(id => params.append('additional_services[]', id));
+                const paramString = params.toString();
+                if (paramString) {
+                    url += (url.includes('?') ? '&' : '?') + paramString;
+                }
+
+                fetch(url)
+                    .then(r => {
+                        if (!r.ok) throw new Error(`Status ${r.status}`);
+                        return r.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            barberSelect.innerHTML = `<option value="">${data.error}</option>`;
+                            return;
+                        }
+                        if (!data.length) {
+                            barberSelect.innerHTML = '<option value="">Không có thợ khả dụng</option>';
+                            return;
+                        }
+                        const added = new Set();
+                        data.forEach(b => {
+                            if (!added.has(b.id)) {
+                                const opt = document.createElement('option');
+                                opt.value = b.id;
+                                opt.text = b.name;
+                                barberSelect.appendChild(opt);
+                                added.add(b.id);
+                            }
+                        });
+                        if (prevBarber && added.has(prevBarber)) {
+                            barberSelect.value = prevBarber;
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        barberSelect.innerHTML = '<option value="">Lỗi khi tải danh sách thợ</option>';
+                    });
+            }
+
+
+            // Bắt sự kiện khi click vào chi nhánh
+            branchContainer.querySelectorAll('.branch-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    // Reset tất cả active
+                    branchContainer.querySelectorAll('.branch-item')
+                        .forEach(el => el.classList.remove('active'));
+
+                    // Active item này
+                    item.classList.add('active');
+
+                    // Lấy id và gán vào input ẩn
+                    const branchId = item.getAttribute('data-id');
+                    branchInput.value = branchId;
+
+                    // Thêm branchContainer.value cho compatibility với code cũ
+                    branchContainer.value = branchId;
+
+                    // Gọi updateBarbers ngay sau khi chọn chi nhánh
+                    updateBarbers(
+                        branchId,
+                        appointmentDate.value,
+                        appointmentTime.value,
+                        serviceSelect.value
+                    );
+                });
+            });
+
+            // Các listener khác giữ nguyên
+            appointmentDate.addEventListener('change', () =>
+                updateBarbers(branchContainer.value, appointmentDate.value, appointmentTime.value, serviceSelect
+                    .value)
+            );
+
+            serviceSelect.addEventListener('change', () =>
+                updateBarbers(branchContainer.value, appointmentDate.value, appointmentTime.value, serviceSelect
+                    .value)
+            );
+
+            flatpickr(appointmentDate, {
+                // defaultDate: "today",
+                locale: 'vn',
+                minDate: "today",
+                maxDate: new Date().fp_incr(90),
+                dateFormat: "Y-m-d", // Thay đổi sang định dạng Laravel chấp nhận
+                disableMobile: true,
+                onChange: function(selectedDates, dateStr, instance) {
+                    appointmentDate.value = dateStr; // Cập nhật trực tiếp
+                    updateBarbers(branchContainer.value, dateStr, appointmentTime.value, serviceSelect
+                        .value);
+                }
+            });
+
+            // Trigger nếu old() đã chọn
+            if (serviceSelect.value) {
+                serviceSelect.dispatchEvent(new Event('change'));
+            }
+
+            const icon = document.getElementById("search-icon");
+            const overlay = document.getElementById("search-overlay");
+            const closeBtn = document.querySelector(".close-btn");
+            if (icon && overlay) {
+                icon.addEventListener("click", e => {
+                    e.preventDefault();
+                    overlay.style.display = "flex";
+                });
+                // đóng
+                closeBtn?.addEventListener("click", () => overlay.style.display = "none");
+                overlay.addEventListener("click", e => {
+                    if (!e.target.closest(".search-content")) overlay.style.display = "none";
+                });
+                document.addEventListener("keydown", e => {
+                    if (e.key === "Escape") overlay.style.display = "none";
+                });
+            }
+
+            // checkbox hiển thị khi đặt lịch hộ
+            const checkbox = document.getElementById('other_person');
+            const otherInfo = document.getElementById('other-info');
+            checkbox.addEventListener('change', function() {
+                otherInfo.style.display = this.checked ? 'block' : 'none';
+            });
+
+        });
+    </script> --}}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Khai báo các phần tử DOM
+            const branchContainer = document.getElementById('branch');
+            const branchInput = document.getElementById('branch_input');
+            const appointmentDate = document.getElementById('appointment_date');
+            const appointmentTime = document.getElementById('appointment_time');
+            const serviceSelect = document.getElementById('service');
+            const additionalServicesInput = document.getElementById('additionalServicesInput');
+            const barberSelect = document.getElementById('barber');
+            const timeGrid = document.getElementById('timeGrid');
+            const addServiceBtn = document.getElementById('addServiceBtn');
+            const additionalServicesContainer = document.getElementById('additionalServicesContainer');
+
+            let lastRequest = null;
+
+            // Hàm cập nhật danh sách kỹ thuật viên
+            function updateBarbers() {
+                const branch = branchInput.value || 'null';
+                const date = appointmentDate.value || 'null';
+                const time = appointmentTime.value || 'null';
+                const service = serviceSelect.value || 'null';
+                let additional = [];
+                try {
+                    additional = JSON.parse(additionalServicesInput.value || '[]');
+                } catch (e) {
+                    console.error('Error parsing additional services:', e);
+                    additional = [];
+                }
+
+                // Ngăn yêu cầu trùng lặp
+                const requestKey = `${branch}|${date}|${time}|${service}|${JSON.stringify(additional.sort())}`;
+                if (lastRequest === requestKey) return;
+                lastRequest = requestKey;
+
+                // Hiển thị trạng thái loading
+                barberSelect.innerHTML = '<option value="">Đang tải...</option>';
+
+                // Tạo URL cho yêu cầu AJAX
+                const url =
+                    `/get-available-barbers-by-date/${encodeURIComponent(branch)}/${encodeURIComponent(date)}/${encodeURIComponent(time)}/${encodeURIComponent(service)}?additional_services=${encodeURIComponent(JSON.stringify(additional))}`;
+
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.error || `HTTP error! Status: ${response.status}`);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        barberSelect.innerHTML = '<option value="">Chọn kỹ thuật viên</option>';
+                        if (data.error) {
+                            barberSelect.innerHTML = `<option value="">${data.error}</option>`;
+                        } else if (data.length > 0) {
+                            data.forEach(barber => {
+                                const option = document.createElement('option');
+                                option.value = barber.id;
+                                option.text = barber.name;
+                                barberSelect.appendChild(option);
+                            });
+                        } else {
+                            barberSelect.innerHTML =
+                            '<option value="">Không có kỹ thuật viên khả dụng</option>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching barbers:', error.message);
+                        barberSelect.innerHTML = `<option value="">Lỗi: ${error.message}</option>`;
+                    });
+            }
+
+            // Xử lý sự kiện nhấp chuột trên các ô giờ
+            if (timeGrid) {
+                timeGrid.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.addEventListener('click', function() {
+                        timeGrid.querySelectorAll('.time-slot').forEach(s => s.classList.remove(
+                            'selected'));
+                        this.classList.add('selected');
+                        appointmentTime.value = this.getAttribute('data-value');
+                        updateBarbers();
+                    });
+                });
+
+                // Đánh dấu ô giờ nếu có giá trị cũ
+                const oldTime = appointmentTime.value;
+                if (oldTime) {
+                    const slot = timeGrid.querySelector(`.time-slot[data-value="${oldTime}"]`);
+                    if (slot) slot.classList.add('selected');
+                }
+            }
+
+            // Xử lý click chi nhánh
+            if (branchContainer) {
+                branchContainer.querySelectorAll('.branch-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        branchContainer.querySelectorAll('.branch-item').forEach(el => el.classList
+                            .remove('active'));
+                        item.classList.add('active');
+                        branchInput.value = item.getAttribute('data-id');
+                        updateBarbers();
+                    });
+                });
+            }
+
+            // Xử lý thêm/xóa dịch vụ bổ sung
+            if (addServiceBtn && additionalServicesContainer) {
+                function addAdditionalService() {
+                    const serviceWrapper = document.createElement('div');
+                    serviceWrapper.className = 'service-wrapper mt-2 d-flex align-items-center';
+
+                    const serviceSelect = document.createElement('select');
+                    serviceSelect.className = 'form-select additional-service-select';
+                    serviceSelect.name = 'additional_services[]';
+                    serviceSelect.innerHTML = `
+                <option value="">Chọn dịch vụ bổ sung</option>
+                @foreach ($services as $service)
+                    <option value="{{ $service->id }}" data-name="{{ $service->name }}"
+                        data-price="{{ $service->price }}" data-duration="{{ $service->duration }}">
+                        {{ $service->name }} – {{ '(' . number_format($service->price) . 'đ)' }}
+                    </option>
+                @endforeach
+            `;
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'btn btn-sm btn-danger remove-service ms-2';
+                    removeBtn.textContent = 'Xóa';
+                    removeBtn.addEventListener('click', function() {
+                        additionalServicesContainer.removeChild(serviceWrapper);
+                        updateAdditionalServicesInput();
+                        updateBarbers();
+                    });
+
+                    serviceWrapper.appendChild(serviceSelect);
+                    serviceWrapper.appendChild(removeBtn);
+                    additionalServicesContainer.appendChild(serviceWrapper);
+                    updateAdditionalServicesInput();
+                    updateBarbers();
+                }
+
+                function updateAdditionalServicesInput() {
+                    const additionalServices = Array.from(additionalServicesContainer.querySelectorAll(
+                            '.additional-service-select'))
+                        .map(select => select.value)
+                        .filter(value => value !== '');
+                    additionalServicesInput.value = JSON.stringify(additionalServices);
+                }
+
+                addServiceBtn.addEventListener('click', addAdditionalService);
+                additionalServicesContainer.addEventListener('change', function(e) {
+                    if (e.target.classList.contains('additional-service-select')) {
+                        updateAdditionalServicesInput();
+                        updateBarbers();
+                    }
+                });
+            }
+
+            // Thêm sự kiện lắng nghe cho các trường
+            appointmentDate.addEventListener('change', updateBarbers);
+            branchInput.addEventListener('change', updateBarbers);
+            appointmentTime.addEventListener('change', updateBarbers);
+            serviceSelect.addEventListener('change', updateBarbers);
+            additionalServicesInput.addEventListener('change', updateBarbers);
+
+            // Khởi tạo flatpickr
+            flatpickr(appointmentDate, {
+                locale: 'vn',
+                minDate: 'today',
+                maxDate: new Date().fp_incr(90),
+                dateFormat: 'Y-m-d',
+                disableMobile: true,
+                onChange: function(selectedDates, dateStr) {
+                    appointmentDate.value = dateStr;
+                    updateBarbers();
+                }
+            });
+
+            // Xử lý search overlay
+            const icon = document.getElementById('search-icon');
+            const overlay = document.getElementById('search-overlay');
+            const closeBtn = document.querySelector('.close-btn');
+            if (icon && overlay) {
+                icon.addEventListener('click', e => {
+                    e.preventDefault();
+                    overlay.style.display = 'flex';
+                });
+                closeBtn?.addEventListener('click', () => overlay.style.display = 'none');
+                overlay.addEventListener('click', e => {
+                    if (!e.target.closest('.search-content')) overlay.style.display = 'none';
+                });
+                document.addEventListener('keydown', e => {
+                    if (e.key === 'Escape') overlay.style.display = 'none';
+                });
+            }
+
+            // Xử lý checkbox "Đặt lịch cho người khác"
+            const checkbox = document.getElementById('other_person');
+            const otherInfo = document.getElementById('other-info');
+            if (checkbox && otherInfo) {
+                checkbox.addEventListener('change', function() {
+                    otherInfo.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+
+            // Trigger cập nhật ban đầu nếu có dữ liệu cũ
+            if (serviceSelect.value || branchInput.value || appointmentDate.value) {
+                updateBarbers();
+            }
         });
     </script>
     <script>
@@ -689,6 +1041,7 @@
             const voucherOpt = $('#voucher_id option:selected');
             const discountType = voucherOpt.data('discount-type');
             const discountValue = parseFloat(voucherOpt.data('discount-value')) || 0;
+            const maxDiscount = parseFloat(voucherOpt.data('max-discount')) || 0;
 
             let discount = 0;
             let discountText = '';
@@ -698,7 +1051,12 @@
                     discountText = '- ' + discount.toLocaleString('vi-VN') + ' vnđ';
                 } else if (discountType === 'percent') {
                     discount = Math.round(totalPrice * discountValue / 100);
-                    discountText = '- ' + discountValue + '% (' + discount.toLocaleString('vi-VN') + ' vnđ)';
+                    if (maxDiscount > 0 && discount > maxDiscount) {
+                        discount = maxDiscount;
+                        discountText = discount.toLocaleString('vi-VN') + ' vnđ';
+                    } else {
+                        discountText = '- ' + discountValue + '% (' + discount.toLocaleString('vi-VN') + ' vnđ)';
+                    }
                 }
             }
 

@@ -71,22 +71,23 @@
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
+                <div class="mb-3">
+                    <label for="long_description" class="form-label">Mô tả dài</label>
+                    <textarea name="long_description" id="long_description" class="form-control">{{ old('long_description') }}</textarea>
+                    @error('long_description')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
 
                 <div class="mb-3">
-                    <label for="price" class="form-label">Giá</label>
+                    <label for="price" class="form-label">Giá đại diện</label>
                     <input type="number" name="price" id="price" class="form-control" value="{{ old('price') }}" step="0.01" >
                     @error('price')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="mb-3">
-                    <label for="stock" class="form-label">Tồn kho</label>
-                    <input type="number" name="stock" id="stock" class="form-control" value="{{ old('stock') }}" >
-                    @error('stock')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
+           
 
                 <div class="mb-3">
                     <label for="image" class="form-label">Ảnh chính sản phẩm</label>
@@ -131,7 +132,7 @@
                                 @enderror
                             </div>
                             <div class="mb-3">
-                                <label for="variants[{{ $index }}][price]" class="form-label">Giá</label>
+                                <label for="variants[{{ $index }}][price]" class="form-label">Giá </label>
                                 <input type="number" name="variants[{{ $index }}][price]" class="form-control" step="0.01" value="{{ $variant['price'] ?? '' }}">
                                 @error('variants.' . $index . '.price')
                                     <div class="text-danger">{{ $message }}</div>
@@ -151,7 +152,7 @@
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-danger">Xóa biến thể</button>
+                            {{-- <button type="button" class="btn btn-sm btn-outline-danger remove-variant">Xóa biến thể</button> --}}
                         </div>
                     @endforeach
                 </div>
@@ -160,6 +161,7 @@
         </div>
 
         <button type="submit" class="btn btn-sm btn-outline-success">Thêm mới</button>
+        <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-sm">Quay lại</a>
     </form>
 </div>
 
@@ -192,7 +194,7 @@
                 <label for="variants[${variantIndex}][image]" class="form-label">Ảnh biến thể</label>
                 <input type="file" name="variants[${variantIndex}][image]" class="form-control" accept="image/jpeg,image/png,image/jpg">
             </div>
-            <button type="button" class="btn btn-danger remove-variant">Xóa biến thể</button>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-variant">Xóa biến thể</button>
         `;
         document.getElementById('variants').appendChild(variantDiv);
         variantIndex++;

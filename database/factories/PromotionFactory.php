@@ -24,7 +24,7 @@ class PromotionFactory extends Factory
             'quantity' => $this->faker->numberBetween(10, 100),
             'start_date' => now()->subDays(rand(1, 10))->toDateString(),
             'end_date' => now()->addDays(rand(5, 20))->toDateString(),
-            'is_active' => $this->faker->boolean(80),
+            'is_active' => '1'
         ];
     }
 }

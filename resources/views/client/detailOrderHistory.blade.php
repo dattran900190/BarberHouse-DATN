@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-@php
+    @php
         $statusMap = [
             'pending' => 'Chờ xử lý',
             'processing' => 'Đang xử lý',
@@ -84,7 +84,27 @@
 
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Ngày dự kiến giao hàng:</strong> 06/05/2025</p>
+                            @php
+                                $deliveryDate = null;
+
+                                if (in_array($order->status, ['pending', 'processing'])) {
+                                    // Dự kiến giao theo ngày đặt + thời gian giao tùy phương thức
+                                    $daysToAdd = $order->shipping_fee == 25000 ? 3 : 1;
+                                    $deliveryDate = $order->created_at->copy()->addDays($daysToAdd);
+                                } elseif ($order->status === 'shipping') {
+                                    // Dự kiến giao là 1 ngày sau khi bắt đầu giao hàng
+                                    $deliveryDate = $order->updated_at->copy()->addDay();
+                                }
+                            @endphp
+
+                            @if ($deliveryDate)
+                                <p><strong>Ngày dự kiến giao hàng:</strong> {{ $deliveryDate->format('d/m/Y') }}</p>
+                            @elseif ($order->status === 'completed')
+                                <p><strong>Trạng thái:</strong> Đơn hàng đã hoàn thành</p>
+                            @elseif ($order->status === 'cancelled')
+                                <p><strong>Trạng thái:</strong> Đơn hàng đã bị hủy</p>
+                            @endif
+
                         </div>
                     </div>
                 </div>
@@ -92,13 +112,14 @@
                     <h5 class="fw-bold">Tổng tiền: {{ number_format($order->total_money, 0, ',', '.') }} VNĐ</h5>
 
                     <div>
-                        <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
-                            style="display:inline-block;"
-                            onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-danger btn-sm">Hủy đơn hàng</button>
-                        </form>
-
+                        @if ($order->status === 'pending')
+                            <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
+                                style="display:inline-block;"
+                                onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Hủy đơn hàng</button>
+                            </form>
+                        @endif
                         <a href="{{ route('client.orderHistory') }}" class="btn btn-outline-secondary btn-sm">Quay lại</a>
                     </div>
                 </div>

@@ -442,7 +442,7 @@ class CartController extends Controller
             };
 
             // Tạo mã đơn hàng
-            $orderCode = 'ORD' . now()->format('Ymd') . strtoupper(Str::random(4));
+            $orderCode = 'ORD' . now()->format('Y') . strtoupper(Str::random(4));
 
             $order = null;
             DB::transaction(function () use ($request, $paymentMethod, $shippingFee, $expectedTotal, $orderCode, &$order) {
@@ -464,6 +464,7 @@ class CartController extends Controller
                 $order->save();
 
                 // Lưu chi tiết + trừ kho từng variant
+
                 foreach ($request->items as $item) {
                     $variant = ProductVariant::find($item['product_variant_id']);
                     if (!$variant) {
@@ -474,7 +475,9 @@ class CartController extends Controller
                     }
 
                     // Trừ tồn kho
+
                     $variant->decrement('stock', $item['quantity']);
+                    
                     $product = $variant->product;
                     if ($product) {
                         $product->updateStockFromVariants();
@@ -485,6 +488,7 @@ class CartController extends Controller
                         'quantity' => $item['quantity'],
                         'price_at_time' => $item['price'],
                         'total_price' => $item['price'] * $item['quantity'],
+                        'volume_name' => $variant->volume->name ?? null, // Lưu tên dung lượng tại thời điểm đặt
                     ]);
                 }
                 $cartItemIds = collect($request->items)->pluck('cart_item_id')->toArray();
@@ -515,12 +519,14 @@ class CartController extends Controller
 
             // Trả về JSON khi thành công
             return response()->json([
+                
                 'success' => true,
                 'message' => 'Đặt hàng thành công!',
                 'order_id' => $order->id,
                 'payment_method' => $paymentMethod,
                 'redirect_url' => $paymentMethod === 'vnpay' ? route('client.payment.vnpay.order', ['order_id' => $order->id]) : route('home'),
             ], 200);
+            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

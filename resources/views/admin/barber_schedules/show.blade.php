@@ -19,19 +19,14 @@
             <form method="GET" class="row g-3 align-items-end mb-4">
                 <div class="col-md-6">
                     <label for="filter" class="form-label">Lọc theo loại lịch</label>
-                    <select name="filter" id="filter" class="form-select p-3 bg-body">
+                    <select name="filter" id="filter" class="form-select p-3 bg-body" onchange="this.form.submit()">
                         <option value="">Tất cả</option>
                         <option value="off" {{ request('filter') === 'off' ? 'selected' : '' }}>Nghỉ cả ngày</option>
                         <option value="custom" {{ request('filter') === 'custom' ? 'selected' : '' }}>Thay đổi giờ làm
                         </option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label d-none d-md-block">&nbsp;</label> {{-- để giữ chỗ với label ở trên --}}
-                    <button type="submit" class="btn btn-primary w-100 p-3">
-                        <i class="fas fa-filter me-1"></i> Lọc
-                    </button>
-                </div>
+
             </form>
 
 

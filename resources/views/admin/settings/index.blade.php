@@ -44,81 +44,45 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ route('client.settings.save') }}" method="POST" enctype="multipart/form-data">
+            <form id="settings-form" action="{{ route('client.settings.save') }}" method="POST"
+                enctype="multipart/form-data">
                 @csrf
+
                 <h5 class="fw-bold mb-3">Liên kết mạng xã hội</h5>
-                <div id="social-links">
-                    @foreach ($social_links as $index => $link)
-                        <div class="setting-item" data-id="{{ $index }}">
-                            <div class="row align-items-center">
-                                <div class="col-md-4">
-                                    <label class="form-label">Tên liên kết</label>
-                                    <input type="text" class="form-control" name="social_links[{{ $index }}][key]"
-                                        value="{{ $index }}" required> <!-- Sử dụng $index làm key -->
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">URL</label>
-                                    <input type="url" class="form-control"
-                                        name="social_links[{{ $index }}][value]" value="{{ $link }}"
-                                        required> <!-- Sử dụng $link làm value -->
-                                </div>
-
-                                <div class="col-md-2 d-flex align-items-start justify-content-center pt-4">
-                                    <button type="button" class="btn btn-outline-danger btn-sm"
-                                        onclick="removeSetting(this)">Xóa</button>
-                                </div>
-                            </div>
+                <div class="row g-3 mb-4">
+                    @foreach (['youtube', 'facebook', 'instagram', 'tiktok'] as $key)
+                        <div class="col-md-6">
+                            <label class="form-label text-capitalize">{{ $key }}</label>
+                            <input type="hidden" name="social_links[{{ $key }}][key]" value="{{ $key }}">
+                            <input type="url" class="form-control" name="social_links[{{ $key }}][value]"
+                                value="{{ data_get($social_links, $key, '') }}" placeholder="Nhập URL {{ $key }}">
                         </div>
                     @endforeach
                 </div>
-                <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addSocialLink()">Thêm liên
-                    kết</button>
 
-                <h5 class="fw-bold mb-3 mt-4">Hình ảnh</h5>
-                <div id="images">
-                    @foreach ($images as $index => $image)
-                        <div class="setting-item" data-id="{{ $index }}">
-                            <div class="row g-3 align-items-start">
-                                <!-- Tên hình ảnh -->
-                                <div class="col-md-5">
-                                    <label class="form-label">Tên hình ảnh</label>
-                                    <input type="text" class="form-control" name="images[{{ $index }}][key]"
-                                        value="{{ $image['key'] }}" required>
-                                </div>
-
-                                <!-- Tệp ảnh + Preview -->
-                                <div class="col-md-5">
-                                    <label class="form-label">Tệp ảnh</label>
-                                    <div class="d-flex flex-column flex-md-row align-items-start gap-3">
-                                        <div class="flex-fill">
-                                            <input type="file" class="form-control mb-2"
-                                                name="images[{{ $index }}][value]" accept="image/*"
-                                                onchange="previewImage(this, 'imagePreview{{ $index }}')">
-                                            <input type="hidden" name="images[{{ $index }}][existing_value]"
-                                                value="{{ $image['value'] }}">
-                                        </div>
-                                        <div>
-                                            <img src="{{ $image['value'] ? asset('storage/' . $image['value']) : 'https://via.placeholder.com/200x100?text=No+Image' }}"
-                                                id="imagePreview{{ $index }}" class="img-thumbnail shadow-sm"
-                                                style="width: 200px; height: 100px; object-fit: cover;">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Nút xóa -->
-                                <div class="col-md-2 d-flex align-items-start justify-content-center pt-4">
-                                    <button type="button" class="btn btn-outline-danger btn-sm"
-                                        onclick="removeSetting(this)">Xóa</button>
-                                </div>
+                <h5 class="fw-bold mb-3">Hình ảnh</h5>
+                <div class="row g-4">
+                    @foreach (['anh_dang_nhap' => 'Ảnh đăng nhập', 'anh_dang_ky' => 'Ảnh đăng ký', 'bang_gia' => 'Ảnh bảng giá'] as $key => $label)
+                        <div class="col-md-4">
+                            <label class="form-label">{{ $label }}</label>
+                            <input type="hidden" name="images[{{ $key }}][key]" value="{{ $key }}">
+                            <div class="mb-2">
+                                <input type="file" class="form-control" name="images[{{ $key }}][value]"
+                                    accept="image/*" onchange="previewImage(this,'preview-{{ $key }}')">
+                                <input type="hidden" name="images[{{ $key }}][existing_value]"
+                                    value="{{ data_get($images, $key . '.value', '') }}">
                             </div>
+                            <img id="preview-{{ $key }}"
+                                src="{{ data_get($images, $key . '.value') ? asset('storage/' . data_get($images, $key . '.value')) : 'https://via.placeholder.com/200x100?text=No+Image' }}"
+                                class="img-thumbnail" style="width:300px; height:200px; object-fit:cover;">
                         </div>
                     @endforeach
                 </div>
-                <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addImage()">Thêm hình
-                    ảnh</button>
 
-                <div class="d-flex justify-content-end mt-4">
-                    <button type="submit" class="btn btn-outline-success me-2">Lưu thay đổi</button>
+                <div class="mt-4 ">
+                    <button type="button" class="btn btn-outline-success submit-setting-btn">
+                        Lưu thay đổi
+                    </button>
                 </div>
             </form>
         </div>
@@ -140,93 +104,102 @@
 
 @section('js')
     <script>
-        let socialLinkCounter = {{ $social_links->count() }};
-        let imageCounter = {{ $images->count() }};
-
-        function addSocialLink() {
-            // Lấy chỉ số cao nhất từ các phần tử hiện có
-            const existingItems = document.querySelectorAll('#social-links .setting-item');
-            socialLinkCounter = existingItems.length > 0 ? Math.max(...Array.from(existingItems).map(item => parseInt(item
-                .dataset.id))) + 1 : socialLinkCounter + 1;
-
-            const container = document.getElementById('social-links');
-            if (!container) {
-                console.error('Container #social-links not found');
-                return;
-            }
-
-            const newItem = document.createElement('div');
-            newItem.className = 'setting-item';
-            newItem.dataset.id = socialLinkCounter;
-            newItem.innerHTML = `
-                <div class="row align-items-center">
-                    <div class="col-md-4">
-                        <label class="form-label">Tên liên kết</label>
-                        <input type="text" class="form-control" name="social_links[${socialLinkCounter}][key]" placeholder="Nhập tên liên kết" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">URL</label>
-                        <input type="url" class="form-control" name="social_links[${socialLinkCounter}][value]" placeholder="Nhập URL" required>
-                    </div>
-                    <div class="col-md-2 d-flex align-items-start justify-content-center pt-4">
-                        <button type="button" class="btn btn-outline-danger btn-sm"
-                            onclick="removeSetting(this)">Xóa</button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(newItem);
-        }
-
-        function addImage() {
-            imageCounter++;
-            const container = document.getElementById('images');
-            const newItem = document.createElement('div');
-            newItem.className = 'setting-item';
-            newItem.dataset.id = imageCounter;
-            newItem.innerHTML = `
-                <div class="row g-3 align-items-start">
-                <div class="col-md-5">
-                    <label class="form-label">Tên hình ảnh</label>
-                    <input type="text" class="form-control" name="images[${imageCounter}][key]" placeholder="Nhập tên hình ảnh" required>
-                </div>
-                <div class="col-md-5">
-                    <label class="form-label">Tệp ảnh</label>
-                    <div class="d-flex flex-column flex-md-row align-items-start gap-3">
-                        <div class="flex-fill">
-                            <input type="file" class="form-control mb-2" name="images[${imageCounter}][value]" accept="image/*" onchange="previewImage(this, 'imagePreview${imageCounter}')">
-                        </div>
-                        <div>
-                            <img src="https://via.placeholder.com/200x100?text=New+Image"
-                                id="imagePreview${imageCounter}"
-                                class="img-thumbnail shadow-sm"
-                                style="width: 170px; height: 100px; object-fit: cover;">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2 d-flex align-items-start justify-content-center pt-4">
-                    <button type="button" class="btn btn-outline-danger btn-sm"
-                        onclick="removeSetting(this)">Xóa</button>
-                </div>
-            </div>
-        `;
-            container.appendChild(newItem);
-        }
-
-        function removeSetting(button) {
-            if (confirm('Bạn có chắc muốn xóa cài đặt này không?')) {
-                button.closest('.setting-item').remove();
-            }
-        }
-
-        function previewImage(input, previewId) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById(previewId).src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
+        function previewImage(input, id) {
+            if (!input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = e => document.getElementById(id).src = e.target.result;
+            reader.readAsDataURL(input.files[0]);
         }
     </script>
+
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            withInput = false,
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    Swal.fire({
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    }).then((result) => {
+                        if (!result.isConfirmed) return;
+
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            didOpen: () => Swal.showLoading()
+                        });
+
+                        const form = document.getElementById('settings-form');
+                        const fd = new FormData(form);
+
+                        fetch(form.action, {
+                                method,
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: fd
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                Swal.close();
+                                Swal.fire({
+                                    title: data.success ? 'Thành công!' : 'Lỗi!',
+                                    text: data.message,
+                                    icon: data.success ? 'success' : 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                }).then(() => {
+                                    if (data.success) onSuccess();
+                                });
+                            })
+                            .catch(error => {
+                                Swal.close();
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: 'Đã có lỗi xảy ra: ' + error.message,
+                                    icon: 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                });
+                            });
+                    });
+                });
+            });
+        }
+
+        // Gọi hàm
+        handleSwalAction({
+            selector: '.submit-setting-btn',
+            title: 'Thay đổi cài đặt',
+            text: 'Bạn có chắc chắn muốn thay đổi cài đặt này?',
+            route: '{{ route('client.settings.save') }}',
+            method: 'POST'
+        });
+    </script>
+
 @endsection

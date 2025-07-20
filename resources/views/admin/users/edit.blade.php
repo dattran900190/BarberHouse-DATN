@@ -3,7 +3,6 @@
 @section('title', 'Chỉnh sửa ' . ($role == 'user' ? 'Người dùng' : 'Quản trị viên'))
 
 @section('content')
-
     <div class="page-header">
         <h3 class="fw-bold mb-3">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
         <ul class="breadcrumbs mb-3">
@@ -44,12 +43,13 @@
                 @method('PUT')
                 <input type="hidden" name="page" value="{{ request('page', 1) }}">
 
-                {{-- Hàng 1 --}}
+                {{-- Hàng 1: Họ tên và Email (chỉ chỉnh sửa nếu là chính mình) --}}
+
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="name" class="form-label">Họ tên</label>
                         <input type="text" class="form-control" name="name" value="{{ old('name', $user->name) }}"
-                            readonly>
+                            {{ $isEditingSelf ? '' : 'readonly' }}>
                         @error('name')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -57,31 +57,25 @@
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" name="email" value="{{ old('email', $user->email) }}"
-                            readonly>
+                            {{ $isEditingSelf ? '' : 'readonly' }}>
                         @error('email')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
 
-                {{-- Hàng 2 --}}
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="phone" class="form-label">Số điện thoại</label>
-                        @if ($role == 'admin')
-                            <input type="text" class="form-control" name="phone"
-                                value="{{ old('phone', $user->phone) }}">
-                        @else
-                            <input type="text" class="form-control" name="phone"
-                                value="{{ old('phone', $user->phone) }}" readonly>
-                        @endif
+                        <input type="text" class="form-control" name="phone" value="{{ old('phone', $user->phone) }}"
+                            {{ $isEditingSelf ? '' : 'readonly' }}>
                         @error('phone')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="col-md-6">
                         <label for="gender" class="form-label">Giới tính</label>
-                        <select class="form-control" name="gender">
+                        <select class="form-control readonly-select" name="gender">
                             <option value="">Chọn giới tính</option>
                             <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : '' }}>Nam
                             </option>
@@ -90,16 +84,42 @@
                             <option value="other" {{ old('gender', $user->gender) == 'other' ? 'selected' : '' }}>Khác
                             </option>
                         </select>
+
+                        @if (!$isEditingSelf)
+                            <style>
+                                .readonly-select {
+                                    pointer-events: none;
+                                    /* Không cho người dùng tương tác */
+                                    background-color: #e9ecef;
+                                    /* Màu nền giống input readonly */
+                                    color: #495057;
+                                }
+
+                                .readonly-select option {
+                                    background-color: white;
+                                    /* Đảm bảo text đọc được */
+                                }
+                            </style>
+                        @endif
+
+
+
+                        {{-- Nếu bị disable thì thêm hidden input --}}
+                        @if (!$isEditingSelf)
+                            <input type="hidden" name="gender_hidden" value="{{ old('gender', $user->gender) }}">
+                        @endif
+
                         @error('gender')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
 
-                  <div class="row mb-3">
+
+                <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="address" class="form-label">Địa chỉ</label>
-                        <textarea class="form-control" name="address" rows="1" disabled>{{ old('address', $user->address) }}</textarea>
+                        <textarea class="form-control" name="address" rows="1" {{ $isEditingSelf ? '' : 'readonly' }}>{{ old('address', $user->address) }}</textarea>
                         @error('address')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -121,7 +141,7 @@
                     </div>
                 </div>
 
-                {{-- Hàng 3 --}}
+                {{-- Hàng 4: Vai trò và Chi nhánh/Số điểm --}}
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="role" class="form-label">Vai trò</label>
@@ -131,7 +151,8 @@
                                 <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>Người
                                     dùng</option>
                             @else
-                                <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Quản trị
+                                <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Quản
+                                    trị
                                     viên</option>
                                 <option value="admin_branch"
                                     {{ old('role', $user->role) == 'admin_branch' ? 'selected' : '' }}>Quản lý chi nhánh
@@ -143,8 +164,8 @@
                         @enderror
                     </div>
                     <div class="col-md-6">
-                        {{-- Chi nhánh (hiện khi role là admin_branch) --}}
-                        <div id="branch-id-group" style="display: none;">
+                        {{-- Chi nhánh (hiện khi role là admin_branch và chỉ chỉnh sửa nếu là chính mình) --}}
+                        <div id="branch-id-group" style="display: {{ $user->role == 'admin_branch' ? 'block' : 'none' }};">
                             <label for="branch_id" class="form-label">Chi nhánh</label>
                             <select name="branch_id" id="branch_id" class="form-control">
                                 <option value="">Chọn chi nhánh</option>
@@ -159,7 +180,7 @@
                             @enderror
                         </div>
 
-                        {{-- Số điểm (chỉ hiện nếu là user) --}}
+                        {{-- Số điểm (chỉ hiện nếu là user, và chỉ đọc) --}}
                         @if ($role == 'user')
                             <label for="points_balance" class="form-label">Số điểm</label>
                             <input type="number" class="form-control" name="points_balance"
@@ -169,13 +190,7 @@
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
-
-                    
                 </div>
-
-
-                {{-- Hàng 4 --}}
-              
 
                 {{-- Nút --}}
                 <div class="d-flex gap-2 mt-3">
@@ -236,7 +251,6 @@
             font-size: 0.9rem;
             width: 100%;
         }
-
 
         .avatar-img {
             width: 80px;
@@ -337,28 +351,6 @@
 
 @section('js')
     <script>
-        document.getElementById('avatar').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('avatar-preview');
-
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    if (preview.classList.contains('avatar-placeholder')) {
-                        const img = document.createElement('img');
-                        img.id = 'avatar-preview';
-                        img.className = 'rounded-circle img-fluid avatar-img';
-                        img.src = e.target.result;
-                        preview.parentNode.replaceChild(img, preview);
-                    } else {
-                        preview.src = e.target.result;
-                    }
-                };
-                reader.readAsDataURL(file);;
-            }
-        });
-    </script>
-    <script>
         function toggleBranchField() {
             const role = document.querySelector('select[name="role"]').value;
             const branchField = document.getElementById('branch-id-group');
@@ -375,5 +367,4 @@
             document.querySelector('select[name="role"]').addEventListener('change', toggleBranchField);
         });
     </script>
-
 @endsection

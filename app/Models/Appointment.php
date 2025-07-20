@@ -21,6 +21,7 @@ class Appointment extends Model
         'additional_services',
         'branch_id',
         'appointment_time',
+        'duration',
         'status',
         'payment_method',
         'payment_status',

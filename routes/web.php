@@ -33,6 +33,7 @@ use App\Http\Controllers\Client\ClientPostController;
 use App\Http\Controllers\Client\ClientBranchController;
 use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\Client\ClientProductController;
+use App\Http\Controllers\ProfileController as AdminProfileController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\ReviewController as ClientReviewController;
@@ -74,7 +75,13 @@ Route::post('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])-
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
 Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('dat-lich.store');
 Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::class, 'getBarbersByBranch'])->name('getBarbersByBranch');
-Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}', [ClientAppointmentController::class, 'getAvailableBarbersByDate']);
+// Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}', [ClientAppointmentController::class, 'getAvailableBarbersByDate']);
+// Route::get(
+//   '/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}',
+//   [ClientAppointmentController::class, 'getAvailableBarbersByDate']
+// );
+Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time}/{service_id}', [ClientAppointmentController::class, 'getAvailableBarbersByDate'])->name('getAvailableBarbersByDate');
+
 Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
 Route::post('/store-errors', function (Request $request) {
     session()->flash('errors', $request->input('errors'));
@@ -153,6 +160,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // Hiển thị giao diện Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
+    Route::post('/profile/update', [AdminProfileController::class, 'update'])->name('admin.update');
+    Route::post('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('admin.password');
+
+
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
     Route::patch('/barbers/{id}/soft-delete', [BarberController::class, 'softDelete'])->name('barbers.softDelete');
@@ -195,6 +207,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
+    Route::get('/user_redeemed_vouchers/{id}', [UserRedeemedVoucherController::class, 'show'])->name('admin.user_redeemed_vouchers.show');
 
     // ==== Đặt lịch ====
     Route::resource('appointments', AppointmentController::class);
@@ -208,9 +221,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);
-    Route::patch('posts/{id}/soft-delete', [PostController::class, 'softDelete'])->name('posts.softDelete');
-    Route::post('posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
-    Route::delete('posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::patch('/posts/{id}/soft-delete', [PostController::class, 'softDelete'])->name('posts.softDelete');
+    Route::post('/posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
+    Route::delete('/posts/{id}/force-delete', [PostController::class, 'forceDelete'])->name('posts.forceDelete');
+
 
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
@@ -231,7 +245,12 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
-
+    Route::patch('admin/branches/{id}/soft-delete', [BranchController::class, 'softDelete'])
+        ->name('branches.softDelete');
+    Route::post('admin/branches/{id}/restore', [BranchController::class, 'restore'])
+        ->name('branches.restore');
+    Route::delete('admin/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])
+        ->name('branches.destroy');
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);
     Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])->name('barber_schedules.showBranch');
@@ -245,16 +264,17 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
 
     // ==== Người dùng ====
-
-    Route::get('/users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
-    Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
-    Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::resource('users', UserController::class);
+    Route::delete('users/{user}/soft-delete', [UserController::class, 'softDelete'])->name('users.softDelete');
+    Route::post('users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
+
 
 
     // ==== Mã giảm giá ====
     Route::resource('promotions', PromotionController::class);
-
+    Route::delete('/{id}/soft-delete', [PromotionController::class, 'softDelete'])->name('promotions.softDelete');
+    Route::put('/{id}/restore', [PromotionController::class, 'restore'])->name('promotions.restore');
     // ==== Sản phẩm ====
     Route::get('/products', [ProductController::class, 'index'])->name('admin.products.index');
     Route::get('/products/create', [ProductController::class, 'create'])->name('admin.products.create');

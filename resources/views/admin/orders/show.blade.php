@@ -82,7 +82,7 @@
     </div>
 
     <!-- Card 2: Sản phẩm -->
-    <div class="card shadow-sm mb-4">
+   <div class="card shadow-sm mb-4">
         <div class="card-header text-white d-flex align-items-center">
             <h4 class="card-title">Sản phẩm trong đơn hàng</h4>
         </div>
@@ -91,24 +91,37 @@
                 <thead class="table-light">
                     <tr>
                         <th>Tên sản phẩm</th>
-                        <th>Dung lượng</th>
+                        <th>Dung tích</th>
                         <th>Số lượng</th>
                         <th>Giá</th>
-                        <th>Tổng</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($order->items as $item)
+                        @php
+                            $product = $item->productVariant->product ?? null;
+                            $variant = $item->productVariant ?? null;
+                        @endphp
                         <tr>
-                            <td>{{ $item->productVariant->product->name ?? '-' }}</td>
-                            <td>{{ $item->productVariant->volume_id ?? '-' }}</td>
+                            <td>
+                                {{ $product->name ?? '-' }}
+                                @if ($product && $product->deleted_at)
+                                    <span class="badge bg-danger ms-1">Đã xóa mềm</span>
+                                @endif
+                            </td>
+                            <td>
+                                {{ $item->volume_name ?? '-' }}
+                                @if ($variant && $variant->deleted_at)
+                                    <span class="badge bg-warning text-dark ms-1">Biến thể đã xóa mềm</span>
+                                @endif
+                            </td>
                             <td>{{ $item->quantity }}</td>
                             <td>{{ number_format($item->price_at_time, 0, ',', '.') }} đ</td>
-                            <td>{{ number_format($item->total_price, 0, ',', '.') }} đ</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+
         </div>
     </div>
 

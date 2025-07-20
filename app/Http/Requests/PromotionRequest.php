@@ -35,6 +35,7 @@ class PromotionRequest extends FormRequest
             'end_date' => 'required|date|after:start_date',
             'is_active' => 'nullable|boolean',
             'description' => 'nullable|string|max:300',
+            'required_point' => 'min:5'
         ];
     }
 
@@ -68,6 +69,7 @@ class PromotionRequest extends FormRequest
             'quantity.min' => 'Số lượng mã giảm giá phải lớn hơn hoặc bằng 1.',
             'description.string' => 'Mô tả phải là chuỗi.',
             'description.max' => 'Mô tả không được vượt quá 300 ký tự.',
+            'required_point.min' => 'Điểm thấp nhất là 5 điểm'
         ];
     }
     public function withValidator($validator)

@@ -13,44 +13,61 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
+public function index(Request $request)
+{
+    $filter = $request->input('filter', 'all');
+    $query = Post::query();
 
-    public function index(Request $request)
-    {
-        $query = Post::query();
-        $filter = $request->input('filter', 'all'); // Mặc định là 'all'
-
-        // Bắt đầu với builder phù hợp theo filter
-        $query = match ($filter) {
-            'active' => Post::query(),
-            'deleted' => Post::onlyTrashed(),
-            default => Post::withTrashed(),
-        };
-        // Bài viết nổi bật (hiển thị trước)
-        $featuredPosts = Post::where('is_featured', true)
-            ->where('status', 'published')
-            ->latest('published_at')
-            ->get();
-
-        // Bài viết không nổi bật
-        $normalPosts = Post::where('is_featured', false)
-            ->where('status', 'published')
-            ->latest('published_at')
-            ->get();
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where('title', 'like', '%' . $search . '%');
-        }
-
-        $posts = $query->orderBy('created_at', 'desc')->paginate(5); // Phân trang 10 bài mỗi trang
-
-        return view('admin.posts.index', compact('posts', 'featuredPosts', 'normalPosts', 'filter'));
+    // Xử lý trạng thái bị xoá mềm
+    if ($filter === 'deleted') {
+        $query = Post::onlyTrashed();
+    } elseif ($filter === 'all') {
+        $query = Post::withTrashed();
     }
 
+    // Trạng thái bài viết
+    if ($filter === 'active') {
+        $query->where('status', 'published');
+    } elseif ($filter === 'inactive') {
+        $query->where('status', 'draft');
+    }
+
+    // Tìm kiếm
+    if ($request->filled('search')) {
+        $search = $request->input('search');
+        $query->where('title', 'like', '%' . $search . '%');
+    }
+
+    // Phân trang
+    $posts = $query->orderBy('created_at', 'desc')->paginate(5);
+
+    // Lấy featured & normal (nếu cần hiển thị ở nơi khác)
+    $featuredPosts = Post::where('is_featured', true)
+        ->where('status', 'published')
+        ->latest('published_at')
+        ->take(5)
+        ->get();
+
+    $normalPosts = Post::where('is_featured', false)
+        ->where('status', 'published')
+        ->latest('published_at')
+        ->take(5)
+        ->get();
+
+    return view('admin.posts.index', compact('posts', 'featuredPosts', 'normalPosts', 'filter'));
+}
 
 
-    public function show(Post $post)
+
+
+    public function show($post)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('posts.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
+
+        $post = Post::withTrashed()->findOrFail($post);
+
         return view('admin.posts.show', compact('post'));
     }
 
@@ -122,27 +139,32 @@ class PostController extends Controller
         return redirect()->route('posts.index')->with('success', 'Bài viết đã được cập nhật thành công!');
     }
 
-    public function destroy($id)
+
+    public function forceDelete($id)
     {
         if (Auth::user()->role === 'admin_branch') {
-            return redirect()->route('posts.index')->with('error', 'Bạn không có quyền xóa bài viết.');
-        }
-        $post = Post::withTrashed()->findOrFail($id);
-
-        // Kiểm tra liên kết phụ (nếu có, ví dụ comment)
-        if ($post->comments()->exists()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Không thể xoá vĩnh viễn vì bài viết đã có bình luận.'
+                'message' => 'Bạn không có quyền xóa bài viết.'
             ]);
         }
-        // Xóa hình ảnh nếu có
-        if ($post->image && \Storage::disk('public')->exists($post->image)) {
-            \Storage::disk('public')->delete($post->image);
+
+        $post = Post::withTrashed()->find($id);
+
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy bài viết.'
+            ]);
         }
 
+        // ⚠️ Nếu KHÔNG có quan hệ comments => bỏ đoạn này đi
 
-        // Xóa bài viết
+        // Xoá hình nếu có
+        if ($post->image && Storage::disk('public')->exists($post->image)) {
+            Storage::disk('public')->delete($post->image);
+        }
+
         $post->forceDelete();
 
         return response()->json([
@@ -150,6 +172,8 @@ class PostController extends Controller
             'message' => 'Đã xoá vĩnh viễn bài viết.'
         ]);
     }
+
+
     public function softDelete($id)
     {
         if (Auth::user()->role === 'admin_branch') {

@@ -70,6 +70,7 @@
                                         @endforeach
                                     </select>
                                 </div>
+                             
 
                                 <div class="col-auto">
                                     <label for="quantity">Số lượng:</label>
@@ -85,6 +86,10 @@
                                         <i class="fas fa-cart-plus"></i>
                                     </button>
                                 </div>
+                            </div>
+                            <div class="w-100"></div>
+                            <div class="col-12" id="variant-image-wrapper" style="text-align:center; margin-top:3px;">
+                                <img id="variant-image" src="{{ $variants->first() && $variants->first()->image ? asset('storage/' . $variants->first()->image) : '' }}" alt="Ảnh biến thể" style="max-width:150px; display:{{ $variants->first() && $variants->first()->image ? 'inline-block' : 'none' }};">
                             </div>
                         </form>
 
@@ -127,59 +132,52 @@
             {{-- ✅ Thông tin chi tiết nằm dưới full-width --}}
             <div class="information-product mt-5 w-100">
                 <h4>Thông tin chi tiết</h4>
-                <p>{{ $product->details ?? 'Đang cập nhật...' }}</p>
+                <p>{{ $product->long_description ?? 'Đang cập nhật...' }}</p>
             </div>
             {{-- Sản phẩm liên quan --}}
             {{-- Sản phẩm liên quan --}}
             <div class="orther-product mt-5">
                 <h2 class="mb-4 text-center">Sản phẩm khác</h2>
-                <div class="container">
-                    <div class="row justify-content-center">
+                <div class="product-wrapper">
+                    <div class="products">
                         @forelse ($relatedProducts as $item)
-                            @php $itemVariant = $item->variants->first(); @endphp
-                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
-                                <div class="card text-center h-100">
-                                    <a href="{{ route('client.product.detail', $item->id) }}"
-                                        class="text-decoration-none text-dark">
-                                        <img src="{{ asset('storage/' . $item->image) }}" class="card-img-top"
-                                            style="height: 150px; object-fit: cover;" alt="{{ $item->name }}">
-                                        <div class="card-body">
-                                            <h6 class="card-title">{{ $item->name }}</h6>
-                                            <p class="card-text text-danger fw-bold">{{ number_format($item->price) }} đ
-                                            </p>
-                                        </div>
+                            <div class="product" style="border: 1px solid #d2d2d2">
+                                <div class="image-product">
+                                    <a href="{{ route('client.product.detail', $item->id) }}">
+                                        <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" />
                                     </a>
-                                    @if ($itemVariant)
-                                        <form action="{{ route('cart.add') }}" method="POST"
-                                            class="related-add-to-cart-form m-0 p-0">
+                                </div>
+                                <h4>
+                                    <a href="{{ route('client.product.detail', $item->id) }}" class="product-link">
+                                        {{ $item->name }}
+                                    </a>
+                                </h4>
+                                <p>{{ number_format($item->price) }} đ</p>
+                                @php $itemVariant = $item->variants->first(); @endphp
+                                @if ($itemVariant)
+                                    <div class="button-group">
+                                        <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
                                             @csrf
                                             <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
                                             <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="btn-add-to-cart icon-button"
-                                                title="Thêm vào giỏ hàng">
-                                                <i class="fa-solid fa-cart-plus"></i>
+                                            <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                                <i class="fas fa-cart-plus"></i>
                                             </button>
                                         </form>
-                                        <div class="action-buttons mt-auto mb-3 d-flex justify-content-center gap-2">
-                                            <form action="{{ route('cart.buyNow') }}" method="POST"
-                                                class="m-0 p-0 buy-now-form-related">
-                                                @csrf
-                                                <input type="hidden" name="product_variant_id"
-                                                    value="{{ $itemVariant->id }}">
-                                                <input type="hidden" name="quantity" value="1">
-                                                @guest
-                                                    <button type="button" class="btn btn-success btn-buy-now"
-                                                        style="margin-top: 20px">Mua Ngay</button>
-                                                @else
-                                                    <button type="submit" class="btn btn-success btn-buy-now"
-                                                        style="margin-top: 20px">Mua Ngay</button>
-                                                @endguest
-                                            </form>
-                                        </div>
-                                    @else
-                                        <p class="text-danger">Không có phiên bản để mua</p>
-                                    @endif
-                                </div>
+                                        <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
+                                            @csrf
+                                            <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            @guest
+                                                <button type="button" class="btn-outline-buy">Mua ngay</button>
+                                            @else
+                                                <button type="submit" class="btn-outline-buy">Mua ngay</button>
+                                            @endguest
+                                        </form>
+                                    </div>
+                                @else
+                                    <p class="text-danger">Không có phiên bản để mua</p>
+                                @endif
                             </div>
                         @empty
                             <p class="text-center">Không có sản phẩm liên quan.</p>
@@ -245,6 +243,23 @@
                     buyNowQuantity.value = this.value;
                 });
             }
+
+            // Hiển thị ảnh biến thể khi chọn thể tích
+            const variantImage = document.getElementById('variant-image');
+            const variantImages = @json($variantImages ?? []);
+            if (variantSelect && variantImage) {
+                variantSelect.addEventListener('change', function() {
+                    const selectedId = this.value;
+                    const imgUrl = variantImages[selectedId];
+                    if (imgUrl) {
+                        variantImage.src = imgUrl;
+                        variantImage.style.display = 'inline-block';
+                    } else {
+                        variantImage.src = '';
+                        variantImage.style.display = 'none';
+                    }
+                });
+            }
         });
         $(function() {
             $('.btn-buy-now[type="button"]').on('click', function() {
@@ -307,7 +322,7 @@
             });
         });
         $(function() {
-            $('.related-add-to-cart-form').on('submit', function(e) {
+            $('.add-to-cart-form').on('submit', function(e) {
                 e.preventDefault();
                 var form = $(this);
                 $.ajax({

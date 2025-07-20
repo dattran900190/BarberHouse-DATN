@@ -16,6 +16,7 @@ class OrderItem extends Model
         'quantity',
         'price_at_time',
         'total_price',
+        'volume_name',
     ];
 
     public function order()
@@ -25,10 +26,10 @@ class OrderItem extends Model
 
     public function productVariant()
     {
-        return $this->belongsTo(ProductVariant::class, 'product_variant_id', 'id');
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id', 'id')->withTrashed();
     }
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id');
+        return $this->belongsTo(Product::class, 'product_id', 'id')->withTrashed();
     }
 }

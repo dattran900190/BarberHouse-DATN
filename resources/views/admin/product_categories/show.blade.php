@@ -222,7 +222,10 @@
             title: 'Xoá vĩnh viễn danh mục',
             text: 'Hành động này không thể khôi phục. Tiếp tục?',
             route: '{{ route('product_categories.destroy', ':id') }}',
-            method: 'DELETE'
+            method: 'DELETE',
+            onSuccess: () => {
+                window.location.href = '{{ route('product_categories.index') }}';
+            }
         });
     </script>
 @endsection

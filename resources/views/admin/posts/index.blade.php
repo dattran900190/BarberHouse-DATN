@@ -63,6 +63,7 @@
                 <select name="filter" onchange="this.form.submit()" class="form-select w-auto">
                     <option value="all" {{ $filter === 'all' ? 'selected' : '' }}>Tất cả</option>
                     <option value="active" {{ $filter === 'active' ? 'selected' : '' }}>Đang hoạt động</option>
+                    <option value="inactive" {{ $filter === 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
                     <option value="deleted" {{ $filter === 'deleted' ? 'selected' : '' }}>Đã xoá</option>
                 </select>
             </form>
@@ -74,10 +75,10 @@
                             <th>STT</th>
                             <th>Tiêu đề</th>
                             <th>Mô tả</th>
-                            <th>Nổi bật</th>
                             <th>Ảnh</th>
-                            <th>Trạng thái</th>
                             <th>Ngày xuất bản</th>
+                            <th>Nổi bật</th>
+                            <th>Trạng thái</th>
                             <th class="text-center">Hành động</th>
                         </tr>
                     </thead>
@@ -88,13 +89,6 @@
                                 <td>{{ $post->title }}</td>
                                 <td>{{ Str::limit($post->short_description, 100) }}</td>
                                 <td class="text-center">
-                                    @if ($post->is_featured)
-                                        <span class="badge bg-warning text-dark">Nổi bật</span>
-                                    @else
-                                        <span class="badge bg-secondary">Không nổi bật</span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
                                     @if ($post->image)
                                         <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh" width="80"
                                             class="img-thumbnail">
@@ -103,16 +97,24 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
+                                    {{ $post->published_at ? \Carbon\Carbon::parse($post->published_at)->format('d/m/Y') : 'Chưa xuất bản' }}
+                                </td>
+                                <td class="text-center">
+                                    @if ($post->is_featured)
+                                        <span class="badge bg-info text-dark">Nổi bật</span>
+                                    @else
+                                        <span class="badge bg-warning">Không nổi bật</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
                                     @if ($post->trashed())
                                         <span class="badge bg-danger">Đã xoá</span>
-                                    @elseif ($post->status)
+                                    @elseif ($post->status === 'published')
                                         <span class="badge bg-success">Đang hoạt động</span>
                                     @else
                                         <span class="badge bg-secondary">Không hoạt động</span>
                                     @endif
-                                </td>
-                                <td class="text-center">
-                                    {{ $post->published_at ? \Carbon\Carbon::parse($post->published_at)->format('d/m/Y') : 'Chưa xuất bản' }}
+
                                 </td>
                                 <td class="text-center">
                                     <div class="dropdown">
@@ -299,9 +301,10 @@
             selector: '.force-delete-btn',
             title: 'Xoá vĩnh viễn',
             text: 'Bạn có chắc chắn muốn xoá vĩnh viễn bài viết này? Hành động này không thể hoàn tác.',
-            route: '{{ route('posts.destroy', ':id') }}',
+            route: '{{ route('posts.forceDelete', ':id') }}',
             method: 'DELETE'
         });
+
 
         // Khôi phục
         handleSwalAction({

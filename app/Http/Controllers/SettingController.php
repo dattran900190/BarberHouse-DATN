@@ -11,84 +11,65 @@ class SettingController extends Controller
 {
     public function index()
     {
-        $settings = Setting::all();
-        $social_links = $settings->where('type', 'url')->map(function ($item) {
-            return $item->toArray(); // Chuyển đổi thành mảng
-        });
-        $images = $settings->where('type', 'image')->map(function ($item) {
-            return $item->toArray(); // Chuyển đổi thành mảng
-        });
+        $settings = Setting::all()->keyBy('key');
 
-        // Debug để kiểm tra
-        // dd($social_links->toArray());
+        // Lấy social links theo key cố định
+        $social_keys = ['youtube', 'facebook', 'instagram', 'tiktok'];
+        $social_links = [];
+        foreach ($social_keys as $k) {
+            $social_links[$k] = data_get($settings->get($k), 'value', '');
+        }
+
+        // Lấy images theo key cố định
+        $image_keys = ['anh_dang_nhap', 'anh_dang_ky', 'bang_gia'];
+        $images = [];
+        foreach ($image_keys as $k) {
+            $images[$k] = [
+                'key'   => $k,
+                'value' => data_get($settings->get($k), 'value', ''),
+            ];
+        }
 
         return view('admin.settings.index', compact('social_links', 'images'));
     }
 
+
     public function saveSettings(Request $request)
     {
-
-
-        // Handle social links
-        $existingLinks = Setting::where('type', 'url')->pluck('value', 'key')->toArray();
-        $newLinks = $request->input('social_links', []);
-
-        foreach ($newLinks as $link) {
+        // Xử lý social links
+        $social_keys = ['youtube', 'facebook', 'instagram', 'tiktok'];
+        foreach ($social_keys as $key) {
+            $value = $request->input("social_links.{$key}.value", '');
             Setting::updateOrCreate(
-                ['key' => $link['key'], 'type' => 'url'],
-                ['value' => $link['value']]
+                ['key' => $key, 'type' => 'url'],
+                ['value' => $value]
             );
-            if (isset($existingLinks[$link['key']])) {
-                unset($existingLinks[$link['key']]);
-            }
         }
-        Setting::where('type', 'url')->whereIn('key', array_keys($existingLinks))->delete();
 
-        // Handle images
-        $existingImages = Setting::where('type', 'image')->pluck('value', 'key')->toArray();
-        $submittedImages = $request->input('images', []);
-        $uploadedFiles = $request->file('images', []);
+        // Xử lý hình ảnh
+        $image_keys = ['anh_dang_nhap', 'anh_dang_ky', 'bang_gia'];
+        foreach ($image_keys as $key) {
+            $existing = $request->input("images.{$key}.existing_value");
+            $file     = $request->file("images.{$key}.value");
 
-        foreach ($submittedImages as $index => $imageData) {
-            $key = $imageData['key'];
-            $existingValue = $imageData['existing_value'] ?? null;
-
-            // If a new file is uploaded
-            if (isset($uploadedFiles[$index]['value']) && $uploadedFiles[$index]['value']->isValid()) {
-                // Store new file
-                $path = $uploadedFiles[$index]['value']->store('uploads', 'public');
-                // Delete old file if it exists
-                if ($existingValue && Storage::disk('public')->exists($existingValue)) {
-                    Storage::disk('public')->delete($existingValue);
+            // Nếu có upload file mới
+            if ($file && $file->isValid()) {
+                $path = $file->store('uploads', 'public');
+                // Xoá file cũ nếu có
+                if ($existing && Storage::disk('public')->exists($existing)) {
+                    Storage::disk('public')->delete($existing);
                 }
             } else {
-                // No new file, keep existing value if available
-                $path = $existingValue;
+                // giữ nguyên
+                $path = $existing;
             }
 
-            if ($path) {
-                Setting::updateOrCreate(
-                    ['key' => $key, 'type' => 'image'],
-                    ['value' => $path]
-                );
-            }
+            Setting::updateOrCreate(
+                ['key' => $key, 'type' => 'image'],
+                ['value' => $path]
+            );
         }
 
-        // xoá các hình ảnh đã bị xoá
-        if ($request->has('images')) {
-            $submittedKeys = array_column($submittedImages, 'key');
-            $keysToDelete = array_diff(array_keys($existingImages), $submittedKeys);
-
-            foreach ($keysToDelete as $key) {
-                $setting = Setting::where('key', $key)->where('type', 'image')->first();
-                if ($setting && Storage::disk('public')->exists($setting->value)) {
-                    Storage::disk('public')->delete($setting->value);
-                }
-                $setting?->delete();
-            }
-        }
-
-
-        return redirect()->back()->with('success', 'Cài đặt đã được lưu!');
+        return response()->json(['success' => true, 'message' => 'Cài đặt đã được lưu!']);
     }
 }

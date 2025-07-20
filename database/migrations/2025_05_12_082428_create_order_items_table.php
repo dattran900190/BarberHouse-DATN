@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigInteger('id',true); // ID tự tăng
             $table->bigInteger('order_id')->nullable()->index('order_id'); // Liên kết đơn hàng
             $table->bigInteger('product_variant_id')->nullable()->index('product_variant_id'); // Sản phẩm (biến thể)
+            $table->string('volume_name')->nullable(); // Tên dung lượng tại thời điểm đặt hàng
             $table->integer('quantity')->nullable(); // Số lượng
             $table->decimal('price_at_time', 10, 2)->nullable(); // Giá tại thời điểm mua
             $table->decimal('total_price', 12, 2)->nullable(); // Tổng giá = quantity * price_at_time

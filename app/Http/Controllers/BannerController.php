@@ -10,29 +10,37 @@ use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
 {
-   public function index(Request $request)
-{
-    $search = $request->input('search');
-    $filter = $request->input('filter', 'all'); // Mặc định là 'all'
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+        $filter = $request->input('filter', 'all'); // Mặc định là 'all'
 
-    // Bắt đầu với builder phù hợp theo filter
-    $query = match ($filter) {
-        'active' => Banner::query(),
-        'deleted' => Banner::onlyTrashed(),
-        default => Banner::withTrashed(),
-    };
+        // Bắt đầu với builder phù hợp theo filter
+        // Tạo builder gốc
+        $query = Banner::query();
 
-    // Áp dụng tìm kiếm nếu có
-    if ($search) {
-        $query->where('title', 'like', '%' . $search . '%');
+        // Xử lý lọc theo trạng thái
+        if ($filter === 'deleted') {
+            $query = Banner::onlyTrashed();
+        } elseif ($filter === 'all') {
+            $query = Banner::withTrashed();
+        } elseif ($filter === 'inactive') {
+            $query->where('is_active', 0);
+        } elseif ($filter === 'active') {
+            $query->where('is_active', 1);
+        }
+
+        // Áp dụng tìm kiếm nếu có
+        if ($search) {
+            $query->where('title', 'like', '%' . $search . '%');
+        }
+
+        // Lấy kết quả phân trang
+        $banners = $query->orderBy('id', 'DESC')->paginate(5);
+
+        // Truyền thêm filter để giữ trạng thái lọc ở view
+        return view('admin.banners.index', compact('banners', 'filter', 'search'));
     }
-
-    // Lấy kết quả phân trang
-    $banners = $query->orderBy('id', 'DESC')->paginate(5);
-
-    // Truyền thêm filter để giữ trạng thái lọc ở view
-    return view('admin.banners.index', compact('banners', 'filter', 'search'));
-}
 
 
     public function create()
@@ -69,7 +77,7 @@ class BannerController extends Controller
 
     public function show($id)
     {
-        $banner = Banner::findOrFail($id);
+        $banner = Banner::withTrashed()->findOrFail($id);
         return view('admin.banners.show', compact('banner'));
     }
 
@@ -108,45 +116,45 @@ class BannerController extends Controller
         return redirect()->route('banners.index')->with('success', 'Cập nhật banner thành công!');
     }
 
-public function destroy($id)
-{
-    if (Auth::user()->role === 'admin_branch') {
-        return response()->json(['success' => false, 'message' => 'Bạn không có quyền xóa banner.'], 403);
+    public function destroy($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json(['success' => false, 'message' => 'Bạn không có quyền xóa banner.'], 403);
+        }
+
+        $banner = Banner::withTrashed()->findOrFail($id);
+
+        if ($banner->image_url && Storage::disk('public')->exists($banner->image_url)) {
+            Storage::disk('public')->delete($banner->image_url);
+        }
+
+        $banner->forceDelete(); // Xoá vĩnh viễn
+
+        return response()->json(['success' => true, 'message' => 'Đã xoá vĩnh viễn banner.']);
     }
 
-    $banner = Banner::withTrashed()->findOrFail($id);
+    public function softDelete($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json(['success' => false, 'message' => 'Bạn không có quyền xóa banner.'], 403);
+        }
 
-    if ($banner->image_url && Storage::disk('public')->exists($banner->image_url)) {
-        Storage::disk('public')->delete($banner->image_url);
+        $banner = Banner::findOrFail($id);
+        $banner->delete();
+
+        return response()->json(['success' => true, 'message' => 'Đã xoá mềm banner.']);
     }
 
-    $banner->forceDelete(); // Xoá vĩnh viễn
+    public function restore($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json(['success' => false, 'message' => 'Bạn không có quyền khôi phục banner.'], 403);
+        }
 
-    return response()->json(['success' => true, 'message' => 'Đã xoá vĩnh viễn banner.']);
-}
+        $banner = Banner::withTrashed()->findOrFail($id);
+        $banner->restore();
 
-public function softDelete($id)
-{
-    if (Auth::user()->role === 'admin_branch') {
-        return response()->json(['success' => false, 'message' => 'Bạn không có quyền xóa banner.'], 403);
+        return response()->json(['success' => true, 'message' => 'Khôi phục banner thành công.']);
     }
-
-    $banner = Banner::findOrFail($id);
-    $banner->delete();
-
-    return response()->json(['success' => true, 'message' => 'Đã xoá mềm banner.']);
-}
-
-public function restore($id)
-{
-    if (Auth::user()->role === 'admin_branch') {
-        return response()->json(['success' => false, 'message' => 'Bạn không có quyền khôi phục banner.'], 403);
-    }
-
-    $banner = Banner::withTrashed()->findOrFail($id);
-    $banner->restore();
-
-    return response()->json(['success' => true, 'message' => 'Khôi phục banner thành công.']);
-}
 
 }
