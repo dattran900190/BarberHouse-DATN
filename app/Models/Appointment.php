@@ -30,7 +30,14 @@ class Appointment extends Model
         'status_before_cancellation',
         'promotion_id',
         'discount_amount',
-        'total_amount'
+        'total_amount',
+        'confirmation_token',
+        'confirmation_token_expires_at',
+    ];
+
+    protected $casts = [
+        'appointment_time' => 'datetime',
+        'confirmation_token_expires_at' => 'datetime',
     ];
 
     public function user()

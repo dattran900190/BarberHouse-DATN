@@ -12,16 +12,22 @@ class CheckinCodeMail extends Mailable
 
     public $code;
     public $appointment;
+    public $additionalServices;
 
-    public function __construct($code, $appointment)
+    public function __construct($code, $appointment, array $additionalServices = [])
     {
         $this->code = $code;
         $this->appointment = $appointment;
+        $this->additionalServices = $additionalServices;
     }
 
     public function build()
     {
-        return $this->subject('Mã Check-in của bạn')
-                    ->view('emails.checkin_code');
+        return $this->view('emails.checkin_code')
+            ->with([
+                'code' => $this->code,
+                'appointment' => $this->appointment,
+                'additionalServices' => $this->additionalServices,
+            ])->subject('Mã Check-in của bạn');
     }
 }
