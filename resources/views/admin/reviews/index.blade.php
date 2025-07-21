@@ -113,12 +113,14 @@
                                                         <i class="fas fa-eye me-2"></i> Xem
                                                     </a>
                                                 </li>
-                                                <li>
-                                                    <a href="{{ route('reviews.edit', ['review' => $review->id]) }}"
-                                                        class="dropdown-item">
-                                                        <i class="fas fa-edit me-2"></i> Sửa
-                                                    </a>
-                                                </li>
+                                                @if (!$review->trashed())
+                                                    <li>
+                                                        <a href="{{ route('reviews.edit', ['review' => $review->id]) }}"
+                                                            class="dropdown-item">
+                                                            <i class="fas fa-edit me-2"></i> Sửa
+                                                        </a>
+                                                    </li>
+                                                @endif
                                                 <li>
                                                     <hr class="dropdown-divider">
                                                 </li>

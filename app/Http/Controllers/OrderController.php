@@ -30,8 +30,7 @@ class OrderController extends Controller
                         ->orWhere('name', 'like', '%' . $search . '%');
                 });
             })
-
-                ->orderBy('created_at', 'DESC');
+            ->orderBy('created_at', 'DESC');
         };
 
         // Lấy đơn hàng theo từng trạng thái với phân trang
@@ -65,9 +64,10 @@ class OrderController extends Controller
             'cancelledOrders',
             'activeTab',
             'search',
-            'pendingOrderCount' // Đổi tên biến truyền về view
+            'pendingOrderCount'
         ));
     }
+
     public function confirm(Order $order)
     {
         if ($order->status === 'pending') {
@@ -82,11 +82,10 @@ class OrderController extends Controller
             } catch (\Exception $e) {
                 Log::error('Lỗi gửi email xác nhận đơn hàng (admin): ' . $e->getMessage());
             }
-            return back()->with('success', 'Đã xác nhận đơn hàng.');
+            return response()->json(['success' => true, 'message' => 'Đã xác nhận đơn hàng.']);
         }
-        return back()->with('error', 'Đơn hàng không thể xác nhận.');
+        return response()->json(['success' => false, 'message' => 'Đơn hàng không thể xác nhận.']);
     }
-
 
     // Hiển thị chi tiết đơn hàng, load quan hệ items và productVariant
     public function show(Order $order)
@@ -119,16 +118,16 @@ class OrderController extends Controller
 
         // Nếu đơn hàng đã bị hủy
         if ($currentStatus === 'cancelled') {
-            return redirect()->route('orders.show', $order->id)->with('error', 'Đơn hàng đã bị hủy, không thể thay đổi trạng thái!');
+            return response()->json(['success' => false, 'message' => 'Đơn hàng đã bị hủy, không thể thay đổi trạng thái!']);
         }
 
         // Nếu đơn hàng đã hoàn thành
         if ($currentStatus === 'completed') {
             if ($newStatus === 'cancelled') {
-                return redirect()->route('orders.show', $order->id)->with('error', 'Đơn hàng đã hoàn thành, không thể hủy đơn!');
+                return response()->json(['success' => false, 'message' => 'Đơn hàng đã hoàn thành, không thể hủy đơn!']);
             }
             if ($newStatus !== 'completed') {
-                return redirect()->route('orders.show', $order->id)->with('error', 'Đơn hàng đã hoàn thành, không thể thay đổi trạng thái!');
+                return response()->json(['success' => false, 'message' => 'Đơn hàng đã hoàn thành, không thể thay đổi trạng thái!']);
             }
         }
 
@@ -137,7 +136,7 @@ class OrderController extends Controller
 
         // Không cho quay lại trạng thái trước đó (trừ khi là hủy)
         if ($newStatus !== 'cancelled' && $statusOrder[$newStatus] <= $statusOrder[$currentStatus]) {
-            return redirect()->route('orders.show', $order->id)->with('error', 'Không thể quay lại trạng thái trước đó!');
+            return response()->json(['success' => false, 'message' => 'Không thể quay lại trạng thái trước đó!']);
         }
 
         // Nếu chuyển sang hủy đơn, cộng lại tồn kho
@@ -166,22 +165,17 @@ class OrderController extends Controller
         $order->status = $newStatus;
         $order->save();
 
-        // Lấy số trang từ request
-        $currentPage = $request->input('page', 1);
-
-        return redirect()->route('admin.orders.index', ['page' => $currentPage])
-            ->with('success', 'Cập nhật trạng thái đơn hàng thành công.');
+        return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái đơn hàng thành công.']);
     }
 
-
-    public function destroy(Order $order)
+    public function destroy(Request $request, Order $order)
     {
         if (Auth::user()->role === 'admin_branch') {
-            return redirect()->route('admin.orders.index')->with('error', 'Bạn không có quyền truy cập.');
+            return response()->json(['success' => false, 'message' => 'Bạn không có quyền truy cập.']);
         }
         $order->status = 'cancelled';
         $order->save();
 
-        return redirect()->route('admin.orders.index')->with('success', 'Đơn hàng đã được hủy.');
+        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được hủy.']);
     }
 }

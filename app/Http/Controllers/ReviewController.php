@@ -54,8 +54,9 @@ class ReviewController extends Controller
         return redirect()->route('reviews.index')->with('success', 'Thêm bình luận thành công');
     }
 
-    public function show(Review $review)
+    public function show($id)
     {
+        $review = Review::withTrashed()->findOrFail($id);
         return view('admin.reviews.show', compact('review'));
     }
 
@@ -63,6 +64,11 @@ class ReviewController extends Controller
     {
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('reviews.index')->with('error', 'Bạn không có quyền sửa bình luận.');
+        }
+
+        // Không cho phép sửa nếu bản ghi đã bị xóa mềm
+        if ($review->trashed()) {
+            return redirect()->route('reviews.index')->with('error', 'Không thể sửa bình luận đã bị xóa.');
         }
         return view('admin.reviews.edit', compact('review'));
     }
@@ -81,7 +87,7 @@ class ReviewController extends Controller
             ->with('success', 'Cập nhật thành công');
     }
 
-    // ✅ Soft delete
+    // Soft delete
     public function softDelete($id)
     {
         if (Auth::user()->role === 'admin_branch') {
@@ -97,7 +103,7 @@ class ReviewController extends Controller
         return response()->json(['success' => true, 'message' => 'Đã xoá mềm bình luận.']);
     }
 
-    // ✅ Khôi phục
+    // Khôi phục
     public function restore($id)
     {
         if (Auth::user()->role === 'admin_branch') {

@@ -64,11 +64,12 @@ class ServiceController extends Controller
         return redirect()->route('services.index')->with('success', 'Thêm dịch vụ thành công');
     }
 
-
-    public function show(Service $service)
+    public function show($id)
     {
+        $service = Service::withTrashed()->findOrFail($id);
         return view('admin.services.show', compact('service'));
     }
+
 
     public function edit(Service $service)
     {
