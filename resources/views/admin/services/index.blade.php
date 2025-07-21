@@ -133,7 +133,7 @@
                                                 <li>
                                                     <hr class="dropdown-divider">
                                                 </li>
-                                               
+
                                                 <li>
                                                     @if ($service->trashed())
                                                         <button type="button"
