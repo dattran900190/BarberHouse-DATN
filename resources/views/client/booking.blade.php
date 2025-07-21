@@ -18,6 +18,23 @@
             <span aria-hidden="true">×</span>
             </button>
         @endif --}}
+        @if (session('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: '{{ session('success') }}',
+                        confirmButtonText: 'OK',
+                        // timer: 3000,
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                        timerProgressBar: true
+                    });
+                });
+            </script>
+        @endif
 
         <div class="booking-container">
             <!-- Header -->
@@ -669,7 +686,7 @@
                             });
                         } else {
                             barberSelect.innerHTML =
-                            '<option value="">Không có kỹ thuật viên khả dụng</option>';
+                                '<option value="">Không có kỹ thuật viên khả dụng</option>';
                         }
                     })
                     .catch(error => {
@@ -895,22 +912,22 @@
                                     //     vnpayForm.method = 'POST';
                                     //     vnpayForm.action = '{{ route('client.payment.vnpay') }}';
                                     //     vnpayForm.innerHTML = `
-                                    //     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    //     <input type="hidden" name="appointment_id" value="${data.appointment_id}">
-                                    // `;
+                                //     <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                //     <input type="hidden" name="appointment_id" value="${data.appointment_id}">
+                                // `;
                                     //     document.body.appendChild(vnpayForm);
                                     //     vnpayForm.submit();
                                     // } else {
-                                        Swal.fire({
-                                            title: 'Thành công!',
-                                            text: data.message,
-                                            icon: 'success',
-                                            customClass: {
-                                                popup: 'custom-swal-popup'
-                                            }
-                                        }).then(() => {
-                                            location.reload();
-                                        });
+                                    Swal.fire({
+                                        title: 'Thành công!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        location.reload();
+                                    });
                                     // }
                                 }
                             })

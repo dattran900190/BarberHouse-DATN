@@ -282,6 +282,7 @@ class AppointmentController extends Controller
 
             // Gửi email thông báo pending
             Mail::to($appointment->email)->queue(new PendingBookingMail($appointment));
+            event(new NewAppointment($appointment));
 
             // Kích hoạt Pusher
             $this->triggerPusher($appointment);
