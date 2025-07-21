@@ -63,8 +63,9 @@ class RefundRequestController extends Controller
         ]);
     }
 
-    public function show(RefundRequest $refund)
+    public function show($id)
     {
+        $refund = RefundRequest::withTrashed()->findOrFail($id);
         $refund->load([
             'user',
             'order.items.productVariant.volume',

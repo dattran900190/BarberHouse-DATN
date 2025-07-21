@@ -72,6 +72,13 @@
                         <a class="nav-link {{ $activeTab == $key ? 'active' : '' }}" id="{{ $key }}-tab"
                             href="{{ route('refunds.index', ['status' => $key, 'search' => request('search'), 'filter' => request('filter')]) }}">
                             {{ $label }}
+                            @if ($key == 'pending' && $pendingRefundCount > 0)
+                                <span class="position-relative">
+                                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                        <span class="visually-hidden">New alerts</span>
+                                    </span>
+                                </span>
+                            @endif
                         </a>
                     </li>
                 @endforeach

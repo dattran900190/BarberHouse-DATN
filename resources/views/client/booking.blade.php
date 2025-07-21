@@ -273,6 +273,37 @@
 
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: '{{ session('success') }}',
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title',
+                        confirmButton: 'custom-swal-confirm'
+                    }
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: '{{ session('error') }}',
+                    confirmButtonText: 'Thử lại',
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title',
+                        confirmButton: 'custom-swal-confirm'
+                    }
+                });
+            @endif
+        });
+    </script>
 
     <script>
         // // Initialize booking system
@@ -669,7 +700,7 @@
                             });
                         } else {
                             barberSelect.innerHTML =
-                            '<option value="">Không có kỹ thuật viên khả dụng</option>';
+                                '<option value="">Không có kỹ thuật viên khả dụng</option>';
                         }
                     })
                     .catch(error => {
