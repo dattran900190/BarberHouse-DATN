@@ -488,6 +488,7 @@ class CartController extends Controller
                         'quantity' => $item['quantity'],
                         'price_at_time' => $item['price'],
                         'total_price' => $item['price'] * $item['quantity'],
+                        'volume_name' => $variant->volume->name ?? null, // Lưu tên dung lượng tại thời điểm đặt
                     ]);
                 }
                 $cartItemIds = collect($request->items)->pluck('cart_item_id')->toArray();
