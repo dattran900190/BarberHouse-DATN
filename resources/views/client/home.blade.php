@@ -21,6 +21,24 @@
 
 @section('content')
     <main class="container">
+        @if (session('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: '{{ session('success') }}',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+                        // timer: 3000,
+                        timerProgressBar: true
+                    });
+                });
+            </script>
+        @endif
+
         <section id="mainPost">
             <h2>Tin tức nổi bật</h2>
             <div class="posts-wrapper">

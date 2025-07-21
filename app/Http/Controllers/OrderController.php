@@ -19,9 +19,9 @@ class OrderController extends Controller
     {
         $search = $request->input('search');
         $activeTab = $request->input('tab', 'pending');
-        
+
         $user = Auth::user();
-        
+
         // Hàm xây dựng truy vấn cơ bản
         $buildQuery = function ($query, $search) use ($user) {
             $query->when($search, function ($q) use ($search) {
@@ -57,10 +57,10 @@ class OrderController extends Controller
         $pendingOrderCount = Order::where('status', 'pending')->count();
 
         return view('admin.orders.index', compact(
-            'pendingOrders', 
-            'processingOrders', 
-            'shippingOrders', 
-            'completedOrders', 
+            'pendingOrders',
+            'processingOrders',
+            'shippingOrders',
+            'completedOrders',
             'cancelledOrders',
             'activeTab',
             'search',
@@ -93,7 +93,14 @@ class OrderController extends Controller
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.orders.index')->with('error', 'Bạn không có quyền truy cập.');
         }
-        $order->load('items.productVariant.product');
+        $order->load([
+            'items.productVariant' => function ($query) {
+                $query->withTrashed(); // ✅ đúng cách
+            },
+            'items.productVariant.product' => function ($query) {
+                $query->withTrashed(); // ✅ đúng cách
+            },
+        ]);
 
         return view('admin.orders.show', compact('order'))->with('title', 'Chi tiết đơn hàng');
     }

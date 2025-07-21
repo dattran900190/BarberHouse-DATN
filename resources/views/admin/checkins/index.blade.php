@@ -34,7 +34,7 @@
                     <i class="icon-home"></i>
                 </a>
             </li>
-             <li class="separator">
+            <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
@@ -124,10 +124,21 @@
                                 </td>
                                 <td class="text-center">{{ $checkin->created_at->format('d/m/Y H:i') }}</td>
                                 <td class="text-center">
-                                    <a href="{{ route('checkins.show', $checkin->id) }}" class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i> Xem
-                                    </a>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary" type="button" id="actionMenu{{ $checkin->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionMenu{{ $checkin->id }}">
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('checkins.show', $checkin->id) }}">
+                                                    <i class="fas fa-eye me-1"></i> Xem
+                                                </a>
+                                            </li>
+
+                                        </ul>
+                                    </div>
                                 </td>
+
                             </tr>
                         @empty
                             <tr>

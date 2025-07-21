@@ -62,10 +62,10 @@
 
                 <p class="text-muted mb-2">
                     <i class="fa fa-eye me-2 text-success"></i><strong>Trạng thái:</strong>
-                    @if ($post->status)
-                        <span class="badge bg-success">Đã xuất bản</span>
+                    @if ($post->deleted_at)
+                        <span class="badge bg-danger">Đã xoá mềm</span>
                     @else
-                        <span class="badge bg-secondary">Bản nháp</span>
+                        <span class="badge bg-success">Đang hoạt động</span>
                     @endif
                 </p>
                 <p class="text-muted mb-2">
@@ -89,7 +89,7 @@
 
     <!-- Card: Hành động -->
     <div class="card shadow-sm mb-4">
-        <div class="card-header text-white d-flex align-items-center">
+        <div class="card-header">
             <h4 class="card-title">Hành động</h4>
         </div>
         <div class="card-body">
@@ -97,10 +97,97 @@
                 <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-outline-primary btn-sm">
                     <i class="fa fa-edit me-1"></i> Sửa
                 </a>
+
+                @if (!$post->trashed())
+                    <button class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $post->id }}">
+                        <i class="fa fa-trash-alt me-1"></i> Xoá mềm
+                    </button>
+                @endif
+
+                @if ($post->trashed())
+                    <button class="btn btn-outline-success btn-sm restore-btn" data-id="{{ $post->id }}">
+                        <i class="fa fa-undo me-1"></i> Khôi phục
+                    </button>
+
+                    <button class="btn btn-outline-danger btn-sm force-delete-btn" data-id="{{ $post->id }}">
+                        <i class="fa fa-times-circle me-1"></i> Xoá vĩnh viễn
+                    </button>
+                @endif
+
                 <a href="{{ route('posts.index') }}" class="btn btn-outline-secondary btn-sm">
                     <i class="fa fa-arrow-left me-1"></i> Quay lại
                 </a>
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function() {
+                    const postId = this.dataset.id;
+                    Swal.fire({
+                        title,
+                        text,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(route.replace(':id', postId), {
+                                    method,
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.fire(data.message, '', data.success ? 'success' :
+                                        'error');
+                                    if (data.success) onSuccess();
+                                });
+                        }
+                    });
+                });
+            });
+        }
+
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Xoá mềm bài viết',
+            text: 'Bạn có chắc chắn muốn xoá mềm bài viết này?',
+            route: '{{ route('posts.softDelete', ':id') }}',
+            method: 'PATCH'
+        });
+
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục bài viết',
+            text: 'Bạn có muốn khôi phục bài viết này?',
+            route: '{{ route('posts.restore', ':id') }}',
+            method: 'POST'
+        });
+
+        handleSwalAction({
+            selector: '.force-delete-btn',
+            title: 'Xoá vĩnh viễn',
+            text: 'Bạn có chắc chắn muốn xoá vĩnh viễn bài viết này? Hành động này không thể hoàn tác.',
+            route: '{{ route('posts.forceDelete', ':id') }}',
+            method: 'DELETE',
+            onSuccess: () => {
+                window.location.href = '{{ route('posts.index') }}'; // Redirect về trang danh sách
+            }
+        });
+    </script>
 @endsection

@@ -59,8 +59,8 @@
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Trạng thái</label>
                         <select name="is_active" class="form-control @error('is_active') is-invalid @enderror">
-                            <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Ẩn</option>
-                            <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Hiển thị</option>
+                            <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Không hoạt động</option>
+                            <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Đang hoạt động</option>
                         </select>
                         @error('is_active') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>

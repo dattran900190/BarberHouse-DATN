@@ -17,13 +17,8 @@ class CheckinController extends Controller
     public function index(Request $request)
     {
         $checkins = Checkin::latest()->paginate(10);
-
-
-
         return view('admin.checkins.index', compact('checkins'));
     }
-
-
 
     public function show(Checkin $checkin)
     {
@@ -41,10 +36,6 @@ class CheckinController extends Controller
         if (!$checkin) {
             return back()->withErrors(['code' => 'Mã không đúng!']);
         }
-
-        // if ($checkin->is_checked_in) {
-        //     return back()->withErrors(['code' => 'Mã này đã được sử dụng!']);
-        // }
 
         $checkin->update([
             'checkin_time' => now(),
