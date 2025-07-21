@@ -23,7 +23,7 @@ return new class extends Migration
             $table->bigInteger('service_id')->nullable()->index('service_id');
             $table->json('additional_services')->nullable();
             $table->dateTime('appointment_time')->nullable();
-            $table->enum('status', ['pending', 'confirmed', 'checked-in', 'progress', 'completed', 'cancelled'])->nullable();
+            $table->enum('status', ['pending','unconfirmed', 'confirmed', 'checked-in', 'progress', 'completed', 'cancelled'])->nullable();
             $table->enum('payment_method', ['cash', 'vnpay'])->nullable();
             $table->enum('payment_status', ['unpaid', 'paid', 'failed', 'refunded'])->nullable();
             $table->text('note')->nullable();

@@ -49,7 +49,6 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // ==== Trang chủ ====
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/test', [HomeController::class, 'test'])->name('test');
 
 // Giỏ hàng
 Route::get('/gio-hang', [CartController::class, 'show'])->name('cart.show');
@@ -81,7 +80,9 @@ Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::c
 //   [ClientAppointmentController::class, 'getAvailableBarbersByDate']
 // );
 Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time}/{service_id}', [ClientAppointmentController::class, 'getAvailableBarbersByDate'])->name('getAvailableBarbersByDate');
+Route::get('/confirm-booking/{token}', [ClientAppointmentController::class, 'confirmBooking'])->name('confirm.booking');
 
+// ==== Profile ====
 Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
 Route::post('/store-errors', function (Request $request) {
     session()->flash('errors', $request->input('errors'));
@@ -131,7 +132,7 @@ Route::get('hoan-tien', [WalletController::class, 'index'])->name('client.detail
 Route::get('hoan-tien/create', [WalletController::class, 'create'])->name('client.wallet');
 Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.wallet.store');
 
-Route::post('/payment/vnpay', [PaymentController::class, 'vnpayPayment'])->name('client.payment.vnpay');
+Route::match(['get', 'post'], '/payment/vnpay', [PaymentController::class, 'vnpayPayment'])->name('client.payment.vnpay');
 Route::get('/payment/vnpay/callback', [PaymentController::class, 'vnpayCallback'])->name('client.payment.vnpay.callback');
 
 Route::match(['get', 'post'], '/payment/vnpay/order', [PaymentController::class, 'vnpayOrderPayment'])->name('client.payment.vnpay.order');
