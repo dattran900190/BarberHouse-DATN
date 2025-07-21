@@ -889,18 +889,18 @@
                                     throw data;
                                 }
                                 if (data.success) {
-                                    if (formData.get('payment_method') === 'vnpay') {
-                                        // Chuyển hướng đến thanh toán VNPay
-                                        const vnpayForm = document.createElement('form');
-                                        vnpayForm.method = 'POST';
-                                        vnpayForm.action = '{{ route('client.payment.vnpay') }}';
-                                        vnpayForm.innerHTML = `
-                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <input type="hidden" name="appointment_id" value="${data.appointment_id}">
-                                    `;
-                                        document.body.appendChild(vnpayForm);
-                                        vnpayForm.submit();
-                                    } else {
+                                    // if (formData.get('payment_method') === 'vnpay') {
+                                    //     // Chuyển hướng đến thanh toán VNPay
+                                    //     const vnpayForm = document.createElement('form');
+                                    //     vnpayForm.method = 'POST';
+                                    //     vnpayForm.action = '{{ route('client.payment.vnpay') }}';
+                                    //     vnpayForm.innerHTML = `
+                                    //     <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    //     <input type="hidden" name="appointment_id" value="${data.appointment_id}">
+                                    // `;
+                                    //     document.body.appendChild(vnpayForm);
+                                    //     vnpayForm.submit();
+                                    // } else {
                                         Swal.fire({
                                             title: 'Thành công!',
                                             text: data.message,
@@ -911,7 +911,7 @@
                                         }).then(() => {
                                             location.reload();
                                         });
-                                    }
+                                    // }
                                 }
                             })
                             .catch(error => {

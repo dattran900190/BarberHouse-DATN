@@ -95,22 +95,70 @@
                 <div class="card-header">
                     <div class="card-head-row">
                         <div class="card-title">Thống kê doanh thu dịch vụ & sản phẩm</div>
+                        <div class="card-tools">
+                            <form method="GET" id="chartFilterForm" class="mb-0">
+                                <div class="row g-2 align-items-end">
+                                    <!-- Filter Type -->
+                                    <div class="col-auto">
+                                        <label for="filter_type" class="form-label small mb-1">Lọc theo:</label>
+                                        <select name="filter_type" id="filter_type" class="form-select form-select-sm"
+                                            onchange="toggleFilterInputs()">
+                                            <option value="month"
+                                                {{ ($filterType ?? 'month') == 'month' ? 'selected' : '' }}>Tháng</option>
+                                            <option value="date_range"
+                                                {{ ($filterType ?? '') == 'date_range' ? 'selected' : '' }}>Khoảng ngày
+                                            </option>
+                                        </select>
+                                    </div>
 
-                        <div class="card-tools d-flex align-items-center gap-2">
-                            <form method="GET" class="d-flex align-items-center gap-2 mb-0">
-                                <label for="month" class="mb-0 me-2">Chọn tháng:</label>
-                                <select name="month" id="month" class="form-select w-auto"
-                                    onchange="this.form.submit()">
-                                    <option value="">Cả năm</option>
-                                    @for ($i = 1; $i <= 12; $i++)
-                                        <option value="{{ $i }}"
-                                            {{ isset($month) && $month == $i ? 'selected' : '' }}>
-                                            Tháng {{ $i }}
-                                        </option>
-                                    @endfor
-                                </select>
+                                    <!-- Filter tháng -->
+                                    <div id="monthFilter" class="col-auto"
+                                        style="{{ ($filterType ?? 'month') == 'month' ? '' : 'display: none;' }}">
+                                        <label for="month" class="form-label small mb-1">Chọn tháng:</label>
+                                        <select name="month" id="month" class="form-select form-select-sm">
+                                            <option value="">Cả năm {{ date('Y') }}</option>
+                                            @for ($i = 1; $i <= 12; $i++)
+                                                <option value="{{ $i }}"
+                                                    {{ isset($month) && $month == $i ? 'selected' : '' }}>
+                                                    Tháng {{ $i }}/{{ date('Y') }}
+                                                </option>
+                                            @endfor
+                                        </select>
+                                    </div>
+
+                                    <!-- Filter khoảng ngày -->
+                                    <div id="dateRangeFilter"
+                                        style="{{ ($filterType ?? '') == 'date_range' ? '' : 'display: none;' }}">
+                                        <div class="row g-2">
+                                            <div class="col-auto">
+                                                <label for="start_date" class="form-label small mb-1">Từ ngày:</label>
+                                                <input type="date" name="start_date" id="start_date"
+                                                    class="form-control form-control-sm" value="{{ $startDate ?? '' }}"
+                                                    max="{{ date('Y-m-d') }}">
+                                            </div>
+                                            <div class="col-auto">
+                                                <label for="end_date" class="form-label small mb-1">Đến ngày:</label>
+                                                <input type="date" name="end_date" id="end_date"
+                                                    class="form-control form-control-sm" value="{{ $endDate ?? '' }}"
+                                                    max="{{ date('Y-m-d') }}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Button -->
+                                    <div class="col-auto">
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="fa fa-filter me-1"></i>Lọc
+                                        </button>
+                                        @if (request()->anyFilled(['filter_type', 'month', 'start_date', 'end_date']))
+                                            <a href="{{ route('dashboard') }}"
+                                                class="btn btn-outline-secondary btn-sm ms-1">
+                                                <i class="fa fa-times me-1"></i>Xóa
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
                             </form>
-
                         </div>
                     </div>
                 </div>
@@ -129,7 +177,7 @@
                     <div class="card-head-row">
                         <div class="card-title">Hiệu suất nhân viên (tuần này)</div>
                     </div>
-                    <div class="card-category">Từ 01/07 đến 06/07</div>
+                    <div class="card-category">{{ $weekRange ?? 'Tuần hiện tại' }}</div>
                 </div>
                 <div class="card-body pb-0">
                     <table class="table table-hover mb-0">
@@ -141,53 +189,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($barberStats as $barber)
+                            @forelse ($barberStats as $barber)
                                 <tr>
-                                    <td>{{ $barber['name'] }}</td>
-                                    <td class="text-center">{{ $barber['cut_count'] }}</td>
-                                    <td class="text-center">{{ $barber['avg_rating'] }} ⭐</td>
+                                    <td>{{ $barber->name }}</td>
+                                    <td class="text-center">{{ $barber->cut_count }}</td>
+                                    <td class="text-center">{{ $barber->avg_rating }} ⭐</td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="text-center">Không có dữ liệu</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-
-    {{-- <div class="col-md-12">
-        <div class="card card-primary card-round">
-            <div class="card-header">
-                <div class="card-head-row">
-                    <div class="card-title">Doanh thu hôm nay</div>
-                    <div class="card-tools">
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-label-light dropdown-toggle" type="button"
-                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                Lọc
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#">Hôm nay</a>
-                                <a class="dropdown-item" href="#">7 ngày gần nhất</a>
-                                <a class="dropdown-item" href="#">30 ngày gần nhất</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-category">{{ now()->format('d/m/Y') }}</div>
-            </div>
-            <div class="card-body pb-0">
-                <div class="mb-4 mt-2">
-                    <h1>₫{{ number_format($todayRevenue, 2) }}</h1>
-                    <p class="text-muted">Tổng doanh thu hôm nay</p>
-                </div>
-                <div class="pull-in">
-                    <canvas id="dailySalesChart" height="120"></canvas>
-                </div>
-            </div>
-        </div>
-    </div> --}}
 
     <div class="row">
         <div class="col-md-6">
@@ -197,14 +215,16 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        @foreach ($upcomingAppointments as $appointment)
+                        @forelse ($upcomingAppointments as $appointment)
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 {{ $appointment->name }} -
                                 {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i') }}
                                 <span
                                     class="badge bg-success">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m') }}</span>
                             </li>
-                        @endforeach
+                        @empty
+                            <li class="list-group-item text-center">Không có lịch hẹn sắp tới</li>
+                        @endforelse
                     </ul>
                 </div>
             </div>
@@ -213,17 +233,57 @@
         <div class="col-md-6">
             <div class="card card-round">
                 <div class="card-header">
-                    <div class="card-title">Top sản phẩm bán chạy</div>
+                    <div class="card-head-row">
+                        <div class="card-title">Sản phẩm bán chạy & ít bán</div>
+                        <div class="card-tools">
+                            <ul class="nav nav-pills nav-secondary nav-pills-no-bd" id="pills-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-top-tab" data-bs-toggle="pill"
+                                        href="#pills-top" role="tab">Bán chạy</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-low-tab" data-bs-toggle="pill" href="#pills-low"
+                                        role="tab">Ít bán</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        @foreach ($topProducts as $item)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ $item->productVariant->product->name ?? 'Không xác định' }}
-                                <span class="badge bg-primary rounded-pill">{{ $item->total_sold }} sp</span>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <div class="tab-content" id="pills-tabContent">
+                        <!-- Tab sản phẩm bán chạy -->
+                        <div class="tab-pane fade show active" id="pills-top" role="tabpanel">
+                            <ul class="list-group list-group-flush">
+                                @forelse ($topProducts as $item)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $item->productVariant->product->name ?? 'Không xác định' }}</strong>
+                                            <br><small class="text-muted">{{ $item->productVariant->name ?? '' }}</small>
+                                        </div>
+                                        <span class="badge bg-success rounded-pill">{{ $item->total_sold }} sp</span>
+                                    </li>
+                                @empty
+                                    <li class="list-group-item text-center">Không có sản phẩm nào được bán</li>
+                                @endforelse
+                            </ul>
+                        </div>
+                        <!-- Tab sản phẩm ít bán -->
+                        <div class="tab-pane fade" id="pills-low" role="tabpanel">
+                            <ul class="list-group list-group-flush">
+                                @forelse ($lowSellingProducts as $item)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $item->product->name ?? 'Không xác định' }}</strong>
+                                            <br><small class="text-muted">Variant: {{ $item->name ?? 'Mặc định' }}</small>
+                                        </div>
+                                        <span class="badge bg-warning rounded-pill">{{ $item->total_sold }} sp</span>
+                                    </li>
+                                @empty
+                                    <li class="list-group-item text-center">Không có dữ liệu</li>
+                                @endforelse
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -254,7 +314,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($latestTransactions as $order)
+                                @forelse ($latestTransactions as $order)
                                     <tr>
                                         <th scope="row">
                                             <button class="btn btn-icon btn-round btn-success btn-sm me-2">
@@ -263,13 +323,18 @@
                                             Giao dịch #{{ $order->order_code ?? $order->id }}
                                         </th>
                                         <td class="text-end">
-                                            {{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y, H:i') }}</td>
+                                            {{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y, H:i') }}
+                                        </td>
                                         <td class="text-end">₫{{ number_format($order->total_money) }}</td>
                                         <td class="text-end">
                                             <span class="badge badge-success">{{ ucfirst($order->status) }}</span>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center">Không có giao dịch nào</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -283,8 +348,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const labels = @json($labels);
-        const serviceRevenue = @json($serviceRevenuePerMonth);
-        const productRevenue = @json($productRevenuePerMonth);
+        const serviceRevenue = @json($serviceRevenuePerPeriod);
+        const productRevenue = @json($productRevenuePerPeriod);
 
         const ctx = document.getElementById('statisticsChart').getContext('2d');
         const statisticsChart = new Chart(ctx, {
@@ -311,6 +376,7 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         display: true
@@ -337,9 +403,96 @@
                 }
             }
         });
-    </script>
 
+        function toggleFilterInputs() {
+            const filterType = document.getElementById('filter_type').value;
+
+            // Ẩn tất cả các filter
+            document.getElementById('monthFilter').style.display = 'none';
+            document.getElementById('dateRangeFilter').style.display = 'none';
+
+            // Hiển thị filter tương ứng
+            if (filterType === 'month') {
+                document.getElementById('monthFilter').style.display = 'block';
+            } else if (filterType === 'date_range') {
+                document.getElementById('dateRangeFilter').style.display = 'block';
+            }
+        }
+
+        // Tự động submit form khi thay đổi month (chỉ khi filter type là month)
+        document.getElementById('month').addEventListener('change', function() {
+            if (document.getElementById('filter_type').value === 'month') {
+                document.getElementById('chartFilterForm').submit();
+            }
+        });
+
+        // Validation cho date range
+        document.getElementById('start_date').addEventListener('change', function() {
+            const startDate = this.value;
+            const endDateInput = document.getElementById('end_date');
+
+            if (startDate) {
+                endDateInput.min = startDate;
+                if (endDateInput.value && endDateInput.value < startDate) {
+                    endDateInput.value = startDate;
+                }
+            }
+        });
+
+        document.getElementById('end_date').addEventListener('change', function() {
+            const endDate = this.value;
+            const startDateInput = document.getElementById('start_date');
+
+            if (endDate) {
+                startDateInput.max = endDate;
+                if (startDateInput.value && startDateInput.value > endDate) {
+                    startDateInput.value = endDate;
+                }
+            }
+        });
+    </script>
 @endsection
 
 @section('css')
+    <style>
+        .nav-pills .nav-link {
+            border-radius: 0.375rem;
+            color: #6c757d;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* Styling cho form filter */
+        .form-label.small {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .form-select-sm,
+        .form-control-sm {
+            font-size: 0.875rem;
+        }
+
+        /* Responsive cho filter form */
+        @media (max-width: 768px) {
+            #dateRangeFilter .row {
+                flex-direction: column;
+            }
+
+            #dateRangeFilter .col-auto {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Animation cho filter toggle */
+        #monthFilter,
+        #dateRangeFilter {
+            transition: all 0.3s ease;
+        }
+    </style>
 @endsection

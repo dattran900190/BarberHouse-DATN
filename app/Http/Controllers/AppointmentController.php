@@ -150,10 +150,10 @@ class AppointmentController extends Controller
                 'message' => 'Đã đánh dấu lịch hẹn ' . $appointment->appointment_code . ' là no-show.'
             ]);
         } catch (\Exception $e) {
-            Log::error('Lỗi khi đánh dấu no-show: ' . $e->getMessage(), [
-                'appointment_id' => $appointment->id,
-                'request_data' => $request->all(),
-            ]);
+            // Log::error('Lỗi khi đánh dấu no-show: ' . $e->getMessage(), [
+            //     'appointment_id' => $appointment->id,
+            //     'request_data' => $request->all(),
+            // ]);
 
             return response()->json([
                 'success' => false,
@@ -178,7 +178,7 @@ class AppointmentController extends Controller
             $appointment->save();
 
             // Tạo mã QR check-in
-            $qrCode = rand(100000, 999999); // Mã QR duy nhất
+            $qrCode = rand(100000, 999999); // Mã QR duy nhất;
             Checkin::create([
                 'appointment_id' => $appointment->id,
                 'qr_code_value' => $qrCode,
@@ -186,9 +186,19 @@ class AppointmentController extends Controller
                 'checkin_time' => null,
             ]);
 
+            $additionalServices = [];
+
+            if (!empty($appointment->additional_services)) {
+                $serviceIds = is_array($appointment->additional_services)
+                    ? $appointment->additional_services
+                    : json_decode($appointment->additional_services, true);
+
+                $additionalServices = Service::whereIn('id', $serviceIds)->pluck('name')->toArray();
+            }
+
             // Gửi email mã QR
             $checkin = Checkin::where('appointment_id', $appointment->id)->first();
-            Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment));
+            Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment, $additionalServices));
 
             // Trigger event
             event(new AppointmentConfirmed($appointment));
@@ -198,10 +208,10 @@ class AppointmentController extends Controller
                 'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được xác nhận.'
             ]);
         } catch (\Exception $e) {
-            Log::error('Confirm: Failed', [
-                'appointment_id' => $appointment->id,
-                'error' => $e->getMessage()
-            ]);
+            // Log::error('Confirm: Failed', [
+            //     'appointment_id' => $appointment->id,
+            //     'error' => $e->getMessage()
+            // ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi xác nhận lịch hẹn: ' . $e->getMessage()
@@ -231,10 +241,10 @@ class AppointmentController extends Controller
                 'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hoàn thành.'
             ]);
         } catch (\Exception $e) {
-            Log::error('Complete: Failed', [
-                'appointment_id' => $appointment->id,
-                'error' => $e->getMessage()
-            ]);
+            // Log::error('Complete: Failed', [
+            //     'appointment_id' => $appointment->id,
+            //     'error' => $e->getMessage()
+            // ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Đã xảy ra lỗi khi hoàn thành lịch hẹn: ' . $e->getMessage()
@@ -275,10 +285,10 @@ class AppointmentController extends Controller
                 'message' => 'Đã huỷ lịch ' . $appointment->appointment_code . '.'
             ]);
         } catch (\Exception $e) {
-            Log::error('Cancel: Failed', [
-                'appointment_id' => $appointment->id,
-                'error' => $e->getMessage()
-            ]);
+            // Log::error('Cancel: Failed', [
+            //     'appointment_id' => $appointment->id,
+            //     'error' => $e->getMessage()
+            // ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi huỷ lịch hẹn: ' . $e->getMessage()
@@ -399,9 +409,19 @@ class AppointmentController extends Controller
                     'checkin_time' => null,
                 ]);
 
+                $additionalServices = [];
+
+                if (!empty($appointment->additional_services)) {
+                    $serviceIds = is_array($appointment->additional_services)
+                        ? $appointment->additional_services
+                        : json_decode($appointment->additional_services, true);
+
+                    $additionalServices = Service::whereIn('id', $serviceIds)->pluck('name')->toArray();
+                }
+
                 // Gửi email mã QR
                 $checkin = Checkin::where('appointment_id', $appointment->id)->first();
-                Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment));
+                Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment, $additionalServices));
             }
 
             // Nếu trạng thái là 'cancelled', lưu vào bảng cancelled_appointments
@@ -433,10 +453,10 @@ class AppointmentController extends Controller
                 'page' => $currentPage
             ]);
         } catch (\Exception $e) {
-            Log::error('Confirm: Failed', [
-                'appointment_id' => $appointment->id,
-                'error' => $e->getMessage()
-            ]);
+            // Log::error('Confirm: Failed', [
+            //     'appointment_id' => $appointment->id,
+            //     'error' => $e->getMessage()
+            // ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi xác nhận lịch hẹn: ' . $e->getMessage()
