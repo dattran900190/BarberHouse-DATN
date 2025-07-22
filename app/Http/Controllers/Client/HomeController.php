@@ -28,7 +28,6 @@ class HomeController extends Controller
             ->take(8)
             ->get();
 
-
         // Sản phẩm
         $products = Product::with('variants')->latest()->take(8)->get();
 
