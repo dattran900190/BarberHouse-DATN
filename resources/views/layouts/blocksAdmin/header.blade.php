@@ -95,18 +95,25 @@
                      </li>
                  </ul>
              </li> --}}
-             <li class="nav-item topbar-icon dropdown hidden-caret">
+             <li class="nav-item topbar-icon hidden-caret">
+                 <a class="nav-link" href="{{ url('/') }}" title="Về trang người dùng">
+                     <i class="fas fa-home"></i>
+                 </a>
+             </li>
+             {{-- <li class="nav-item topbar-icon dropdown hidden-caret">
                  <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button"
                      data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                      <i class="fa fa-bell"></i>
                      <span id="pending-appointment-count" class="notification">{{ $pendingCount }}</span>
                  </a>
                  <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
+
                      <li>
                          <div class="dropdown-title">
                              Bạn có {{ $pendingCount }} thông báo mới
                          </div>
                      </li>
+
                      <li>
                          <div class="notif-scroll scrollbar-outer">
                              <div class="notif-center">
@@ -160,7 +167,8 @@
                          </a>
                      </li>
                  </ul>
-             </li>
+             </li> --}}
+
              {{-- <li class="nav-item topbar-icon dropdown hidden-caret">
                  <a class="nav-link" data-bs-toggle="dropdown" href="#" aria-expanded="false">
                      <i class="fas fa-layer-group"></i>
@@ -230,7 +238,7 @@
              <li class="nav-item topbar-user dropdown hidden-caret">
                  <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
                      <div class="avatar-sm">
-                        <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
+                         <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
                              class="avatar-img rounded-circle" />
                      </div>
                      <span class="profile-username">
@@ -243,13 +251,14 @@
                          <li>
                              <div class="user-box">
                                  <div class="avatar-lg">
-                                    <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
-                                     class="avatar-img rounded" />
+                                     <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
+                                         class="avatar-img rounded" />
                                  </div>
                                  <div class="u-text">
                                      <h4>{{ Auth::user()->name }}</h4>
                                      <p class="text-muted">{{ Auth::user()->email }}</p>
-                                     <a href="{{route('admin.profile')}}" class="btn btn-xs btn-secondary btn-sm">View Profile</a>
+                                     <a href="{{ route('admin.profile') }}" class="btn btn-xs btn-secondary btn-sm">View
+                                         Profile</a>
                                  </div>
                              </div>
                          </li>
