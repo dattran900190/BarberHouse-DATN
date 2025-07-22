@@ -15,28 +15,47 @@ class ProductCategoryController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $categories = ProductCategory::when($search, function ($query, $search) {
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhere('slug', 'like', "%{$search}%");
-        })->latest()->paginate(5);
+        $filter = $request->input('filter', 'all'); // Mặc định là 'all'
 
-        return view('admin.product_categories.index', compact('categories', 'search'));
+        // Chọn truy vấn theo filter
+        $query = match ($filter) {
+            'active' => ProductCategory::query(),         // Chỉ danh mục còn hoạt động
+            'deleted' => ProductCategory::onlyTrashed(),  // Chỉ danh mục đã xoá mềm
+            default => ProductCategory::withTrashed(),    // Tất cả (cả đã xoá mềm)
+        };
+
+        // Áp dụng tìm kiếm nếu có
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('slug', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Lấy kết quả, sắp xếp và phân trang
+        $categories = $query->orderBy('updated_at', 'DESC')->paginate(5);
+
+        return view('admin.product_categories.index', compact('categories', 'search', 'filter'));
     }
-    public function show(ProductCategory $product_category)
+
+    public function show($product_category)
     {
-        return view('admin.product_categories.show', compact('product_category'));
+        // Lấy cả danh mục đã xóa mềm (withTrashed)
+        $category = ProductCategory::withTrashed()->findOrFail($product_category);
+
+        return view('admin.product_categories.show', compact('category'));
     }
 
 
     public function create()
-{
-    if (Auth::user()->role === 'admin_branch') {
-        return redirect()->route('product_categories.index')
-            ->with('error', 'Bạn không có quyền thêm danh mục.');
-    }
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('product_categories.index')
+                ->with('error', 'Bạn không có quyền thêm danh mục.');
+        }
 
-    return view('admin.product_categories.create');
-}
+        return view('admin.product_categories.create');
+    }
 
     public function store(ProductCategoryRequest $request)
     {
@@ -87,25 +106,68 @@ class ProductCategoryController extends Controller
     }
 
 
-    public function destroy(ProductCategory $product_category)
+    public function softDelete($id)
     {
-         if (Auth::user()->role === 'admin_branch') {
-            return redirect()->route('product_categories.index')->with('error', 'Bạn không có quyền xóa danh mục.');
-        }
         if (Auth::user()->role === 'admin_branch') {
-            return redirect()->route('product_categories.index')
-                ->with('error', 'Bạn không có quyền xóa danh mục.');
-        }
-        // Kiểm tra nếu có sản phẩm liên quan
-        if ($product_category->products()->exists()) {
-            return redirect()->route('product_categories.index')
-                ->with('error', 'Không thể xóa danh mục vì còn sản phẩm liên quan!!');
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xóa danh mục.'
+            ]);
         }
 
-        // Nếu không có thì mới được xóa
-        $product_category->delete();
+        $category = ProductCategory::findOrFail($id);
 
-        return redirect()->route('product_categories.index')
-            ->with('success', 'Xóa danh mục thành công');
+        $category->delete(); // ❌ chỉ xoá mềm danh mục
+
+        // Không nên ẩn toàn bộ sản phẩm nếu ảnh hưởng đơn hàng
+
+        return response()->json(['success' => true, 'message' => 'Đã xoá mềm danh mục.']);
     }
+
+
+    public function restore($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền khôi phục danh mục.'
+            ]);
+        }
+
+        $category = ProductCategory::withTrashed()->findOrFail($id);
+        $category->restore(); // khôi phục (cả sản phẩm liên quan)
+        return response()->json(['success' => true, 'message' => 'Khôi phục danh mục thành công.']);
+    }
+
+    public function destroy($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xoá danh mục.'
+            ]);
+        }
+
+        $category = ProductCategory::withTrashed()->findOrFail($id);
+
+        // Check nếu danh mục còn sản phẩm thì không xoá vĩnh viễn
+        $hasProducts = Product::withTrashed()
+            ->where('product_category_id', $category->id)
+            ->exists();
+
+        if ($hasProducts) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xoá vĩnh viễn vì vẫn còn sản phẩm thuộc danh mục.'
+            ]);
+        }
+
+        $category->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã xoá vĩnh viễn danh mục.'
+        ]);
+    }
+
 }

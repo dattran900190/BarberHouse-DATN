@@ -56,14 +56,16 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ route('posts.index') }}" method="GET" class="mb-3">
-                <div class="position-relative">
-                    <input type="text" name="search" placeholder="Tìm kiếm theo tiêu đề..." class="form-control pe-5"
-                        value="{{ request()->get('search') }}">
-                    <button type="submit" class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </div>
+            <form method="GET" action="{{ route('posts.index') }}" class="mb-3 d-flex">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm tiêu đề"
+                    class="form-control me-2" />
+
+                <select name="filter" onchange="this.form.submit()" class="form-select w-auto">
+                    <option value="all" {{ $filter === 'all' ? 'selected' : '' }}>Tất cả</option>
+                    <option value="active" {{ $filter === 'active' ? 'selected' : '' }}>Đang hoạt động</option>
+                    <option value="inactive" {{ $filter === 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
+                    <option value="deleted" {{ $filter === 'deleted' ? 'selected' : '' }}>Đã xoá</option>
+                </select>
             </form>
 
             <div class="table-responsive">
@@ -73,10 +75,10 @@
                             <th>STT</th>
                             <th>Tiêu đề</th>
                             <th>Mô tả</th>
-                            <th>Nổi bật</th>
                             <th>Ảnh</th>
-                            <th>Trạng thái</th>
                             <th>Ngày xuất bản</th>
+                            <th>Nổi bật</th>
+                            <th>Trạng thái</th>
                             <th class="text-center">Hành động</th>
                         </tr>
                     </thead>
@@ -87,13 +89,6 @@
                                 <td>{{ $post->title }}</td>
                                 <td>{{ Str::limit($post->short_description, 100) }}</td>
                                 <td class="text-center">
-                                    @if ($post->is_featured)
-                                        <span class="badge bg-warning text-dark">Nổi bật</span>
-                                    @else
-                                        <span class="badge bg-secondary">Không nổi bật</span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
                                     @if ($post->image)
                                         <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh" width="80"
                                             class="img-thumbnail">
@@ -102,14 +97,24 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    @if ($post->status)
-                                        <span class="badge bg-success">Đã xuất bản</span>
+                                    {{ $post->published_at ? \Carbon\Carbon::parse($post->published_at)->format('d/m/Y') : 'Chưa xuất bản' }}
+                                </td>
+                                <td class="text-center">
+                                    @if ($post->is_featured)
+                                        <span class="badge bg-info text-dark">Nổi bật</span>
                                     @else
-                                        <span class="badge bg-secondary">Bản nháp</span>
+                                        <span class="badge bg-warning">Không nổi bật</span>
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    {{ $post->published_at ? \Carbon\Carbon::parse($post->published_at)->format('d/m/Y') : 'Chưa xuất bản' }}
+                                    @if ($post->trashed())
+                                        <span class="badge bg-danger">Đã xoá</span>
+                                    @elseif ($post->status === 'published')
+                                        <span class="badge bg-success">Đang hoạt động</span>
+                                    @else
+                                        <span class="badge bg-secondary">Không hoạt động</span>
+                                    @endif
+
                                 </td>
                                 <td class="text-center">
                                     <div class="dropdown">
@@ -120,6 +125,7 @@
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end"
                                             aria-labelledby="actionMenu{{ $post->id }}">
+
                                             <li>
                                                 <a class="dropdown-item" href="{{ route('posts.show', $post->id) }}">
                                                     <i class="fas fa-eye me-2"></i> Xem
@@ -133,16 +139,26 @@
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>
+
                                             <li>
-                                                <form action="{{ route('posts.destroy', $post->id) }}" method="POST"
-                                                    onsubmit="return confirm('Xác nhận xoá bài viết?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="dropdown-item text-danger">
-                                                        <i class="fas fa-trash me-2"></i> Xoá
+                                                @if ($post->trashed())
+                                                    <button type="button" class="dropdown-item text-success restore-btn"
+                                                        data-id="{{ $post->id }}">
+                                                        <i class="fas fa-undo me-2"></i> Khôi phục
                                                     </button>
-                                                </form>
+                                                    <button type="button"
+                                                        class="dropdown-item text-danger force-delete-btn"
+                                                        data-id="{{ $post->id }}">
+                                                        <i class="fas fa-trash-alt me-2"></i> Xoá vĩnh viễn
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="dropdown-item text-danger soft-delete-btn"
+                                                        data-id="{{ $post->id }}">
+                                                        <i class="fas fa-times me-2"></i> Xoá mềm
+                                                    </button>
+                                                @endif
                                             </li>
+
                                         </ul>
                                     </div>
                                 </td>
@@ -173,4 +189,130 @@
             display: inline;
         }
     </style>
+@endsection
+
+@section('js')
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            withInput = false, // Thêm tùy chọn hiển thị input
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload() // Thay reload bằng callback linh hoạt
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const appointmentId = this.getAttribute('data-id');
+
+                    const swalOptions = {
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    };
+
+                    if (withInput) {
+                        swalOptions.input = 'textarea';
+                        swalOptions.inputPlaceholder = inputPlaceholder;
+                        if (inputValidator) {
+                            swalOptions.inputValidator = inputValidator;
+                        }
+                    }
+
+                    Swal.fire(swalOptions).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup' // CSS
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            const body = withInput ? JSON.stringify({
+                                no_show_reason: result.value || 'Không có lý do'
+                            }) : undefined;
+
+                            fetch(route.replace(':id', appointmentId), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        }
+        // Xoá mềm
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Xoá mềm bài viết',
+            text: 'Bạn có chắc chắn muốn xoá mềm bài viết này?',
+            route: '{{ route('posts.softDelete', ':id') }}',
+            method: 'PATCH'
+        });
+
+        // Xoá cứng
+        handleSwalAction({
+            selector: '.force-delete-btn',
+            title: 'Xoá vĩnh viễn',
+            text: 'Bạn có chắc chắn muốn xoá vĩnh viễn bài viết này? Hành động này không thể hoàn tác.',
+            route: '{{ route('posts.forceDelete', ':id') }}',
+            method: 'DELETE'
+        });
+
+
+        // Khôi phục
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục bài viết',
+            text: 'Bạn có chắc chắn muốn khôi phục bài viết này?',
+            route: '{{ route('posts.restore', ':id') }}',
+            method: 'POST'
+        });
+    </script>
 @endsection

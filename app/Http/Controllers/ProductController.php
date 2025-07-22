@@ -18,12 +18,24 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $products = Product::with('category', 'variants.volume', 'images')
-            ->when($search, function ($query, $search) {
+        $filter = $request->query('filter', 'all');
+
+        $query = Product::with('category', 'variants.volume', 'images');
+
+        if ($filter === 'deleted') {
+            $query->onlyTrashed();
+        } elseif ($filter === 'active') {
+            // Mặc định là chỉ lấy những product chưa bị xóa mềm, không cần thêm điều kiện
+        } else { // 'all'
+            $query->withTrashed();
+        }
+        
+        $products = $query->when($search, function ($query, $search) {
                 return $query->where('name', 'like', '%' . $search . '%');
             })
             ->latest()
             ->paginate(10);
+            
         return view('admin.products.index', compact('products'));
     }
 
@@ -217,24 +229,77 @@ class ProductController extends Controller
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền xóa sản phẩm.');
         }
-        if ($product->image) {
-            Storage::disk('public')->delete($product->image);
-        }
 
-        foreach ($product->images as $image) {
-            Storage::disk('public')->delete($image->image_url);
-        }
-        $product->images()->delete();
-
+        // Xóa mềm các biến thể trước
         foreach ($product->variants as $variant) {
-            if ($variant->image) {
-                Storage::disk('public')->delete($variant->image);
-            }
+            $variant->delete();
         }
-        $product->variants()->delete();
 
+        // Xóa mềm sản phẩm
         $product->delete();
 
-        return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được xóa thành công!');
+        return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được xóa mềm thành công!');
+    }
+
+    public function restore($id)
+    {
+        $product = Product::withTrashed()->findOrFail($id);
+        if ($product->trashed()) {
+            // Khôi phục sản phẩm
+            $product->restore();
+
+            // Khôi phục các biến thể
+            $product->variants()->onlyTrashed()->get()->each(function ($variant) {
+                $variant->restore();
+            });
+            
+            return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được khôi phục thành công!');
+        }
+        return redirect()->route('admin.products.index')->with('error', 'Sản phẩm không ở trong thùng rác.');
+    }
+
+    public function forceDelete($id)
+    {
+        $product = Product::withTrashed()->findOrFail($id);
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền xóa sản phẩm.');
+        }
+
+        if ($product->trashed()) {
+            // Kiểm tra xem sản phẩm có trong bất kỳ đơn hàng nào không
+            $isInOrder = DB::table('order_items')
+                ->join('product_variants', 'order_items.product_variant_id', '=', 'product_variants.id')
+                ->where('product_variants.product_id', $product->id)
+                ->exists();
+
+            if ($isInOrder) {
+                return redirect()->route('admin.products.index')->with('error', 'Không thể xóa vĩnh viễn sản phẩm vì đã tồn tại trong đơn hàng.');
+            }
+
+            // Nếu không có trong đơn hàng, tiến hành xóa
+            try {
+                // Xóa ảnh vật lý
+                if ($product->image) {
+                    Storage::disk('public')->delete($product->image);
+                }
+                foreach ($product->images as $image) {
+                    Storage::disk('public')->delete($image->image_url);
+                }
+                foreach ($product->variants()->withTrashed()->get() as $variant) {
+                    if ($variant->image) {
+                        Storage::disk('public')->delete($variant->image);
+                    }
+                }
+
+                // Xóa vĩnh viễn
+                $product->forceDelete();
+                return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được xóa vĩnh viễn!');
+            } catch (\Exception $e) {
+                // Phòng trường hợp có lỗi khác
+                return redirect()->route('admin.products.index')->with('error', 'Đã xảy ra lỗi khi xóa sản phẩm vì sản phẩm còn liên quan tới các sản phẩm khác: ');
+            }
+        }
+
+        return redirect()->route('admin.products.index')->with('error', 'Sản phẩm cần được xóa mềm trước.');
     }
 }

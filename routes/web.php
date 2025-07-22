@@ -181,7 +181,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Đơn hàng ====
     Route::resource('orders', OrderController::class)->names('admin.orders');
     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
-
+    Route::put('/orders/{order}', [OrderController::class, 'update'])->name('admin.orders.update'); // Sử dụng PUT cho update
+    // Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('admin.orders.destroy');
     // ==== Lịch sử điểm ====
     Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');
     Route::get('/point_histories/user/{id}', [PointHistoryController::class, 'userHistory'])->name('point_histories.user');
@@ -222,18 +223,29 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);
+    Route::patch('/posts/{id}/soft-delete', [PostController::class, 'softDelete'])->name('posts.softDelete');
+    Route::post('/posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
+    Route::delete('/posts/{id}/force-delete', [PostController::class, 'forceDelete'])->name('posts.forceDelete');
+
 
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
-
+    Route::patch('product_categories/{id}/soft-delete', [ProductCategoryController::class, 'softDelete'])->name('product_categories.softDelete');
+    Route::post('product_categories/{id}/restore', [ProductCategoryController::class, 'restore'])->name('product_categories.restore');
+    Route::delete('product_categories/{id}/force-delete', [ProductCategoryController::class, 'destroy'])->name('product_categories.destroy');
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
 
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
+    Route::post('volumes/{id}/restore', [VolumeController::class, 'restore'])->name('admin.volumes.restore');
+    Route::delete('volumes/{id}/force-delete', [VolumeController::class, 'forceDelete'])->name('admin.volumes.forceDelete');
 
     // ==== Banner ====
     Route::resource('banners', BannerController::class);
+    Route::patch('banners/{id}/soft-delete', [BannerController::class, 'softDelete'])->name('banners.softDelete');
+    Route::post('banners/{id}/restore', [BannerController::class, 'restore'])->name('banners.restore');
+    Route::delete('banners/{id}', [BannerController::class, 'destroy'])->name('banners.destroy');
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
@@ -275,6 +287,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('admin.products.edit');
     Route::put('/products/{product}', [ProductController::class, 'update'])->name('admin.products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
+    Route::post('/products/{id}/restore', [ProductController::class, 'restore'])->name('admin.products.restore');
+    Route::delete('/products/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('admin.products.forceDelete');
     Route::get('/products/search', [ProductController::class, 'search'])->name('admin.products.search');
 });
 

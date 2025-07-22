@@ -30,7 +30,7 @@ class PointController extends Controller
             ->where('quantity', '>', 0)
             ->whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())
-            ->where('required_points', '<=', $user->points_balance) // 👈 chỉ hiện cái user đổi được
+            ->where('required_points', '>', 0)
             ->paginate(6);
 
         return view('client.redeem', compact('promotions'));

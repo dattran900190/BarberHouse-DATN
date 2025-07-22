@@ -43,7 +43,8 @@
                 @if ($banner->image_url)
                     <div class="col-md-4 text-center">
                         <img src="{{ asset('storage/' . $banner->image_url) }}" alt="Ảnh banner"
-                             class="img-fluid rounded mb-3" style="max-height: 250px; object-fit: cover; border: 1px solid #dee2e6;">
+                            class="img-fluid rounded mb-3"
+                            style="max-height: 250px; object-fit: cover; border: 1px solid #dee2e6;">
                     </div>
                 @endif
 
@@ -59,10 +60,12 @@
 
                     <p class="text-muted mb-2">
                         <i class="fa fa-eye me-2 text-success"></i><strong>Trạng thái:</strong>
-                        @if ($banner->is_active)
-                            <span class="badge bg-success">Hiển thị</span>
+                        @if ($banner->trashed())
+                            <span class="badge bg-danger">Đã xoá mềm</span>
+                        @elseif ($banner->is_active)
+                            <span class="badge bg-success">Đang hoạt động</span>
                         @else
-                            <span class="badge bg-secondary">Ẩn</span>
+                            <span class="badge bg-secondary">Không hoạt động</span>
                         @endif
                     </p>
 
@@ -77,7 +80,7 @@
 
     <!-- Card: Hành động -->
     <div class="card shadow-sm mb-4">
-        <div class="card-header text-white d-flex align-items-center">
+        <div class="card-header">
             <h4 class="card-title">Hành động</h4>
         </div>
         <div class="card-body">
@@ -85,10 +88,97 @@
                 <a href="{{ route('banners.edit', $banner->id) }}" class="btn btn-outline-primary btn-sm">
                     <i class="fa fa-edit me-1"></i> Sửa
                 </a>
+
+                @if (!$banner->trashed())
+                    <button class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $banner->id }}">
+                        <i class="fa fa-trash-alt me-1"></i> Xoá mềm
+                    </button>
+                @endif
+
+                @if ($banner->trashed())
+                    <button class="btn btn-outline-success btn-sm restore-btn" data-id="{{ $banner->id }}">
+                        <i class="fa fa-undo me-1"></i> Khôi phục
+                    </button>
+
+                    <button class="btn btn-outline-danger btn-sm force-delete-btn" data-id="{{ $banner->id }}">
+                        <i class="fa fa-times-circle me-1"></i> Xoá vĩnh viễn
+                    </button>
+                @endif
+
                 <a href="{{ route('banners.index') }}" class="btn btn-outline-secondary btn-sm">
                     <i class="fa fa-arrow-left me-1"></i> Quay lại
                 </a>
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function() {
+                    const postId = this.dataset.id;
+                    Swal.fire({
+                        title,
+                        text,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(route.replace(':id', postId), {
+                                    method,
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.fire(data.message, '', data.success ? 'success' :
+                                        'error');
+                                    if (data.success) onSuccess();
+                                });
+                        }
+                    });
+                });
+            });
+        }
+
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Xoá mềm banner',
+            text: 'Bạn có chắc chắn muốn xoá mềm banner này?',
+            route: '{{ route('banners.softDelete', ':id') }}',
+            method: 'PATCH'
+        });
+
+        handleSwalAction({
+            selector: '.force-delete-btn',
+            title: 'Xoá vĩnh viễn',
+            text: 'Bạn có chắc chắn muốn xoá vĩnh viễn banner này?',
+            route: '{{ route('banners.destroy', ':id') }}',
+            method: 'DELETE',
+            onSuccess: () => {
+                window.location.href = '{{ route('banners.index') }}';
+            }
+        });
+
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục banner',
+            text: 'Bạn có chắc chắn muốn khôi phục banner này?',
+            route: '{{ route('banners.restore', ':id') }}',
+            method: 'POST'
+        });
+    </script>
 @endsection

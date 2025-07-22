@@ -48,12 +48,19 @@
 
         <div class="card-body">
             <form action="{{ route('admin.products.index') }}" method="GET" class="mb-3">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên sản phẩm..."
-                           value="{{ request()->get('search') }}">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-primary type="submit">   <i class="fa fa-search"></i></button>
+                <div class="d-flex flex-wrap gap-2">
+                    <div class="input-group" style="flex: 1;">
+                        <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên sản phẩm..."
+                            value="{{ request()->get('search') }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" type="submit"><i class="fa fa-search"></i></button>
+                        </div>
                     </div>
+                    <select name="filter" class="form-select" style="max-width: 200px;" onchange="this.form.submit()">
+                        <option value="all" {{ request('filter', 'all') == 'all' ? 'selected' : '' }}>Tất cả</option>
+                        <option value="active" {{ request('filter', 'active') == 'active' ? 'selected' : '' }}>Còn hoạt động</option>
+                        <option value="deleted" {{ request('filter', 'deleted') == 'deleted' ? 'selected' : '' }}>Đã xóa</option>
+                    </select>
                 </div>
             </form>
 
@@ -68,13 +75,14 @@
                         <th>Ảnh chính</th>
                         <th>Ảnh bổ sung</th>
                         <th>Biến thể</th>
+                        <th>Trạng thái</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($products as $index => $product)
+                    @forelse ($products as $index => $product)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $products->firstItem() + $index }}</td>
                             <td>{{ $product->name }}</td>
                             <td>{{ number_format($product->price) }} đ</td>
                             <td>{{ $product->stock }}</td>
@@ -111,45 +119,63 @@
                                     Không có biến thể
                                 @endif
                             </td>
+                            <td>
+                                @if ($product->trashed())
+                                    <span class="badge bg-danger">Đã xóa</span>
+                                @else
+                                    <span class="badge bg-success">Hoạt động</span>
+                                @endif
+                            </td>
                             <td class="text-center">
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-outline-secondary" type="button"
-                                                        id="actionMenu{{ $product->id }}" data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end"
-                                                    aria-labelledby="actionMenu{{ $product->id }}">
-                                                    <li> <a href="{{ route('admin.products.show', $product->id) }}"
-                                                        class="dropdown-item">
-                                                        <i class="fas fa-eye me-2"></i> Xem
-                                                    </a></li>
-                                                    <li>  <a href="{{ route('admin.products.edit', $product->id) }}"
-                                                        class="dropdown-item">
-                                                        <i class="fas fa-edit me-2"></i> Sửa
-                                                    </a></li>
-                                  <li>
-                                    <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST"
-                                          class="d-inline m-0"
-                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="dropdown-item text-danger">
-                                            <i class="fas fa-trash-alt"></i> <span>  Xóa </span>
-                                        </button>
-                                    </form>
-                                </li>
+                                        id="actionMenu{{ $product->id }}" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end"
+                                        aria-labelledby="actionMenu{{ $product->id }}">
+                                        @if ($product->trashed())
+                                            <li>
+                                                <button type="button" class="dropdown-item text-success restore-btn"
+                                                    data-id="{{ $product->id }}">
+                                                    <i class="fas fa-undo me-2"></i> Khôi phục
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button" class="dropdown-item text-danger force-delete-btn"
+                                                    data-id="{{ $product->id }}">
+                                                    <i class="fas fa-trash-alt me-2"></i> Xóa vĩnh viễn
+                                                </button>
+                                            </li>
+                                        @else
+                                            <li>
+                                                <a href="{{ route('admin.products.show', $product->id) }}" class="dropdown-item">
+                                                    <i class="fas fa-eye me-2"></i> Xem
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ route('admin.products.edit', $product->id) }}" class="dropdown-item">
+                                                    <i class="fas fa-edit me-2"></i> Sửa
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <button type="button" class="dropdown-item text-danger soft-delete-btn"
+                                                    data-id="{{ $product->id }}">
+                                                    <i class="fas fa-trash me-2"></i> Xóa mềm
+                                                </button>
+                                            </li>
+                                        @endif
+                                    </ul>
                                 </div>
                             </td>
                         </tr>
-                        
-                    @endforeach
-                    @if ($products->isEmpty())
+                    @empty
                         <tr>
-                            <td colspan="9" class="text-center">Không có dữ liệu</td>
+                            <td colspan="10" class="text-center">Không có dữ liệu</td>
                         </tr>
-                    @endif
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -175,4 +201,81 @@
             margin: 5px;
         }
     </style>
+@endsection
+
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function handleSwalAction({
+        selector,
+        title,
+        text,
+        route,
+        method = 'POST'
+    }) {
+        document.querySelectorAll(selector).forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const recordId = this.getAttribute('data-id');
+
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy',
+                    width: '400px',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = route.replace(':id', recordId);
+                        
+                        let csrfToken = document.createElement('input');
+                        csrfToken.type = 'hidden';
+                        csrfToken.name = '_token';
+                        csrfToken.value = '{{ csrf_token() }}';
+                        form.appendChild(csrfToken);
+
+                        if (method.toUpperCase() !== 'POST') {
+                            let methodInput = document.createElement('input');
+                            methodInput.type = 'hidden';
+                            methodInput.name = '_method';
+                            methodInput.value = method;
+                            form.appendChild(methodInput);
+                        }
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    }
+
+    handleSwalAction({
+        selector: '.soft-delete-btn',
+        title: 'Xoá mềm Sản phẩm',
+        text: 'Bạn có chắc muốn xoá mềm sản phẩm này?',
+        route: '{{ route("admin.products.destroy", ":id") }}',
+        method: 'DELETE'
+    });
+
+    handleSwalAction({
+        selector: '.restore-btn',
+        title: 'Khôi phục Sản phẩm',
+        text: 'Khôi phục sản phẩm đã xoá?',
+        route: '{{ route("admin.products.restore", ":id") }}',
+        method: 'POST'
+    });
+
+    handleSwalAction({
+        selector: '.force-delete-btn',
+        title: 'Xoá vĩnh viễn Sản phẩm',
+        text: 'Bạn có chắc muốn xoá vĩnh viễn? Hành động không thể hoàn tác!',
+        route: '{{ route("admin.products.forceDelete", ":id") }}',
+        method: 'DELETE'
+    });
+</script>
 @endsection
