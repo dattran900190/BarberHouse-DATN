@@ -22,7 +22,7 @@ class ProductCategory extends Model
     {
         return $this->hasMany(Product::class, 'product_category_id'); // Một danh mục có nhiều sản phẩm
     }
- protected static function booted()
+    protected static function booted()
     {
         static::deleting(function ($category) {
             if (! $category->isForceDeleting()) {
@@ -40,4 +40,3 @@ class ProductCategory extends Model
         });
     }
 }
-

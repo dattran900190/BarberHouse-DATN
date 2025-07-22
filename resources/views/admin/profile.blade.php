@@ -62,31 +62,25 @@
             </ul>
 
             <div class="tab-content" id="profileTabsContent">
-                {{-- Tab thông tin cá nhân --}}
                 <div class="tab-pane fade {{ $tab == 'account-info' ? 'show active' : '' }}" id="info">
                     <form action="{{ route('admin.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        
-                        {{-- Đảm bảo giữ tab khi submit --}}
                         <input type="hidden" name="tab" value="account-info">
-
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Họ và tên</label>
                                 <input type="text" name="name"
                                     class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ old('name', $user->name) }}" >
+                                    value="{{ old('name', $user->name) }}">
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Email</label>
                                 <input type="email" class="form-control" value="{{ $user->email }}" disabled>
                             </div>
                         </div>
-
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Giới tính</label>
@@ -107,7 +101,6 @@
 
                             </div>
                         </div>
-
                         <div class="mb-3">
                             <label class="form-label">Địa chỉ</label>
                             <input type="text" name="address" class="form-control @error('address') is-invalid @enderror"
