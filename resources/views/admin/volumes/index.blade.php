@@ -79,16 +79,16 @@
                                 <td class="text-center">
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-outline-secondary" type="button"
-                                            id="actionMenu{{ $volume->id }}" data-bs-toggle="dropdown"
-                                            aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end"
-                                            aria-labelledby="actionMenu{{ $volume->id }}">
+                                                            id="actionMenu{{ $volume->id }}" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end"
+                                                        aria-labelledby="actionMenu{{ $volume->id }}">
                                             <li>
                                                 <a href="{{ route('admin.volumes.edit', $volume) }}?page={{ request()->get('page') }}"
-                                                    class="dropdown-item">
-                                                    <i class="fas fa-edit me-2"></i> Sửa
+                                                            class="dropdown-item">
+                                                            <i class="fas fa-edit me-2"></i> Sửa
                                                 </a>
                                             </li>
                                             <li><hr class="dropdown-divider"></li>
@@ -111,16 +111,16 @@
                                                     </form>
                                                 </li>
                                             @else
-                                                <li>
-                                                    <form action="{{ route('admin.volumes.destroy', $volume) }}?page={{ request()->get('page') }}" 
+                                      <li>
+                                        <form action="{{ route('admin.volumes.destroy', $volume) }}?page={{ request()->get('page') }}" 
                                                         method="POST" class="d-inline" onsubmit="return confirm('Xóa mềm?');">
-                                                        @csrf
-                                                        @method('DELETE')
+                                          @csrf
+                                          @method('DELETE')
                                                         <button type="submit" class="dropdown-item text-danger">
                                                             <i class="fas fa-times me-2"></i> Xóa mềm
-                                                        </button>
-                                                    </form>
-                                                </li>
+                                          </button>
+                                      </form>
+                                    </li>
                                             @endif
                                         </ul>
                                     </div>

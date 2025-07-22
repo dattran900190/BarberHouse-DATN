@@ -67,7 +67,7 @@ class VolumeController extends Controller
 
     public function destroy(Request $request, Volume $volume)
     {
-        if (Auth::user()->role === 'admin_branch') {
+          if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.volumes.index')->with('error', 'Bạn không có quyền xóa   dung tích.');
         }
         // Bỏ kiểm tra liên kết productVariants ở đây, chỉ xóa mềm
