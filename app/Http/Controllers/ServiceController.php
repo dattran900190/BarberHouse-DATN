@@ -17,24 +17,24 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $filter = $request->input('filter', 'all');
+        $filter = $request->input('filter', 'all'); // Mặc định là 'all' nếu không có
 
+        // Lấy query builder tùy theo filter
         $query = match ($filter) {
-            'active' => ProductCategory::query(),
-            'deleted' => ProductCategory::onlyTrashed(),
-            default => ProductCategory::withTrashed(),
+            'active' => Service::query(), // chỉ service còn hoạt động
+            'deleted' => Service::onlyTrashed(),
+            default => Service::withTrashed(), // tất cả (kể cả đã xoá mềm)
         };
 
+        // Thêm điều kiện search nếu có
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('slug', 'like', '%' . $search . '%');
-            });
+            $query->where('name', 'like', '%' . $search . '%');
         }
 
-        $categories = $query->orderBy('updated_at', 'DESC')->paginate(5);
+        // Sắp xếp & phân trang
+        $services = $query->orderBy('updated_at', 'DESC')->paginate(5);
 
-        return view('admin.product_categories.index', compact('categories', 'filter', 'search'));
+        return view('admin.services.index', compact('services', 'filter', 'search'));
     }
 
 
