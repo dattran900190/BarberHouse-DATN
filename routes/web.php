@@ -238,6 +238,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
+    Route::post('volumes/{id}/restore', [VolumeController::class, 'restore'])->name('admin.volumes.restore');
+    Route::delete('volumes/{id}/force-delete', [VolumeController::class, 'forceDelete'])->name('admin.volumes.forceDelete');
 
     // ==== Banner ====
     Route::resource('banners', BannerController::class);
@@ -285,6 +287,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('admin.products.edit');
     Route::put('/products/{product}', [ProductController::class, 'update'])->name('admin.products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
+    Route::post('/products/{id}/restore', [ProductController::class, 'restore'])->name('admin.products.restore');
+    Route::delete('/products/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('admin.products.forceDelete');
     Route::get('/products/search', [ProductController::class, 'search'])->name('admin.products.search');
 });
 
