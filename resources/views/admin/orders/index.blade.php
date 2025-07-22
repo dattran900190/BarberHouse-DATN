@@ -168,30 +168,21 @@
                                                                 </a>
                                                             </li>
                                                             <li>
-                                                                <form
-                                                                    action="{{ route('admin.orders.confirm', $order->id) }}"
-                                                                    method="POST"
-                                                                    onsubmit="return confirm('Bạn có chắc muốn xác nhận đơn này không?');">
-                                                                    @csrf
-                                                                    <button type="submit"
-                                                                        class="dropdown-item text-success">
-                                                                        <i class="fas fa-check-circle me-2"></i> Xác nhận
-                                                                    </button>
-                                                                </form>
+                                                                <button type="button"
+                                                                    class="dropdown-item text-success confirm-btn"
+                                                                    data-id="{{ $order->id }}">
+                                                                    <i class="fas fa-check-circle me-2"></i> Xác nhận
+                                                                </button>
                                                             </li>
-                                                            <li><hr class="dropdown-divider"></li>
                                                             <li>
-                                                                <form
-                                                                    action="{{ route('admin.orders.destroy', $order->id) }}"
-                                                                    method="POST"
-                                                                    onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit"
-                                                                        class="dropdown-item text-danger">
-                                                                        <i class="fas fa-times-circle me-2"></i> Hủy
-                                                                    </button>
-                                                                </form>
+                                                                <hr class="dropdown-divider">
+                                                            </li>
+                                                            <li>
+                                                                <button type="button"
+                                                                    class="dropdown-item text-danger destroy-btn"
+                                                                    data-id="{{ $order->id }}">
+                                                                    <i class="fas fa-times-circle me-2"></i> Hủy
+                                                                </button>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -201,7 +192,8 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="11" class="text-center text-muted">Không có đơn hàng chờ xác nhận.</td>
+                                        <td colspan="11" class="text-center text-muted">Không có đơn hàng chờ xác nhận.
+                                        </td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -265,32 +257,21 @@
                                                                 </a>
                                                             </li>
                                                             <li>
-                                                                <form
-                                                                    action="{{ route('admin.orders.update', $order->id) }}"
-                                                                    method="POST"
-                                                                    onsubmit="return confirm('Bạn có chắc muốn cập nhật trạng thái đơn hàng này không?');">
-                                                                    @csrf
-                                                                    @method('PUT')
-                                                                    <input type="hidden" name="status" value="shipping">
-                                                                    <button type="submit"
-                                                                        class="dropdown-item text-success">
-                                                                        <i class="fas fa-truck me-2"></i> Chuyển sang giao hàng
-                                                                    </button>
-                                                                </form>
+                                                                <button type="button"
+                                                                    class="dropdown-item text-success update-btn"
+                                                                    data-id="{{ $order->id }}" data-status="shipping">
+                                                                    <i class="fas fa-truck me-2"></i> Chuyển sang giao hàng
+                                                                </button>
                                                             </li>
-                                                            <li><hr class="dropdown-divider"></li>
                                                             <li>
-                                                                <form
-                                                                    action="{{ route('admin.orders.destroy', $order->id) }}"
-                                                                    method="POST"
-                                                                    onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit"
-                                                                        class="dropdown-item text-danger">
-                                                                        <i class="fas fa-times-circle me-2"></i> Hủy
-                                                                    </button>
-                                                                </form>
+                                                                <hr class="dropdown-divider">
+                                                            </li>
+                                                            <li>
+                                                                <button type="button"
+                                                                    class="dropdown-item text-danger destroy-btn"
+                                                                    data-id="{{ $order->id }}">
+                                                                    <i class="fas fa-times-circle me-2"></i> Hủy
+                                                                </button>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -300,7 +281,8 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="10" class="text-center text-muted">Không có đơn hàng đang xử lý.</td>
+                                        <td colspan="10" class="text-center text-muted">Không có đơn hàng đang xử lý.
+                                        </td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -364,32 +346,22 @@
                                                                 </a>
                                                             </li>
                                                             <li>
-                                                                <form
-                                                                    action="{{ route('admin.orders.update', $order->id) }}"
-                                                                    method="POST"
-                                                                    onsubmit="return confirm('Bạn có chắc muốn hoàn thành đơn hàng này không?');">
-                                                                    @csrf
-                                                                    @method('PUT')
-                                                                    <input type="hidden" name="status" value="completed">
-                                                                    <button type="submit"
-                                                                        class="dropdown-item text-success">
-                                                                        <i class="fas fa-check-circle me-2"></i> Hoàn thành
-                                                                    </button>
-                                                                </form>
+                                                                <button type="button"
+                                                                    class="dropdown-item text-success update-btn"
+                                                                    data-id="{{ $order->id }}"
+                                                                    data-status="completed">
+                                                                    <i class="fas fa-check-circle me-2"></i> Hoàn thành
+                                                                </button>
                                                             </li>
-                                                            <li><hr class="dropdown-divider"></li>
                                                             <li>
-                                                                <form
-                                                                    action="{{ route('admin.orders.destroy', $order->id) }}"
-                                                                    method="POST"
-                                                                    onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit"
-                                                                        class="dropdown-item text-danger">
-                                                                        <i class="fas fa-times-circle me-2"></i> Hủy
-                                                                    </button>
-                                                                </form>
+                                                                <hr class="dropdown-divider">
+                                                            </li>
+                                                            <li>
+                                                                <button type="button"
+                                                                    class="dropdown-item text-danger destroy-btn"
+                                                                    data-id="{{ $order->id }}">
+                                                                    <i class="fas fa-times-circle me-2"></i> Hủy
+                                                                </button>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -399,7 +371,8 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="10" class="text-center text-muted">Không có đơn hàng đang giao.</td>
+                                        <td colspan="10" class="text-center text-muted">Không có đơn hàng đang giao.
+                                        </td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -470,7 +443,8 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="10" class="text-center text-muted">Không có đơn hàng hoàn thành.</td>
+                                        <td colspan="10" class="text-center text-muted">Không có đơn hàng hoàn thành.
+                                        </td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -597,13 +571,24 @@
     </script>
     <script>
         const paymentMap = {
-            paid: { class: 'bg-success', text: 'Đã thanh toán' },
-            unpaid: { class: 'bg-warning', text: 'Chưa thanh toán' },
-            failed: { class: 'bg-danger', text: 'Thanh toán thất bại' },
-            refunded: { class: 'bg-secondary', text: 'Đã hoàn tiền' }
+            paid: {
+                class: 'bg-success',
+                text: 'Đã thanh toán'
+            },
+            unpaid: {
+                class: 'bg-warning',
+                text: 'Chưa thanh toán'
+            },
+            failed: {
+                class: 'bg-danger',
+                text: 'Thanh toán thất bại'
+            },
+            refunded: {
+                class: 'bg-secondary',
+                text: 'Đã hoàn tiền'
+            }
         };
 
-        // Thêm ánh xạ phương thức thanh toán sang tiếng Việt
         const paymentMethodMap = {
             cash: 'Thanh toán khi nhận hàng',
             vnpay: 'Thanh toán qua VNPAY'
@@ -617,11 +602,14 @@
         orderChannel.bind('App\\Events\\NewOrderCreated', function(data) {
             const tableBody = document.querySelector('#pending tbody');
             if (tableBody) {
-                const paymentInfo = paymentMap[data.payment_status] || { class: 'bg-secondary', text: data.payment_status };
+                const paymentInfo = paymentMap[data.payment_status] || {
+                    class: 'bg-secondary',
+                    text: data.payment_status
+                };
                 const paymentMethodText = paymentMethodMap[data.payment_method] || data.payment_method || '';
                 let actionButtons = `
                     <li>
-                        <a href="/admin/orders/${data.order_id || ''}" class="dropdown-item">
+                        <a href="{{ route('admin.orders.show', ':id') }}".replace(':id', ${data.order_id || ''}) class="dropdown-item">
                             <i class="fas fa-eye me-2"></i> Xem
                         </a>
                     </li>
@@ -629,24 +617,15 @@
                 if (window.currentRole === 'admin') {
                     actionButtons += `
                         <li>
-                            <form action="/admin/orders/${data.order_id || ''}/confirm" method="POST"
-                                onsubmit="return confirm('Bạn có chắc muốn xác nhận đơn này không?');">
-                                <input type="hidden" name="_token" value="${document.querySelector('meta[name=csrf-token]').content}">
-                                <button type="submit" class="dropdown-item text-success">
-                                    <i class="fas fa-check-circle me-2"></i> Xác nhận
-                                </button>
-                            </form>
+                            <button type="button" class="dropdown-item text-success confirm-btn" data-id="${data.order_id || ''}">
+                                <i class="fas fa-check-circle me-2"></i> Xác nhận
+                            </button>
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <form action="/admin/orders/${data.order_id || ''}" method="POST"
-                                onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
-                                <input type="hidden" name="_token" value="${document.querySelector('meta[name=csrf-token]').content}">
-                                <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" class="dropdown-item text-danger">
-                                    <i class="fas fa-times-circle me-2"></i> Hủy
-                                </button>
-                            </form>
+                            <button type="button" class="dropdown-item text-danger destroy-btn" data-id="${data.order_id || ''}">
+                                <i class="fas fa-times-circle me-2"></i> Hủy
+                            </button>
                         </li>
                     `;
                 }
@@ -689,15 +668,147 @@
                 if (codeCell && codeCell.textContent.trim() === data.order_code) {
                     const paymentCell = row.children[8];
                     if (paymentCell) {
-                        let badgeClass = 'bg-secondary', badgeText = data.payment_status;
-                        if (data.payment_status === 'paid') { badgeClass = 'bg-success'; badgeText = 'Đã thanh toán'; }
-                        else if (data.payment_status === 'unpaid') { badgeClass = 'bg-warning'; badgeText = 'Chưa thanh toán'; }
-                        else if (data.payment_status === 'failed') { badgeClass = 'bg-danger'; badgeText = 'Thanh toán thất bại'; }
-                        else if (data.payment_status === 'refunded') { badgeClass = 'bg-secondary'; badgeText = 'Đã hoàn tiền'; }
+                        let badgeClass = 'bg-secondary',
+                            badgeText = data.payment_status;
+                        if (data.payment_status === 'paid') {
+                            badgeClass = 'bg-success';
+                            badgeText = 'Đã thanh toán';
+                        } else if (data.payment_status === 'unpaid') {
+                            badgeClass = 'bg-warning';
+                            badgeText = 'Chưa thanh toán';
+                        } else if (data.payment_status === 'failed') {
+                            badgeClass = 'bg-danger';
+                            badgeText = 'Thanh toán thất bại';
+                        } else if (data.payment_status === 'refunded') {
+                            badgeClass = 'bg-secondary';
+                            badgeText = 'Đã hoàn tiền';
+                        }
                         paymentCell.innerHTML = `<span class="badge ${badgeClass}">${badgeText}</span>`;
                     }
                 }
             });
+        });
+    </script>
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            withInput = false,
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const orderId = this.getAttribute('data-id');
+                    const status = this.getAttribute('data-status'); // Lấy trạng thái cho update
+
+                    const swalOptions = {
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    };
+
+                    if (withInput) {
+                        swalOptions.input = 'textarea';
+                        swalOptions.inputPlaceholder = inputPlaceholder;
+                        if (inputValidator) {
+                            swalOptions.inputValidator = inputValidator;
+                        }
+                    }
+
+                    Swal.fire(swalOptions).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                didOpen: () => Swal.showLoading()
+                            });
+
+                            const body = withInput ? JSON.stringify({
+                                    reason: result.value || 'Không có lý do'
+                                }) :
+                                status ? JSON.stringify({
+                                    status
+                                }) : undefined;
+
+                            fetch(route.replace(':id', orderId), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        }
+
+        // Cấu hình các hành động
+        handleSwalAction({
+            selector: '.confirm-btn',
+            title: 'Xác nhận đơn hàng',
+            text: 'Bạn có chắc chắn muốn xác nhận đơn hàng này?',
+            route: '{{ route('admin.orders.confirm', ':id') }}'
+        });
+
+        handleSwalAction({
+            selector: '.update-btn',
+            title: 'Cập nhật trạng thái',
+            text: 'Bạn có chắc chắn muốn cập nhật trạng thái đơn hàng này?',
+            route: '{{ route('admin.orders.update', ':id') }}',
+            method: 'PUT'
+        });
+
+        handleSwalAction({
+            selector: '.destroy-btn',
+            title: 'Hủy đơn hàng',
+            text: 'Bạn có chắc chắn muốn hủy đơn hàng này?',
+            route: '{{ route('admin.orders.destroy', ':id') }}',
+            method: 'DELETE'
         });
     </script>
 @endsection

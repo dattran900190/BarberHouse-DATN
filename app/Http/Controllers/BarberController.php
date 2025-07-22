@@ -59,8 +59,9 @@ class BarberController extends Controller
         return redirect()->route('barbers.index')->with('success', 'Thêm thợ thành công');
     }
 
-    public function show(Barber $barber)
+    public function show($id)
     {
+        $barber = Barber::withTrashed()->findOrFail($id);
         $barber->load('branch');
         return view('admin.barbers.show', compact('barber'));
     }

@@ -131,7 +131,7 @@
                         $currentOrder = $statusOrder[$currentStatus];
                     @endphp
 
-                    @if (!in_array($currentStatus, ['refunded', 'rejected']))
+                    @if (!$refund->trashed() && !in_array($currentStatus, ['refunded', 'rejected']))
                         <form action="{{ route('refunds.update', $refund->id) }}" method="POST"
                             onsubmit="return confirm('Bạn chắc chắn muốn cập nhật trạng thái?');">
                             @csrf
@@ -158,8 +158,11 @@
                                     <i class="fa fa-arrow-left me-1"></i> Quay lại
                                 </a>
                             </div>
-
                         </form>
+                    @elseif ($refund->trashed())
+                        <div class="alert alert-warning mt-4">
+                            Yêu cầu này đã bị xóa mềm. Không thể cập nhật trạng thái.
+                        </div>
                     @else
                         <div class="alert alert-secondary mt-4">
                             Yêu cầu đã {{ $currentStatus === 'refunded' ? 'hoàn tiền' : 'bị từ chối' }}, không thể cập
@@ -169,6 +172,7 @@
                             <i class="fa fa-arrow-left me-1"></i> Quay lại
                         </a>
                     @endif
+
                 </div>
             </div>
         </div>

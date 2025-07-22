@@ -25,8 +25,6 @@ class ClientPostController extends Controller
     }
 
 
-
-
     public function detail($slug)
     {
         $post = Post::where('slug', $slug)->firstOrFail();

@@ -11,9 +11,23 @@
           </p>
           <div class="social">
             <ul>
-              <li><a href="#"><i class="fa-brands fa-square-facebook"></i></a></li>
-              <li><a href="#"><i class="fa-brands fa-square-instagram"></i></a></li>
-              <li><a href="#"><i class="fa-brands fa-square-youtube"></i></a></li>
+              @foreach ($social_links as $key => $url)
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="{{ $url }}" target="_blank">
+                            @if (str_contains($key, 'facebook'))
+                                <i class="fa-brands fa-facebook"></i>
+                            @elseif (str_contains($key, 'instagram'))
+                                <i class="fa-brands fa-instagram"></i>
+                            @elseif (str_contains($key, 'youtube'))
+                                <i class="fa-brands fa-youtube"></i>
+                            @elseif (str_contains($key, 'tiktok'))
+                                <i class="fa-brands fa-tiktok"></i>
+                            @else
+                                <i class="fa-solid fa-link"></i>
+                            @endif
+                        </a>
+                    </li>
+                @endforeach
             </ul>
           </div>
         </div>

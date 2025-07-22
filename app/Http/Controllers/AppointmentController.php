@@ -16,6 +16,7 @@ use App\Events\AppointmentConfirmed;
 use App\Models\CancelledAppointment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Events\AppointmentStatusUpdated;
 use App\Http\Requests\AppointmentRequest;
 
 class AppointmentController extends Controller
@@ -201,17 +202,15 @@ class AppointmentController extends Controller
             Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment, $additionalServices));
 
             // Trigger event
-            event(new AppointmentConfirmed($appointment));
+            // event(new AppointmentConfirmed($appointment));
+
+            event(new AppointmentStatusUpdated($appointment));
 
             return response()->json([
                 'success' => true,
                 'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được xác nhận.'
             ]);
         } catch (\Exception $e) {
-            // Log::error('Confirm: Failed', [
-            //     'appointment_id' => $appointment->id,
-            //     'error' => $e->getMessage()
-            // ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi xác nhận lịch hẹn: ' . $e->getMessage()
@@ -223,13 +222,6 @@ class AppointmentController extends Controller
     public function completed(Request $request, Appointment $appointment)
     {
         try {
-            // Kiểm tra trạng thái hợp lệ
-            // if ($appointment->status !== 'confirmed') {
-            //     return response()->json([
-            //         'success' => false,
-            //         'message' => 'Chỉ có thể hoàn thành lịch hẹn đã được xác nhận.'
-            //     ], 400);
-            // }
 
             // Cập nhật trạng thái lịch hẹn và thanh toán
             $appointment->status = 'completed';
