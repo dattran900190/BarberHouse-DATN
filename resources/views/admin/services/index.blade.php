@@ -124,16 +124,18 @@
                                                         <i class="fas fa-eye me-2"></i> Xem
                                                     </a>
                                                 </li>
+                                                @if (!$service->trashed())
                                                 <li>
                                                     <a class="dropdown-item"
                                                         href="{{ route('services.edit', ['service' => $service->id, 'page' => request('page', 1)]) }}">
                                                         <i class="fas fa-edit me-2"></i> Sửa
                                                     </a>
                                                 </li>
+                                                @endif
                                                 <li>
                                                     <hr class="dropdown-divider">
                                                 </li>
-                                               
+
                                                 <li>
                                                     @if ($service->trashed())
                                                         <button type="button"

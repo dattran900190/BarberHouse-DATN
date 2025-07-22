@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Mail\CheckinCodeMail;
 use App\Events\NewAppointment;
 use Illuminate\Support\Carbon;
+use App\Mail\ConfirmBookingMail;
 use App\Mail\PendingBookingMail;
 use App\Events\AppointmentCreated;
 use Illuminate\Support\Facades\DB;
@@ -37,9 +38,6 @@ class AppointmentController extends Controller
     {
         $this->appointmentService = $appointmentService;
     }
-    /**
-     * Display a listing of the resource.
-     */
 
     public function index(Request $request)
     {
@@ -83,7 +81,6 @@ class AppointmentController extends Controller
 
         return view('client.booking', compact('barbers', 'services', 'branches', 'vouchers', 'publicPromotions'));
     }
-
 
     public function appointmentHistory(Request $request)
     {
@@ -198,7 +195,6 @@ class AppointmentController extends Controller
         return view('client.detailAppointmentHistory', compact('appointment'));
     }
 
-
     public function detailAppointmentHistory($id)
     {
         $appointment = Appointment::where('user_id', Auth::id())
@@ -236,7 +232,6 @@ class AppointmentController extends Controller
         ]);
 
         // Tạo bản ghi trong cancelled_appointments
-
         CancelledAppointment::create(array_merge($appointment->toArray(), [
             'status' => 'cancelled',
             'payment_status' => $appointment,
@@ -258,6 +253,48 @@ class AppointmentController extends Controller
             'success' => true,
             'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.'
         ]);
+    }
+
+    public function confirmBooking($token)
+    {
+        try {
+            $appointment = Appointment::where('confirmation_token', $token)->first();
+
+            if (!$appointment || $appointment->status !== 'unconfirmed' || !$appointment->confirmation_token_expires_at || $appointment->confirmation_token_expires_at < now()) {
+                $errorMessage = !$appointment ? 'Liên kết xác nhận không hợp lệ.' : ($appointment->status !== 'unconfirmed' ? 'Lịch hẹn đã được xác nhận hoặc bị hủy.' :
+                    'Liên kết xác nhận đã hết hạn.');
+                return redirect()->route('home')->with('error', $errorMessage);
+            }
+
+            // Cập nhật trạng thái và xóa token
+            $appointment->status = 'pending';
+            $appointment->confirmation_token = null;
+            $appointment->confirmation_token_expires_at = null;
+            $appointment->save();
+
+            // Load quan hệ trước khi gửi email và Pusher
+            $appointment->load(['barber', 'service']);
+
+            // Chuyển hướng theo phương thức thanh toán
+            if ($appointment->payment_method === 'vnpay') {
+                return redirect()->route('client.payment.vnpay', ['appointment_id' => $appointment->id]);
+            }
+
+            // Gửi email thông báo pending
+            Mail::to($appointment->email)->queue(new PendingBookingMail($appointment));
+            event(new NewAppointment($appointment));
+
+            // Kích hoạt Pusher
+            $this->triggerPusher($appointment);
+
+            return redirect()->route('dat-lich')->with('success', 'Lịch hẹn đã được xác nhận thành công!');
+        } catch (\Exception $e) {
+            Log::error('Confirmation error for token: ' . $token, [
+                'error' => $e->getMessage(),
+                'appointment_id' => $appointment ? $appointment->id : null,
+            ]);
+            return redirect()->route('home')->with('error', 'Có lỗi xảy ra khi xác nhận lịch hẹn.');
+        }
     }
 
     protected function handleVoucher($request, $service)
@@ -427,130 +464,6 @@ class AppointmentController extends Controller
         ];
     }
 
-
-    // public function store(BookingRequest $request)
-    // {
-    //     try {
-    //         // Kiểm tra đăng nhập
-    //         if (!Auth::check()) {
-    //             if ($request->ajax() || $request->wantsJson()) {
-    //                 return response()->json([
-    //                     'success' => false,
-    //                     'message' => 'Bạn cần đăng nhập để đặt lịch.'
-    //                 ], 401);
-    //             }
-    //             return redirect()->route('dat-lich')->with('mustLogin', true);
-    //         }
-
-    //         // Phân tích ngày giờ cuộc hẹn
-    //         $datetime = Carbon::parse($request->appointment_date . ' ' . $request->appointment_time . ':00');
-
-    //         // Kiểm tra trùng lặp lịch hẹn
-    //         $service = Service::findOrFail($request->service_id);
-    //         $duration = $service->duration;
-
-    //         $appointments = Appointment::with('service')
-    //             ->where('barber_id', $request->barber_id)
-    //             ->where('branch_id', $request->branch_id)
-    //             ->whereIn('status', ['pending', 'confirmed', 'pending_cancellation'])
-    //             ->get();
-
-    //         $start = $datetime;
-    //         $end = $datetime->copy()->addMinutes($duration);
-
-    //         $conflict = $appointments->first(function ($appointment) use ($start, $end) {
-    //             $appointmentStart = Carbon::parse($appointment->appointment_time);
-    //             $appointmentEnd = $appointmentStart->copy()->addMinutes($appointment->service->duration ?? 0);
-
-    //             return $start->lt($appointmentEnd) && $end->gt($appointmentStart);
-    //         });
-
-    //         if ($conflict) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Thợ này đã có lịch hẹn trong khoảng thời gian này.'
-    //             ], 422);
-    //         }
-
-    //         // Lấy thông tin người đặt
-    //         $name = $request->other_person ? $request->name : Auth::user()->name;
-    //         $phone = $request->other_person ? $request->phone : Auth::user()->phone;
-    //         $email = $request->other_person ? $request->email : Auth::user()->email;
-
-    //         // Tính tổng giá trị lịch hẹn và xử lý voucher
-    //         [$totalAmount, $discountAmount, $promotion, $redeemedVoucher, $additionalServices] = $this->handleVoucher($request, $service);
-
-    //         // Tạo lịch hẹn
-    //         $appointment = Appointment::create([
-    //             'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
-    //             'user_id' => Auth::id(),
-    //             'barber_id' => $request->barber_id,
-    //             'branch_id' => $request->branch_id,
-    //             'service_id' => $request->service_id,
-    //             'appointment_time' => $datetime,
-    //             'status' => 'pending',
-    //             'payment_method' => $request->payment_method,
-    //             'payment_status' => 'unpaid',
-    //             'note' => $request->note,
-    //             'name' => $name,
-    //             'phone' => $phone,
-    //             'email' => $email,
-    //             'cancellation_reason' => null,
-    //             'rejection_reason' => null,
-    //             'status_before_cancellation' => null,
-    //             'promotion_id' => $promotion ? $promotion->id : null,
-    //             'discount_amount' => $discountAmount,
-    //             'total_amount' => $totalAmount,
-    //             'additional_services' => json_encode($additionalServices),
-    //         ]);
-
-    //         // Load quan hệ
-    //         $appointment->load(['barber', 'service']);
-    //         $this->triggerPusher($appointment);
-
-    //         // Xử lý voucher
-    //         if ($promotion && $redeemedVoucher) {
-    //             $this->appointmentService->applyPromotion($appointment, $redeemedVoucher);
-    //         } elseif ($promotion) {
-    //             $this->appointmentService->applyPromotion($appointment, null, $promotion);
-    //         }
-
-    //         // Nếu chọn VNPay, trả về appointment_id để chuyển hướng
-    //         if ($request->payment_method === 'vnpay') {
-    //             if ($request->ajax() || $request->wantsJson()) {
-    //                 return response()->json([
-    //                     'success' => true,
-    //                     'message' => 'Lịch hẹn đã được tạo, đang chuyển hướng đến thanh toán VNPay.',
-    //                     'appointment_id' => $appointment->id,
-    //                 ]);
-    //             }
-    //         }
-
-    //         // Gửi thông báo sự kiện AppointmentCreated
-    //         //     event(new AppointmentCreated($appointment));
-
-    //         // Gửi sự kiện thông bao NewAppointment và email
-    //         event(new NewAppointment($appointment));
-    //         Mail::to($appointment->email)->send(new PendingBookingMail($appointment));
-
-    //         // Phản hồi thành công
-    //         if ($request->ajax() || $request->wantsJson()) {
-    //             return response()->json([
-    //                 'success' => true,
-    //                 'message' => 'Đặt lịch thành công!'
-    //             ]);
-    //         }
-    //         return redirect()->route('appointments.index')->with('success', 'Đặt lịch thành công!');
-    //     } catch (\Exception $e) {
-    //         Log::error('Booking error: ' . $e->getMessage());
-    //         session()->flash('error', 'Lỗi khi đặt lịch: ' . $e->getMessage());
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Lỗi khi đặt lịch: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
     public function store(BookingRequest $request)
     {
         try {
@@ -600,6 +513,20 @@ class AppointmentController extends Controller
                 ], 422);
             }
 
+            // Kiểm tra trùng lặp lịch hẹn
+            $existingAppointment = Appointment::where('branch_id', $request->branch_id)
+                ->where('barber_id', $request->barber_id)
+                ->where('appointment_time', $datetime)
+                ->whereIn('status', ['unconfirmed', 'pending'])
+                ->first();
+
+            if ($existingAppointment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Khung giờ này đã có lịch hẹn đang chờ xác nhận hoặc đã được đặt. Vui lòng chọn khung giờ khác.',
+                ], 422);
+            }
+
             // Lấy thông tin người đặt
             $name = $request->other_person ? $request->name : Auth::user()->name;
             $phone = $request->other_person ? $request->phone : Auth::user()->phone;
@@ -616,8 +543,8 @@ class AppointmentController extends Controller
                 'branch_id' => $request->branch_id,
                 'service_id' => $request->service_id,
                 'appointment_time' => $datetime,
-                'duration' => $totalDuration, // Lưu totalDuration vào cột duration
-                'status' => 'pending',
+                'duration' => $totalDuration,
+                'status' => 'unconfirmed',
                 'payment_method' => $request->payment_method,
                 'payment_status' => 'unpaid',
                 'note' => $request->note,
@@ -631,11 +558,35 @@ class AppointmentController extends Controller
                 'discount_amount' => $discountAmount,
                 'total_amount' => $totalAmount,
                 'additional_services' => json_encode($additionalServices),
+                'confirmation_token' => Str::random(60),
+                'confirmation_token_expires_at' => now()->addMinutes(10),
             ]);
 
-            // Load quan hệ
+            // Giới hạn số lượng lịch hẹn chưa xác nhận
+            $unconfirmedCount = Appointment::where('user_id', Auth::id())
+                ->where('status', 'unconfirmed')
+                ->count();
+            if ($unconfirmedCount >= 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn có quá nhiều lịch hẹn chưa xác nhận. Vui lòng xác nhận hoặc hủy trước khi đặt thêm.'
+                ], 422);
+            }
+
+            // Load quan hệ và xử lý dịch vụ bổ sung
             $appointment->load(['barber', 'service']);
-            $this->triggerPusher($appointment);
+            $AdditionalServiceIds = json_decode($appointment->additional_services, true) ?? [];
+            $AdditionalServices = !empty($AdditionalServiceIds)
+                ? Service::whereIn('id', $AdditionalServiceIds)->pluck('name')->toArray()
+                : [];
+
+            // Gửi email xác nhận với danh sách dịch vụ bổ sung
+            Mail::to($appointment->email)->send(new ConfirmBookingMail($appointment, $AdditionalServices));
+
+            // Phản hồi thành công
+            $message = $request->payment_method === 'vnpay'
+                ? 'Lịch hẹn đã được tạo. Vui lòng kiểm tra email để xác nhận và tiến hành thanh toán (trong vòng 10 phút kể từ khi đặt).'
+                : 'Lịch hẹn đã được tạo. Vui lòng kiểm tra email để xác nhận (trong vòng 10 phút kể từ khi đặt).';
 
             // Xử lý voucher
             if ($promotion && $redeemedVoucher) {
@@ -644,26 +595,12 @@ class AppointmentController extends Controller
                 $this->appointmentService->applyPromotion($appointment, null, $promotion);
             }
 
-            // Nếu chọn VNPay, trả về appointment_id để chuyển hướng
-            if ($request->payment_method === 'vnpay') {
-                if ($request->ajax() || $request->wantsJson()) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Lịch hẹn đã được tạo, đang chuyển hướng đến thanh toán VNPay.',
-                        'appointment_id' => $appointment->id,
-                    ]);
-                }
-            }
-
-            // Gửi sự kiện thông báo NewAppointment và email
-            event(new NewAppointment($appointment));
-            Mail::to($appointment->email)->send(new PendingBookingMail($appointment));
 
             // Phản hồi thành công
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Đặt lịch thành công!'
+                    'message' => $message
                 ]);
             }
             return redirect()->route('appointments.index')->with('success', 'Đặt lịch thành công!');
@@ -679,270 +616,6 @@ class AppointmentController extends Controller
             ], 500);
         }
     }
-
-    // public function getAvailableBarbersByDate($branch_id, $date, $time = null, $service_id = null)
-    // {
-    //     // 1. Validate branch
-    //     if (!is_numeric($branch_id) || !Branch::find($branch_id)) {
-    //         return response()->json(['error' => 'Invalid branch ID'], 400);
-    //     }
-
-    //     try {
-    //         $parsedDate = Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
-    //         $parsedTime = null;
-    //         $datetime = null;
-    //         $serviceDuration = null;
-
-    //         // 2. Lấy duration nếu có service
-    //         if ($service_id) {
-    //             $service = Service::find($service_id);
-    //             if (!$service) {
-    //                 return response()->json(['error' => 'Invalid service ID'], 400);
-    //             }
-    //             $serviceDuration = $service->duration;
-    //         }
-
-    //         // 3. Parse time nếu client truyền lên
-    //         if ($time && $time !== 'null') {
-    //             // Chuẩn hoá SA/CH -> 24h
-    //             $rawTime = $time;
-    //             if (preg_match('/^(\d{1,2}):([0-5]\d)\s*(SA|CH)$/iu', $rawTime, $m)) {
-    //                 $hour = (int) $m[1];
-    //                 $minute = $m[2];
-    //                 $suf = strtoupper($m[3]);
-    //                 if ($suf === 'SA') {
-    //                     if ($hour === 12)
-    //                         $hour = 0;
-    //                 } else {
-    //                     if ($hour < 12)
-    //                         $hour += 12;
-    //                 }
-    //                 $time = sprintf('%02d:%02d', $hour, $minute);
-    //             }
-
-    //             $parsedTime = Carbon::createFromFormat('H:i', $time)->format('H:i');
-    //             $datetime = Carbon::parse("{$date} {$time}:00");
-    //         }
-
-    //         // 4. Build query
-    //         $query = Barber::query()
-    //             ->select('barbers.id', 'barbers.name')
-    //             ->where('branch_id', $branch_id)
-    //             ->where('status', 'idle')
-    //             // Loại bỏ thợ “off” trong ngày $parsedDate
-    //             ->whereDoesntHave('schedules', function ($q) use ($parsedDate) {
-    //                 $q->where('schedule_date', $parsedDate)
-    //                     ->where('status', 'off');
-    //             });
-
-    //         // 5. Nếu filter theo giờ
-    //         if ($parsedTime) {
-    //             $appointmentEnd = $serviceDuration
-    //                 ? $datetime->copy()->addMinutes($serviceDuration)->format('H:i')
-    //                 : $parsedTime;
-
-    //             $query->where(function ($q) use ($parsedDate, $parsedTime, $appointmentEnd) {
-    //                 $q->whereHas('schedules', function ($qs) use ($parsedDate, $parsedTime, $appointmentEnd) {
-    //                     $qs->where('schedule_date', $parsedDate)
-    //                         ->where('status', 'custom')
-    //                         ->whereTime('start_time', '<=', $parsedTime)
-    //                         ->whereTime('end_time', '>=', $appointmentEnd);
-    //                 })
-    //                     ->orWhereDoesntHave('schedules', function ($qs) use ($parsedDate) {
-    //                         $qs->where('schedule_date', $parsedDate)
-    //                             ->where('status', 'custom');
-    //                     });
-    //             });
-    //         }
-
-    //         // 6. Kiểm tra tính khả dụng của thợ
-    //         if ($datetime && $serviceDuration) {
-    //             $query->whereDoesntHave('appointments', function ($q) use ($datetime, $serviceDuration) {
-    //                 $q->whereIn('status', ['pending', 'confirmed'])
-    //                     ->where(function ($q2) use ($datetime, $serviceDuration) {
-    //                         $q2->where(function ($query) use ($datetime, $serviceDuration) {
-    //                             $query->whereRaw('? BETWEEN appointment_time AND DATE_ADD(appointment_time, INTERVAL ? MINUTE)', [$datetime, $serviceDuration])
-    //                                 ->orWhereRaw('DATE_ADD(?, INTERVAL ? MINUTE) BETWEEN appointment_time AND DATE_ADD(appointment_time, INTERVAL ? MINUTE)', [
-    //                                     $datetime,
-    //                                     $serviceDuration,
-    //                                     $serviceDuration
-    //                                 ]);
-    //                         });
-    //                     });
-    //             });
-    //         } elseif ($datetime) {
-    //             $query->whereDoesntHave('appointments', function ($q) use ($datetime) {
-    //                 $q->whereIn('status', ['pending', 'confirmed'])
-    //                     ->where('appointment_time', $datetime);
-    //             });
-    //         }
-
-    //         $barbers = $query->with(['appointments' => function ($q) use ($parsedDate) {
-    //             $q->whereDate('appointment_time', $parsedDate)
-    //                 ->whereIn('status', ['pending', 'confirmed']);
-    //         }, 'appointments.service'])->get();
-
-    //         $availableBarbers = $barbers->filter(function ($barber) use ($datetime, $serviceDuration) {
-    //             foreach ($barber->appointments as $appointment) {
-    //                 $start = Carbon::parse($appointment->appointment_time);
-    //                 $end = $start->copy()->addMinutes($appointment->service->duration ?? 0);
-
-    //                 $currentEnd = $datetime->copy()->addMinutes($serviceDuration);
-
-    //                 if ($datetime->lt($end) && $currentEnd->gt($start)) {
-    //                     return false; // Có trùng lịch
-    //                 }
-    //             }
-    //             return true;
-    //         });
-
-
-    //         $barbers = $query->distinct('barbers.id')->get();
-    //         return response()->json($barbers);
-    //     } catch (\Exception $e) {
-    //         Log::error('Error in getAvailableBarbersByDate: ' . $e->getMessage(), compact('branch_id', 'date', 'time', 'service_id'));
-    //         return response()->json(['error' => 'Server error'], 500);
-    //     }
-    // }
-
-
-    // public function getAvailableBarbersByDate(Request $request, $branch_id, $date, $time = null, $service_id = null)
-    // {
-    //     // 1. Validate branch
-    //     if (!is_numeric($branch_id) || !Branch::find($branch_id)) {
-    //         return response()->json(['error' => 'Invalid branch ID'], 400);
-    //     }
-
-    //     try {
-    //         $parsedDate = Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
-    //         $parsedTime = null;
-    //         $datetime = null;
-    //         $serviceDuration = null;
-
-
-    //         // 2. Tính duration chính
-    //         $mainDuration = 0;
-    //         if ($service_id) {
-    //             $srv = Service::find($service_id);
-    //             if (!$srv) {
-    //                 return response()->json(['error' => 'Invalid service ID'], 400);
-    //             }
-    //             $mainDuration = $srv->duration;
-    //         }
-
-    //         // 3. Tính duration bổ sung
-    //         $additionalIds = $request->query('additional_services', []);
-    //         $additionalDuration = 0;
-    //         if (count($additionalIds)) {
-    //             $additionalDuration = Service::whereIn('id', $additionalIds)
-    //                 ->sum('duration');
-    //         }
-
-    //         // 4. Tổng thời gian
-    //         $totalDuration = $mainDuration + $additionalDuration;
-
-    //         // 3. Parse time nếu client truyền lên
-    //         if ($time && $time !== 'null') {
-    //             // Chuẩn hoá SA/CH -> 24h
-    //             $rawTime = $time;
-    //             if (preg_match('/^(\d{1,2}):([0-5]\d)\s*(SA|CH)$/iu', $rawTime, $m)) {
-    //                 $hour = (int) $m[1];
-    //                 $minute = $m[2];
-    //                 $suf = strtoupper($m[3]);
-    //                 if ($suf === 'SA') {
-    //                     if ($hour === 12)
-    //                         $hour = 0;
-    //                 } else {
-    //                     if ($hour < 12)
-    //                         $hour += 12;
-    //                 }
-    //                 $time = sprintf('%02d:%02d', $hour, $minute);
-    //             }
-
-    //             $parsedTime = Carbon::createFromFormat('H:i', $time)->format('H:i');
-    //             $datetime = Carbon::parse("{$date} {$time}:00");
-    //         }
-
-    //         // 4. Build query
-    //         $query = Barber::query()
-    //             ->select('barbers.id', 'barbers.name')
-    //             ->where('branch_id', $branch_id)
-    //             ->where('status', 'idle')
-    //             // Loại bỏ thợ “off” trong ngày $parsedDate
-    //             ->whereDoesntHave('schedules', function ($q) use ($parsedDate) {
-    //                 $q->where('schedule_date', $parsedDate)
-    //                     ->where('status', 'off');
-    //             });
-
-    //         // 5. Nếu filter theo giờ
-
-    //         if ($parsedTime) {
-    //             $appointmentEnd = $datetime->copy()
-    //                 ->addMinutes($totalDuration)
-    //                 ->format('H:i');
-
-    //             $query->where(function ($q) use ($parsedDate, $parsedTime, $appointmentEnd) {
-    //                 $q->whereHas('schedules', function ($qs) use ($parsedDate, $parsedTime, $appointmentEnd) {
-    //                     $qs->where('schedule_date', $parsedDate)
-    //                         ->where('status', 'custom')
-    //                         ->whereTime('start_time', '<=', $parsedTime)
-    //                         ->whereTime('end_time', '>=', $appointmentEnd);
-    //                 })
-    //                     ->orWhereDoesntHave('schedules', function ($qs) use ($parsedDate) {
-    //                         $qs->where('schedule_date', $parsedDate)
-    //                             ->where('status', 'custom');
-    //                     });
-    //             });
-    //         }
-
-
-
-    //         // 6. Kiểm tra xung đột appointments với $totalDuration
-    //         if ($datetime && $totalDuration) {
-    //             $query->whereDoesntHave('appointments', function ($q) use ($datetime, $totalDuration) {
-    //                 $q->whereIn('status', ['pending', 'confirmed'])
-    //                     ->where(function ($q2) use ($datetime, $totalDuration) {
-    //                         $q2->whereRaw('? BETWEEN appointment_time AND DATE_ADD(appointment_time, INTERVAL ? MINUTE)', [
-    //                             $datetime,
-    //                             $totalDuration
-    //                         ])
-    //                             ->orWhereRaw('DATE_ADD(?, INTERVAL ? MINUTE) BETWEEN appointment_time AND DATE_ADD(appointment_time, INTERVAL ? MINUTE)', [
-    //                                 $datetime,
-    //                                 $totalDuration,
-    //                                 $totalDuration
-    //                             ]);
-    //                     });
-    //             });
-    //         }
-
-    //         // 7. Lấy danh sách barber có lịch hẹn trong ngày $parsedDate
-    //         $barbers = $query->with(['appointments' => function ($q) use ($parsedDate) {
-    //             $q->whereDate('appointment_time', $parsedDate)
-    //                 ->whereIn('status', ['pending', 'confirmed']);
-    //         }, 'appointments.service'])->get();
-
-    //         // 8. Lọc barber có lịch hẹn không trùng với $datetime và $totalDuration
-    //         $availableBarbers = $barbers->filter(function ($barber) use ($datetime, $totalDuration) {
-    //             foreach ($barber->appointments as $appointment) {
-    //                 $start = Carbon::parse($appointment->appointment_time);
-    //                 $end = $start->copy()->addMinutes($appointment->service->duration ?? 0);
-    //                 $currentEnd = $datetime->copy()->addMinutes($totalDuration);
-    //                 if ($datetime->lt($end) && $currentEnd->gt($start)) {
-    //                     return false; // Có trùng lịch
-    //                 }
-    //             }
-    //             return true;
-    //         });
-
-
-    //         $barbers = $query->distinct('barbers.id')->get();
-    //         return response()->json($availableBarbers->values());
-    //     } catch (\Exception $e) {
-    //         Log::error('Error in getAvailableBarbersByDate: ' . $e->getMessage(), compact('branch_id', 'date', 'time', 'service_id'));
-    //         return response()->json(['error' => 'Server error'], 500);
-    //     }
-    // }
-
     public function getAvailableBarbersByDate(Request $request, $branch_id = 'null', $date = 'null', $time = 'null', $service_id = 'null')
     {
         try {
@@ -1089,17 +762,17 @@ class AppointmentController extends Controller
         return response()->json($barbers);
     }
 
-    public function completeAppointment($appointmentId)
-    {
-        try {
-            $appointment = Appointment::findOrFail($appointmentId);
-            $appointment->status = 'completed';
-            $appointment->save();
+    // public function completeAppointment($appointmentId)
+    // {
+    //     try {
+    //         $appointment = Appointment::findOrFail($appointmentId);
+    //         $appointment->status = 'completed';
+    //         $appointment->save();
 
-            return response()->json(['message' => 'Lịch hẹn đã hoàn thành']);
-        } catch (\Exception $e) {
-            Log::error('Error in completeAppointment: ' . $e->getMessage());
-            return response()->json(['error' => 'Server error'], 500);
-        }
-    }
+    //         return response()->json(['message' => 'Lịch hẹn đã hoàn thành']);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error in completeAppointment: ' . $e->getMessage());
+    //         return response()->json(['error' => 'Server error'], 500);
+    //     }
+    // }
 }

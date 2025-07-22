@@ -49,7 +49,6 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // ==== Trang chủ ====
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/test', [HomeController::class, 'test'])->name('test');
 
 // Giỏ hàng
 Route::get('/gio-hang', [CartController::class, 'show'])->name('cart.show');
@@ -81,7 +80,9 @@ Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::c
 //   [ClientAppointmentController::class, 'getAvailableBarbersByDate']
 // );
 Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time}/{service_id}', [ClientAppointmentController::class, 'getAvailableBarbersByDate'])->name('getAvailableBarbersByDate');
+Route::get('/confirm-booking/{token}', [ClientAppointmentController::class, 'confirmBooking'])->name('confirm.booking');
 
+// ==== Profile ====
 Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
 Route::post('/store-errors', function (Request $request) {
     session()->flash('errors', $request->input('errors'));
@@ -131,7 +132,7 @@ Route::get('hoan-tien', [WalletController::class, 'index'])->name('client.detail
 Route::get('hoan-tien/create', [WalletController::class, 'create'])->name('client.wallet');
 Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.wallet.store');
 
-Route::post('/payment/vnpay', [PaymentController::class, 'vnpayPayment'])->name('client.payment.vnpay');
+Route::match(['get', 'post'], '/payment/vnpay', [PaymentController::class, 'vnpayPayment'])->name('client.payment.vnpay');
 Route::get('/payment/vnpay/callback', [PaymentController::class, 'vnpayCallback'])->name('client.payment.vnpay.callback');
 
 Route::match(['get', 'post'], '/payment/vnpay/order', [PaymentController::class, 'vnpayOrderPayment'])->name('client.payment.vnpay.order');
@@ -180,7 +181,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Đơn hàng ====
     Route::resource('orders', OrderController::class)->names('admin.orders');
     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
-
+    Route::put('/orders/{order}', [OrderController::class, 'update'])->name('admin.orders.update'); // Sử dụng PUT cho update
+    // Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('admin.orders.destroy');
     // ==== Lịch sử điểm ====
     Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');
     Route::get('/point_histories/user/{id}', [PointHistoryController::class, 'userHistory'])->name('point_histories.user');
@@ -221,10 +223,16 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);
+    Route::patch('/posts/{id}/soft-delete', [PostController::class, 'softDelete'])->name('posts.softDelete');
+    Route::post('/posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
+    Route::delete('/posts/{id}/force-delete', [PostController::class, 'forceDelete'])->name('posts.forceDelete');
+
 
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
-
+    Route::patch('product_categories/{id}/soft-delete', [ProductCategoryController::class, 'softDelete'])->name('product_categories.softDelete');
+    Route::post('product_categories/{id}/restore', [ProductCategoryController::class, 'restore'])->name('product_categories.restore');
+    Route::delete('product_categories/{id}/force-delete', [ProductCategoryController::class, 'destroy'])->name('product_categories.destroy');
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
 
@@ -235,6 +243,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Banner ====
     Route::resource('banners', BannerController::class);
+    Route::patch('banners/{id}/soft-delete', [BannerController::class, 'softDelete'])->name('banners.softDelete');
+    Route::post('banners/{id}/restore', [BannerController::class, 'restore'])->name('banners.restore');
+    Route::delete('banners/{id}', [BannerController::class, 'destroy'])->name('banners.destroy');
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
