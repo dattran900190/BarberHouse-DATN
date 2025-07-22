@@ -230,6 +230,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
+    Route::post('volumes/{id}/restore', [VolumeController::class, 'restore'])->name('admin.volumes.restore');
+    Route::delete('volumes/{id}/force-delete', [VolumeController::class, 'forceDelete'])->name('admin.volumes.forceDelete');
 
     // ==== Banner ====
     Route::resource('banners', BannerController::class);
