@@ -2186,6 +2186,12 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
   border-color: #dc3545;
 }
 
+.status-pending {
+  background-color: #fff3cd;
+  color: #ffc107;
+  border-color: #ffc107;
+}
+
 .status-processing {
   background-color: #fff3cd;
   color: #ffc107;

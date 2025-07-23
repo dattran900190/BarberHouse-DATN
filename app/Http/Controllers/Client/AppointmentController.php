@@ -192,7 +192,13 @@ class AppointmentController extends Controller
         ])->where('user_id', Auth::id())
             ->findOrFail($id);
 
-        return view('client.detailAppointmentHistory', compact('appointment'));
+
+        $additionalServicesIds = json_decode($appointment->additional_services, true) ?? [];
+        $additionalServices = Service::whereIn('id', $additionalServicesIds)
+            ->withTrashed() // cho phép lấy cả dịch vụ đã xóa mềm
+            ->get();
+
+        return view('client.detailAppointmentHistory', compact('appointment', 'additionalServices'));
     }
 
     public function detailAppointmentHistory($id)
@@ -201,7 +207,13 @@ class AppointmentController extends Controller
             ->with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name', 'review'])
             ->findOrFail($id);
 
-        return view('client.detailAppointmentHistory', compact('appointment'));
+
+        $additionalServicesIds = json_decode($appointment->additional_services, true) ?? [];
+        $additionalServices = Service::whereIn('id', $additionalServicesIds)
+            ->withTrashed() // cho phép lấy cả dịch vụ đã xóa mềm
+            ->get();
+
+        return view('client.detailAppointmentHistory', compact('appointment', 'additionalServices'));
     }
 
     public function cancel(Request $request, Appointment $appointment)
@@ -282,6 +294,8 @@ class AppointmentController extends Controller
 
             // Gửi email thông báo pending
             Mail::to($appointment->email)->queue(new PendingBookingMail($appointment));
+
+            // Gửi sự kiện NewAppointment
             event(new NewAppointment($appointment));
 
             // Kích hoạt Pusher
