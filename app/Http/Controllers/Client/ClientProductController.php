@@ -10,7 +10,13 @@ class ClientProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Product::whereHas('variants', function($q) {
+            $q->whereNotNull('volume_id')
+              ->whereHas('volume', function($q2) {
+                  $q2->whereNull('deleted_at')
+                     ->where('name', '!=', 'Không rõ');
+              });
+        });
 
         // ---- LỌC DANH MỤC ----
         if ($request->filled('category')) {      // <‑‑ key trên URL: ?category=1
@@ -22,7 +28,7 @@ class ClientProductController extends Controller
             [$min, $max] = explode('-', $request->price_range);
             $query->whereBetween('price', [(int)$min * 1000, (int)$max * 1000]);
         }
-
+       
         $products = $query->with('variants')->latest()->paginate(8);
 
 

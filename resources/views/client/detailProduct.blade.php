@@ -12,6 +12,14 @@
         <section class="h-100 h-custom">
             <div class="mainDetailPro d-flex flex-wrap gap-4">
                 @php $variant = $product->variants->first(); @endphp
+                @php
+                    $validVariants = $product->variants->filter(function($variant) {
+                        return $variant->volume
+                            && $variant->volume->name !== 'Không rõ'
+                            && is_null($variant->volume->deleted_at);
+                    });
+                    $defaultVariant = $validVariants->first();
+                @endphp
 
                 {{-- Hình ảnh sản phẩm --}}
                 <div class="detailPro-left" style="flex: 1; min-width: 300px;">
@@ -63,10 +71,8 @@
                                 </div>
                                 <div class="col-auto">
                                     <select name="product_variant_id" id="variant_id" class="form-select form-select-sm">
-                                        @foreach ($variants as $variant)
-                                            <option value="{{ $variant->id }}">
-                                                {{ $variant->volume->name ?? 'Không rõ' }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}
-                                            </option>
+                                        @foreach ($validVariants as $variant)
+                                            <option value="{{ $variant->id }}">{{ $variant->volume->name }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -96,8 +102,7 @@
                         {{-- Nút Mua ngay --}}
                         <form action="{{ route('cart.buyNow') }}" method="POST" class="mt-3" id="buyNowForm">
                             @csrf
-                            <input type="hidden" name="product_variant_id" id="buy_now_variant_id"
-                                value="{{ $product->variants->first()->id }}">
+                            <input type="hidden" name="product_variant_id" id="buy_now_variant_id" value="{{ $defaultVariant ? $defaultVariant->id : '' }}">
                             <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
 
                             @guest
@@ -153,7 +158,14 @@
                                     </a>
                                 </h4>
                                 <p>{{ number_format($item->price) }} đ</p>
-                                @php $itemVariant = $item->variants->first(); @endphp
+                                @php
+                                    $validVariants = $item->variants->filter(function($variant) {
+                                        return $variant->volume
+                                            && $variant->volume->name !== 'Không rõ'
+                                            && is_null($variant->volume->deleted_at);
+                                    });
+                                    $itemVariant = $validVariants->first();
+                                @endphp
                                 @if ($itemVariant)
                                     <div class="button-group">
                                         <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
@@ -184,6 +196,8 @@
                         @endforelse
                     </div>
                 </div>
+            </div>
+            
             </div>
 
 
