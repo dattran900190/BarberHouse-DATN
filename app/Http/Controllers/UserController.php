@@ -286,7 +286,7 @@ class UserController extends Controller
             if ($user->trashed()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Khóa ' . ($role === 'user' ? 'người dùng' : 'quản trị viên') . ' thành công'
+                    'message' => 'Xóa ' . ($role === 'user' ? 'người dùng' : 'quản trị viên') . ' thành công'
                 ], 200);
             } else {
                 throw new \Exception('Xóa mềm không thành công');

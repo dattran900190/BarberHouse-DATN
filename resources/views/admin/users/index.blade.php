@@ -63,11 +63,11 @@
             <div class="card-title">Danh sách {{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</div>
             <div class="d-flex gap-2 ms-auto">
                 @if ($currentRole == 'admin')
-                <a href="{{ route('users.create', ['role' => $role]) }}"
-                    class="btn btn-sm btn-outline-success d-flex align-items-center">
-                    <i class="fas fa-plus"></i>
-                    <span class="ms-2">Thêm {{ $role == 'user' ? 'người dùng' : 'quản trị viên' }}</span>
-                </a>
+                    <a href="{{ route('users.create', ['role' => $role]) }}"
+                        class="btn btn-sm btn-outline-success d-flex align-items-center">
+                        <i class="fas fa-plus"></i>
+                        <span class="ms-2">Thêm {{ $role == 'user' ? 'người dùng' : 'quản trị viên' }}</span>
+                    </a>
                 @endif
             </div>
         </div>
@@ -107,7 +107,7 @@
                     style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
                     <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả người dùng</option>
                     <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Hoạt động</option>
-                    <option value="banned" {{ request('filter') == 'banned' ? 'selected' : '' }}>Bị khóa</option>
+                    <option value="banned" {{ request('filter') == 'banned' ? 'selected' : '' }}>Đã xóa</option>
                 </select>
             </form>
 
@@ -157,65 +157,66 @@
                                             <td>{{ $user->address ?? 'Không có' }}</td>
                                             <td>
                                                 @if ($user->trashed())
-                                                    <span class="badge bg-danger">Đã khóa</span>
+                                                    <span class="badge bg-danger">Đã xóa</span>
                                                 @else
                                                     <span
                                                         class="badge {{ $user->status === 'active' ? 'bg-success' : ($user->status === 'inactive' ? 'bg-warning' : 'bg-danger') }}">
-                                                        {{ $user->status === 'active' ? 'Hoạt động' : ($user->status === 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
+                                                        {{ $user->status === 'active' ? 'Hoạt động' : ($user->status === 'inactive' ? 'Không hoạt động' : 'Đã xóa') }}
                                                     </span>
                                                 @endif
                                             </td>
                                             @if ($currentRole == 'admin')
-                                            <td class="text-center">
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-outline-secondary" type="button"
-                                                        id="actionMenu{{ $user->id }}" data-bs-toggle="dropdown"
-                                                        aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end"
-                                                        aria-labelledby="actionMenu{{ $user->id }}">
+                                                <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                            id="actionMenu{{ $user->id }}" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end"
+                                                            aria-labelledby="actionMenu{{ $user->id }}">
 
-                                                        @if ($currentRole === 'admin')
-                                                            @if ($user->trashed())
-                                                                <li>
-                                                                    <button type="button"
-                                                                        class="dropdown-item text-success restore-btn"
-                                                                        data-id="{{ $user->id }}">
-                                                                        <i class="fas fa-undo me-2"></i> Khôi phục
-                                                                    </button>
-                                                                    <button type="button"
-                                                                        class="dropdown-item text-danger force-delete-btn"
-                                                                        data-id="{{ $user->id }}"
-                                                                        data-role="{{ $currentRole }}">
-                                                                        <i class="fas fa-trash-alt me-2"></i> Xóa vĩnh viễn
-                                                                    </button>
-                                                                </li>
-                                                            @else
-                                                                <li>
-                                                                    <a class="dropdown-item"
-                                                                        href="{{ route('users.show', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
-                                                                        <i class="fas fa-eye me-2"></i> Xem
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item"
-                                                                        href="{{ route('users.edit', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
-                                                                        <i class="fas fa-edit me-2"></i> Sửa
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <button type="button"
-                                                                        class="dropdown-item text-danger soft-delete-btn"
-                                                                        data-id="{{ $user->id }}">
-                                                                        <i class="fas fa-times me-2"></i> Khóa tài khoản
-                                                                    </button>
-                                                                </li>
+                                                            @if ($currentRole === 'admin')
+                                                                @if ($user->trashed())
+                                                                    <li>
+                                                                        <button type="button"
+                                                                            class="dropdown-item text-success restore-btn"
+                                                                            data-id="{{ $user->id }}">
+                                                                            <i class="fas fa-undo me-2"></i> Khôi phục
+                                                                        </button>
+                                                                        <button type="button"
+                                                                            class="dropdown-item text-danger force-delete-btn"
+                                                                            data-id="{{ $user->id }}"
+                                                                            data-role="{{ $currentRole }}">
+                                                                            <i class="fas fa-trash-alt me-2"></i> Xóa vĩnh
+                                                                            viễn
+                                                                        </button>
+                                                                    </li>
+                                                                @else
+                                                                    <li>
+                                                                        <a class="dropdown-item"
+                                                                            href="{{ route('users.show', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
+                                                                            <i class="fas fa-eye me-2"></i> Xem
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="dropdown-item"
+                                                                            href="{{ route('users.edit', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
+                                                                            <i class="fas fa-edit me-2"></i> Sửa
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <button type="button"
+                                                                            class="dropdown-item text-danger soft-delete-btn"
+                                                                            data-id="{{ $user->id }}">
+                                                                            <i class="fas fa-times me-2"></i> Xóa mềm
+                                                                        </button>
+                                                                    </li>
+                                                                @endif
                                                             @endif
-                                                        @endif
-                                                    </ul>
-                                                </div>
-                                            </td>
+                                                        </ul>
+                                                    </div>
+                                                </td>
                                             @endif
                                         </tr>
                                     @endforeach
@@ -278,11 +279,11 @@
                                             <td>{{ $admin->address ?? 'Không có' }}</td>
                                             <td>
                                                 @if ($admin->trashed())
-                                                    <span class="badge bg-danger">Đã khóa</span>
+                                                    <span class="badge bg-danger">Đã xóa</span>
                                                 @else
                                                     <span
                                                         class="badge {{ $admin->status === 'active' ? 'bg-success' : ($admin->status === 'inactive' ? 'bg-warning' : 'bg-danger') }}">
-                                                        {{ $admin->status === 'active' ? 'Hoạt động' : ($admin->status === 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
+                                                        {{ $admin->status === 'active' ? 'Hoạt động' : ($admin->status === 'inactive' ? 'Không hoạt động' : 'Đã xóa') }}
                                                     </span>
                                                 @endif
                                             </td>
@@ -306,6 +307,13 @@
                                                                             <i class="fas fa-undo me-2"></i> Khôi phục
                                                                         </button>
                                                                     </li>
+                                                                    <button type="button"
+                                                                        class="dropdown-item text-danger force-delete-btn"
+                                                                        data-id="{{ $admin->id }}"
+                                                                        data-role="{{ $currentRole }}">
+                                                                        <i class="fas fa-trash-alt me-2"></i> Xóa vĩnh
+                                                                        viễn
+                                                                    </button>
                                                                 @else
                                                                     <li>
                                                                         <a class="dropdown-item"
@@ -323,8 +331,7 @@
                                                                         <button type="button"
                                                                             class="dropdown-item text-danger soft-delete-btn"
                                                                             data-id="{{ $admin->id }}">
-                                                                            <i class="fas fa-times me-2"></i> Khóa tài
-                                                                            khoản
+                                                                            <i class="fas fa-times me-2"></i>Xóa mềm
                                                                         </button>
                                                                     </li>
                                                                 @endif
@@ -493,15 +500,15 @@
 
         handleSwalAction({
             selector: '.soft-delete-btn',
-            title: 'Khóa tài khoản',
-            text: 'Bạn có chắc chắn muốn khóa người dùng này?',
+            title: 'Xóa mềm người dùng',
+            text: 'Bạn có chắc chắn muốn xóa người dùng này?',
             route: '{{ route('users.softDelete', ':id') }}',
             method: 'DELETE'
         });
 
         handleSwalAction({
             selector: '.restore-btn',
-            title: 'Khôi phục tài khoản',
+            title: 'Khôi phục người dùng',
             text: 'Khôi phục người dùng này?',
             route: '{{ route('users.restore', ':id') }}',
             method: 'POST'

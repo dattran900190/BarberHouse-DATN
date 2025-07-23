@@ -34,19 +34,21 @@ class BarberController extends Controller
 
     public function create()
     {
-        if (Auth::user()->role === 'admin_branch') {
-            return redirect()->route('barbers.index')->with('error', 'Bạn không có quyền thêm thợ cắt tóc.');
+         $user = Auth::user();
+
+        // Nếu là admin_branch thì chỉ lấy ra chi nhánh của họ
+        if ($user->role === 'admin_branch') {
+            $branches = Branch::where('id', $user->branch_id)->get(); // giả sử có `branch_id` trong bảng users
+        } else {
+            $branches = Branch::all(); // admin thì lấy hết
         }
-        $branches = Branch::all();
+
         return view('admin.barbers.create', compact('branches'));
+
     }
 
     public function store(BarberRequest $request)
     {
-        if (Auth::user()->role === 'admin_branch') {
-            return redirect()->route('barbers.index')->with('error', 'Bạn không có quyền thêm thợ cắt tóc.');
-        }
-
         $data = $request->validated();
 
         if ($request->hasFile('avatar')) {
@@ -122,12 +124,12 @@ class BarberController extends Controller
 
     public function softDelete($id)
     {
-        if (Auth::user()->role === 'admin_branch') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bạn không có quyền xoá thợ.'
-            ]);
-        }
+        // if (Auth::user()->role === 'admin_branch') {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Bạn không có quyền xoá thợ.'
+        //     ]);
+        // }
 
         $barber = Barber::findOrFail($id);
 
@@ -149,12 +151,12 @@ class BarberController extends Controller
 
     public function restore($id)
     {
-        if (Auth::user()->role === 'admin_branch') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bạn không có quyền khôi phục thợ.'
-            ]);
-        }
+        // if (Auth::user()->role === 'admin_branch') {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Bạn không có quyền khôi phục thợ.'
+        //     ]);
+        // }
 
         $barber = Barber::withTrashed()->findOrFail($id);
         $barber->restore();

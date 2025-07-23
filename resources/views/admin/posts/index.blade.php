@@ -20,7 +20,9 @@
             </button>
         </div>
     @endif
-
+    @php
+        $currentRole = Auth::user()->role;
+    @endphp
     <div class="page-header">
         <h3 class="fw-bold mb-3">Tin tức</h3>
         <ul class="breadcrumbs mb-3">
@@ -47,12 +49,13 @@
     <div class="card">
         <div class="card-header text-white d-flex justify-content-between align-items-center">
             <div class="card-title">Danh sách bài viết</div>
-
-            <a href="{{ route('posts.create') }}"
-                class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
-                <i class="fas fa-plus"></i>
-                <span class="ms-2">Thêm bài viết</span>
-            </a>
+            @if ($currentRole == 'admin')
+                <a href="{{ route('posts.create') }}"
+                    class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
+                    <i class="fas fa-plus"></i>
+                    <span class="ms-2">Thêm bài viết</span>
+                </a>
+            @endif
         </div>
 
         <div class="card-body">

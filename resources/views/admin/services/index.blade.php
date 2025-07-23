@@ -20,6 +20,9 @@
             </button>
         </div>
     @endif
+    @php
+        $currentRole = Auth::user()->role;
+    @endphp
     <div class="page-header">
         <h3 class="fw-bold mb-3">Dịch vụ cắt tóc</h3>
         <ul class="breadcrumbs mb-3">
@@ -46,13 +49,13 @@
     <div class="card">
         <div class="card-header text-white d-flex justify-content-between align-items-center">
             <div class="card-title">Danh sách dịch vụ</div>
-
+             @if ($currentRole == 'admin')
             <a href="{{ route('services.create') }}"
                 class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
                 <i class="fas fa-plus"></i>
                 <span class="ms-2">Thêm dịch vụ</span>
             </a>
-
+            @endif
         </div>
 
         <div class="card-body">
@@ -125,12 +128,12 @@
                                                     </a>
                                                 </li>
                                                 @if (!$service->trashed())
-                                                <li>
-                                                    <a class="dropdown-item"
-                                                        href="{{ route('services.edit', ['service' => $service->id, 'page' => request('page', 1)]) }}">
-                                                        <i class="fas fa-edit me-2"></i> Sửa
-                                                    </a>
-                                                </li>
+                                                    <li>
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('services.edit', ['service' => $service->id, 'page' => request('page', 1)]) }}">
+                                                            <i class="fas fa-edit me-2"></i> Sửa
+                                                        </a>
+                                                    </li>
                                                 @endif
                                                 <li>
                                                     <hr class="dropdown-divider">

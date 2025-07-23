@@ -2,6 +2,9 @@
 
 @section('title', 'Danh sách Chi nhánh')
 
+@php
+    $currentRole = Auth::user()->role;
+@endphp
 @section('content')
     <div class="page-header mb-4">
         <h3 class="fw-bold mb-0">Lịch làm việc theo chi nhánh</h3>
@@ -20,10 +23,12 @@
         <div class="card-header bg-white d-flex justify-content-between align-items-center rounded-top border-bottom-0"
             style="border-radius: 16px 16px 0 0;">
             <h4 class="mb-0 fw-bold">Danh sách chi nhánh</h4>
-            <a href="{{ route('barber_schedules.createHoliday') }}"
-                class="btn btn-outline-success btn-sm d-flex align-items-center">
-                <i class="fas fa-plus me-1"></i> Tạo lịch nghỉ lễ
-            </a>
+            @if ($currentRole == 'admin')
+                <a href="{{ route('barber_schedules.createHoliday') }}"
+                    class="btn btn-outline-success btn-sm d-flex align-items-center">
+                    <i class="fas fa-plus me-1"></i> Tạo lịch nghỉ lễ
+                </a>
+            @endif
         </div>
         <div class="card-body">
             {{-- Tìm kiếm chi nhánh --}}
@@ -108,9 +113,8 @@
                                 <td>{{ $branch->phone }}</td>
                                 <td class="text-center align-middle" style="width: 70px;">
                                     <div class="dropdown d-inline-block">
-                                        <button
-                                            class="btn btn-sm btn-outline-secondary"
-                                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fa fa-ellipsis-v"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
