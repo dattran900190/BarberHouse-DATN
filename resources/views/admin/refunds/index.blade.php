@@ -20,6 +20,9 @@
             </button>
         </div>
     @endif
+    @php
+        $currentRole = Auth::user()->role;
+    @endphp
 
     <div class="page-header">
         <h3 class="fw-bold mb-3">Danh sách Yêu cầu hoàn tiền</h3>
@@ -74,7 +77,8 @@
                             {{ $label }}
                             @if ($key == 'pending' && $pendingRefundCount > 0)
                                 <span class="position-relative">
-                                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
                                         <span class="visually-hidden">New alerts</span>
                                     </span>
                                 </span>
@@ -108,7 +112,9 @@
                                         <th>Trạng thái</th>
                                         <th>Ngày tạo</th>
                                         <th>Tình trạng</th>
-                                        <th>Hành động</th>
+                                        @if ($currentRole == 'admin')
+                                            <th>Hành động</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody id="refund-table-{{ $key }}">
@@ -143,37 +149,40 @@
                                                     <span class="badge bg-success">Hoạt động</span>
                                                 @endif
                                             </td>
-                                            <td class="text-center">
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-outline-secondary" type="button"
-                                                        data-bs-toggle="dropdown">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('refunds.show', $refund->id) }}">
-                                                                <i class="fas fa-eye me-2"></i> Xem
-                                                            </a>
-                                                        </li>
-                                                        @if ($refund->trashed())
+                                            @if ($currentRole == 'admin')
+                                                <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                            data-bs-toggle="dropdown">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end">
                                                             <li>
-                                                                <button class="dropdown-item text-success restore-btn"
-                                                                    data-id="{{ $refund->id }}">
-                                                                    <i class="fas fa-undo me-2"></i> Khôi phục
-                                                                </button>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('refunds.show', $refund->id) }}">
+                                                                    <i class="fas fa-eye me-2"></i> Xem
+                                                                </a>
                                                             </li>
-                                                        @else
-                                                            <li>
-                                                                <button class="dropdown-item text-danger soft-delete-btn"
-                                                                    data-id="{{ $refund->id }}">
-                                                                    <i class="fas fa-times me-2"></i> Xoá mềm
-                                                                </button>
-                                                            </li>
-                                                        @endif
-                                                    </ul>
-                                                </div>
-                                            </td>
+                                                            @if ($refund->trashed())
+                                                                <li>
+                                                                    <button class="dropdown-item text-success restore-btn"
+                                                                        data-id="{{ $refund->id }}">
+                                                                        <i class="fas fa-undo me-2"></i> Khôi phục
+                                                                    </button>
+                                                                </li>
+                                                            @else
+                                                                <li>
+                                                                    <button
+                                                                        class="dropdown-item text-danger soft-delete-btn"
+                                                                        data-id="{{ $refund->id }}">
+                                                                        <i class="fas fa-times me-2"></i> Xoá mềm
+                                                                    </button>
+                                                                </li>
+                                                            @endif
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                            @endif
                                         </tr>
                                     @empty
                                         <tr>
@@ -195,121 +204,121 @@
 @endsection
 
 @section('js')
-<script>
-    function handleSwalAction({
-        selector,
-        title,
-        text,
-        route,
-        method = 'POST',
-        withInput = false,
-        inputPlaceholder = '',
-        inputValidator = null,
-        onSuccess = () => location.reload()
-    }) {
-        document.querySelectorAll(selector).forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                const id = this.getAttribute('data-id');
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            withInput = false,
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const id = this.getAttribute('data-id');
 
-                const swalOptions = {
-                    title,
-                    text,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Xác nhận',
-                    cancelButtonText: 'Hủy',
-                    width: '400px',
-                    customClass: {
-                        popup: 'custom-swal-popup'
+                    const swalOptions = {
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    };
+
+                    if (withInput) {
+                        swalOptions.input = 'textarea';
+                        swalOptions.inputPlaceholder = inputPlaceholder;
+                        if (inputValidator) {
+                            swalOptions.inputValidator = inputValidator;
+                        }
                     }
-                };
 
-                if (withInput) {
-                    swalOptions.input = 'textarea';
-                    swalOptions.inputPlaceholder = inputPlaceholder;
-                    if (inputValidator) {
-                        swalOptions.inputValidator = inputValidator;
-                    }
-                }
-
-                Swal.fire(swalOptions).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: 'Đang xử lý...',
-                            text: 'Vui lòng chờ trong giây lát.',
-                            allowOutsideClick: false,
-                            customClass: {
-                                popup: 'custom-swal-popup'
-                            },
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-
-                        const body = withInput ? JSON.stringify({
-                            input: result.value || ''
-                        }) : undefined;
-
-                        fetch(route.replace(':id', id), {
-                                method,
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    Swal.fire(swalOptions).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
                                 },
-                                body
-                            })
-                            .then(response => {
-                                if (!response.ok) throw new Error('Lỗi xử lý phía máy chủ.');
-                                return response.json();
-                            })
-                            .then(data => {
-                                Swal.close();
-                                Swal.fire({
-                                    title: data.success ? 'Thành công!' : 'Lỗi!',
-                                    text: data.message,
-                                    icon: data.success ? 'success' : 'error',
-                                    customClass: {
-                                        popup: 'custom-swal-popup'
-                                    }
-                                }).then(() => {
-                                    if (data.success) onSuccess();
-                                });
-                            })
-                            .catch(error => {
-                                Swal.close();
-                                Swal.fire({
-                                    title: 'Lỗi!',
-                                    text: error.message,
-                                    icon: 'error',
-                                    customClass: {
-                                        popup: 'custom-swal-popup'
-                                    }
-                                });
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
                             });
-                    }
+
+                            const body = withInput ? JSON.stringify({
+                                input: result.value || ''
+                            }) : undefined;
+
+                            fetch(route.replace(':id', id), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body
+                                })
+                                .then(response => {
+                                    if (!response.ok) throw new Error(
+                                        'Lỗi xử lý phía máy chủ.');
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: error.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
+                        }
+                    });
                 });
             });
+        }
+
+        // Xoá mềm yêu cầu hoàn tiền
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Xoá mềm yêu cầu hoàn tiền',
+            text: 'Bạn có chắc chắn muốn xoá mềm yêu cầu này?',
+            route: '{{ route('refunds.softDelete', ':id') }}',
+            method: 'PATCH'
         });
-    }
 
-    // Xoá mềm yêu cầu hoàn tiền
-    handleSwalAction({
-        selector: '.soft-delete-btn',
-        title: 'Xoá mềm yêu cầu hoàn tiền',
-        text: 'Bạn có chắc chắn muốn xoá mềm yêu cầu này?',
-        route: '{{ route('refunds.softDelete', ':id') }}',
-        method: 'PATCH'
-    });
-
-    // Khôi phục yêu cầu hoàn tiền
-    handleSwalAction({
-        selector: '.restore-btn',
-        title: 'Khôi phục yêu cầu hoàn tiền',
-        text: 'Bạn có chắc chắn muốn khôi phục yêu cầu này?',
-        route: '{{ route('refunds.restore', ':id') }}',
-        method: 'POST'
-    });
-</script>
+        // Khôi phục yêu cầu hoàn tiền
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục yêu cầu hoàn tiền',
+            text: 'Bạn có chắc chắn muốn khôi phục yêu cầu này?',
+            route: '{{ route('refunds.restore', ':id') }}',
+            method: 'POST'
+        });
+    </script>
 @endsection
-

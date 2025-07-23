@@ -20,7 +20,9 @@
             </button>
         </div>
     @endif
-
+    @php
+        $currentRole = Auth::user()->role;
+    @endphp
     <div class="page-header">
         <h3 class="fw-bold mb-3">Banner</h3>
         <ul class="breadcrumbs mb-3">
@@ -47,25 +49,27 @@
     <div class="card">
         <div class="card-header text-white d-flex justify-content-between align-items-center">
             <div class="card-title">Danh sách Banner</div>
-            <a href="{{ route('banners.create') }}"
-                class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
-                <i class="fas fa-plus"></i>
-                <span class="ms-2">Thêm Banner</span>
-            </a>
+            @if ($currentRole == 'admin')
+                <a href="{{ route('banners.create') }}"
+                    class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
+                    <i class="fas fa-plus"></i>
+                    <span class="ms-2">Thêm Banner</span>
+                </a>
+            @endif
         </div>
 
 
 
         <div class="card-body">
-            <form method="GET" action="{{ route('banners.index') }}"
-                class="mb-3 d-flex">
+            <form method="GET" action="{{ route('banners.index') }}" class="mb-3 d-flex">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm tiêu đề"
                     class="form-control me-2" />
                 <select name="filter" id="filter" class="form-select pe-5"
                     style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
                     <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả</option>
                     <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Còn hoạt động</option>
-                    <option value="inactive" {{ request('filter') == 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
+                    <option value="inactive" {{ request('filter') == 'inactive' ? 'selected' : '' }}>Không hoạt động
+                    </option>
                     <option value="deleted" {{ request('filter') == 'deleted' ? 'selected' : '' }}>Đã xoá</option>
                 </select>
 

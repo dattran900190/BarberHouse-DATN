@@ -15,13 +15,20 @@ class BranchController extends Controller
         $search = $request->input('search');
         $filter = $request->input('filter', 'all');
 
+        $user = Auth::user();
         $query = Branch::query();
 
-        if ($filter === 'deleted') {
-            $query->onlyTrashed();
-        } elseif ($filter === 'all') {
-            $query->withTrashed();
+        if ($user->role === 'admin_branch') {
+            $query->where('id', $user->branch_id); // Giả sử có cột `branch_id` trong bảng `users`
+        } else {
+            // Nếu là admin -> xử lý filter như cũ
+            if ($filter === 'deleted') {
+                $query->onlyTrashed();
+            } elseif ($filter === 'all') {
+                $query->withTrashed();
+            }
         }
+
         // Nếu muốn chỉ hiện chi nhánh hoạt động khi không chọn gì, thì bỏ else if trên và để mặc định
 
         if ($search) {
@@ -79,6 +86,7 @@ class BranchController extends Controller
     // Hiển thị form sửa
     public function edit(Branch $branch)
     {
+        
         return view('admin.branches.edit', compact('branch'));
     }
 
@@ -123,6 +131,12 @@ class BranchController extends Controller
     }
     public function softDelete($id)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xóa chi nhánh'
+            ]);
+        }
         $branch = Branch::findOrFail($id);
         $branch->delete();
         return response()->json(['success' => true, 'message' => 'Đã xoá mềm chi nhánh!']);
@@ -130,6 +144,12 @@ class BranchController extends Controller
 
     public function restore($id)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền khôi phục chi nhánh'
+            ]);
+        }
         $branch = Branch::withTrashed()->findOrFail($id);
         $branch->restore();
         return response()->json(['success' => true, 'message' => 'Đã khôi phục chi nhánh!']);
@@ -137,6 +157,12 @@ class BranchController extends Controller
 
     public function forceDelete($id)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xóa chi nhánh'
+            ]);
+        }
         $branch = Branch::withTrashed()->findOrFail($id);
         $branch->forceDelete();
         return response()->json(['success' => true, 'message' => 'Đã xoá vĩnh viễn chi nhánh!']);

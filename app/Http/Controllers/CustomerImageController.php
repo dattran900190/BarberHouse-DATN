@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CustomerImage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class CustomerImageController extends Controller
@@ -23,6 +24,9 @@ class CustomerImageController extends Controller
      */
     public function create()
     {
+         if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('customer-images.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         return view('admin.custormer_images.create');
     }
 
@@ -77,6 +81,9 @@ class CustomerImageController extends Controller
      */
     public function edit(string $id)
     {
+          if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('customer-images.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         $customerImage = CustomerImage::findOrFail($id);
 
         return view('admin.custormer_images.edit', compact('customerImage'));
@@ -116,6 +123,9 @@ class CustomerImageController extends Controller
      */
     public function destroy(string $id)
     {
+          if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('customer-images.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         $customerImage = CustomerImage::findOrFail($id);
 
         // Xoá ảnh khỏi thư mục storage nếu tồn tại

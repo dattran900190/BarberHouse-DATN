@@ -16,6 +16,9 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
+     @php
+        $currentRole = Auth::user()->role;
+    @endphp
 
     {{-- Header giống trang thợ --}}
     <div class="page-header">
@@ -38,11 +41,13 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <div class="card-title">Danh sách chi nhánh</div>
+               @if ($currentRole == 'admin')
             <a href="{{ route('branches.create') }}"
                 class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
                 <i class="fas fa-plus"></i>
                 <span class="ms-2">Thêm chi nhánh</span>
             </a>
+            @endif
         </div>
 
         <div class="card-body">

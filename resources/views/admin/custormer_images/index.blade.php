@@ -17,7 +17,9 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
-
+    @php
+        $currentRole = Auth::user()->role;
+    @endphp
     {{-- Breadcrumb --}}
     <div class="page-header">
         <h3 class="fw-bold mb-3">Ảnh Khách Hàng</h3>
@@ -38,9 +40,11 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <div class="card-title fw-bold">Danh sách ảnh</div>
-            <a href="{{ route('customer-images.create') }}" class="btn btn-sm btn-outline-success">
-                <i class="fas fa-plus"></i> Thêm ảnh mới
-            </a>
+            @if ($currentRole == 'admin')
+                <a href="{{ route('customer-images.create') }}" class="btn btn-sm btn-outline-success">
+                    <i class="fas fa-plus"></i> Thêm ảnh mới
+                </a>
+            @endif
         </div>
 
         <div class="card-body">
@@ -59,11 +63,12 @@
                     <tbody>
                         @forelse ($customerImages as $index => $img)
                             <tr>
-                                <td>{{ $loop->iteration + ($customerImages->currentPage() - 1) * $customerImages->perPage() }}</td>
+                                <td>{{ $loop->iteration + ($customerImages->currentPage() - 1) * $customerImages->perPage() }}
+                                </td>
                                 <td>
                                     @if ($img->image)
-                                        <img src="{{ asset('storage/' . $img->image) }}" alt="Ảnh khách"
-                                            width="100" class="img-thumbnail">
+                                        <img src="{{ asset('storage/' . $img->image) }}" alt="Ảnh khách" width="100"
+                                            class="img-thumbnail">
                                     @else
                                         <span class="text-muted">Không có ảnh</span>
                                     @endif
@@ -83,18 +88,23 @@
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{ $img->id }}">
                                             <li>
-                                                <a class="dropdown-item" href="{{ route('customer-images.show', $img->id) }}">
+                                                <a class="dropdown-item"
+                                                    href="{{ route('customer-images.show', $img->id) }}">
                                                     <i class="fas fa-eye me-2"></i> Xem
                                                 </a>
                                             </li>
                                             <li>
-                                                <a class="dropdown-item" href="{{ route('customer-images.edit', $img->id) }}">
+                                                <a class="dropdown-item"
+                                                    href="{{ route('customer-images.edit', $img->id) }}">
                                                     <i class="fas fa-edit me-2"></i> Sửa
                                                 </a>
                                             </li>
-                                            <li><hr class="dropdown-divider"></li>
                                             <li>
-                                                <form action="{{ route('customer-images.destroy', $img->id) }}" method="POST"
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('customer-images.destroy', $img->id) }}"
+                                                    method="POST"
                                                     onsubmit="return confirm('Bạn có chắc chắn muốn xoá ảnh này không?');">
                                                     @csrf
                                                     @method('DELETE')
