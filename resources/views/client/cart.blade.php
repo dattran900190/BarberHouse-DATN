@@ -79,10 +79,12 @@
                                                                                 class="form-select form-select-sm mt-1"
                                                                                 onchange="this.form.submit()">
                                                                                 @foreach ($variants as $variant)
-                                                                                    <option value="{{ $variant->id }}"
-                                                                                        {{ $variant->id == $currentVariantId ? 'selected' : '' }}>
-                                                                                        {{ $variant->volume->name ?? ($variant->name ?? 'Không rõ') }}
-                                                                                    </option>
+                                                                                    @if($variant->volume && $variant->volume->name !== 'Không rõ' && is_null($variant->volume->deleted_at))
+                                                                                        <option value="{{ $variant->id }}"
+                                                                                            {{ $variant->id == $currentVariantId ? 'selected' : '' }}>
+                                                                                            {{ $variant->volume->name ?? ($variant->name ?? 'Không rõ') }}
+                                                                                        </option>
+                                                                                    @endif
                                                                                 @endforeach
                                                                             </select>
                                                                         </form>
