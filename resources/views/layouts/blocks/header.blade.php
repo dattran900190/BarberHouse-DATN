@@ -30,8 +30,9 @@
                         </span>
                     </a>
                 </li>
-                <li class="nav-item mx-2 position-relative">
-                    <a class="nav-link" href="">
+                 <li class="nav-item mx-2 position-relative">
+                    <a class="nav-link" href="#" id="notification-bell" data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         <i class="fas fa-bell"></i>
                         <span id="notification-count"
                             class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger"
@@ -39,6 +40,20 @@
                             0
                         </span>
                     </a>
+                    <ul class="dropdown-menu dropdown-menu-end notification-dropdown"
+                        aria-labelledby="notification-bell">
+                        <li>
+                            <h6 class="dropdown-header">Thông báo</h6>
+                        </li>
+                        <li id="notification-list" class="notification-list">
+                            <p class="text-center text-muted">Chưa có thông báo</p>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-center" href="#" onclick="resetNotificationCount()">Xóa
+                                tất cả thông báo</a></li>
+                    </ul>
                 </li>
 
 
@@ -108,7 +123,7 @@
                 @auth
                     @if (Auth::user()->role != 'user')
                         <li class="nav-item mx-2">
-                            <a class="nav-link" href="{{ route('dashboard') }}" title="Đến trang quản trị">
+                            <a class="nav-link" href="{{ route('dashboard') }}"  onclick="window.location.reload();" title="Đến trang quản trị">
                                 <i class="fa-solid fa-user-shield"></i>
                             </a>
                         </li>
