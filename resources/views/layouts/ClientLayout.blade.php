@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,10 +8,214 @@
 
     @include('layouts.blocks.includes.link-head')
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <style>
+        .page-link {
+            color: #000;
+            border-radius: 5px;
+            /* border: 1px solid #000; */
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .page-link:hover {
+            background-color: #000;
+            color: #fff
+        }
+
+        .page-item.active .page-link {
+            background-color: #000;
+            color: white;
+            border: 1px solid #000;
+        }
+
+        .active .page-link {
+            background-color: #000;
+            color: white;
+            border: 1px solid #000;
+        }
+
+        /* Đảm bảo navbar ở trên toastr */
+        /* .navbar {
+            z-index: 10000 !important;
+        } */
+
+        /* Dịch toastr xuống dưới để không đè lên menu */
+        body.client-page .toast-custom-position {
+            position: fixed !important;
+            top: 15% !important;
+            right: 10px !important;
+            z-index: 1099 !important;
+        }
+
+        /* CSS cho dropdown thông báo */
+        .notification-dropdown {
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: #fff;
+            z-index: 9999 !important;
+        }
+
+        .notification-list {
+            padding: 10px;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notification-item i {
+            margin-right: 10px;
+            color: #007bff;
+        }
+
+        .notification-item p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .notification-item .time {
+            font-size: 0.7rem;
+            color: #6c757d;
+        }
+
+        /* Hiệu ứng rung cho chuông */
+        @keyframes bellShake {
+            0% {
+                transform: rotate(0);
+            }
+
+            25% {
+                transform: rotate(15deg);
+            }
+
+            50% {
+                transform: rotate(-15deg);
+            }
+
+            75% {
+                transform: rotate(10deg);
+            }
+
+            100% {
+                transform: rotate(0);
+            }
+        }
+
+        .bell-shake {
+            animation: bellShake 0.5s ease-in-out;
+        }
+
+        /* Tùy chỉnh toastr */
+        .toast {
+            border-radius: 8px !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
+        }
+
+        .toast-success {
+            background-color: #28a745 !important;
+        }
+
+        .toast-error {
+            background-color: #dc3545 !important;
+        }
+
+        .toast-info {
+            background-color: #17a2b8 !important;
+        }
+
+        .toast-warning {
+            background-color: #ffc107 !important;
+        }
+
+        /* CSS cho Select2 để tránh xung đột */
+        .select2-container--default .select2-selection--single {
+            height: 54px !important;
+            padding: 10px 14px !important;
+            border-radius: 4px !important;
+            background-color: #fff !important;
+            font-size: 15px !important;
+            font-weight: 500 !important;
+            /* color: #000 !important; */
+            transition: all 0.3s ease !important;
+        }
+
+        .select2-container--default .select2-selection--single:focus,
+        .select2-container--default .select2-selection--single.select2-selection--focus {
+            background-color: #fff !important;
+            box-shadow: 0 0 0 2px #000 !important;
+            outline: none !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top: 8px !important;
+            right: 8px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            /* color: #000 !important; */
+            line-height: 28px !important;
+        }
+
+        .select2-container--default .select2-results>.select2-results__options {
+            max-height: 240px !important;
+            /* border: 1px solid #000 !important; */
+            /* border-radius: 6px !important; */
+            font-size: 15px !important;
+        }
+
+        .select2-container--default .select2-results__option--highlighted {
+            /* background-color: #000 !important; */
+            color: #fff !important;
+        }
+
+        .btn-icon-remove {
+            background-color: transparent !important;
+            border: 1px solid #ccc !important;
+            color: #000 !important;
+            border-radius: 6px !important;
+            width: 36px !important;
+            height: 36px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 14px !important;
+            transition: all 0.3s ease !important;
+            cursor: pointer !important;
+        }
+
+        .btn-icon-remove:hover {
+            background-color: #000 !important;
+            color: #fff !important;
+        }
+    </style>
 </head>
-<body>
+
+<body class="client-page">
     <div class="site-wrapper">
         @include('layouts.blocks.header')
 
@@ -39,61 +244,126 @@
         </div>
     </div>
 
-    <!-- Thêm jQuery trước toastr -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Pusher JS -->
     <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <!-- Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Flatpickr -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+
     @include('layouts.blocks.includes.link-foot')
 
     <script>
+    document.addEventListener('DOMContentLoaded', function() {
         // Cấu hình toastr
         toastr.options = {
             closeButton: true,
             progressBar: true,
-            positionClass: 'toast-top-right',
-            timeOut: 5000
+            timeOut: 0,
+            extendedTimeOut: 0,
+            tapToDismiss: true,
+            debug: false,
+            showEasing: 'swing',
+            hideEasing: 'linear',
+            showMethod: 'fadeIn',
+            hideMethod: 'fadeOut',
+            target: 'body',
+            positionClass: 'toast-custom-position',
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Khởi tạo Pusher
-            const pusher = new Pusher('124e770f1adf07681023', {
-                cluster: 'ap1',
-                encrypted: true
-            });
-
-            // Subscribe vào channel 'appointments'
-            const channel = pusher.subscribe('appointments');
-
-            // Lắng nghe event 'AppointmentStatusUpdated'
-            channel.bind('AppointmentStatusUpdated', function(data) {
-                // Hiển thị thông báo bằng toastr
-                toastr.success(data.message);
-
-                // Cập nhật số lượng thông báo trên chuông
-                const badge = document.querySelector('#notification-count');
-                let currentCount = parseInt(badge.textContent) || 0;
-                badge.textContent = currentCount + 1;
-            });
-
-            // Lắng nghe event 'NewAppointment'
-            channel.bind('NewAppointment', function(data) {
-                // Hiển thị thông báo bằng toastr
-                toastr.success(data.message);
-
-                // Cập nhật số lượng thông báo trên chuông
-                const badge = document.querySelector('#notification-count');
-                let currentCount = parseInt(badge.textContent) || 0;
-                badge.textContent = currentCount + 1;
-            });
-
-            // Hàm reset số lượng thông báo
-            function resetNotificationCount() {
-                const badge = document.querySelector('#notification-count');
-                badge.textContent = '0';
-            }
+        // Khởi tạo Pusher
+        const pusher = new Pusher('124e770f1adf07681023', {
+            cluster: 'ap1',
+            encrypted: true
         });
-    </script>
+
+        // Subscribe vào channel 'appointments'
+        const channel = pusher.subscribe('appointments');
+
+        // Lấy danh sách thông báo từ localStorage
+        let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+
+        // Cập nhật số lượng thông báo trên chuông
+        const badge = document.querySelector('#notification-count');
+        badge.textContent = notifications.length;
+
+        // Hàm hiển thị danh sách thông báo
+        function displayNotifications() {
+            const notificationList = document.querySelector('#notification-list');
+            if (notifications.length === 0) {
+                notificationList.innerHTML = '<p class="text-center text-muted">Chưa có thông báo</p>';
+            } else {
+                notificationList.innerHTML = '';
+                notifications.forEach(notification => {
+                    const notificationItem = document.createElement('div');
+                    notificationItem.className = 'notification-item';
+                    notificationItem.innerHTML = `
+                        <i class="fas fa-bell"></i>
+                        <div>
+                            <a href="/appointment/${notification.appointment_id || ''}"><p>${notification.message}</p></a>
+                            <span class="time">${notification.time}</span>
+                        </div>
+                    `;
+                    notificationList.appendChild(notificationItem);
+                });
+            }
+        }
+
+        // Hàm thêm thông báo mới
+        function addNotification(message, appointment_id) {
+            const time = new Date().toLocaleString('vi-VN');
+            notifications.unshift({
+                message,
+                time,
+                appointment_id
+            });
+            localStorage.setItem('notifications', JSON.stringify(notifications));
+            displayNotifications();
+
+            // Cập nhật số lượng thông báo trên chuông
+            const badge = document.querySelector('#notification-count');
+            badge.textContent = notifications.length;
+
+            // Thêm hiệu ứng rung cho chuông
+            const bell = document.querySelector('#notification-bell i');
+            bell.classList.add('bell-shake');
+            setTimeout(() => bell.classList.remove('bell-shake'), 500);
+        }
+
+        // Lắng nghe event 'AppointmentStatusUpdated'
+        channel.bind('AppointmentStatusUpdated', function(data) {
+            toastr.success(data.message);
+            addNotification(data.message, data.appointment_id);
+        });
+
+        // Hàm reset số lượng thông báo
+        window.resetNotificationCount = function() {
+            notifications = [];
+            localStorage.setItem('notifications', JSON.stringify(notifications));
+            const badge = document.querySelector('#notification-count');
+            badge.textContent = '0';
+            displayNotifications();
+        };
+
+        // Khởi tạo dropdown của Bootstrap thủ công
+        const notificationBell = document.querySelector('#notification-bell');
+        if (notificationBell) {
+            new bootstrap.Dropdown(notificationBell);
+        }
+
+        // Hiển thị danh sách thông báo khi tải trang
+        displayNotifications();
+    });
+</script>
 </body>
+
 </html>

@@ -451,10 +451,10 @@ class AppointmentController extends Controller
         ];
 
         $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            ['cluster' => env('PUSHER_APP_CLUSTER'), 'useTLS' => true]
+            config('broadcasting.connections.pusher.key'),
+            config('broadcasting.connections.pusher.secret'),
+            config('broadcasting.connections.pusher.app_id'),
+            ['cluster' => config('broadcasting.connections.pusher.options.cluster'), 'useTLS' => true]
         );
 
         $pusher->trigger('appointments', 'App\\Events\\AppointmentCreated', $pusherData);
