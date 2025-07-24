@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\View;
 use App\Observers\AppointmentObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Broadcast;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Broadcast::routes(['middleware' => ['auth']]);
+
+        // Xác thực kênh riêng tư
+        Broadcast::channel('private-user.{userId}', function ($user, $userId) {
+            return (int) $user->id === (int) $userId;
+        });
+        
         // Kích hoạt phân trang dùng Bootstrap
         Paginator::useBootstrap();
 

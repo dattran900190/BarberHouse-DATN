@@ -96,7 +96,7 @@
                  </ul>
              </li> --}}
              <li class="nav-item topbar-icon hidden-caret">
-                 <a class="nav-link" href="{{ url('/') }}" title="Về trang người dùng">
+                 <a class="nav-link" href="{{ url('/') }}" onclick="window.location.reload();" title="Về trang người dùng">
                      <i class="fas fa-home"></i>
                  </a>
              </li>

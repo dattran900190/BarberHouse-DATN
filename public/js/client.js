@@ -109,6 +109,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+
+
 // document.addEventListener('DOMContentLoaded', function () {
 //   const appointmentDate = document.getElementById('appointment_date');
 //   const appointmentTime = document.getElementById('appointment_time');
