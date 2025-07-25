@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\View;
 use App\Observers\AppointmentObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Broadcast;
 
 class AppServiceProvider extends ServiceProvider
 {
-
     /**
      * Register any application services.
      */
@@ -29,12 +29,23 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Đăng ký broadcasting routes với middleware auth
+        Broadcast::routes(['middleware' => ['auth']]);
+        
+        // Xác thực kênh riêng tư cho từng user
+        Broadcast::channel('user.{userId}', function ($user, $userId) {
+            return (int) $user->id === (int) $userId;
+        });
+
         // Kích hoạt phân trang dùng Bootstrap
         Paginator::useBootstrap();
 
         // Đăng ký observer cho Appointment
         Appointment::observe(AppointmentObserver::class);
-     
+
+        if (Schema::hasTable('product_categories')) {
+            View::share('globalCategories', ProductCategory::all());
+        }
 
         View::composer('admin.*', function ($view) {
             $pendingCount = Appointment::where('status', 'pending')->count();
@@ -57,16 +68,13 @@ class AppServiceProvider extends ServiceProvider
             $banners = Banner::where('is_active', 1)
                 ->orderBy('id', 'desc')
                 ->get();
-
             $view->with('banners', $banners);
         });
 
         // Chia sẻ các liên kết mạng xã hội với tất cả các view
         View::composer('*', function ($view) {
             $social_links = Setting::where('type', 'url')->get()->pluck('value', 'key');
-
             $imageSettings = Setting::where('type', 'image')->pluck('value', 'key');
-
             $view->with([
                 'social_links' => $social_links,
                 'imageSettings' => $imageSettings,

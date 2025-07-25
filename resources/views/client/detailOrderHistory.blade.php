@@ -14,13 +14,13 @@
                             <div class="d-sm-flex">
                                 <div class="flex-grow-1">
                                     {{-- Logo công ty --}}
-                                    <img src="{{ asset('images/black_logo.png') }}" class="card-logo card-logo-dark"
+                                    <img src="{{ asset('storage/' . ($imageSettings['black_logo'] ?? 'default-images/black_logo.png')) }}" class="card-logo card-logo-dark"
                                         alt="logo tối" height="56">
 
                                 </div>
                                 <div class="flex-shrink-0 mt-sm-0 mt-3">
 
-                                    <h6><span class="text-muted fw-normal">Email:</span> email123@
+                                    <h6><span class="text-muted fw-normal">Email:</span> {{ $order->email }}
                                     </h6>
 
                                     <h6 class="mb-0"><span class="text-muted fw-normal">Điện thoại:</span>
@@ -43,9 +43,19 @@
                                 </div>
                                 <div class="col-lg-3 col-6">
                                     <p class="text-muted mb-2 text-uppercase fw-semibold fs-14">Trạng thái</p>
-                                    <span class="status-label status-{{ $order->status }}">
-                                        {{ $statusMap[$order->status] ?? ucfirst($order->status) }}
-                                    </span>
+                                    @if ($order->status == 'pending')
+                                        <span class="status-label status-processing">Đang chờ</span>
+                                    @elseif ($order->status == 'shipping')
+                                        <span class="status-label status-confirmed">Đang giao hàng</span>
+                                    @elseif ($order->status == 'processing')
+                                        <span class="status-label status-info">Đang xử lý</span>
+                                    @elseif ($order->status == 'cancelled')
+                                        <span class="status-label status-cancelled">
+                                            {{ $order->cancellation_type == 'no-show' ? 'Không đến' : 'Đã hủy' }}
+                                        </span>
+                                    @elseif ($order->status == 'completed')
+                                        <span class="status-label status-completed">Đã giao hàng</span>
+                                    @endif
                                 </div>
                                 <div class="col-lg-3 col-6">
                                     <p class="text-muted mb-2 text-uppercase fw-semibold fs-14">Tổng cộng</p>
@@ -56,14 +66,25 @@
                     </div>
                     <div class="col-lg-12">
                         <div class="card-body p-4 border-top border-top-dashed">
+                            <h6 class="text-muted text-uppercase fw-semibold fs-15">Địa chỉ nhận hàng</h6>
                             <div class="row g-3">
+
                                 <div class="col-6">
-                                    <h6 class="text-muted text-uppercase fw-semibold fs-15 mb-3">Địa chỉ giao hàng</h6>
+                                    <p class="text-muted mb-1">Họ tên: <span class="fw-medium"> {{ $order->name }}
+                                        </span></p>
                                     <p class="text-muted mb-1">Địa chỉ: <span class="fw-medium"> {{ $order->address }}
                                         </span></p>
                                     <p class="text-muted mb-1">Điện thoại: <span class="fw-medium"> {{ $order->phone }}
                                         </span></p>
-                                    <p class="text-muted mb-1">Loại giao hàng:
+
+
+                                </div>
+                                <div class="col-6">
+
+                                    <p class="text-muted mb-1">Thanh toán: <span class="fw-medium">
+                                            {{ $order->shipping_method == 'standard' ? 'Thanh toán khi nhận hàng' : 'VNPay' }}
+                                        </span></p>
+                                    <p class="text-muted mb-1">Vận chuyển:
                                         <span class="fw-medium">
                                             {{ $order->shipping_fee == 25000 ? 'Giao hàng tiêu chuẩn' : 'Giao hàng nhanh' }}
                                         </span>
@@ -113,6 +134,10 @@
                                             @php
                                                 $variant = $item->productVariant;
                                                 $product = $variant->product ?? null;
+                                                $subtotal =
+                                                    $order->total_money -
+                                                    $order->shipping_fee +
+                                                    ($order->discount_amount ?? 0);
                                             @endphp
                                             <tr>
                                                 {{-- Số thứ tự --}}
@@ -129,7 +154,9 @@
                                                     <p class="text-muted mb-0">{{ $variant?->description ?? '' }}</p>
                                                 </td>
                                                 {{-- Dung tích --}}
-                                                <td>DUng tích</td>
+                                                <td>
+                                                    {{ $item->volume_name }}
+                                                </td>
                                                 {{-- Giá và số lượng --}}
                                                 <td>{{ number_format($item->price_at_time, 0, ',', '.') }} VNĐ</td>
                                                 <td>{{ $item->quantity }}</td>
@@ -148,7 +175,7 @@
                                     <tbody>
                                         <tr>
                                             <td>Tổng tạm tính</td>
-                                            <td class="text-end">{{ number_format($item->total_price, 0, ',', '.') }} VNĐ
+                                            <td class="text-end">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</td>
                                             </td>
                                         </tr>
 
@@ -174,29 +201,20 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="mt-3">
-                                <h6 class="text-muted text-uppercase fw-semibold mb-3">Chi tiết thanh toán</h6>
-                                <p class="text-muted mb-1">Phương thức thanh toán: <span class="fw-medium">Thanh toán tại
-                                        nhà</span>
-                                </p>
 
-                                <p class="text-muted">Tổng cộng: <span
-                                        class="fw-medium">{{ number_format($order->total_money, 0, ',', '.') }} VNĐ</span>
-                                </p>
-                            </div>
                             <div class="mt-4">
                                 <div class="alert alert-light">
                                     <p class="mb-0"><span class="fw-semibold">GHI CHÚ:</span>
-                                        {{ $order->notes ?? 'Không có ghi chú' }}</p>
+                                        {{ $order->note ?? 'Không có ghi chú' }}</p>
                                 </div>
                             </div>
                             <div class="hstack gap-2 justify-content-end d-print-none mt-4">
                                 @if ($order->status === 'pending')
-                                    <form action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
-                                        style="display:inline-block;"
-                                        onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
+                                    <form id="cancelOrderForm" action="{{ route('client.orders.cancel', $order->id) }}"
+                                        method="POST" style="display:inline-block;">
                                         @csrf
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">Hủy đơn hàng</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" id="cancelOrderBtn">Hủy
+                                            đơn hàng</button>
                                     </form>
                                 @endif
                                 <a href="{{ route('client.orderHistory') }}" class="btn btn-outline-secondary btn-sm">Quay
@@ -219,4 +237,24 @@
 @endsection
 
 @section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.getElementById('cancelOrderBtn')?.addEventListener('click', function(e) {
+            Swal.fire({
+                title: 'Xác nhận hủy đơn hàng?',
+                text: "Bạn sẽ không thể khôi phục thao tác này!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#aaa',
+                confirmButtonText: 'Vâng, hủy đơn!',
+                cancelButtonText: 'Không'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('cancelOrderForm').submit();
+                }
+            });
+        });
+    </script>
 @endsection

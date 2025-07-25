@@ -2,7 +2,7 @@
       <div class="main-footer">
         <div class="description">
           <div class="logo">
-            <a href=""><img src="images/white_logo.png" alt=""></a>
+            <a href=""><img src="{{ asset('storage/' . ($imageSettings['white_logo'] ?? 'default-images/white_logo.png')) }}" alt=""></a>
           </div>
           <p>
             CÔNG TY TNHH BARBER HOURSE<br>

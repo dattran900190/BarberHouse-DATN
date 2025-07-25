@@ -52,7 +52,7 @@
                         <div class="mb-3">
                             <label for="note" class="form-label">Ghi chú</label>
                             <textarea name="note" class="form-control" id="note" rows="5">{{ old('note') }}</textarea>
-@error('note')
+                            @error('note')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
@@ -91,7 +91,7 @@
                             <div class="chon">
                                 <input class="form-check-input" value="1" type="radio"
                                     name="phuong_thuc_thanh_toan_id" id="paymentMethodCOD" checked required />
-                                <label class="form-check-label" for="paymentMethodCOD">Thanh toán khi giao hàng
+                                <label class="form-check-label" for="paymentMethodCOD">Thanh toán khi nhận hàng
                                     (COD)</label>
                             </div>
                             <div class="icon-bank">
@@ -99,7 +99,7 @@
                             </div>
                         </div>
                         <div class="form-check" style="display: flex; justify-content: space-between">
-<div class="chon">
+                            <div class="chon">
                                 <input class="form-check-input" value="2" type="radio"
                                     name="phuong_thuc_thanh_toan_id" id="paymentMethodVNPAY" />
                                 <label class="form-check-label" for="paymentMethodVNPAY">Thanh toán qua VNPAY-QR</label>
@@ -148,7 +148,7 @@
                             <div class="phi-van-chuyen">
                                 <p>Phí vận chuyển</p>
                                 <span id="shipping-fee-display">{{ number_format($shippingFee, 0, ',', '.') }} VNĐ</span>
-</div>
+                            </div>
                         </div>
 
                         <div class="tong-cong">
@@ -213,7 +213,7 @@
             // Xử lý sự kiện click nút Đặt hàng
             document.querySelector('.checkout-btn').addEventListener('click', function(e) {
                 e.preventDefault();
-const form = document.getElementById('checkoutForm');
+                const form = document.getElementById('checkoutForm');
 
                 // Kiểm tra form trước khi gửi
                 if (!form.checkValidity()) {
@@ -280,7 +280,7 @@ const form = document.getElementById('checkoutForm');
 
                             // Thu thập dữ liệu từ form
                             const formData = new FormData(form);
-// Gửi yêu cầu AJAX
+                            // Gửi yêu cầu AJAX
                             fetch('{{ route('cart.checkout.process') }}', {
                                     method: 'POST',
                                     body: formData,
@@ -330,7 +330,7 @@ const form = document.getElementById('checkoutForm');
                                                     .redirect_url;
                                             });
                                         }
-}
+                                    }
                                 })
                                 .catch(error => {
                                     Swal.close();
