@@ -54,6 +54,9 @@ class ProductController extends Controller
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền thêm sản phẩm.');
         }
+        if (!$request->has('variants') || count($request->variants) < 1) {
+            return back()->with('error', 'Phải có ít nhất 1 biến thể')->withInput();
+        }
         $imagePath = null;
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $imagePath = $request->file('image')->store('products', 'public');
