@@ -229,8 +229,8 @@
         toastr.options = {
             closeButton: true,
             progressBar: true,
-            timeOut: 5000,
-            extendedTimeOut: 2000,
+            timeOut: 7000,
+            extendedTimeOut: 4000,
             tapToDismiss: true,
             debug: false,
             showEasing: 'swing',
@@ -270,22 +270,31 @@
         function displayNotifications() {
             const notificationList = document.querySelector('#notification-list');
             if (!notificationList) return;
-            
+
             if (notifications.length === 0) {
                 notificationList.innerHTML = '<p class="text-center text-muted">Chưa có thông báo</p>';
             } else {
                 notificationList.innerHTML = '';
-                notifications.forEach(notification => {
+                notifications.forEach((notification, index) => {
                     const notificationItem = document.createElement('div');
                     notificationItem.className = 'notification-item';
                     notificationItem.innerHTML = `
                         <i class="fas fa-bell"></i>
                         <div>
-                            <a href="/appointment/${notification.appointment_id || ''}"><p>${notification.message}</p></a>
+                            <a href="/lich-su-dat-lich/${notification.appointment_id || ''}" style="color: #000" data-index="${index}"><p>${notification.message}</p></a>
                             <span class="time">${notification.time}</span>
                         </div>
                     `;
                     notificationList.appendChild(notificationItem);
+                });
+
+                // Thêm sự kiện nhấp chuột cho các liên kết thông báo
+                const notificationLinks = notificationList.querySelectorAll('a[data-index]');
+                notificationLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        removeNotification(index);
+                    });
                 });
             }
         }
@@ -308,6 +317,17 @@
             if (bell) {
                 bell.classList.add('bell-shake');
                 setTimeout(() => bell.classList.remove('bell-shake'), 500);
+            }
+        }
+
+        function removeNotification(index) {
+            notifications.splice(index, 1); // Xóa thông báo tại chỉ số index
+            localStorage.setItem('notifications_' + userId, JSON.stringify(notifications));
+            displayNotifications();
+
+            const badge = document.querySelector('#notification-count');
+            if (badge) {
+                badge.textContent = notifications.length;
             }
         }
 
@@ -349,7 +369,7 @@
     window.addEventListener('unload', function() {
         if (pusherInstance) pusherInstance.disconnect();
     });
-    </script>
+</script>
 </body>
 
 </html>

@@ -29,10 +29,24 @@ class AppointmentStatusUpdated implements ShouldBroadcast
 
     public function broadcastWith()
     {
+        // Mảng ánh xạ trạng thái tiếng Anh sang tiếng Việt
+        $statusTranslations = [
+            'pending' => 'Đang chờ xử lý',
+            'unconfirmed' => 'Chưa xác nhận',
+            'confirmed' => 'Đã xác nhận',
+            'checked-in' => 'Đã đến',
+            'progress' => 'Đang thực hiện',
+            'completed' => 'Hoàn tất',
+            'cancelled' => 'Đã hủy',
+        ];
+
+        // Lấy trạng thái đã dịch, mặc định trả về trạng thái gốc nếu không tìm thấy
+        $translatedStatus = $statusTranslations[$this->appointment->status] ?? $this->appointment->status;
+
         return [
-            'message' => 'Lịch hẹn của ' . ($this->appointment->name ?? 'Khách hàng không xác định') . ' đã được cập nhật trạng thái thành ' . $this->appointment->status,
+            'message' => 'Lịch hẹn của bạn đã được cập nhật trạng thái thành ' . $translatedStatus,
             'appointment_id' => $this->appointment->id,
-            'status' => $this->appointment->status,
+            'status' => $translatedStatus, // Trả về trạng thái đã dịch
         ];
     }
 

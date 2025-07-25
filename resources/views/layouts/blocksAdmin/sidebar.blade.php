@@ -12,7 +12,7 @@
             </div>
 
             <a href="index.html" class="logo text-center mx-auto">
-                <img src="{{ asset('images/white_logo.png') }}" alt="navbar brand" class="navbar-brand"
+                <img src="{{ asset('storage/' . ($imageSettings['white_logo'] ?? 'default-images/white_logo.png')) }}" alt="navbar brand" class="navbar-brand"
                     height="70" />
             </a>
 

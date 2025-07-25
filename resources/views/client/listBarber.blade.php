@@ -82,58 +82,7 @@
             background-color: #000;
         }
 
-        .barber-card {
-            border-radius: 18px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid #eee;
-            overflow: hidden;
-        }
-
-        .barber-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .barber-img-wrapper {
-            overflow: hidden;
-            border-top-left-radius: 18px;
-            border-top-right-radius: 18px;
-        }
-
-        .barber-img {
-            height: 240px;
-            width: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .barber-img-wrapper:hover .barber-img {
-            transform: scale(1.05);
-        }
-
-        .rating i {
-            font-size: 0.9rem;
-        }
-
-        .book-btn {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: #fff;
-            background: linear-gradient(135deg, #000000, #f5c518);
-            border: none;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .book-btn:hover {
-            background: linear-gradient(135deg, #f5c518, #000000);
-            color: #fff;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(245, 197, 24, 0.4);
-        }
+        
     </style>
 
     <!-- Font Awesome -->
