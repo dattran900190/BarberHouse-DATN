@@ -112,12 +112,41 @@
                         @endphp
                         @foreach ($allVariants as $variant)
                             <tr class="variant-row" data-variant-id="{{ $variant->id }}">
-                                <td>{{ optional($variant->volume)->name }}</td>
-                                <td>{{ $variant->price }}</td>
-                                <td>{{ $variant->stock }}</td>
+                                <td>
+                                    @if(isset($variant->id) && !$variant->trashed())
+                                        <input type="hidden" name="variants[{{ $variant->id }}][id]" value="{{ $variant->id }}">
+                                    @endif
+                                    @if ($variant->trashed())
+                                        {{ optional($variant->volume)->name }}
+                                    @else
+                                        <select name="variants[{{ $variant->id }}][volume_id]" class="form-control">
+                                            <option value="">Chọn dung tích</option>
+                                            @foreach ($volumes as $volume)
+                                                <option value="{{ $volume->id }}" {{ $variant->volume_id == $volume->id ? 'selected' : '' }}>{{ $volume->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($variant->trashed())
+                                        {{ $variant->price }}
+                                    @else
+                                        <input type="number" name="variants[{{ $variant->id }}][price]" class="form-control" step="0.01" value="{{ $variant->price }}">
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($variant->trashed())
+                                        {{ $variant->stock }}
+                                    @else
+                                        <input type="number" name="variants[{{ $variant->id }}][stock]" class="form-control" value="{{ $variant->stock }}">
+                                    @endif
+                                </td>
                                 <td>
                                     @if ($variant->image)
-                                        <img src="{{ asset('storage/' . $variant->image) }}" width="60">
+                                        <img src="{{ asset('storage/' . $variant->image) }}" width="60" class="mb-1"><br>
+                                    @endif
+                                    @if (!$variant->trashed())
+                                        <input type="file" name="variants[{{ $variant->id }}][image]" class="form-control" accept="image/*">
                                     @endif
                                 </td>
                                 <td>
@@ -270,6 +299,23 @@
                             // Cập nhật trạng thái dòng
                             row.querySelector('td:nth-child(5)').innerHTML = '<span class="badge bg-secondary">Đã ẩn</span>';
                             row.querySelector('td:nth-child(6)').innerHTML = '<button type="button" class="btn btn-success btn-sm btn-restore-variant" data-variant-id="' + variantId + '">Kích hoạt lại</button>';
+
+                            // Chuyển các trường về dạng text (không cho sửa)
+                            // Dung tích
+                            let volumeSelect = row.querySelector('td:nth-child(1) select');
+                            let volumeText = volumeSelect ? volumeSelect.selectedOptions[0].textContent : row.querySelector('td:nth-child(1)').textContent;
+                            row.querySelector('td:nth-child(1)').innerHTML = volumeText;
+                            // Giá
+                            let priceInput = row.querySelector('td:nth-child(2) input');
+                            let priceValue = priceInput ? priceInput.value : row.querySelector('td:nth-child(2)').textContent;
+                            row.querySelector('td:nth-child(2)').innerHTML = priceValue;
+                            // Tồn kho
+                            let stockInput = row.querySelector('td:nth-child(3) input');
+                            let stockValue = stockInput ? stockInput.value : row.querySelector('td:nth-child(3)').textContent;
+                            row.querySelector('td:nth-child(3)').innerHTML = stockValue;
+                            // Ảnh: chỉ giữ lại ảnh, xóa input file
+                            let imgHtml = row.querySelector('td:nth-child(4) img') ? row.querySelector('td:nth-child(4) img').outerHTML + '<br>' : '';
+                            row.querySelector('td:nth-child(4)').innerHTML = imgHtml;
                         } else {
                             Swal.fire('Lỗi', data.message || 'Không thể ẩn biến thể cuối cùng!', 'error');
                         }
@@ -309,6 +355,31 @@
                             // Cập nhật trạng thái dòng
                             row.querySelector('td:nth-child(5)').innerHTML = '<span class="badge bg-success">Đang hoạt động</span>';
                             row.querySelector('td:nth-child(6)').innerHTML = '<button type="button" class="btn btn-danger btn-sm btn-soft-delete-variant" data-variant-id="' + variantId + '">Ẩn</button>';
+
+                            // Chuyển các trường về dạng input (cho phép sửa)
+                            // Dung tích
+                            let currentVolume = row.querySelector('td:nth-child(1)').textContent.trim();
+                            let selectHtml = `<input type=\"hidden\" name=\"variants[${variantId}][id]\" value=\"${variantId}\">`;
+                            selectHtml += `<select name=\"variants[${variantId}][volume_id]\" class=\"form-control\">`;
+                            selectHtml += `<option value=\"\">Chọn dung tích</option>`;
+                            @foreach ($volumes as $volume)
+                                selectHtml += `<option value=\"{{ $volume->id }}\"${currentVolume === '{{ $volume->name }}' ? ' selected' : ''}>{{ $volume->name }}</option>`;
+                            @endforeach
+                            selectHtml += `</select>`;
+                            row.querySelector('td:nth-child(1)').innerHTML = selectHtml;
+
+                            // Giá
+                            let price = row.querySelector('td:nth-child(2)').textContent.trim();
+                            row.querySelector('td:nth-child(2)').innerHTML = `<input type=\"number\" name=\"variants[${variantId}][price]\" class=\"form-control\" step=\"0.01\" value=\"${price}\">`;
+
+                            // Tồn kho
+                            let stock = row.querySelector('td:nth-child(3)').textContent.trim();
+                            row.querySelector('td:nth-child(3)').innerHTML = `<input type=\"number\" name=\"variants[${variantId}][stock]\" class=\"form-control\" value=\"${stock}\">`;
+
+                            // Ảnh
+                            let imgHtml = row.querySelector('td:nth-child(4) img') ? row.querySelector('td:nth-child(4) img').outerHTML + '<br>' : '';
+                            imgHtml += `<input type=\"file\" name=\"variants[${variantId}][image]\" class=\"form-control\" accept=\"image/*\">`;
+                            row.querySelector('td:nth-child(4)').innerHTML = imgHtml;
                         } else {
                             Swal.fire('Lỗi', data.message || 'Không thể kích hoạt lại biến thể!', 'error');
                         }
