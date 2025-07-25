@@ -5,19 +5,14 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\ProductCategory;
 
 class ClientProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::whereHas('variants', function($q) {
-            $q->whereNotNull('volume_id')
-              ->whereHas('volume', function($q2) {
-                  $q2->whereNull('deleted_at')
-                     ->where('name', '!=', 'Không rõ');
-              });
-        });
-
+        $query = Product::query();
+        $globalCategories = ProductCategory::all();
         // ---- LỌC DANH MỤC ----
         if ($request->filled('category')) {      // <‑‑ key trên URL: ?category=1
             $query->where('product_category_id', $request->category);
@@ -28,11 +23,11 @@ class ClientProductController extends Controller
             [$min, $max] = explode('-', $request->price_range);
             $query->whereBetween('price', [(int)$min * 1000, (int)$max * 1000]);
         }
-       
+
         $products = $query->with('variants')->latest()->paginate(8);
 
 
-        return view('client.product', compact('products'));
+        return view('client.product', compact('products','globalCategories'));
     }
     public function show($id)
     {

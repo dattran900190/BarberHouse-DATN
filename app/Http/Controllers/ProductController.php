@@ -115,7 +115,8 @@ class ProductController extends Controller
         }
         $categories = ProductCategory::all();
         $volumes = Volume::all();
-        $product->load('variants', 'images');
+        // Nạp lại product từ database để đảm bảo variants mới nhất
+        $product = Product::with(['variants', 'images'])->findOrFail($product->id);
         return view('admin.products.edit', compact('product', 'categories', 'volumes'));
     }
 
@@ -256,6 +257,65 @@ class ProductController extends Controller
             return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được khôi phục thành công!');
         }
         return redirect()->route('admin.products.index')->with('error', 'Sản phẩm không ở trong thùng rác.');
+    }
+
+    public function restoreVariant($id)
+    {
+        $variant = \App\Models\ProductVariant::withTrashed()->findOrFail($id);
+        if ($variant->trashed()) {
+            $variant->restore();
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Kích hoạt lại biến thể thành công!'
+                ]);
+            }
+            return redirect()->route('admin.products.edit', $variant->product_id)->with('success', 'Khôi phục biến thể thành công!');
+        }
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Biến thể này chưa bị xóa mềm.'
+            ]);
+        }
+        return redirect()->back()->with('error', 'Biến thể này chưa bị xóa mềm.');
+    }
+
+    public function softDeleteVariant($id)
+    {
+        $variant = \App\Models\ProductVariant::findOrFail($id);
+        $product = $variant->product;
+        $activeVariantsCount = $product->variants()->whereNull('deleted_at')->count();
+
+        if ($activeVariantsCount <= 1) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sản phẩm phải có ít nhất 1 biến thể. Không thể xóa biến thể cuối cùng!'
+                ]);
+            }
+            return redirect()->route('admin.products.edit', $variant->product_id)
+                ->with('error', 'Sản phẩm phải có ít nhất 1 biến thể. Không thể xóa biến thể cuối cùng!');
+        }
+
+        if (!$variant->trashed()) {
+            $variant->delete();
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Xóa mềm biến thể thành công!'
+                ]);
+            }
+            return redirect()->route('admin.products.edit', $variant->product_id)->with('success', 'Xóa mềm biến thể thành công!');
+        }
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Biến thể này đã bị xóa mềm.'
+            ]);
+        }
+        return redirect()->back()->with('error', 'Biến thể này đã bị xóa mềm.');
     }
 
     public function forceDelete($id)

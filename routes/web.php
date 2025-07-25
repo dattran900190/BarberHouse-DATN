@@ -290,6 +290,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/products/{id}/restore', [ProductController::class, 'restore'])->name('admin.products.restore');
     Route::delete('/products/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('admin.products.forceDelete');
     Route::get('/products/search', [ProductController::class, 'search'])->name('admin.products.search');
+    Route::post('admin/product-variants/{id}/restore', [App\Http\Controllers\ProductController::class, 'restoreVariant'])->name('admin.product-variants.restore');
+    Route::post('admin/product-variants/{id}/soft-delete', [App\Http\Controllers\ProductController::class, 'softDeleteVariant'])->name('admin.product-variants.softDelete');
 });
 
 // ==== profile ====

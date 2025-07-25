@@ -36,130 +36,122 @@
             </li>
         </ul>
     </div>
-<div class="container">
+<div class="container-fluid px-0"> {{-- Bỏ padding ngang --}}
     <h1>Thêm sản phẩm</h1>
     <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <div class="row">
-            <!-- Phần 1: Thông tin sản phẩm chính -->
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="product_category_id" class="form-label">Danh mục</label>
-                    <select name="product_category_id" id="product_category_id" class="form-control" >
-                        <option value="">Chọn danh mục</option>
-                        @foreach ($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('product_category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('product_category_id')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="name" class="form-label">Tên sản phẩm</label>
-                    <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" >
-                    @error('name')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="description" class="form-label">Mô tả</label>
-                    <textarea name="description" id="description" class="form-control">{{ old('description') }}</textarea>
-                    @error('description')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="mb-3">
-                    <label for="long_description" class="form-label">Mô tả dài</label>
-                    <textarea name="long_description" id="long_description" class="form-control">{{ old('long_description') }}</textarea>
-                    @error('long_description')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="price" class="form-label">Giá đại diện</label>
-                    <input type="number" name="price" id="price" class="form-control" value="{{ old('price') }}" step="0.01" >
-                    @error('price')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-           
-
-                <div class="mb-3">
-                    <label for="image" class="form-label">Ảnh chính sản phẩm</label>
-                    <input type="file" name="image" id="image" class="form-control" accept="image/jpeg,image/png,image/jpg">
-                    @error('image')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="additional_images" class="form-label">Ảnh bổ sung</label>
-                    <input type="file" name="additional_images[]" id="additional_images" class="form-control" accept="image/jpeg,image/png,image/jpg" multiple>
-                    @error('additional_images.*')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-
-            <!-- Phần 2: Biến thể sản phẩm -->
-            <div class="col-md-6">
-                <h3>Biến thể sản phẩm</h3>
-                <div id="variants">
-                    {{-- Hiển thị biến thể cũ (nếu có), ngược lại show 1 biến thể mặc định --}}
-                    @php
-                        $oldVariants = old('variants', [
-                            ['volume_id' => '', 'price' => '', 'stock' => '']
-                        ]);
-                    @endphp
-
-                    @foreach ($oldVariants as $index => $variant)
-                        <div class="variant mb-3 border p-3">
-                            <div class="mb-3">
-                                <label for="variants[{{ $index }}][volume_id]" class="form-label">Dung tích</label>
-                                <select name="variants[{{ $index }}][volume_id]" class="form-control" >
-                                    <option value="">Chọn dung tích</option>
-                                    @foreach ($volumes as $volume)
-                                        <option value="{{ $volume->id }}" {{ (string)($variant['volume_id'] ?? '') === (string)$volume->id ? 'selected' : '' }}>{{ $volume->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('variants.' . $index . '.volume_id')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="mb-3">
-                                <label for="variants[{{ $index }}][price]" class="form-label">Giá </label>
-                                <input type="number" name="variants[{{ $index }}][price]" class="form-control" step="0.01" value="{{ $variant['price'] ?? '' }}">
-                                @error('variants.' . $index . '.price')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="mb-3">
-                                <label for="variants[{{ $index }}][stock]" class="form-label">Tồn kho</label>
-                                <input type="number" name="variants[{{ $index }}][stock]" class="form-control" value="{{ $variant['stock'] ?? '' }}">
-                                @error('variants.' . $index . '.stock')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="mb-3">
-                                <label for="variants[{{ $index }}][image]" class="form-label">Ảnh biến thể</label>
-                                <input type="file" name="variants[{{ $index }}][image]" class="form-control" accept="image/jpeg,image/png,image/jpg">
-                                @error('variants.' . $index . '.image')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            {{-- <button type="button" class="btn btn-sm btn-outline-danger remove-variant">Xóa biến thể</button> --}}
-                        </div>
+        {{-- Bỏ row/col, chỉ để 1 div bọc --}}
+        <div>
+            {{-- Danh mục --}}
+            <div class="mb-3">
+                <label for="product_category_id" class="form-label">Danh mục</label>
+                <select name="product_category_id" id="product_category_id" class="form-control w-100" >
+                    <option value="">Chọn danh mục</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('product_category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                     @endforeach
-                </div>
-                <button type="button" class="btn btn-sm btn-outline-success" id="add-variant">Thêm biến thể</button>
+                </select>
+                @error('product_category_id')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+            {{-- Tên sản phẩm --}}
+            <div class="mb-3">
+                <label for="name" class="form-label">Tên sản phẩm</label>
+                <input type="text" name="name" id="name" class="form-control w-100" value="{{ old('name') }}" >
+                @error('name')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+            {{-- Mô tả --}}
+            <div class="mb-3">
+                <label for="description" class="form-label">Mô tả</label>
+                <textarea name="description" id="description" class="form-control w-100">{{ old('description') }}</textarea>
+                @error('description')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+            {{-- Mô tả dài --}}
+            <div class="mb-3">
+                <label for="long_description" class="form-label">Mô tả dài</label>
+                <textarea name="long_description" id="long_description" class="form-control w-100">{{ old('long_description') }}</textarea>
+                @error('long_description')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+            {{-- Giá đại diện --}}
+            <div class="mb-3">
+                <label for="price" class="form-label">Giá đại diện</label>
+                <input type="number" name="price" id="price" class="form-control w-100" value="{{ old('price') }}" step="0.01" >
+                @error('price')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+            {{-- Ảnh chính sản phẩm --}}
+            <div class="mb-3">
+                <label for="image" class="form-label">Ảnh chính sản phẩm</label>
+                <input type="file" name="image" id="image" class="form-control w-100" accept="image/jpeg,image/png,image/jpg">
+                @error('image')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+            {{-- Ảnh bổ sung --}}
+            <div class="mb-3">
+                <label for="additional_images" class="form-label">Ảnh bổ sung</label>
+                <input type="file" name="additional_images[]" id="additional_images" class="form-control w-100" accept="image/jpeg,image/png,image/jpg" multiple>
+                @error('additional_images.*')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
         </div>
-
+        <h3>Biến thể sản phẩm</h3>
+        <div id="variants">
+            {{-- Hiển thị biến thể cũ (nếu có), ngược lại show 1 biến thể mặc định --}}
+            @php
+                $oldVariants = old('variants', [
+                    ['volume_id' => '', 'price' => '', 'stock' => '']
+                ]);
+            @endphp
+            @foreach ($oldVariants as $index => $variant)
+                <div class="variant mb-3 border p-3">
+                    <div class="mb-3">
+                        <label for="variants[{{ $index }}][volume_id]" class="form-label">Dung tích</label>
+                        <select name="variants[{{ $index }}][volume_id]" class="form-control w-100" >
+                            <option value="">Chọn dung tích</option>
+                            @foreach ($volumes as $volume)
+                                <option value="{{ $volume->id }}" {{ (string)($variant['volume_id'] ?? '') === (string)$volume->id ? 'selected' : '' }}>{{ $volume->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('variants.' . $index . '.volume_id')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="variants[{{ $index }}][price]" class="form-label">Giá </label>
+                        <input type="number" name="variants[{{ $index }}][price]" class="form-control w-100" step="0.01" value="{{ $variant['price'] ?? '' }}">
+                        @error('variants.' . $index . '.price')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="variants[{{ $index }}][stock]" class="form-label">Tồn kho</label>
+                        <input type="number" name="variants[{{ $index }}][stock]" class="form-control w-100" value="{{ $variant['stock'] ?? '' }}">
+                        @error('variants.' . $index . '.stock')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="variants[{{ $index }}][image]" class="form-label">Ảnh biến thể</label>
+                        <input type="file" name="variants[{{ $index }}][image]" class="form-control w-100" accept="image/jpeg,image/png,image/jpg">
+                        @error('variants.' . $index . '.image')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-success" id="add-variant">Thêm biến thể</button>
+        <br><br>
         <button type="submit" class="btn btn-sm btn-outline-success">Thêm mới</button>
         <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-sm">Quay lại</a>
     </form>
@@ -175,7 +167,7 @@
         variantDiv.innerHTML = `
             <div class="mb-3">
                 <label for="variants[${variantIndex}][volume_id]" class="form-label">Dung tích</label>
-                <select name="variants[${variantIndex}][volume_id]" class="form-control" >
+                <select name="variants[${variantIndex}][volume_id]" class="form-control w-100" >
                     <option value="">Chọn dung tích</option>
                     @foreach ($volumes as $volume)
                         <option value="{{ $volume->id }}">{{ $volume->name }}</option>
@@ -184,15 +176,15 @@
             </div>
             <div class="mb-3">
                 <label for="variants[${variantIndex}][price]" class="form-label">Giá</label>
-                <input type="number" name="variants[${variantIndex}][price]" class="form-control" step="0.01" >
+                <input type="number" name="variants[${variantIndex}][price]" class="form-control w-100" step="0.01" >
             </div>
             <div class="mb-3">
                 <label for="variants[${variantIndex}][stock]" class="form-label">Tồn kho</label>
-                <input type="number" name="variants[${variantIndex}][stock]" class="form-control" >
+                <input type="number" name="variants[${variantIndex}][stock]" class="form-control w-100" >
             </div>
             <div class="mb-3">
                 <label for="variants[${variantIndex}][image]" class="form-label">Ảnh biến thể</label>
-                <input type="file" name="variants[${variantIndex}][image]" class="form-control" accept="image/jpeg,image/png,image/jpg">
+                <input type="file" name="variants[${variantIndex}][image]" class="form-control w-100" accept="image/jpeg,image/png,image/jpg">
             </div>
             <button type="button" class="btn btn-sm btn-outline-danger remove-variant">Xóa biến thể</button>
         `;
