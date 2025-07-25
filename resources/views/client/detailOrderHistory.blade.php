@@ -14,7 +14,7 @@
                             <div class="d-sm-flex">
                                 <div class="flex-grow-1">
                                     {{-- Logo công ty --}}
-                                    <img src="{{ asset('images/black_logo.png') }}" class="card-logo card-logo-dark"
+                                    <img src="{{ asset('storage/' . ($imageSettings['black_logo'] ?? 'default-images/black_logo.png')) }}" class="card-logo card-logo-dark"
                                         alt="logo tối" height="56">
 
                                 </div>

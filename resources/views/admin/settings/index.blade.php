@@ -79,6 +79,27 @@
                     @endforeach
                 </div>
 
+                <h5 class="fw-bold mt-3 mb-3">Logo</h5>
+                <div class="row g-4">
+                    @foreach ([ 'black_logo' => 'Logo đăng nhập, đăng ký, chi tiết đơn hàng, chi tiết đặt hàng', 
+                                'white_logo' => 'Logo đầu trang, chân trang, thanh bên'
+                                ] as $key => $label)
+                        <div class="col-md-6">
+                            <label class="form-label">{{ $label }}</label>
+                            <input type="hidden" name="images[{{ $key }}][key]" value="{{ $key }}">
+                                <div class="mb-2">
+                                <input type="file" class="form-control" name="images[{{ $key }}][value]"
+                                    accept="image/*" onchange="previewImage(this,'preview-{{ $key }}')">
+                                <input type="hidden" name="images[{{ $key }}][existing_value]"
+                                    value="{{ data_get($images, $key . '.value', '') }}">
+                            </div>
+                            <img id="preview-{{ $key }}"
+                                src="{{ data_get($images, $key . '.value') ? asset('storage/' . data_get($images, $key . '.value')) : 'https://via.placeholder.com/200x100?text=No+Image' }}"
+                                class="img-thumbnail" style="width:150px; height:100px; object-fit:cover;">
+                        </div>
+                    @endforeach
+                </div>
+
                 <div class="mt-4 ">
                     <button type="button" class="btn btn-outline-success submit-setting-btn">
                         Lưu thay đổi

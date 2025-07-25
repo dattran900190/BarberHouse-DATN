@@ -21,7 +21,7 @@ class SettingController extends Controller
         }
 
         // Lấy images theo key cố định
-        $image_keys = ['anh_dang_nhap', 'anh_dang_ky', 'bang_gia'];
+        $image_keys = ['anh_dang_nhap', 'anh_dang_ky', 'bang_gia', 'black_logo', 'white_logo'];
         $images = [];
         foreach ($image_keys as $k) {
             $images[$k] = [
@@ -47,7 +47,7 @@ class SettingController extends Controller
         }
 
         // Xử lý hình ảnh
-        $image_keys = ['anh_dang_nhap', 'anh_dang_ky', 'bang_gia'];
+        $image_keys = ['anh_dang_nhap', 'anh_dang_ky', 'bang_gia', 'black_logo', 'white_logo'];
         foreach ($image_keys as $key) {
             $existing = $request->input("images.{$key}.existing_value");
             $file     = $request->file("images.{$key}.value");
