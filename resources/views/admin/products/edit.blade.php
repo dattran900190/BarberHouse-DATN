@@ -25,9 +25,9 @@
         @csrf
         @method('PUT')
         {{-- Bỏ row/col, chỉ để 1 div bọc --}}
-        <div>
+        <div class="row">
             {{-- Danh mục --}}
-            <div class="mb-3">
+            <div class="mb-3 col-md-6">
                 <label for="product_category_id" class="form-label">Danh mục</label>
                 <select name="product_category_id" id="product_category_id" class="form-control w-100">
                     <option value="">Chọn danh mục</option>
@@ -38,23 +38,26 @@
                 @error('product_category_id') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
             {{-- Tên sản phẩm --}}
-            <div class="mb-3">
+            <div class="mb-3 col-md-6">
                 <label for="name" class="form-label">Tên sản phẩm</label>
                 <input type="text" name="name" id="name" class="form-control w-100" value="{{ old('name', $product->name) }}">
                 @error('name') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
+        </div>
+        <div class="row">
             {{-- Mô tả --}}
-            <div class="mb-3">
+            <div class="mb-3 col-md-6">
                 <label for="description" class="form-label">Mô tả</label>
                 <textarea name="description" id="description" class="form-control w-100">{{ old('description', $product->description) }}</textarea>
                 @error('description') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
             {{-- Mô tả dài --}}
-            <div class="mb-3">
+            <div class="mb-3 col-md-6">
                 <label for="long_description" class="form-label">Mô tả dài</label>
                 <textarea name="long_description" id="long_description" class="form-control w-100">{{ old('long_description', $product->long_description) }}</textarea>
                 @error('long_description') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
+        </div>
             {{-- Giá đại diện --}}
             <div class="mb-3">
                 <label for="price" class="form-label">Giá đại diện</label>
