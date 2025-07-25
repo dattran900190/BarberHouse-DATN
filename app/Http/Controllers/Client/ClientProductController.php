@@ -14,6 +14,10 @@ class ClientProductController extends Controller
         $query = Product::query();
         $globalCategories = ProductCategory::all();
         // ---- LỌC DANH MỤC ----
+                // ---- Tìm kiếm theo tên ----
+                if ($request->filled('search')) {
+                    $query->where('name', 'like', '%' . $request->search . '%');
+                }
         if ($request->filled('category')) {
             $query->where('product_category_id', $request->category);
         }
