@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title-page')</title>
 
     @include('layouts.blocks.includes.link-head')
@@ -23,7 +24,6 @@
         .page-link {
             color: #000;
             border-radius: 5px;
-            /* border: 1px solid #000; */
         }
 
         a {
@@ -47,12 +47,6 @@
             border: 1px solid #000;
         }
 
-        /* Đảm bảo navbar ở trên toastr */
-        /* .navbar {
-            z-index: 10000 !important;
-        } */
-
-        /* Dịch toastr xuống dưới để không đè lên menu */
         body.client-page .toast-custom-position {
             position: fixed !important;
             top: 15% !important;
@@ -60,7 +54,6 @@
             z-index: 1099 !important;
         }
 
-        /* CSS cho dropdown thông báo */
         .notification-dropdown {
             width: 300px;
             max-height: 400px;
@@ -102,57 +95,29 @@
             color: #6c757d;
         }
 
-        /* Hiệu ứng rung cho chuông */
         @keyframes bellShake {
-            0% {
-                transform: rotate(0);
-            }
-
-            25% {
-                transform: rotate(15deg);
-            }
-
-            50% {
-                transform: rotate(-15deg);
-            }
-
-            75% {
-                transform: rotate(10deg);
-            }
-
-            100% {
-                transform: rotate(0);
-            }
+            0% { transform: rotate(0); }
+            25% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+            75% { transform: rotate(10deg); }
+            100% { transform: rotate(0); }
         }
 
         .bell-shake {
             animation: bellShake 0.5s ease-in-out;
         }
 
-        /* Tùy chỉnh toastr */
         .toast {
             border-radius: 8px !important;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
         }
 
-        .toast-success {
-            background-color: #28a745 !important;
-        }
+        .toast-success { background-color: #28a745 !important; }
+        .toast-error { background-color: #dc3545 !important; }
+        .toast-info { background-color: #17a2b8 !important; }
+        .toast-warning { background-color: #ffc107 !important; }
 
-        .toast-error {
-            background-color: #dc3545 !important;
-        }
-
-        .toast-info {
-            background-color: #17a2b8 !important;
-        }
-
-        .toast-warning {
-            background-color: #ffc107 !important;
-        }
-
-        /* CSS cho Select2 để tránh xung đột */
         .select2-container--default .select2-selection--single {
             height: 54px !important;
             padding: 10px 14px !important;
@@ -160,7 +125,6 @@
             background-color: #fff !important;
             font-size: 15px !important;
             font-weight: 500 !important;
-            /* color: #000 !important; */
             transition: all 0.3s ease !important;
         }
 
@@ -177,19 +141,15 @@
         }
 
         .select2-container--default .select2-selection--single .select2-selection__rendered {
-            /* color: #000 !important; */
             line-height: 28px !important;
         }
 
         .select2-container--default .select2-results>.select2-results__options {
             max-height: 240px !important;
-            /* border: 1px solid #000 !important; */
-            /* border-radius: 6px !important; */
             font-size: 15px !important;
         }
 
         .select2-container--default .select2-results__option--highlighted {
-            /* background-color: #000 !important; */
             color: #fff !important;
         }
 
@@ -263,13 +223,14 @@
     @include('layouts.blocks.includes.link-foot')
 
     <script>
+    let pusherInstance = null;
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Cấu hình toastr
         toastr.options = {
             closeButton: true,
             progressBar: true,
-            timeOut: 0,
-            extendedTimeOut: 0,
+            timeOut: 5000,
+            extendedTimeOut: 2000,
             tapToDismiss: true,
             debug: false,
             showEasing: 'swing',
@@ -280,25 +241,36 @@
             positionClass: 'toast-custom-position',
         };
 
-        // Khởi tạo Pusher
-        const pusher = new Pusher('124e770f1adf07681023', {
-            cluster: 'ap1',
-            encrypted: true
-        });
+        @auth
+        if (!pusherInstance) {
+            console.log('User đã đăng nhập, khởi tạo Pusher...');
+            pusherInstance = new Pusher('124e770f1adf07681023', {
+                cluster: 'ap1',
+                encrypted: true,
+                authEndpoint: '/broadcasting/auth',
+                auth: {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                }
+            });
+        }
 
-        // Subscribe vào channel 'appointments'
-        const channel = pusher.subscribe('appointments');
+        const userId = '{{ auth()->id() }}';
+        const channel = pusherInstance.subscribe('private-user.' + userId);
+        console.log('Đã subscribe vào channel: private-user.' + userId);
 
-        // Lấy danh sách thông báo từ localStorage
-        let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+        let notifications = JSON.parse(localStorage.getItem('notifications_' + userId)) || [];
 
-        // Cập nhật số lượng thông báo trên chuông
         const badge = document.querySelector('#notification-count');
-        badge.textContent = notifications.length;
+        if (badge) {
+            badge.textContent = notifications.length;
+        }
 
-        // Hàm hiển thị danh sách thông báo
         function displayNotifications() {
             const notificationList = document.querySelector('#notification-list');
+            if (!notificationList) return;
+            
             if (notifications.length === 0) {
                 notificationList.innerHTML = '<p class="text-center text-muted">Chưa có thông báo</p>';
             } else {
@@ -318,52 +290,66 @@
             }
         }
 
-        // Hàm thêm thông báo mới
         function addNotification(message, appointment_id) {
             const time = new Date().toLocaleString('vi-VN');
-            notifications.unshift({
-                message,
-                time,
-                appointment_id
-            });
-            localStorage.setItem('notifications', JSON.stringify(notifications));
+            notifications.unshift({ message, time, appointment_id });
+            if (notifications.length > 50) {
+                notifications = notifications.slice(0, 50);
+            }
+            localStorage.setItem('notifications_' + userId, JSON.stringify(notifications));
             displayNotifications();
 
-            // Cập nhật số lượng thông báo trên chuông
             const badge = document.querySelector('#notification-count');
-            badge.textContent = notifications.length;
+            if (badge) {
+                badge.textContent = notifications.length;
+            }
 
-            // Thêm hiệu ứng rung cho chuông
             const bell = document.querySelector('#notification-bell i');
-            bell.classList.add('bell-shake');
-            setTimeout(() => bell.classList.remove('bell-shake'), 500);
+            if (bell) {
+                bell.classList.add('bell-shake');
+                setTimeout(() => bell.classList.remove('bell-shake'), 500);
+            }
         }
 
-        // Lắng nghe event 'AppointmentStatusUpdated'
         channel.bind('AppointmentStatusUpdated', function(data) {
             toastr.success(data.message);
             addNotification(data.message, data.appointment_id);
         });
 
-        // Hàm reset số lượng thông báo
+        pusherInstance.connection.bind('error', function(err) {
+            console.error('Pusher connection error:', err);
+        });
+
+        pusherInstance.connection.bind('connected', function() {
+            console.log('Pusher connected successfully');
+        });
+
         window.resetNotificationCount = function() {
             notifications = [];
-            localStorage.setItem('notifications', JSON.stringify(notifications));
+            localStorage.setItem('notifications_' + userId, JSON.stringify(notifications));
             const badge = document.querySelector('#notification-count');
-            badge.textContent = '0';
+            if (badge) {
+                badge.textContent = '0';
+            }
             displayNotifications();
         };
 
-        // Khởi tạo dropdown của Bootstrap thủ công
+        displayNotifications();
+
+        @else
+        console.log('User chưa đăng nhập, không khởi tạo Pusher');
+        @endauth
+
         const notificationBell = document.querySelector('#notification-bell');
         if (notificationBell) {
             new bootstrap.Dropdown(notificationBell);
         }
-
-        // Hiển thị danh sách thông báo khi tải trang
-        displayNotifications();
     });
-</script>
+
+    window.addEventListener('unload', function() {
+        if (pusherInstance) pusherInstance.disconnect();
+    });
+    </script>
 </body>
 
 </html>

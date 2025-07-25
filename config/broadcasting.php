@@ -2,6 +2,7 @@
 
 return [
     'default' => env('BROADCAST_CONNECTION', 'pusher'),
+    
     'connections' => [
         'pusher' => [
             'driver' => 'pusher',
@@ -16,6 +17,7 @@ return [
                 'scheme' => 'https',
             ],
         ],
+        
         'null' => [
             'driver' => 'null',
         ],
