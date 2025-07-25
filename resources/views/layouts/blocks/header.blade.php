@@ -13,7 +13,8 @@
 
             {{-- LOGO Ở GIỮA --}}
             <a class="navbar-brand mx-4" href="{{ url('/') }}">
-                <img src="{{ asset('images/white_logo.png') }}" height="60" alt="Logo">
+                <img src="{{ asset('storage/' . ($imageSettings['white_logo'] ?? 'default-images/white_logo.png')) }}"
+                    height="60" alt="Logo">
             </a>
 
             {{-- RIGHT --}}
@@ -30,7 +31,7 @@
                         </span>
                     </a>
                 </li>
-                 <li class="nav-item mx-2 position-relative">
+                <li class="nav-item mx-2 position-relative">
                     <a class="nav-link" href="#" id="notification-bell" data-bs-toggle="dropdown"
                         aria-expanded="false">
                         <i class="fas fa-bell"></i>
@@ -123,7 +124,8 @@
                 @auth
                     @if (Auth::user()->role != 'user')
                         <li class="nav-item mx-2">
-                            <a class="nav-link" href="{{ route('dashboard') }}"  onclick="window.location.reload();" title="Đến trang quản trị">
+                            <a class="nav-link" href="{{ route('dashboard') }}" onclick="window.location.reload();"
+                                title="Đến trang quản trị">
                                 <i class="fa-solid fa-user-shield"></i>
                             </a>
                         </li>

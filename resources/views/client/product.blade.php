@@ -82,18 +82,21 @@
                             $defaultVariant = $validVariants->first();
                         @endphp
                         <div class="col-6 col-md-3 mb-4">
-                            <div class="card h-100 text-center">
-                                <a href="{{ route('client.product.detail', $product->id) }}"
-                                    class="text-decoration-none text-dark">
-                                    <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}"
-                                        class="card-img-top" style="height: 200px; object-fit: cover;">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ $product->name }}</h5>
-                                        <p class="card-text text-danger fw-bold">{{ number_format($product->price) }} đ</p>
-                                    </div>
-                                </a>
-                                <div
-                                    class="card-footer bg-white border-top-0 d-flex justify-content-center gap-2 flex-wrap">
+                            <div class="card barber-card border-0 shadow-sm h-100">
+                                <div class="barber-img-wrapper">
+                                    <a href="{{ route('client.product.detail', $product->id) }}"
+                                        class="text-decoration-none text-dark">
+                                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}"
+                                            class="card-img-top barber-img">
+                                    </a>
+                                </div>
+
+                                <div class="card-body text-center">
+                                    <h5 class="card-title mb-1">{{ $product->name }}</h5>
+                                    <p class="mb-1 text-danger fw-bold">{{ number_format($product->price) }} đ</p>
+                                    <div class="border-top-0 d-flex justify-content-center gap-2 flex-wrap">
+
+                                    
                                     @if ($defaultVariant)
                                         <form action="{{ route('cart.add') }}" method="POST"
                                             class="add-to-cart-form m-0 p-0">
@@ -122,6 +125,7 @@
                                             @endguest
                                         </form>
                                     @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -20,7 +20,7 @@
 
             <div class="form-login">
                 <div class="image">
-                    <img src="{{ asset('images/black_logo.png') }}" alt="">
+                    <img src="{{ asset('storage/' . ($imageSettings['black_logo'] ?? 'default-images/black_logo.png')) }}" alt="">
                 </div>
 
                 <div class="form">
