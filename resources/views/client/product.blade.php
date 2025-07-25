@@ -26,6 +26,13 @@
 
                 {{-- FORM LỌC --}}
                 <form method="GET" action="{{ route('client.product') }}" class="row g-3 mb-5">
+                    {{-- Từ khóa tìm kiếm --}}
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">Tìm kiếm</label>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}"
+                            class="form-control" placeholder="Nhập tên sản phẩm...">
+                    </div>
+
                     {{-- Danh mục --}}
                     <div class="col-md-3">
                         <label for="filter-category" class="form-label">Loại sản phẩm</label>
@@ -55,7 +62,13 @@
                             </option>
                         </select>
                     </div>
+
+                    {{-- Nút submit (ẩn nếu bạn chỉ dùng onchange, tùy bạn) --}}
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                    </div>
                 </form>
+
 
                 {{-- DANH SÁCH SẢN PHẨM --}}
                 <div class="row">
