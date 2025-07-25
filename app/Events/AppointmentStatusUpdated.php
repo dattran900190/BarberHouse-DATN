@@ -5,6 +5,7 @@ namespace App\Events;
 use App\Models\Appointment;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -22,7 +23,8 @@ class AppointmentStatusUpdated implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new Channel('appointments');
+        // Sử dụng private channel riêng cho từng user
+        return new PrivateChannel('user.' . $this->appointment->user_id);
     }
 
     public function broadcastWith()

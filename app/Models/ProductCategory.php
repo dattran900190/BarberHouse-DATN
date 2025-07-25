@@ -12,7 +12,7 @@ class ProductCategory extends Model
 {
 
     use HasFactory;
-    // use SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = ['name', 'slug', 'description']; // Các cột có thể gán giá trị hàng loạt
     protected $table = 'product_categories'; // Tên bảng trong database

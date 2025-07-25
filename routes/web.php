@@ -39,6 +39,9 @@ use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\ReviewController as ClientReviewController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\CustomerImageController;
+use Illuminate\Support\Facades\Broadcast;
+
+Broadcast::routes(['middleware' => ['auth']]);
 
 // ==== Auth ====
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -181,7 +184,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Đơn hàng ====
     Route::resource('orders', OrderController::class)->names('admin.orders');
     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
-    Route::put('/orders/{order}', [OrderController::class, 'update'])->name('admin.orders.update'); // Sử dụng PUT cho update
+    // Route::put('/orders/{order}', [OrderController::class, 'update'])->name('admin.orders.update'); // Sử dụng PUT cho update
     // Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('admin.orders.destroy');
     // ==== Lịch sử điểm ====
     Route::get('/point_histories', [PointHistoryController::class, 'index'])->name('point_histories.index');
@@ -190,7 +193,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Dịch vụ ====
     Route::resource('services', ServiceController::class);
     Route::patch('admin/services/{id}/soft-delete', [ServiceController::class, 'softDelete'])->name('services.softDelete');
-    Route::delete('admin/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
+    // Route::delete('admin/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
     Route::post('/services/{id}/restore', [ServiceController::class, 'restore'])->name('services.restore');
 
     // ==== settings ====
@@ -201,7 +204,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('reviews', ReviewController::class);
     Route::patch('/reviews/{id}/soft-delete', [ReviewController::class, 'softDelete'])->name('reviews.softDelete');
     Route::post('/reviews/{id}/restore', [ReviewController::class, 'restore'])->name('reviews.restore');
-    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    // Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
 
     // ==== Ảnh khách hàng ====
@@ -232,7 +235,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('product_categories', ProductCategoryController::class);
     Route::patch('product_categories/{id}/soft-delete', [ProductCategoryController::class, 'softDelete'])->name('product_categories.softDelete');
     Route::post('product_categories/{id}/restore', [ProductCategoryController::class, 'restore'])->name('product_categories.restore');
-    Route::delete('product_categories/{id}/force-delete', [ProductCategoryController::class, 'destroy'])->name('product_categories.destroy');
+    // Route::delete('product_categories/{id}/force-delete', [ProductCategoryController::class, 'destroy'])->name('product_categories.destroy');
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
 
@@ -245,7 +248,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('banners', BannerController::class);
     Route::patch('banners/{id}/soft-delete', [BannerController::class, 'softDelete'])->name('banners.softDelete');
     Route::post('banners/{id}/restore', [BannerController::class, 'restore'])->name('banners.restore');
-    Route::delete('banners/{id}', [BannerController::class, 'destroy'])->name('banners.destroy');
+    // Route::delete('banners/{id}', [BannerController::class, 'destroy'])->name('banners.destroy');
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
@@ -253,19 +256,19 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
         ->name('branches.softDelete');
     Route::post('admin/branches/{id}/restore', [BranchController::class, 'restore'])
         ->name('branches.restore');
-    Route::delete('admin/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])
-        ->name('branches.destroy');
+    // Route::delete('admin/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])
+    //     ->name('branches.destroy');
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);
-    Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])->name('barber_schedules.showBranch');
-    Route::get('barber-schedules/create/{branchId}', [BarberScheduleController::class, 'create'])->name('barber_schedules.createForBranch');
-    // Xử lý lưu
-    Route::post('/barber-schedules', [BarberScheduleController::class, 'store'])->name('barber_schedules.store');
-    // Đúng: KHÔNG cần lặp lại 'admin/' vì đã có prefix
-    // routes/web.php
-    Route::get('barber-schedules/holiday/edit/{id}', [BarberScheduleController::class, 'editHoliday'])->name('barber_schedules.editHoliday');
-    Route::put('barber-schedules/holiday/update/{id}', [BarberScheduleController::class, 'updateHoliday'])->name('barber_schedules.updateHoliday');
-    Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
+    // Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])->name('barber_schedules.showBranch');
+    // Route::get('barber-schedules/create/{branchId}', [BarberScheduleController::class, 'create'])->name('barber_schedules.createForBranch');
+    // // Xử lý lưu
+    // Route::post('/barber-schedules', [BarberScheduleController::class, 'store'])->name('barber_schedules.store');
+    // // Đúng: KHÔNG cần lặp lại 'admin/' vì đã có prefix
+    // // routes/web.php
+    // Route::get('barber-schedules/holiday/edit/{id}', [BarberScheduleController::class, 'editHoliday'])->name('barber_schedules.editHoliday');
+    // Route::put('barber-schedules/holiday/update/{id}', [BarberScheduleController::class, 'updateHoliday'])->name('barber_schedules.updateHoliday');
+    // Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
 
     // ==== Người dùng ====
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
