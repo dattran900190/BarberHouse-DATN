@@ -51,7 +51,7 @@
                                         <div class="position-relative">
 
                                             <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
-                                                alt="Avatar" class="rounded-circle avatar-preview"
+                                                alt="Avatar" class="rounded avatar-preview"
                                                 style="width:80px; height:80px; object-fit:cover;">
                                         </div>
                                     </div>
@@ -153,7 +153,7 @@
                                         <input type="hidden" name="tab" value="account-info">
                                         <div class="card-body d-flex align-items-center">
                                             <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
-                                                alt="Avatar" class="rounded-circle avatar-preview"
+                                                alt="Avatar" class="rounded  avatar-preview"
                                                 style="width:80px; height:80px; object-fit:cover;">
                                             <div class="ms-4">
                                                 <label class="btn btn-outline-primary">

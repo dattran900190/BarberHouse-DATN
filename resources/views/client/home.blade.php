@@ -71,7 +71,7 @@
                         </div>
                         <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
                         <p><a
-                                href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->short_description), 50) }}</a>
+href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->short_description), 50) }}</a>
                         </p>
                     </div>
                 @endforeach
@@ -86,14 +86,6 @@
                 <h2>Sản phẩm Baber House</h2>
                 <div class="products">
                     @foreach ($products as $product)
-                        @php
-                            $validVariants = $product->variants->filter(function($variant) {
-                                return $variant->volume
-                                    && $variant->volume->name !== 'Không rõ'
-                                    && is_null($variant->volume->deleted_at);
-                            });
-                            $defaultVariant = $validVariants->first();
-                        @endphp
                         <div class="product">
                             <div class="image-product">
                                 <a href="{{ route('client.product.detail', $product->id) }}">
@@ -106,19 +98,23 @@
                                 </a>
                             </h4>
                             <p>{{ number_format($product->price) }} đ</p>
-                            @if ($defaultVariant)
+
+                            @php $variant = $product->variants->first(); @endphp
+
+                            @if ($variant)
                                 <div class="button-group">
                                     <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
                                         @csrf
-                                        <input type="hidden" name="product_variant_id" value="{{ $defaultVariant->id }}">
+                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
                                         <input type="hidden" name="quantity" value="1">
                                         <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
                                             <i class="fas fa-cart-plus"></i>
                                         </button>
                                     </form>
+
                                     <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
                                         @csrf
-                                        <input type="hidden" name="product_variant_id" value="{{ $defaultVariant->id }}">
+                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
                                         <input type="hidden" name="quantity" value="1">
                                         @guest
                                             <button type="button" class="btn-outline-buy">Mua ngay</button>
@@ -126,7 +122,7 @@
                                             <button type="submit" class="btn-outline-buy">Mua ngay</button>
                                         @endguest
                                     </form>
-                                </div>
+</div>
                             @endif
                         </div>
                     @endforeach
@@ -203,7 +199,7 @@
 
                         Swal.fire({
                             icon: 'warning',
-                            title: 'Cảnh báo!',
+title: 'Cảnh báo!',
                             text: message,
                         });
                     }

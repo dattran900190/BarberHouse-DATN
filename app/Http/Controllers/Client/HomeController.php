@@ -28,15 +28,8 @@ class HomeController extends Controller
             ->take(8)
             ->get();
 
-            
         // Sản phẩm
-        $products = Product::whereHas('variants', function($q) {
-            $q->whereNotNull('volume_id')
-              ->whereHas('volume', function($q2) {
-                  $q2->whereNull('deleted_at')
-                     ->where('name', '!=', 'Không rõ');
-              });
-        })->with('variants')->latest()->take(8)->get();
+        $products = Product::with('variants')->latest()->take(8)->get();
 
         // ảnh khách hàng
         $customerImages = CustomerImage::where('status', true)

@@ -26,13 +26,6 @@
 
                 {{-- FORM LỌC --}}
                 <form method="GET" action="{{ route('client.product') }}" class="row g-3 mb-5">
-                    {{-- Từ khóa tìm kiếm --}}
-                    <div class="col-md-3">
-                        <label for="search" class="form-label">Tìm kiếm</label>
-                        <input type="text" name="search" id="search" value="{{ request('search') }}"
-                            class="form-control" placeholder="Nhập tên sản phẩm...">
-                    </div>
-
                     {{-- Danh mục --}}
                     <div class="col-md-3">
                         <label for="filter-category" class="form-label">Loại sản phẩm</label>
@@ -61,11 +54,6 @@
                             <option value="500-9999" {{ request('price_range') == '500-9999' ? 'selected' : '' }}>Trên 500k
                             </option>
                         </select>
-                    </div>
-
-                    {{-- Nút submit (ẩn nếu bạn chỉ dùng onchange, tùy bạn) --}}
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
                     </div>
                 </form>
 
@@ -96,35 +84,35 @@
                                     <p class="mb-1 text-danger fw-bold">{{ number_format($product->price) }} đ</p>
                                     <div class="border-top-0 d-flex justify-content-center gap-2 flex-wrap">
 
-                                    
-                                    @if ($defaultVariant)
-                                        <form action="{{ route('cart.add') }}" method="POST"
-                                            class="add-to-cart-form m-0 p-0">
-                                            @csrf
-                                            <input type="hidden" name="product_variant_id"
-                                                value="{{ $defaultVariant->id }}">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
-                                                <i class="fas fa-cart-plus"></i>
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('cart.buyNow') }}" method="POST"
-                                            class="buy-now-form m-0 p-0">
-                                            @csrf
-                                            <input type="hidden" name="product_variant_id"
-                                                value="{{ $defaultVariant->id }}">
-                                            <input type="hidden" name="quantity" value="1">
-                                            @guest
-                                                <button type="button" class="btn-outline-buy" title="Mua ngay">
-                                                    <span>Mua ngay</span>
+
+                                        @if ($defaultVariant)
+                                            <form action="{{ route('cart.add') }}" method="POST"
+                                                class="add-to-cart-form m-0 p-0">
+                                                @csrf
+                                                <input type="hidden" name="product_variant_id"
+                                                    value="{{ $defaultVariant->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                                    <i class="fas fa-cart-plus"></i>
                                                 </button>
-                                            @else
-                                                <button type="submit" class="btn-outline-buy" title="Mua ngay">
-                                                    <span>Mua ngay</span>
-                                                </button>
-                                            @endguest
-                                        </form>
-                                    @endif
+                                            </form>
+                                            <form action="{{ route('cart.buyNow') }}" method="POST"
+                                                class="buy-now-form m-0 p-0">
+                                                @csrf
+                                                <input type="hidden" name="product_variant_id"
+                                                    value="{{ $defaultVariant->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                @guest
+                                                    <button type="button" class="btn-outline-buy" title="Mua ngay">
+                                                        <span>Mua ngay</span>
+                                                    </button>
+                                                @else
+                                                    <button type="submit" class="btn-outline-buy" title="Mua ngay">
+                                                        <span>Mua ngay</span>
+                                                    </button>
+                                                @endguest
+                                            </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
