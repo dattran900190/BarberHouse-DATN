@@ -135,14 +135,17 @@
 
 
             <!-- Search Overlay -->
-            <div id="search-overlay">
+            <div id="search-overlay" style="display: none;">
                 <div class="search-content">
-                    <input type="text" id="search-input" placeholder="Tìm kiếm sản phẩm..." />
-                    <button type="submit">Tìm</button>
-                    <button class="close-btn">❌</button>
-                    <!-- Nút đóng -->
+                    <form method="GET" action="{{ route('client.product') }}" class="d-flex align-items-center">
+                        <input type="text" name="search" id="search-input" placeholder="Tìm kiếm sản phẩm..."
+                            class="form-control me-2" />
+                        <button type="submit" class="btn btn-primary">Tìm</button>
+                    </form>
+                    <button class="close-btn btn btn-sm btn-danger mt-2">❌</button>
                 </div>
             </div>
+
         </div>
 
     </div>

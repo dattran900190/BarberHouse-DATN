@@ -4,7 +4,15 @@
 
 @section('content')
     <div id="alerts-container">
-        @if (session('success'))
+        @foreach (['success' => 'success', 'error' => 'danger'] as $key => $type)
+            @if (session($key))
+                <div class="alert alert-{{ $type }} alert-dismissible fade show" role="alert">
+                    {{ session($key) }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+        @endforeach
+        {{-- @if (session('success'))
             <script>
                 Swal.fire({
                     icon: 'success',
@@ -28,7 +36,7 @@
                     }
                 });
             </script>
-        @endif
+        @endif --}}
     </div>
 
     @php
