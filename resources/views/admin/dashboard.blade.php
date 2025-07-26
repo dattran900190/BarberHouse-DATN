@@ -256,25 +256,26 @@
         </div>
 
         {{-- Cột bên phải --}}
-        <div class="col-md-6">
-            <div class="card card-round h-100 d-flex flex-column">
+        <div class="col-md-6 d-flex flex-column gap-3">
+            {{-- Sản phẩm bán chạy & ít bán --}}
+            <div class="card card-round flex-fill">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0 fw-bold">Sản phẩm bán chạy & ít bán</h5>
-                    <ul class="nav nav-pills nav-secondary nav-pills-no-bd" id="pills-tab" role="tablist">
+                    <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="pills-top-tab" data-bs-toggle="pill" href="#pills-top"
-                                role="tab">Bán chạy</a>
+                            <a class="nav-link active" id="pills-top-product-tab" data-bs-toggle="pill"
+                                href="#pills-top-product" role="tab">Bán chạy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="pills-low-tab" data-bs-toggle="pill" href="#pills-low"
-                                role="tab">Ít bán</a>
+                            <a class="nav-link" id="pills-low-product-tab" data-bs-toggle="pill"
+                                href="#pills-low-product" role="tab">Ít bán</a>
                         </li>
                     </ul>
                 </div>
                 <div class="card-body">
-                    <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-content">
                         {{-- Bán chạy --}}
-                        <div class="tab-pane fade show active" id="pills-top" role="tabpanel">
+                        <div class="tab-pane fade show active" id="pills-top-product" role="tabpanel">
                             <ul class="list-group list-group-flush">
                                 @forelse ($topProducts as $item)
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -294,7 +295,7 @@
                         </div>
 
                         {{-- Ít bán --}}
-                        <div class="tab-pane fade" id="pills-low" role="tabpanel">
+                        <div class="tab-pane fade" id="pills-low-product" role="tabpanel">
                             <ul class="list-group list-group-flush">
                                 @forelse ($lowSellingProducts as $item)
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -314,8 +315,69 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Dịch vụ được sử dụng nhiều & ít --}}
+            <div class="card card-round flex-fill">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 fw-bold">Dịch vụ phổ biến & ít dùng</h5>
+                    <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="pills-top-service-tab" data-bs-toggle="pill"
+                                href="#pills-top-service" role="tab">Phổ biến</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-low-service-tab" data-bs-toggle="pill"
+                                href="#pills-low-service" role="tab">Ít dùng</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        {{-- Dịch vụ phổ biến --}}
+                        <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
+                            <ul class="list-group list-group-flush">
+                                @forelse ($topServices as $item)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $item->service->name ?? 'Không xác định' }}</strong><br>
+                                            <small
+                                                class="text-muted">₫{{ number_format($item->service->price ?? 0) }}</small>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">
+                                            {{ $item->usage_count }} lượt
+                                        </span>
+                                    </li>
+                                @empty
+                                    <li class="list-group-item text-center text-muted">Không có dịch vụ nào được sử dụng
+                                    </li>
+                                @endforelse
+                            </ul>
+                        </div>
+
+                        {{-- Dịch vụ ít sử dụng --}}
+                        <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
+                            <ul class="list-group list-group-flush">
+                                @forelse ($lowUsageServices as $item)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $item->name ?? 'Không xác định' }}</strong><br>
+                                            <small class="text-muted">₫{{ number_format($item->price ?? 0) }}</small>
+                                        </div>
+                                        <span class="badge bg-secondary rounded-pill">
+                                            {{ $item->usage_count }} lượt
+                                        </span>
+                                    </li>
+                                @empty
+                                    <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
+                                @endforelse
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
 
 
     <!-- Transaction History -->

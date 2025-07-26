@@ -10,6 +10,7 @@ use App\Models\Barber;
 use App\Models\Appointment;
 use App\Models\OrderItem;
 use App\Models\ProductVariant;
+use App\Models\Service; // Thêm model Service
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -80,6 +81,31 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
+        // Top dịch vụ được sử dụng nhiều nhất
+        $topServices = Appointment::select('service_id', DB::raw('COUNT(*) as usage_count'))
+            ->where('status', 'completed')
+            ->groupBy('service_id')
+            ->orderByDesc('usage_count')
+            ->take(10)
+            ->with('service')
+            ->get();
+
+        // Dịch vụ ít được sử dụng (các dịch vụ có trong hệ thống nhưng ít được đặt)
+        $lowUsageServices = Service::select(
+            'services.id',
+            'services.name',
+            'services.price',
+            DB::raw('COALESCE(COUNT(appointments.id), 0) as usage_count')
+        )
+            ->leftJoin('appointments', function ($join) {
+                $join->on('services.id', '=', 'appointments.service_id')
+                    ->where('appointments.status', '=', 'completed');
+            })
+            ->groupBy('services.id', 'services.name', 'services.price')
+            ->orderBy('usage_count', 'asc')
+            ->take(10)
+            ->get();
+
         $latestTransactions = Order::latest()->take(5)->get();
 
         // Xử lý filter cho biểu đồ ngày/tuần
@@ -115,6 +141,8 @@ class DashboardController extends Controller
             'upcomingAppointments',
             'topProducts',
             'lowSellingProducts',
+            'topServices', // Thêm biến mới
+            'lowUsageServices', // Thêm biến mới
             'latestTransactions',
             // Biểu đồ tuần
             'weekLabels',
