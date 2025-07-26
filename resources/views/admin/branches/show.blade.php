@@ -49,7 +49,7 @@
                         <strong>Ngày tạo:</strong> {{ $branch->created_at->format('d/m/Y H:i') }}
                     </p>
                     @if ($branch->image)
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <i class="fa fa-image me-2 text-success"></i>
                             <strong class="text-muted mb-2">Ảnh chi nhánh:</strong>
                             <img src="{{ asset('storage/' . $branch->image) }}" alt="Ảnh chi nhánh"
@@ -58,8 +58,8 @@
                         </div>
                     @endif
                     @if ($branch->content)
-                        <div class="mt-3">
-                            <p class="fa fa-info-circle text-muted mb-2"><strong> Giới thiệu:</strong></p>
+                        <div class="">
+                            <p class="text-muted mb-2"><strong><i class="fa fa-info-circle"></i> Giới thiệu:</strong></p>
                             <div>{!! $branch->content !!}</div>
                         </div>
                     @endif
@@ -67,26 +67,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Card: Hành động -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header text-white d-flex align-items-center">
-            <h4 class="card-title">Hành động</h4>
-        </div>
-        <div class="card-body">
-            <div class="d-flex gap-2">
-                <a href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"
-                    class="btn btn-outline-primary btn-sm">
-                    <i class="fa fa-edit me-1"></i> Sửa
-                </a>
-                <a href="{{ route('branches.index', ['page' => request('page', 1)]) }}"
-                    class="btn btn-outline-secondary btn-sm">
-                    <i class="fa fa-arrow-left me-1"></i> Quay lại
-                </a>
-            </div>
-        </div>
-    </div>
-
 
     <div class="card shadow-sm mb-4">
         <div class="card-header px-4 py-3">
@@ -119,11 +99,11 @@
                                     <td class="text-center">
                                         @if ($barber->avatar)
                                             <img src="{{ asset('storage/' . $barber->avatar) }}"
-                                                class="img-fluid rounded-circle" style="max-width: 80px; max-height: 60px;"
+                                                class="img-thumbnail" style="max-width: 80px; max-height: 60px;"
                                                 alt="Avatar">
                                         @else
                                             <img src="{{ asset('uploads/avatars/default-avatar.png') }}"
-                                                class="img-fluid rounded-circle" style="max-width: 80px; max-height: 60px;"
+                                                class="img-thumbnail" style="max-width: 80px; max-height: 60px;"
                                                 alt="Avatar">
                                         @endif
                                     </td>
@@ -166,6 +146,25 @@
                     </table>
                 </div>
             @endif
+        </div>
+    </div>
+
+    <!-- Card: Hành động -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white d-flex align-items-center">
+            <h4 class="card-title">Hành động</h4>
+        </div>
+        <div class="card-body">
+            <div class="d-flex gap-2">
+                <a href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"
+                    class="btn btn-outline-primary btn-sm">
+                    <i class="fa fa-edit me-1"></i> Sửa
+                </a>
+                <a href="{{ route('branches.index', ['page' => request('page', 1)]) }}"
+                    class="btn btn-outline-secondary btn-sm">
+                    <i class="fa fa-arrow-left me-1"></i> Quay lại
+                </a>
+            </div>
         </div>
     </div>
 @endsection

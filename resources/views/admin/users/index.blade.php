@@ -148,7 +148,7 @@
                                             <td class="text-center">
                                                 @if ($user->avatar)
                                                     <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar"
-                                                        class="img-fluid avatar-img"
+                                                        class="img-thumbnail"
                                                         style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
                                                 @else
                                                     <div class="bg-secondary d-flex align-items-center justify-content-center avatar-placeholder"
@@ -212,6 +212,9 @@
                                                                             href="{{ route('users.edit', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
                                                                             <i class="fas fa-edit me-2"></i> Sửa
                                                                         </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <hr class="dropdown-divider">
                                                                     </li>
                                                                     <li>
                                                                         <button type="button"
@@ -334,6 +337,9 @@
                                                                             href="{{ route('users.edit', ['user' => $admin->id, 'role' => 'admin', 'page' => request('page', 1)]) }}">
                                                                             <i class="fas fa-edit me-2"></i> Sửa
                                                                         </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <hr class="dropdown-divider">
                                                                     </li>
                                                                     <li>
                                                                         <button type="button"

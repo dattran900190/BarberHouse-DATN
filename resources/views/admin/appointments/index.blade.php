@@ -76,8 +76,26 @@
 
     <div class="card">
         <div class="card-header text-white d-flex justify-content-between align-items-center">
-            <div class="card-title">Danh sách đặt lịch</div>
+            <div class="card-title mb-0">Danh sách đặt lịch</div>
+
+            <form action="{{ route('checkins.store') }}" method="POST" class="d-flex align-items-start ms-auto">
+                @csrf
+                <div class="mt-4">
+                    <input type="text" name="code" id="code"
+                        class="form-control @error('code') is-invalid @enderror" maxlength="6" required
+                        placeholder="Nhập mã check-in">
+                    @error('code')
+                        <span class="invalid-feedback d-block mt-1"><strong>{{ $message }}</strong></span>
+                    @enderror
+                </div>
+                <div class="mt-4 ms-1">
+                    <button type="submit" class="btn btn-outline-success">
+                        <i class="fas fa-check-circle"></i> Xác nhận
+                    </button>
+                </div>
+            </form>
         </div>
+
 
         <div class="card-body">
             <form method="GET" action="{{ route('appointments.index') }}" id="searchForm" class="mb-3">
@@ -89,28 +107,6 @@
                     </button>
                 </div>
             </form>
-
-
-
-            <form action="{{ route('checkins.store') }}" method="POST">
-                @csrf
-                <div class="mb-3">
-                    <label for="code" class="form-label fw-bold">Nhập mã Checkin (6 chữ số)</label>
-                    <input type="text" name="code" id="code"
-                        class="form-control @error('code') is-invalid @enderror" maxlength="6" required
-                        placeholder="Ví dụ: 123456">
-                    @error('code')
-                        <span class="invalid-feedback d-block mt-1"><strong>{{ $message }}</strong></span>
-                    @enderror
-                </div>
-                <div class="text-end">
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-check-circle"></i> Xác nhận
-                    </button>
-                </div>
-            </form>
-
-
 
             @if ($search && trim($search) && $allAppointments->isEmpty())
                 <div class="alert alert-warning">
@@ -305,6 +301,9 @@
                             Swal.fire({
                                 title: data.success ? 'Thành công!' : 'Thất bại!',
                                 text: data.message,
+                                customClass: {
+                                    popup: 'custom-swal-popup' // CSS
+                                },
                                 icon: data.success ? 'success' : 'error'
                             }).then(() => {
                                 if (data.success) location.reload();

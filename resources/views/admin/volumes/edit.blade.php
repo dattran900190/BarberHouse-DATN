@@ -56,21 +56,23 @@
                 @csrf
                 @method('PUT')
 
-                <div class="form-group d-flex align-items-center">
-                    <label for="name" class="me-2">Tên dung tích:</label>
-                    <input type="number" name="name" id="name" 
+                <div class="form-group mb-3" style="max-width: 400px;">
+                    <label for="name" class="form-label fw-bold">Dung tích </label>
+                    <div class="input-group">
+                       <input type="number" name="name" id="name" 
                         value="{{ old('name', preg_replace('/[^0-9]/', '', $volume->name)) }}" 
-                        class="form-control w-auto me-2" required placeholder="Nhập số">
-                    <span>ml</span>
+                        class="form-control" required placeholder="Nhập số">
+                        <span class="input-group-text">ml</span>
+                    </div>
                 </div>
 
-                <div class="d-flex justify-content-between">
-                    <a href="{{ route('admin.volumes.index', ['page' => request()->get('page')]) }}" class="btn btn-sm btn-outline-danger">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                        <i class="fa fa-edit me-1"></i> Cập nhật
+                    </button>
+                    <a href="{{ route('admin.volumes.index', ['page' => request()->get('page')]) }}" class="btn btn-sm btn-outline-secondary">
                         <i class="fas fa-arrow-left"></i> Quay lại
                     </a>
-                    <button type="submit" class="btn btn-sm btn-outline-success">
-                        <i class="fas fa-save"></i> Cập nhật
-                    </button>
                 </div>
             </form>
         </div>

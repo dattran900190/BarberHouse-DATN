@@ -11,7 +11,7 @@
                     <i class="icon-home"></i>
                 </a>
             </li>
-             <li class="separator">
+            <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
@@ -44,77 +44,95 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Tiêu đề</label>
-                        <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}">
-                        @error('title') <div class="text-danger">{{ $message }}</div> @enderror
+                        <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
+                            value="{{ old('title') }}">
+                        @error('title')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Slug (tự sinh nếu để trống)</label>
-                        <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}">
-                        @error('slug') <div class="text-danger">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Mô tả ngắn</label>
-                        <input type="text" name="short_description" class="form-control @error('short_description') is-invalid @enderror" value="{{ old('short_description') }}">
-                        @error('short_description') <div class="text-danger">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Hình ảnh (tuỳ chọn)</label>
-                        <input type="file" name="image" class="form-control @error('image') is-invalid @enderror">
-                        @error('image') <div class="text-danger">{{ $message }}</div> @enderror
+                        <label class="form-label">Ngày xuất bản</label>
+                        <input type="date" name="published_at"
+                            class="form-control @error('published_at') is-invalid @enderror"
+                            value="{{ old('published_at') }}">
+                        @error('published_at')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Nội dung</label>
                     <textarea id="content" name="content" class="form-control @error('content') is-invalid @enderror" rows="10">{{ old('content') }}</textarea>
-                    @error('content') <div class="text-danger">{{ $message }}</div> @enderror
+                    @error('content')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="row">
+                    {{-- Mô tả ngắn bên trái --}}
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Tác giả</label>
-                        <input type="text" class="form-control" value="{{ Auth::user()->name }}" disabled>
-                        <input type="hidden" name="author_id" value="{{ Auth::id() }}">
+                        <label class="form-label">Mô tả ngắn</label>
+                        <textarea name="short_description" rows="5" class="form-control @error('short_description') is-invalid @enderror">{{ old('short_description') }}</textarea>
+                        @error('short_description')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Nổi bật</label>
-                        <select class="form-control" name="is_featured">
-                            <option value="0" {{ old('is_featured') == 0 ? 'selected' : '' }}>Không nổi bật</option>
-                            <option value="1" {{ old('is_featured') == 1 ? 'selected' : '' }}>Nổi bật</option>
-                        </select>
+                    {{-- Trạng thái và Nổi bật bên phải --}}
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Trạng thái</label>
+                            <select name="status" class="form-control @error('status') is-invalid @enderror">
+                                <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Bản nháp</option>
+                                <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Đã xuất bản
+                                </option>
+                            </select>
+                            @error('status')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nổi bật</label>
+                            <select name="is_featured" class="form-control @error('is_featured') is-invalid @enderror">
+                                <option value="0" {{ old('is_featured') == '0' ? 'selected' : '' }}>Không nổi bật
+                                </option>
+                                <option value="1" {{ old('is_featured', '0') == '1' ? 'selected' : '' }}>Nổi bật
+                                </option>
+                            </select>
+                            @error('is_featured')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Trạng thái</label>
-                        <select name="status" class="form-control @error('status') is-invalid @enderror">
-                            <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Không hoạt động</option>
-                            <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Đang hoạt động</option>
-                        </select>
-                        @error('status') <div class="text-danger">{{ $message }}</div> @enderror
-                    </div>
+                {{-- Ảnh --}}
+                <div class="mb-3">
+                    <label class="form-label">Ảnh đại diện (tùy chọn)</label>
+                    <input type="file" name="image" class="form-control @error('image') is-invalid @enderror">
+                    @error('image')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Ngày xuất bản</label>
-                        <input type="date" name="published_at" class="form-control @error('published_at') is-invalid @enderror" value="{{ old('published_at') }}">
-                        @error('published_at') <div class="text-danger">{{ $message }}</div> @enderror
-                    </div>
+                {{-- Tác giả --}}
+                <div class="mb-3">
+                    <label class="form-label">Tác giả</label>
+                    <input type="text" class="form-control" value="{{ Auth::user()->name }}" disabled>
+                    <input type="hidden" name="author_id" value="{{ Auth::id() }}">
                 </div>
 
                 <button type="submit" class="btn btn-sm btn-outline-success">
-                    <i class="fas fa-plus"></i> <span class="ms-2">Thêm</span>
+                    <i class="fas fa-plus me-1"></i> Thêm
                 </button>
                 <a href="{{ route('posts.index') }}" class="btn btn-sm btn-outline-secondary">
                     <i class="fa fa-arrow-left me-1"></i> Quay lại
                 </a>
             </form>
+
         </div>
     </div>
 @endsection

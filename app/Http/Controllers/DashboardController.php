@@ -106,7 +106,7 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        $latestTransactions = Order::latest()->take(5)->get();
+        $latestTransactions = Order::latest()->take(10)->get();
 
         // Xử lý filter cho biểu đồ ngày/tuần
         $weekStart = $request->input('week_start');

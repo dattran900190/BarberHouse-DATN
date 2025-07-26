@@ -21,7 +21,7 @@
             </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item">
-                <a href="#">Chi tiết Checkin</a>
+                <a href="#">Chi tiết Check-in</a>
             </li>
         </ul>
     </div>
@@ -29,7 +29,7 @@
     <!-- Card 1: Thông tin Check-in -->
     <div class="card shadow-sm mb-4">
         <div class="card-header text-white d-flex align-items-center">
-            <h4 class="card-title">Chi tiết Checkin</h4>
+            <h4 class="card-title">Chi tiết Check-in</h4>
         </div>
         <div class="card-body">
             <div class="row gy-3">
@@ -39,14 +39,14 @@
                         Mã Checkin: <strong>{{ $checkin->qr_code_value }}</strong>
                     </h4>
 
-                    <div class="d-flex flex-wrap gap-3 mb-3">
+                    <div class="row flex-wrap gap-3 ">
                         <div>
                             <i class="fa fa-toggle-on me-2 text-success"></i>
                             <span class="fw-semibold">Trạng thái:</span>
-                            @if($checkin->is_checked_in)
-                                <span class="badge bg-success">Đã Checkin</span>
+                            @if ($checkin->is_checked_in)
+                                <span class="badge bg-success">Đã Check-in</span>
                             @else
-                                <span class="badge bg-warning text-dark">Chưa Checkin</span>
+                                <span class="badge bg-warning text-dark">Chưa Check-in</span>
                             @endif
                         </div>
                         <div>
@@ -64,17 +64,16 @@
                             <span class="fw-semibold">Thời gian hẹn:</span>
                             {{ optional($checkin->appointment)->appointment_time ? \Carbon\Carbon::parse($checkin->appointment->appointment_time)->format('d/m/Y H:i') : '-' }}
                         </div>
-                    </div>
-
-                    <div class="text-muted mb-2">
-                        <i class="fa fa-calendar-alt me-2 text-muted"></i>
-                        <span class="fw-semibold">Ngày tạo:</span>
-                        {{ $checkin->created_at->format('d/m/Y H:i') }}
-                    </div>
-                    <div class="text-muted">
-                        <i class="fa fa-calendar-check me-2 text-muted"></i>
-                        <span class="fw-semibold">Ngày cập nhật:</span>
-                        {{ $checkin->updated_at->format('d/m/Y H:i') }}
+                        <div>
+                            <i class="fa fa-calendar-alt me-2 text-muted"></i>
+                            <span class="fw-semibold">Ngày tạo:</span>
+                            {{ $checkin->created_at->format('d/m/Y H:i') }}
+                        </div>
+                        <div>
+                            <i class="fa fa-calendar-check me-2 text-muted"></i>
+                            <span class="fw-semibold">Ngày cập nhật:</span>
+                            {{ $checkin->updated_at->format('d/m/Y H:i') }}
+                        </div>
                     </div>
                 </div>
             </div>

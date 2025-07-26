@@ -75,7 +75,7 @@
                     {{-- Mô tả ngắn bên trái --}}
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Mô tả ngắn</label>
-                        <textarea name="short_description" rows="4" class="form-control @error('short_description') is-invalid @enderror">{{ old('short_description', $post->short_description) }}</textarea>
+                        <textarea name="short_description" rows="5" class="form-control @error('short_description') is-invalid @enderror">{{ old('short_description', $post->short_description) }}</textarea>
                         @error('short_description')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -114,21 +114,19 @@
                         </div>
                     </div>
                 </div>
-
-
-                @if ($post->image)
-                    <div class="mb-3">
-                        <label class="form-label">Ảnh hiện tại</label><br>
-                        <img src="{{ asset('storage/' . $post->image) }}" width="120" class="img-thumbnail">
-                    </div>
-                @endif
-
+                
                 <div class="mb-3">
                     <label class="form-label">Ảnh mới (nếu muốn thay)</label>
                     <input type="file" name="image" class="form-control @error('image') is-invalid @enderror">
                     @error('image')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
+                     @if ($post->image)
+                    <div class="mb-3">
+                        <label class="form-label">Ảnh hiện tại</label><br>
+                        <img src="{{ asset('storage/' . $post->image) }}" width="120" class="img-thumbnail">
+                    </div>
+                @endif
                 </div>
 
                 <button type="submit" class="btn btn-sm btn-outline-primary">

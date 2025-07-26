@@ -124,13 +124,13 @@
                     </div>
                 @endforeach
 
-                <div class="d-flex justify-content-between">
-                    <a href="{{ route('barber_schedules.index') }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="fas fa-arrow-left me-1"></i> Quay lại
-                    </a>
+                <div class="d-flex gap-2">
                     <a href="{{ route('barber_schedules.createForBranch', $branch->id) }}"
                         class="btn btn-outline-success btn-sm">
-                        <i class="fas fa-plus me-1"></i> Chỉnh sửa lịch trình
+                        <i class="fas fa-plus me-1"></i> Sửa lịch trình
+                    </a>
+                    <a href="{{ route('barber_schedules.index') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> Quay lại
                     </a>
                 </div>
             @else
