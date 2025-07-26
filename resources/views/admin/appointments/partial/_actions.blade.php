@@ -34,11 +34,6 @@
             </li>
         @elseif($type == 'confirmed')
             <li>
-                <button type="button" class="dropdown-item text-success complete-btn" data-id="{{ $appointment->id }}">
-                    <i class="fas fa-check-circle me-2"></i> Hoàn thành
-                </button>
-            </li>
-            <li>
                 <button type="button" class="dropdown-item text-primary no-show-btn" data-id="{{ $appointment->id }}">
                     <i class="fas fa-user-times me-2"></i> Không đến
                 </button>

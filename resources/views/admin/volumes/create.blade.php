@@ -54,25 +54,27 @@
             </div>
         @endif
         <div class="card-body">
-        <form action="{{ route('admin.volumes.store') }}" method="POST">
-            @csrf
+            <form action="{{ route('admin.volumes.store') }}" method="POST">
+                @csrf
 
-            <div class="form-group mb-3" style="max-width: 400px;">
-                <label for="name" class="form-label fw-bold">Tên dung tích <span class="text-danger">*</span></label>
-                <div class="input-group">
-                    <input type="number" name="name" id="name" class="form-control"
-                        value="{{ old('name') ? preg_replace('/[^0-9]/', '', old('name')) : '' }}" placeholder="Nhập số"
-                        required>
-                    <span class="input-group-text">ml</span>
+                <div class="form-group mb-3" style="max-width: 400px;">
+                    <label for="name" class="form-label fw-bold">Dung tích </label>
+                    <div class="input-group">
+                        <input type="number" name="name" id="name" class="form-control"
+                            value="{{ old('name') ? preg_replace('/[^0-9]/', '', old('name')) : '' }}" placeholder="Nhập số"
+                            required>
+                        <span class="input-group-text">ml</span>
+                    </div>
                 </div>
-            </div>
 
 
 
-            <button type="submit" class="btn btn-sm btn-outline-primary">Lưu</button>
-            <a href="{{ route('admin.volumes.index') }}" class="btn btn-sm btn-outline-danger">Quay lại</a>
+                <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-plus"></i> <span
+                        class="ms-2">Thêm</span></button>
+                <a href="{{ route('admin.volumes.index') }}" class="btn btn-sm btn-outline-secondary"><i
+                        class="fa fa-arrow-left me-1"></i> Quay lại</a>
 
-        </form>
+            </form>
         </div>
     </div>
 @endsection

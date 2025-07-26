@@ -16,7 +16,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-     @php
+    @php
         $currentRole = Auth::user()->role;
     @endphp
 
@@ -41,12 +41,12 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <div class="card-title">Danh sách chi nhánh</div>
-               @if ($currentRole == 'admin')
-            <a href="{{ route('branches.create') }}"
-                class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
-                <i class="fas fa-plus"></i>
-                <span class="ms-2">Thêm chi nhánh</span>
-            </a>
+            @if ($currentRole == 'admin')
+                <a href="{{ route('branches.create') }}"
+                    class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
+                    <i class="fas fa-plus"></i>
+                    <span class="ms-2">Thêm chi nhánh</span>
+                </a>
             @endif
         </div>
 
@@ -114,9 +114,9 @@
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end"
                                             aria-labelledby="branchActions{{ $branch->id }}">
-                                            <li>
+                                            {{-- <li>
                                                 <a class="dropdown-item"
-                                                    href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
+                                                    href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"> --}}
 
                                             <li>
                                                 @if ($branch->trashed())

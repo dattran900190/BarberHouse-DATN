@@ -27,7 +27,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="#">Sửa</a>
+                <a href="#">Sửa người dùng</a>
             </li>
         </ul>
     </div>

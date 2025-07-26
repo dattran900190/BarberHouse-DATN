@@ -2,7 +2,7 @@
 
 @section('title', 'Danh sách dung tích')
 
-@section('content')  
+@section('content')
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
@@ -26,7 +26,7 @@
             <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Quản lý dung tích</a>
+                <a href="{{ url('admin/dashboard') }}">Quản lý đặt hàng</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
@@ -40,13 +40,14 @@
         <div class="card-header text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0  flex-grow-1">Danh sách dung tích sản phẩm</h3>
             <a href="{{ route('admin.volumes.create') }}"
-               class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
+                class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
                 <i class="fas fa-plus"></i>
                 <span class="btn-text ms-2">Thêm dung tích sản phẩm</span>
             </a>
         </div>
         <div class="card-body">
-            <form method="GET" action="{{ route('admin.volumes.index') }}" class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+            <form method="GET" action="{{ route('admin.volumes.index') }}"
+                class="d-flex flex-wrap gap-2 mb-4 align-items-center">
                 <select name="filter" id="filter" class="form-select pe-5"
                     style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
                     <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả</option>
@@ -79,22 +80,25 @@
                                 <td class="text-center">
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-outline-secondary" type="button"
-                                                            id="actionMenu{{ $volume->id }}" data-bs-toggle="dropdown"
-                                                            aria-expanded="false">
-                                                            <i class="fas fa-ellipsis-v"></i>
-                                                        </button>
-                                                        <ul class="dropdown-menu dropdown-menu-end"
-                                                        aria-labelledby="actionMenu{{ $volume->id }}">
+                                            id="actionMenu{{ $volume->id }}" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end"
+                                            aria-labelledby="actionMenu{{ $volume->id }}">
                                             <li>
                                                 <a href="{{ route('admin.volumes.edit', $volume) }}?page={{ request()->get('page') }}"
-                                                            class="dropdown-item">
-                                                            <i class="fas fa-edit me-2"></i> Sửa
+                                                    class="dropdown-item">
+                                                    <i class="fas fa-edit me-2"></i> Sửa
                                                 </a>
                                             </li>
-                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
                                             @if ($volume->trashed())
                                                 <li>
-                                                    <form action="{{ route('admin.volumes.restore', $volume->id) }}" method="POST" class="d-inline">
+                                                    <form action="{{ route('admin.volumes.restore', $volume->id) }}"
+                                                        method="POST" class="d-inline">
                                                         @csrf
                                                         <button type="submit" class="dropdown-item text-success">
                                                             <i class="fas fa-undo me-2"></i> Khôi phục
@@ -102,7 +106,9 @@
                                                     </form>
                                                 </li>
                                                 <li>
-                                                    <form action="{{ route('admin.volumes.forceDelete', $volume->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Xóa vĩnh viễn?');">
+                                                    <form action="{{ route('admin.volumes.forceDelete', $volume->id) }}"
+                                                        method="POST" class="d-inline"
+                                                        onsubmit="return confirm('Xóa vĩnh viễn?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="dropdown-item text-danger">
@@ -111,16 +117,18 @@
                                                     </form>
                                                 </li>
                                             @else
-                                      <li>
-                                        <form action="{{ route('admin.volumes.destroy', $volume) }}?page={{ request()->get('page') }}" 
-                                                        method="POST" class="d-inline" onsubmit="return confirm('Xóa mềm?');">
-                                          @csrf
-                                          @method('DELETE')
+                                                <li>
+                                                    <form
+                                                        action="{{ route('admin.volumes.destroy', $volume) }}?page={{ request()->get('page') }}"
+                                                        method="POST" class="d-inline"
+                                                        onsubmit="return confirm('Xóa mềm?');">
+                                                        @csrf
+                                                        @method('DELETE')
                                                         <button type="submit" class="dropdown-item text-danger">
                                                             <i class="fas fa-times me-2"></i> Xóa mềm
-                                          </button>
-                                      </form>
-                                    </li>
+                                                        </button>
+                                                    </form>
+                                                </li>
                                             @endif
                                         </ul>
                                     </div>

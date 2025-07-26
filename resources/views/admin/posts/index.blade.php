@@ -63,7 +63,7 @@
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm tiêu đề"
                     class="form-control me-2" />
 
-                <select name="filter" onchange="this.form.submit()" class="form-select w-auto">
+                <select name="filter" onchange="this.form.submit()" class="form-select pe-5" style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;">
                     <option value="all" {{ $filter === 'all' ? 'selected' : '' }}>Tất cả</option>
                     <option value="active" {{ $filter === 'active' ? 'selected' : '' }}>Đang hoạt động</option>
                     <option value="inactive" {{ $filter === 'inactive' ? 'selected' : '' }}>Không hoạt động</option>

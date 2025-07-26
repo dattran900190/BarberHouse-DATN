@@ -19,28 +19,42 @@
     <div class="page-header">
         <h3 class="fw-bold mb-3">Sản phẩm</h3>
         <ul class="breadcrumbs mb-3">
-            <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
-            <li class="separator"><i class="icon-arrow-right"></i></li>
-            <li class="nav-item">
-                <a href="{{ url('admin/user_redeemed_vouchers') }}">Danh sách voucher</a>
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
             </li>
-           
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/dashboard') }}">Quản lý đặt lịch</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/user_redeemed_vouchers') }}">Lịch sử đổi Voucher</a>
+            </li>
         </ul>
+        
     </div>
     <div class="card shadow mb-4">
         <div class="card-header bg- text-black">
-            <h4 class="mb-0"><i class="fas fa-ticket-alt mr-2"></i>Danh sách Voucher đã đổi</h4>
+            <h4 class="mb-0"></i>Danh sách Voucher đã đổi</h4>
         </div>
 
         <div class="card-body">
-            <form action="{{ route('user_redeemed_vouchers.index') }}" method="GET" class="mb-4">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="Nhập tên người dùng..." value="{{ request('search') }}">
-                    <div class="input-group-append">
-                        <button class="btn " style="border: 1px solid #a29b9b;" type="submit">
-                            <i class="fas fa-search mr-1"></i>
-                        </button>
-                    </div>
+                 <form method="GET" action="{{ route('user_redeemed_vouchers.index') }}"
+                class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+
+                <div class="position-relative" style="flex: 1; min-width: 200px">
+                    <input type="text" name="search" class="form-control" placeholder="Nhập tên người dùng..."
+                        value="{{ request('search') }}">
+                    <button type="submit"
+                        class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent text-dark">
+                        <i class="fa fa-search"></i>
+                    </button>
                 </div>
             </form>
 
@@ -55,17 +69,18 @@
                             <th>Trạng thái</th>
                             <th>Ngày sử dụng</th>
                             <th>Hành động</th>
-                          
+
                         </tr>
                     </thead>
                     <tbody>
                         @if (count($items) > 0)
-                            @foreach($items as $item)
+                            @foreach ($items as $item)
                                 <tr>
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->user->name ?? 'Không rõ' }}</td>
                                     <td>{{ $item->promotion->code ?? 'Không rõ' }}</td>
-                                    <td>{{ $item->redeemed_at ? \Carbon\Carbon::parse($item->redeemed_at)->format('d/m/Y H:i') : '-' }}</td>
+                                    <td>{{ $item->redeemed_at ? \Carbon\Carbon::parse($item->redeemed_at)->format('d/m/Y H:i') : '-' }}
+                                    </td>
                                     <td>
                                         <span class="badge badge-{{ $item->is_used ? 'success' : 'secondary' }}">
                                             {{ $item->is_used ? 'Đã dùng' : 'Chưa dùng' }}
@@ -77,17 +92,17 @@
                                     <td class="text-center">
                                         <div class="dropdown">
                                             <button class="btn btn-sm btn-outline-secondary" type="button"
-                                                                id="actionMenu{{ $item->id }}" data-bs-toggle="dropdown"
-                                                                aria-expanded="false">
-                                                                <i class="fas fa-ellipsis-v"></i>
-                                                            </button>
-                                                            <ul class="dropdown-menu dropdown-menu-end"
-                                                            aria-labelledby="actionMenu{{ $item->id }}">
-                                                            <li> <a href="{{ route('admin.user_redeemed_vouchers.show', $item->id) }}"
-                                                                class="dropdown-item">
-                                                                <i class="fas fa-eye me-2"></i> Xem
-                                                            </a></li>
-                                            
+                                                id="actionMenu{{ $item->id }}" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end"
+                                                aria-labelledby="actionMenu{{ $item->id }}">
+                                                <li> <a href="{{ route('admin.user_redeemed_vouchers.show', $item->id) }}"
+                                                        class="dropdown-item">
+                                                        <i class="fas fa-eye me-2"></i> Xem
+                                                    </a></li>
+
                                         </div>
                                     </td>
                                 </tr>
@@ -98,11 +113,11 @@
                             </tr>
                         @endif
                     </tbody>
-                    
+
                 </table>
             </div>
 
-            @if($items->hasPages())
+            @if ($items->hasPages())
                 <div class="mt-3 d-flex justify-content-center">
                     {{ $items->links() }}
                 </div>

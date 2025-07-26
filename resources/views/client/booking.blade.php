@@ -172,7 +172,7 @@
                         <div class="service-item" data-service-index="0">
                             <div class="position-relative">
                                 <select id="service" name="service_id" class="form-select service-select"
-                                    data-index="0" required>
+                                    data-index="0">
                                     <option value="">Chọn dịch vụ chính</option>
                                     @foreach ($services as $service)
                                         <option value="{{ $service->id }}" data-name="{{ $service->name }}"
@@ -252,21 +252,26 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Phương thức thanh toán <span class="required">*</span></label><br>
+                    <label class="form-label me-3">Phương thức thanh toán <span class="required">*</span></label>
+
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="payment_method" id="payment_cash"
-                            value="cash" required {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
+                            value="cash" {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
                         <label class="form-check-label" for="payment_cash">Tiền mặt</label>
                     </div>
+
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="payment_method" id="payment_vnpay"
-                            value="vnpay" required {{ old('payment_method') == 'vnpay' ? 'checked' : '' }}>
+                            value="vnpay" {{ old('payment_method') == 'vnpay' ? 'checked' : '' }}>
                         <label class="form-check-label" for="payment_vnpay">VNPay</label>
                     </div>
+
                     @error('payment_method')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
+
+
 
                 <div class="form-btn mt-3">
                     <button type="submit" class="submit-btn booking-btn booking-btn" data-id="{{ $service->id }}">

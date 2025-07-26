@@ -64,7 +64,7 @@
                     </button>
                 </div>
 
-                <select name="filter" class="form-select" style="max-width:200px" onchange="this.form.submit()">
+                <select name="filter" class="form-select" style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
                     <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả</option>
                     <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Đang hoạt động</option>
                     <option value="deleted" {{ request('filter') == 'deleted' ? 'selected' : '' }}>Đã xoá</option>

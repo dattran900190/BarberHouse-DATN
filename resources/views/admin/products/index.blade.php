@@ -38,7 +38,7 @@
     </div>
     <div class="card">
         <div class="card-header text-white d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0  flex-grow-1">Danh sách Sản phẩm</h3>
+            <h3 class="card-title mb-0 flex-grow-1">Danh sách Sản phẩm</h3>
             <a href="{{ route('admin.products.create') }}"
                class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
                 <i class="fas fa-plus"></i>

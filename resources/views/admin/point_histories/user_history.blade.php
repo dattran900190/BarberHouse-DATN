@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Người dùng</h3>
+        <h3 class="fw-bold mb-3">Lịch sử điểm</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -16,7 +16,7 @@
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item"><a href="{{ route('point_histories.index') }}">Lịch sử điểm</a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
-            <li class="nav-item"><a href="#">Chi tiết</a></li>
+            <li class="nav-item"><a href="#">Chi tiết người dùng</a></li>
         </ul>
     </div>
 
@@ -30,8 +30,7 @@
                 <!-- Cột ảnh -->
                 <div class="col-md-4 text-center mb-3">
                     @if ($user->avatar)
-                        <img src="{{ $user->avatar }}" alt="Avatar" class="img-fluid rounded"
-                            style="max-height: 300px;">
+                        <img src="{{ $user->avatar }}" alt="Avatar" class="img-fluid rounded" style="max-height: 300px;">
                     @else
                         <p>Không có ảnh</p>
                     @endif
@@ -40,42 +39,48 @@
                 <!-- Cột thông tin -->
                 <div class="col-md-8">
                     <div class="mb-3">
-                        <label class="form-label">Họ tên</label>
-                        <div class="form-control-plaintext">{{ $user->name }}</div>
+                        <label class="form-label">Họ tên: <span class="text-black">{{ $user->name }}</span></label>
+                        <div class="form-control-plaintext"></div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <div class="form-control-plaintext">{{ $user->email }}</div>
+                        <label class="form-label">Email: <span class="text-black">{{ $user->email }}</span></label>
+                        <div class="form-control-plaintext"></div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Số điện thoại</label>
-                        <div class="form-control-plaintext">{{ $user->phone ?? '-' }}</div>
+                        <label class="form-label">Số điện thoại: <span
+                                class="text-black">{{ $user->phone ?? '-' }}</span></label>
+                        <div class="form-control-plaintext"></div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Giới tính</label>
+                        <label class="form-label">Giới tính: <span class="text-black">
+                                @if ($user->gender === 'male')
+                                    Nam
+                                @elseif ($user->gender === 'female')
+                                    Nữ
+                                @else
+                                    Không xác định
+                                @endif
+                            </span>
+                        </label>
                         <div class="form-control-plaintext">
-                            @if ($user->gender === 'male')
-                                Nam
-                            @elseif ($user->gender === 'female')
-                                Nữ
-                            @else
-                                Không xác định
-                            @endif
+
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Địa chỉ</label>
-                        <div class="form-control-plaintext">{{ $user->address ?? 'không rõ' }}</div>
+                        <label class="form-label">Địa chỉ: <span
+                                class="text-black">{{ $user->address ?? 'không rõ' }}</span></label>
+                        <div class="form-control-plaintext"></div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Điểm hiện tại</label>
+                        <label class="form-label">Điểm hiện tại: <span class="badge bg-info">{{ $user->points_balance }}
+                                điểm</span></label>
                         <div class="form-control-plaintext">
-                            <span class="badge bg-info">{{ $user->points_balance }} điểm</span>
+
                         </div>
                     </div>
 
