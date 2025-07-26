@@ -3,6 +3,13 @@
 @section('title', 'Chỉnh sửa ' . ($role == 'user' ? 'Người dùng' : 'Quản trị viên'))
 
 @section('content')
+    @php
+        $isEditingSelf = Auth::id() === $user->id;
+        $isAdmin = Auth::user()->role === 'admin';
+        $isEditingAdminBranch = $isAdmin && $user->role === 'admin_branch' && !$isEditingSelf;
+          $canEditStatus = $isAdmin && !$isEditingSelf && in_array($user->role, ['user', 'admin_branch']);
+    @endphp
+
     <div class="page-header">
         <h3 class="fw-bold mb-3">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
         <ul class="breadcrumbs mb-3">
@@ -49,7 +56,8 @@
                     <div class="col-md-6">
                         <label for="name" class="form-label">Họ tên</label>
                         <input type="text" class="form-control" name="name" value="{{ old('name', $user->name) }}"
-                            {{ $isEditingSelf ? '' : 'readonly' }}>
+                            {{ $isEditingSelf && $isAdmin ? '' : 'readonly' }}>
+
                         @error('name')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -57,7 +65,7 @@
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" name="email" value="{{ old('email', $user->email) }}"
-                            {{ $isEditingSelf ? '' : 'readonly' }}>
+                            readonly>
                         @error('email')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -68,14 +76,15 @@
                     <div class="col-md-6">
                         <label for="phone" class="form-label">Số điện thoại</label>
                         <input type="text" class="form-control" name="phone" value="{{ old('phone', $user->phone) }}"
-                            {{ $isEditingSelf ? '' : 'readonly' }}>
+                            {{ $isEditingSelf && $isAdmin ? '' : 'readonly' }}>
+
                         @error('phone')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="col-md-6">
                         <label for="gender" class="form-label">Giới tính</label>
-                        <select class="form-control readonly-select" name="gender">
+                        <select class="form-control readonly-select" name="gender" disabled>
                             <option value="">Chọn giới tính</option>
                             <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : '' }}>Nam
                             </option>
@@ -84,6 +93,7 @@
                             <option value="other" {{ old('gender', $user->gender) == 'other' ? 'selected' : '' }}>Khác
                             </option>
                         </select>
+                        <input type="hidden" name="gender" value="{{ old('gender', $user->gender) }}">
 
                         @if (!$isEditingSelf)
                             <style>
@@ -119,22 +129,25 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="address" class="form-label">Địa chỉ</label>
-                        <textarea class="form-control" name="address" rows="1" {{ $isEditingSelf ? '' : 'readonly' }}>{{ old('address', $user->address) }}</textarea>
+                        <textarea class="form-control" name="address" {{ $isEditingSelf && $isAdmin ? '' : 'readonly' }}>{{ old('address', $user->address) }}</textarea>
+
                         @error('address')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="col-md-6">
                         <label for="status" class="form-label">Trạng thái</label>
-                        <select class="form-control" name="status">
-                            <option value="">Chọn trạng thái</option>
+                        <select class="form-control" name="status" {{ $canEditStatus  ? '' : 'disabled' }}>
                             <option value="active" {{ old('status', $user->status) == 'active' ? 'selected' : '' }}>Đang
-                                hoạt động
-                            </option>
-                            <option value="banned" {{ old('status', $user->status) == 'banned' ? 'selected' : '' }}>Bị
-                                khóa
+                                hoạt động</option>
+                            <option value="banned" {{ old('status', $user->status) == 'banned' ? 'selected' : '' }}>Bị khóa
                             </option>
                         </select>
+
+                        @if (!$canEditStatus )
+                            <input type="hidden" name="status" value="{{ old('status', $user->status) }}">
+                        @endif
+
                         @error('status')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -145,7 +158,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="role" class="form-label">Vai trò</label>
-                        <select class="form-control" name="role" id="role">
+                        <select class="form-control" name="role" disabled>
                             <option value="">Chọn vai trò</option>
                             @if ($role == 'user')
                                 <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>Người
@@ -159,13 +172,15 @@
                                 </option>
                             @endif
                         </select>
+                        <input type="hidden" name="role" value="{{ old('role', $user->role) }}">
                         @error('role')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="col-md-6">
                         {{-- Chi nhánh (hiện khi role là admin_branch và chỉ chỉnh sửa nếu là chính mình) --}}
-                        <div id="branch-id-group" style="display: {{ $user->role == 'admin_branch' ? 'block' : 'none' }};">
+                        <div id="branch-id-group"
+                            style="display: {{ $user->role == 'admin_branch' ? 'block' : 'none' }};">
                             <label for="branch_id" class="form-label">Chi nhánh</label>
                             <select name="branch_id" id="branch_id" class="form-control">
                                 <option value="">Chọn chi nhánh</option>

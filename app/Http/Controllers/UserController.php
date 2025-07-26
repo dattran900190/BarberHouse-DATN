@@ -262,7 +262,14 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Bạn không có quyền xóa người dùng.'
-            ], 403);
+            ]);
+        }
+        // Ngăn không cho tự xóa chính mình
+        if (Auth::id() === $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không thể tự xóa chính mình.'
+            ]);
         }
 
         $role = $request->input('role', 'user');
