@@ -121,7 +121,7 @@
                             @if ($user->avatar)
                                 <div class="mt-2">
                                     <img src="{{ asset('storage/' . $user->avatar) }}" alt="avatar"
-                                        class="rounded-circle" width="80" height="80">
+                                        class="rounded" width="100" height="80">
                                 </div>
                             @endif
                         </div>
