@@ -12,14 +12,6 @@
         <section class="h-100 h-custom">
             <div class="mainDetailPro d-flex flex-wrap gap-4">
                 @php $variant = $product->variants->first(); @endphp
-                @php
-                    $validVariants = $product->variants->filter(function($variant) {
-                        return $variant->volume
-                            && $variant->volume->name !== 'Không rõ'
-                            && is_null($variant->volume->deleted_at);
-                    });
-                    $defaultVariant = $validVariants->first();
-                @endphp
 
                 {{-- Hình ảnh sản phẩm --}}
                 <div class="detailPro-left" style="flex: 1; min-width: 300px;">
@@ -64,15 +56,17 @@
                     @endphp
                     @if ($variants->count())
                         <form action="{{ route('cart.add') }}" method="POST" class="mt-3" id="addToCartForm">
-                            @csrf
+@csrf
                             <div class="row g-2 align-items-center">
                                 <div class="col-auto">
                                     <label for="variant_id">Thể tích:</label>
                                 </div>
                                 <div class="col-auto">
                                     <select name="product_variant_id" id="variant_id" class="form-select form-select-sm">
-                                        @foreach ($validVariants as $variant)
-                                            <option value="{{ $variant->id }}">{{ $variant->volume->name }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}</option>
+                                        @foreach ($variants as $variant)
+                                            <option value="{{ $variant->id }}">
+                                                {{ $variant->volume->name ?? 'Không rõ' }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -102,12 +96,13 @@
                         {{-- Nút Mua ngay --}}
                         <form action="{{ route('cart.buyNow') }}" method="POST" class="mt-3" id="buyNowForm">
                             @csrf
-                            <input type="hidden" name="product_variant_id" id="buy_now_variant_id" value="{{ $defaultVariant ? $defaultVariant->id : '' }}">
+                            <input type="hidden" name="product_variant_id" id="buy_now_variant_id"
+                                value="{{ $product->variants->first()->id }}">
                             <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
 
                             @guest
                                 <button type="button"
-                                    class="btn btn-danger d-flex align-items-center justify-content-center gap-2">
+class="btn btn-danger d-flex align-items-center justify-content-center gap-2">
                                     <i class="fas fa-bolt"></i> <span>Mua ngay</span>
                                 </button>
                             @else
@@ -158,19 +153,12 @@
                                     </a>
                                 </h4>
                                 <p>{{ number_format($item->price) }} đ</p>
-                                @php
-                                    $validVariants = $item->variants->filter(function($variant) {
-                                        return $variant->volume
-                                            && $variant->volume->name !== 'Không rõ'
-                                            && is_null($variant->volume->deleted_at);
-                                    });
-                                    $itemVariant = $validVariants->first();
-                                @endphp
+                                @php $itemVariant = $item->variants->first(); @endphp
                                 @if ($itemVariant)
                                     <div class="button-group">
                                         <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
                                             @csrf
-                                            <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
+<input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
                                             <input type="hidden" name="quantity" value="1">
                                             <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
                                                 <i class="fas fa-cart-plus"></i>
@@ -196,8 +184,6 @@
                         @endforelse
                     </div>
                 </div>
-            </div>
-            
             </div>
 
 
@@ -240,7 +226,7 @@
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
             // Khi chọn variant, cập nhật cho "Mua ngay"
             const variantSelect = document.getElementById('variant_id');
             const buyNowVariantId = document.getElementById('buy_now_variant_id');
@@ -307,7 +293,7 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Đã thêm vào giỏ hàng!',
-                            showConfirmButton: false,
+showConfirmButton: false,
                             timer: 1500
                         });
                         if (response.cart_count !== undefined) {
@@ -377,6 +363,6 @@
                 });
             });
         });
-    </script>
+</script>
 
 @endsection

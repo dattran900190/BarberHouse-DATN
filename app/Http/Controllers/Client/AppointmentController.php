@@ -192,7 +192,13 @@ class AppointmentController extends Controller
         ])->where('user_id', Auth::id())
             ->findOrFail($id);
 
-        return view('client.detailAppointmentHistory', compact('appointment'));
+
+        $additionalServicesIds = json_decode($appointment->additional_services, true) ?? [];
+        $additionalServices = Service::whereIn('id', $additionalServicesIds)
+            ->withTrashed() // cho phép lấy cả dịch vụ đã xóa mềm
+            ->get();
+
+        return view('client.detailAppointmentHistory', compact('appointment', 'additionalServices'));
     }
 
     public function detailAppointmentHistory($id)
@@ -201,7 +207,13 @@ class AppointmentController extends Controller
             ->with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name', 'review'])
             ->findOrFail($id);
 
-        return view('client.detailAppointmentHistory', compact('appointment'));
+
+        $additionalServicesIds = json_decode($appointment->additional_services, true) ?? [];
+        $additionalServices = Service::whereIn('id', $additionalServicesIds)
+            ->withTrashed() // cho phép lấy cả dịch vụ đã xóa mềm
+            ->get();
+
+        return view('client.detailAppointmentHistory', compact('appointment', 'additionalServices'));
     }
 
     public function cancel(Request $request, Appointment $appointment)
@@ -231,28 +243,36 @@ class AppointmentController extends Controller
             'cancellation_reason.max' => 'Lý do hủy không được vượt quá 500 ký tự.',
         ]);
 
-        // Tạo bản ghi trong cancelled_appointments
-        CancelledAppointment::create(array_merge($appointment->toArray(), [
-            'status' => 'cancelled',
-            'payment_status' => $appointment,
-            'cancellation_type' => 'no-show',
-            'status_before_cancellation' => $appointment->status,
-            'additional_services' => $appointment->additional_services,
-            'payment_method' => $appointment->payment_method,
-            'note' => $appointment->note,
-            'cancellation_reason' => $request->input('no_show_reason', 'Khách hàng không đến'),
-        ]));
+        // Tạo bản ghi trong cancelled_appointments với định dạng thời gian phù hợp
+        try {
+            $appointmentData = array_merge($appointment->toArray(), [
+                'status' => 'cancelled',
+                'payment_status' => $appointment->payment_status, // Sửa thành giá trị hợp lệ
+                'cancellation_type' => 'no-show',
+                'status_before_cancellation' => $appointment->status,
+                'additional_services' => $appointment->additional_services,
+                'payment_method' => $appointment->payment_method,
+                'note' => $appointment->note,
+                'cancellation_reason' => $request->input('no_show_reason', 'Khách hàng không đến'),
+                'appointment_time' => $appointment->appointment_time->format('Y-m-d H:i:s'), // Chuyển đổi định dạng
+            ]);
 
-        // Xóa bản ghi liên quan trong bảng checkins (nếu có)
-        DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
+            CancelledAppointment::create($appointmentData);
 
-        // Xóa bản ghi khỏi bảng appointments
-        $appointment->delete();
+            // Xóa bản ghi liên quan trong bảng checkins (nếu có)
+            DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.'
-        ]);
+            // Xóa bản ghi khỏi bảng appointments
+            $appointment->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Cancellation error: ' . $e->getMessage(), ['appointment' => $appointment->toArray()]);
+            return response()->json(['success' => false, 'message' => 'Lỗi máy chủ'], 500);
+        }
     }
 
     public function confirmBooking($token)
@@ -282,6 +302,8 @@ class AppointmentController extends Controller
 
             // Gửi email thông báo pending
             Mail::to($appointment->email)->queue(new PendingBookingMail($appointment));
+
+            // Gửi sự kiện NewAppointment
             event(new NewAppointment($appointment));
 
             // Kích hoạt Pusher
@@ -429,10 +451,10 @@ class AppointmentController extends Controller
         ];
 
         $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            ['cluster' => env('PUSHER_APP_CLUSTER'), 'useTLS' => true]
+            config('broadcasting.connections.pusher.key'),
+            config('broadcasting.connections.pusher.secret'),
+            config('broadcasting.connections.pusher.app_id'),
+            ['cluster' => config('broadcasting.connections.pusher.options.cluster'), 'useTLS' => true]
         );
 
         $pusher->trigger('appointments', 'App\\Events\\AppointmentCreated', $pusherData);

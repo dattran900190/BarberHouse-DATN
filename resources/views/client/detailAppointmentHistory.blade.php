@@ -9,77 +9,136 @@
         $time = \Carbon\Carbon::parse($appointment->appointment_time);
         $formattedTime = $time->format('d/m/Y - H:i');
         $period = $time->format('H') < 12 ? 'Sáng' : 'Chiều tối';
+
+        $statusLabels = [
+            '' => 'Tất cả',
+            'completed' => 'Đã hoàn thành',
+            'pending' => 'Đang chờ',
+            'progress' => 'Đang làm tóc',
+            'confirmed' => 'Đã xác nhận',
+            'cancelled' => 'Đã hủy',
+        ];
     @endphp
     <main style="padding: 10%">
-        <div class="container mt-5">
-            <div class="card order-detail shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center border-0">
-                    <h3 class="mb-0 fw-bold">Chi tiết đặt lịch - {{ $appointment->appointment_code }}</h3>
-                    <div>
-                        <strong>Trạng thái:</strong>
-                        @if ($appointment->status == 'pending')
-                            <span class="status-label status-processing">Đang chờ</span>
-                        @elseif ($appointment->status == 'confirmed')
-                            <span class="status-label status-confirmed">Đã xác nhận</span>
-                        @elseif ($appointment->status == 'cancelled')
-                            <span class="status-label status-cancelled">Đã hủy</span>
-                        @elseif ($appointment->status == 'completed')
-                            <span class="status-label status-completed">Đã hoàn thành</span>
-                        @endif
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <p><strong>Họ và tên:</strong> {{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}
-                            </p>
-                            <p><strong>Số điện thoại:</strong>
-                                <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}
-                            </p>
-                            <p><strong>Email:</strong>
-                                <td>{{ $appointment->email ?? ($appointment->user?->email ?? 'N/A') }}
-                            </p>
-                            <p><strong>Mã đặt lịch:</strong> {{ $appointment->appointment_code }}</p>
-                            <p><strong>Thời gian:</strong> {{ $formattedTime }} {{ $period }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Dịch vụ:</strong> {{ $appointment->service?->name ?? 'N/A' }}</p>
-                            <p><strong>Thợ:</strong> {{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</p>
-                            <p><strong>Chi nhánh:</strong> {{ $appointment->branch?->name ?? 'N/A' }}</p>
-                            @if ($appointment->status === 'cancelled' && $appointment->cancellation_reason)
-                                <div class="form-group">
-                                    <p><strong>Lý do huỷ: </strong>{{ $appointment->cancellation_reason }}
+        <div class="modal-body">
+            <div class="card mb-0">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card-header border-bottom-dashed p-4">
+                            <div class="d-sm-flex">
+                                <div class="flex-grow-1">
+                                    {{-- Logo công ty --}}
+                                    <img src="{{ asset('storage/' . ($imageSettings['black_logo'] ?? 'default-images/black_logo.png')) }}" class="card-logo card-logo-dark"
+                                        alt="logo tối" height="56">
 
                                 </div>
-                            @endif
+                                <div class="flex-shrink-0 mt-sm-0 mt-3">
+
+                                    <h6><span class="text-muted fw-normal">Email:</span> {{ $appointment->email }}
+                                    </h6>
+
+                                    <h6 class="mb-0"><span class="text-muted fw-normal">Điện thoại:</span>
+                                        {{ $appointment->phone }}</h6>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                @if ($appointment->review)
-                    <div class="review mt-4">
-                        <h5>Đánh giá của bạn:</h5>
-                        <div>
-                            @for ($i = 1; $i <= 5; $i++)
-                                <i class="fa fa-star"
-                                    style="color: {{ $i <= $appointment->review->rating ? '#f1c40f' : '#ccc' }}"></i>
-                            @endfor
+                    <div class="col-lg-12">
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+                                <div class="col-lg-3 col-6">
+                                    <p class="text-muted mb-2 text-uppercase fw-semibold fs-14">Mã đặt lịch</p>
+                                    <h5 class="fs-15 mb-0">{{ $appointment->appointment_code }}</h5>
+                                </div>
+                                <div class="col-lg-3 col-6">
+                                    <p class="text-muted mb-2 text-uppercase fw-semibold fs-14">Ngày đặt</p>
+                                    <h5 class="fs-15 mb-0">{{ $appointment->created_at->format('d/m/Y') }} <small
+                                            class="text-muted">{{ $appointment->created_at->format('h:ia') }}</small></h5>
+                                </div>
+                                <div class="col-lg-3 col-6">
+                                    <p class="text-muted mb-2 text-uppercase fw-semibold fs-14">Trạng thái</p>
+                                    <span class="status-label status-{{ $appointment->status }}">
+                                        {{ $statusLabels[$appointment->status] ?? ucfirst($appointment->status) }}
+                                    </span>
+                                </div>
+                                <div class="col-lg-3 col-6">
+                                    <p class="text-muted mb-2 text-uppercase fw-semibold fs-14">Tổng cộng</p>
+                                    <h5 class="fs-15 mb-0">{{ number_format($appointment->total_amount, 0, ',', '.') }} VNĐ
+                                    </h5>
+                                </div>
+                            </div>
                         </div>
-                        <p class="mt-2">{{ $appointment->review->comment }}</p>
                     </div>
-                @endif
+                    <div class="col-lg-12">
+                        <div class="card-body p-4 border-top border-top-dashed">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <h6 class="text-muted text-uppercase fw-semibold fs-15 mb-3">Thông tin chi tiết</h6>
+                                    <p class="text-muted mb-1">Chi nhánh: <span class="fw-medium">
+                                            {{ $appointment->branch->name }}
+                                        </span></p>
+                                    <p class="text-muted mb-1">Điện thoại: <span class="fw-medium">
+                                            {{ $appointment->phone }}
+                                        </span></p>
+                                    <p class="text-muted mb-1">Thợ: <span class="fw-medium">
+                                            {{ $appointment->barber->name }}
+                                        </span></p>
+                                    @if ($appointment->status === 'cancelled' && $appointment->cancellation_reason)
+                                        <p class="text-muted mb-1">Lý do huỷ: <span
+                                                class="fw-medium">{{ $appointment->cancellation_reason }}</span></p>
+                                    @endif
+                                    <p class="text-muted mb-1">Thời gian lịch hẹn:
+                                        <span class="fw-medium">
+                                            {{ $formattedTime }} {{ $period }}
+                                        </span>
+                                    </p>
+                                    <p class="text-muted mb-1">Dịch vụ: <span class="fw-medium">
+                                            {{ $appointment->service->name }}
+                                        </span></p>
+                                    @if ($additionalServices->isNotEmpty())
+                                        <p class="text-muted mb-1">Dịch vụ bổ xung: <span class="fw-medium">
+                                                <ul class="m-2 mt-1 ps-3">
+                                                    @foreach ($additionalServices as $service)
+                                                        <li>
+                                                            {{ $service->name }}
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </span></p>
+                                    @endif
 
+                                </div>
 
-                <div class="card-footer d-flex justify-content-between align-items-center border-0">
-                    <h5 class="fw-bold">Tổng tiền: {{ number_format($appointment->total_amount) }}đ</h5>
-                    <div>
-                        @if (
-                            !($appointment instanceof \App\Models\CancelledAppointment) &&
-                                $appointment->status != 'completed' &&
-                                $appointment->status != 'cancelled')
-                            <a href="#" class="btn btn-outline-danger btn-sm me-2">Hủy đặt lịch</a>
-                        @endif
-                        <a href="{{ route('client.appointmentHistory') }}" class="btn btn-outline-secondary btn-sm">Quay
-                            lại</a>
+                                <div class="col-6">
+                                    <h6 class="text-muted text-uppercase fw-semibold mb-3">Chi tiết thanh toán</h6>
+                                    <p class="text-muted mb-1">Phương thức thanh toán: <span
+                                            class="fw-medium">{{ $appointment->payment_method === 'cash' ? 'Thanh toán tại tiệm' : 'Thanh toán vnpay' }}</span>
+                                    </p>
+
+                                    <p class="text-muted">Tổng cộng: <span
+                                            class="fw-medium">{{ number_format($appointment->total_amount, 0, ',', '.') }}
+                                            VNĐ</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <div class="alert alert-light">
+                                    <p class="mb-0"><span class="fw-semibold">GHI CHÚ:</span>
+                                        {{ $appointment->notes ?? 'Không có ghi chú' }}</p>
+                                </div>
+                            </div>
+                            <div class="hstack gap-2 justify-content-end d-print-none mt-4">
+                                @if (
+                                    !($appointment instanceof \App\Models\CancelledAppointment) &&
+                                        $appointment->status != 'completed' &&
+                                        $appointment->status != 'cancelled')
+                                    <a href="#" class="btn btn-outline-danger btn-sm me-2">Hủy đặt lịch</a>
+                                @endif
+                                <a href="{{ route('client.appointmentHistory') }}"
+                                    class="btn btn-outline-secondary btn-sm">Quay
+                                    lại</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

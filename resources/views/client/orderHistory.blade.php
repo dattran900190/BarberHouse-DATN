@@ -146,13 +146,13 @@
                     const orderId = this.getAttribute('data-order-id');
 
                     Swal.fire({
-                        title: 'Bạn có chắc chắn?',
-                        text: 'Bạn có chắc chắn muốn hủy đơn hàng này không?',
+                        title: 'Xác nhận hủy đơn hàng?',
+                        text: "Bạn sẽ không thể khôi phục thao tác này!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Có, hủy đơn hàng!',
+                        cancelButtonColor: '#aaa',
+                        confirmButtonText: 'Vâng, hủy đơn!',
                         cancelButtonText: 'Không'
                     }).then((result) => {
                         if (result.isConfirmed) {
