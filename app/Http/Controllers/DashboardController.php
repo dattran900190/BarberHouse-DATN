@@ -77,100 +77,32 @@ class DashboardController extends Controller
             ->with('product')
             ->groupBy('product_variants.id', 'product_variants.product_id')
             ->orderBy('total_sold', 'asc')
-            ->take(5)
+            ->take(10)
             ->get();
 
         $latestTransactions = Order::latest()->take(5)->get();
 
-        // Xử lý filter cho biểu đồ
-        $filterType = $request->input('filter_type', 'month'); // month, date_range
-        $month = $request->input('month');
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
+        // Xử lý filter cho biểu đồ ngày/tuần
+        $weekStart = $request->input('week_start');
+        $weekEnd = $request->input('week_end');
 
-        $labels = [];
-        $serviceRevenuePerPeriod = [];
-        $productRevenuePerPeriod = [];
+        $weekLabels = [];
+        $weekServiceRevenue = [];
+        $weekProductRevenue = [];
+        $this->generateWeekChart($weekStart, $weekEnd, $weekLabels, $weekServiceRevenue, $weekProductRevenue);
 
-        if ($filterType === 'date_range' && $startDate && $endDate) {
-            // Lọc theo khoảng ngày
-            $start = Carbon::parse($startDate);
-            $end = Carbon::parse($endDate);
-            $diffInDays = $start->diffInDays($end);
+        // Xử lý filter cho biểu đồ tháng
+        $selectedMonth = $request->input('selected_month');
+        $year = $request->input('year', date('Y'));
 
-            if ($diffInDays <= 31) {
-                // Hiển thị theo ngày nếu khoảng thời gian <= 31 ngày
-                for ($date = $start->copy(); $date <= $end; $date->addDay()) {
-                    $labels[] = $date->format('d/m');
+        $monthLabels = [];
+        $monthServiceRevenue = [];
+        $monthProductRevenue = [];
+        $this->generateMonthChart($selectedMonth, $year, $monthLabels, $monthServiceRevenue, $monthProductRevenue);
 
-                    $serviceRevenuePerPeriod[] = Appointment::whereDate('created_at', $date)
-                        ->where('status', 'completed')
-                        ->sum('total_amount');
-
-                    $productRevenuePerPeriod[] = Order::whereDate('created_at', $date)
-                        ->where('status', 'completed')
-                        ->sum('total_money');
-                }
-            } else {
-                // Hiển thị theo tháng nếu khoảng thời gian > 31 ngày
-                $currentMonth = $start->copy()->startOfMonth();
-                $endMonth = $end->copy()->startOfMonth();
-
-                while ($currentMonth <= $endMonth) {
-                    $labels[] = $currentMonth->format('m/Y');
-
-                    $monthStart = $currentMonth->copy()->startOfMonth();
-                    $monthEnd = $currentMonth->copy()->endOfMonth();
-
-                    $serviceRevenuePerPeriod[] = Appointment::whereBetween('created_at', [$monthStart, $monthEnd])
-                        ->where('status', 'completed')
-                        ->sum('total_amount');
-
-                    $productRevenuePerPeriod[] = Order::whereBetween('created_at', [$monthStart, $monthEnd])
-                        ->where('status', 'completed')
-                        ->sum('total_money');
-
-                    $currentMonth->addMonth();
-                }
-            }
-        } else {
-            // Mặc định: hiển thị theo tháng trong năm
-            $currentYear = date('Y');
-
-            if ($month) {
-                // Hiển thị theo ngày trong tháng được chọn
-                $selectedMonth = Carbon::createFromDate($currentYear, $month, 1);
-                $daysInMonth = $selectedMonth->daysInMonth;
-
-                for ($day = 1; $day <= $daysInMonth; $day++) {
-                    $date = Carbon::createFromDate($currentYear, $month, $day);
-                    $labels[] = $date->format('d/m');
-
-                    $serviceRevenuePerPeriod[] = Appointment::whereDate('created_at', $date)
-                        ->where('status', 'completed')
-                        ->sum('total_amount');
-
-                    $productRevenuePerPeriod[] = Order::whereDate('created_at', $date)
-                        ->where('status', 'completed')
-                        ->sum('total_money');
-                }
-            } else {
-                // Hiển thị cả năm theo tháng
-                for ($i = 1; $i <= 12; $i++) {
-                    $labels[] = 'Tháng ' . $i;
-
-                    $serviceRevenuePerPeriod[] = Appointment::whereMonth('created_at', $i)
-                        ->whereYear('created_at', $currentYear)
-                        ->where('status', 'completed')
-                        ->sum('total_amount');
-
-                    $productRevenuePerPeriod[] = Order::whereMonth('created_at', $i)
-                        ->whereYear('created_at', $currentYear)
-                        ->where('status', 'completed')
-                        ->sum('total_money');
-                }
-            }
-        }
+        // Tạo danh sách tháng có dữ liệu (chỉ các tháng đã qua và tháng hiện tại)
+        $currentMonth = date('n');
+        $availableMonths = range(1, $currentMonth);
 
         return view('admin.dashboard', compact(
             'totalBookings',
@@ -184,13 +116,91 @@ class DashboardController extends Controller
             'topProducts',
             'lowSellingProducts',
             'latestTransactions',
-            'labels',
-            'serviceRevenuePerPeriod',
-            'productRevenuePerPeriod',
-            'filterType',
-            'month',
-            'startDate',
-            'endDate'
+            // Biểu đồ tuần
+            'weekLabels',
+            'weekServiceRevenue',
+            'weekProductRevenue',
+            'weekStart',
+            'weekEnd',
+            // Biểu đồ tháng
+            'monthLabels',
+            'monthServiceRevenue',
+            'monthProductRevenue',
+            'selectedMonth',
+            'year',
+            'availableMonths'
         ));
+    }
+
+    private function generateWeekChart($weekStart, $weekEnd, &$labels, &$serviceRevenue, &$productRevenue)
+    {
+        if ($weekStart && $weekEnd) {
+            $start = Carbon::parse($weekStart);
+            $end = Carbon::parse($weekEnd);
+        } else {
+            // Mặc định: tuần hiện tại
+            $start = Carbon::now()->startOfWeek();
+            $end = Carbon::now()->endOfWeek();
+        }
+
+        // Hiển thị theo từng ngày trong tuần
+        for ($date = $start->copy(); $date <= $end; $date->addDay()) {
+            $labels[] = $date->format('d/m (D)'); // Ví dụ: 15/7 (Mon)
+
+            $serviceRevenue[] = Appointment::whereDate('created_at', $date)
+                ->where('status', 'completed')
+                ->sum('total_amount');
+
+            $productRevenue[] = Order::whereDate('created_at', $date)
+                ->where('status', 'completed')
+                ->sum('total_money');
+        }
+    }
+
+    private function generateMonthChart($selectedMonth, $year, &$labels, &$serviceRevenue, &$productRevenue)
+    {
+        $currentYear = date('Y');
+        $currentMonth = date('n');
+
+        if ($selectedMonth && $selectedMonth <= $currentMonth && $year == $currentYear) {
+            // Hiển thị theo ngày trong tháng được chọn
+            $monthObj = Carbon::createFromDate($year, $selectedMonth, 1);
+            $daysInMonth = $monthObj->daysInMonth;
+            $today = Carbon::today();
+
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $date = Carbon::createFromDate($year, $selectedMonth, $day);
+
+                // Chỉ hiển thị đến ngày hiện tại nếu là tháng hiện tại
+                if ($selectedMonth == $currentMonth && $date->gt($today)) {
+                    break;
+                }
+
+                $labels[] = $date->format('d/m');
+
+                $serviceRevenue[] = Appointment::whereDate('created_at', $date)
+                    ->where('status', 'completed')
+                    ->sum('total_amount');
+
+                $productRevenue[] = Order::whereDate('created_at', $date)
+                    ->where('status', 'completed')
+                    ->sum('total_money');
+            }
+        } else {
+            // Hiển thị theo tháng (chỉ các tháng đã qua và tháng hiện tại)
+            for ($i = 1; $i <= $currentMonth; $i++) {
+                $labels[] = 'Tháng ' . $i;
+
+                $serviceRevenue[] = Appointment::whereMonth('created_at', $i)
+                    ->whereYear('created_at', $year)
+                    ->where('status', 'completed')
+                    ->sum('total_amount');
+
+                $productRevenue[] = Order::whereMonth('created_at', $i)
+                    ->whereYear('created_at', $year)
+                    ->where('status', 'completed')
+                    ->sum('total_money');
+            }
+        }
     }
 }
