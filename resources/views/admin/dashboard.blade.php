@@ -92,45 +92,38 @@
 
     <!-- Chart Section -->
     <div class="row align-items-stretch">
+
         <!-- Biểu đồ theo tuần/khoảng ngày -->
         <div class="col-md-6 mb-3">
-            <div class="card card-round h-100 d-flex flex-column">
-                <div class="card-header">
-                    <div class="card-head-row">
-                        <div class="card-title">Thống kê doanh thu theo tuần</div>
-                        <div class="card-tools">
-                            <form method="GET" id="weekChartFilterForm" class="mb-0">
-                                <div class="row g-2 align-items-end">
-                                    <div class="col-auto">
-                                        <label for="week_start" class="form-label small mb-1">Từ ngày:</label>
-                                        <input type="date" name="week_start" id="week_start"
-                                            class="form-control form-control-sm" value="{{ $weekStart ?? '' }}"
-                                            max="{{ date('Y-m-d') }}">
-                                    </div>
-                                    <div class="col-auto">
-                                        <label for="week_end" class="form-label small mb-1">Đến ngày:</label>
-                                        <input type="date" name="week_end" id="week_end"
-                                            class="form-control form-control-sm" value="{{ $weekEnd ?? '' }}"
-                                            max="{{ date('Y-m-d') }}">
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-filter me-1"></i>Lọc
-                                        </button>
-                                        @if (request()->anyFilled(['week_start', 'week_end']))
-                                            <a href="{{ route('dashboard') }}"
-                                                class="btn btn-outline-secondary btn-sm ms-1">
-                                                <i class="fa fa-times me-1"></i>Xóa
-                                            </a>
-                                        @endif
-                                    </div>
-                                </div>
-                                <small class="text-muted">Để trống để xem tuần hiện tại</small>
-                            </form>
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-2 fw-bold">Thống kê doanh thu theo tuần</h5>
+                    <form method="GET" id="weekChartFilterForm" class="d-flex align-items-end gap-2 flex-wrap">
+                        <div>
+                            <label for="week_start" class="form-label small mb-1">Từ ngày:</label>
+                            <input type="date" name="week_start" id="week_start" class="form-control form-control-sm"
+                                value="{{ $weekStart ?? '' }}" max="{{ date('Y-m-d') }}">
                         </div>
-                    </div>
+                        <div>
+                            <label for="week_end" class="form-label small mb-1">Đến ngày:</label>
+                            <input type="date" name="week_end" id="week_end" class="form-control form-control-sm"
+                                value="{{ $weekEnd ?? '' }}" max="{{ date('Y-m-d') }}">
+                        </div>
+                        <div class="d-flex gap-1">
+                            <button type="submit" class="btn btn-sm btn-primary d-flex align-items-center">
+                                <i class="fa fa-filter me-1"></i>Lọc
+                            </button>
+                            @if (request()->anyFilled(['week_start', 'week_end']))
+                                <a href="{{ route('dashboard') }}"
+                                    class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                                    <i class="fa fa-times me-1"></i>Xóa
+                                </a>
+                            @endif
+                        </div>
+                    </form>
                 </div>
                 <div class="card-body">
+                    <p class="text-muted small mb-3">Để trống để xem tuần hiện tại.</p>
                     <div class="chart-container" style="min-height: 300px;">
                         <canvas id="weekChart"></canvas>
                     </div>
@@ -138,90 +131,51 @@
             </div>
         </div>
 
+
         <!-- Biểu đồ theo tháng -->
         <div class="col-md-6 mb-3">
-            <div class="card card-round h-100 d-flex flex-column">
-                <div class="card-header">
-                    <div class="card-head-row">
-                        <div class="card-title">Thống kê doanh thu theo tháng</div>
-                        <div class="card-tools">
-                            <form method="GET" id="monthChartFilterForm" class="mb-0">
-                                <div class="row g-2 align-items-end">
-                                    <div class="col-auto">
-                                        <label for="selected_month" class="form-label small mb-1">Chọn tháng:</label>
-                                        <select name="selected_month" id="selected_month"
-                                            class="form-select form-select-sm">
-                                            <option value="">Tất cả tháng {{ $year ?? date('Y') }}</option>
-                                            @foreach ($availableMonths as $monthNum)
-                                                <option value="{{ $monthNum }}"
-                                                    {{ isset($selectedMonth) && $selectedMonth == $monthNum ? 'selected' : '' }}>
-                                                    Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-filter me-1"></i>Lọc
-                                        </button>
-                                        @if (request()->anyFilled(['selected_month']))
-                                            <a href="{{ route('dashboard') }}"
-                                                class="btn btn-outline-secondary btn-sm ms-1">
-                                                <i class="fa fa-times me-1"></i>Xóa
-                                            </a>
-                                        @endif
-                                    </div>
-                                </div>
-                            </form>
+            <div class="card card-round shadow-sm h-100 d-flex flex-column">
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-2 fw-bold">Thống kê doanh thu theo tháng</h5>
+                    <form method="GET" id="monthChartFilterForm" class="d-flex align-items-end gap-2 flex-wrap">
+                        <div>
+                            <label for="selected_month" class="form-label small mb-1 text-muted">Chọn tháng:</label>
+                            <select name="selected_month" id="selected_month" class="form-select form-select-sm">
+                                <option value="">Tất cả tháng {{ $year ?? date('Y') }}</option>
+                                @foreach ($availableMonths as $monthNum)
+                                    <option value="{{ $monthNum }}"
+                                        {{ isset($selectedMonth) && $selectedMonth == $monthNum ? 'selected' : '' }}>
+                                        Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
-                    </div>
+
+                        <div class="d-flex gap-1">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="fas fa-filter me-1"></i>Lọc
+                            </button>
+                            @if (request()->anyFilled(['selected_month']))
+                                <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-times me-1"></i>Xóa
+                                </a>
+                            @endif
+                        </div>
+                    </form>
                 </div>
                 <div class="card-body">
+                    <p class="text-muted small mb-3">Để trống để xem toàn bộ năm</p>
                     <div class="chart-container" style="min-height: 300px;">
                         <canvas id="monthChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- <div class="row align-items-stretch">
-        <!-- Barber Performance -->
-        <div class="col-md-12 mb-3">
-
-        </div>
-    </div> --}}
-
-    <!-- Bottom Row -->
-    <div class="row g-3">
         {{-- Cột bên trái --}}
-        <div class="col-md-6 d-flex flex-column gap-3">
-            {{-- Lịch hẹn sắp tới --}}
-            <div class="card card-round flex-fill">
-                <div class="card-header">
-                    <h5 class="card-title mb-0 fw-bold">Lịch hẹn sắp tới</h5>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        @forelse ($upcomingAppointments as $appointment)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="fw-semibold">{{ $appointment->name ?? '-' }}</span> -
-                                    {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i') }}
-                                </div>
-                                <span class="badge bg-success">
-                                    {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m') }}
-                                </span>
-                            </li>
-                        @empty
-                            <li class="list-group-item text-center text-muted">Không có lịch hẹn sắp tới</li>
-                        @endforelse
-                    </ul>
-                </div>
-            </div>
-
+        <div class="col-md-6 d-flex flex-column mt-3">
             {{-- Hiệu suất nhân viên --}}
-            <div class="card card-round flex-fill">
+            <div class="card card-round pb-3">
                 <div class="card-header d-flex flex-column">
                     <h5 class="card-title mb-1 fw-bold">Hiệu suất nhân viên (tuần này)</h5>
                     <span class="text-muted small">{{ $weekRange ?? 'Tuần hiện tại' }}</span>
@@ -253,12 +207,38 @@
                     </table>
                 </div>
             </div>
+
+            {{-- Lịch hẹn sắp tới --}}
+            <div class="card card-round pb-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fw-bold">Lịch hẹn sắp tới</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @forelse ($upcomingAppointments as $appointment)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-semibold">{{ $appointment->name ?? '-' }}</span> -
+                                    {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i') }}
+                                </div>
+                                <span class="badge bg-success">
+                                    {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m') }}
+                                </span>
+                            </li>
+                        @empty
+                            <li class="list-group-item text-center text-muted">Không có lịch hẹn sắp tới</li>
+                        @endforelse
+                    </ul>
+                </div>
+            </div>
+
+
         </div>
 
         {{-- Cột bên phải --}}
-        <div class="col-md-6 d-flex flex-column gap-3">
+        <div class="col-md-6 d-flex flex-column gap-3 mt-3">
             {{-- Sản phẩm bán chạy & ít bán --}}
-            <div class="card card-round flex-fill">
+            <div class="card card-round" style="padding-bottom: 60px;">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0 fw-bold">Sản phẩm bán chạy & ít bán</h5>
                     <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
@@ -289,7 +269,8 @@
                                         </span>
                                     </li>
                                 @empty
-                                    <li class="list-group-item text-center text-muted">Không có sản phẩm nào được bán</li>
+                                    <li class="list-group-item text-center text-muted">Không có sản phẩm nào được bán
+                                    </li>
                                 @endforelse
                             </ul>
                         </div>
@@ -315,75 +296,11 @@
                     </div>
                 </div>
             </div>
-
-            {{-- Dịch vụ được sử dụng nhiều & ít --}}
-            <div class="card card-round flex-fill">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0 fw-bold">Dịch vụ phổ biến & ít dùng</h5>
-                    <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="pills-top-service-tab" data-bs-toggle="pill"
-                                href="#pills-top-service" role="tab">Phổ biến</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="pills-low-service-tab" data-bs-toggle="pill"
-                                href="#pills-low-service" role="tab">Ít dùng</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-body">
-                    <div class="tab-content">
-                        {{-- Dịch vụ phổ biến --}}
-                        <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
-                            <ul class="list-group list-group-flush">
-                                @forelse ($topServices as $item)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <strong>{{ $item->service->name ?? 'Không xác định' }}</strong><br>
-                                            <small
-                                                class="text-muted">₫{{ number_format($item->service->price ?? 0) }}</small>
-                                        </div>
-                                        <span class="badge bg-primary rounded-pill">
-                                            {{ $item->usage_count }} lượt
-                                        </span>
-                                    </li>
-                                @empty
-                                    <li class="list-group-item text-center text-muted">Không có dịch vụ nào được sử dụng
-                                    </li>
-                                @endforelse
-                            </ul>
-                        </div>
-
-                        {{-- Dịch vụ ít sử dụng --}}
-                        <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
-                            <ul class="list-group list-group-flush">
-                                @forelse ($lowUsageServices as $item)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <strong>{{ $item->name ?? 'Không xác định' }}</strong><br>
-                                            <small class="text-muted">₫{{ number_format($item->price ?? 0) }}</small>
-                                        </div>
-                                        <span class="badge bg-secondary rounded-pill">
-                                            {{ $item->usage_count }} lượt
-                                        </span>
-                                    </li>
-                                @empty
-                                    <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
-                                @endforelse
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
-    </div>
 
-
-
-    <!-- Transaction History -->
-    <div class="row mt-3">
-        <div class="col-md-12 mb-3">
-            <div class="card card-round">
+        <!-- Cột phải: Lịch sử giao dịch -->
+        <div class="col-md-6 d-flex flex-column">
+            <div class="card card-round flex-fill">
                 <div class="card-header">
                     <div class="card-head-row card-tools-still-right">
                         <h4 class="card-title">Lịch sử giao dịch</h4>
@@ -431,16 +348,15 @@
                                         <td class="text-end">
                                             <span
                                                 class="badge 
-    {{ $order->status == 'completed'
-        ? 'bg-success'
-        : ($order->status == 'pending'
-            ? 'bg-warning'
-            : ($order->status == 'cancelled'
-                ? 'bg-danger'
-                : 'bg-primary')) }}">
+                                            {{ $order->status == 'completed'
+                                                ? 'bg-success'
+                                                : ($order->status == 'pending'
+                                                    ? 'bg-warning'
+                                                    : ($order->status == 'cancelled'
+                                                        ? 'bg-danger'
+                                                        : 'bg-primary')) }}">
                                                 {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
                                             </span>
-
                                         </td>
                                     </tr>
                                 @empty
@@ -454,6 +370,68 @@
                 </div>
             </div>
         </div>
+
+        <!-- Cột trái: Dịch vụ phổ biến & ít dùng -->
+        <div class="col-md-6 d-flex flex-column">
+            <div class="card card-round flex-fill">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 fw-bold">Dịch vụ phổ biến & ít dùng</h5>
+                    <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="pills-top-service-tab" data-bs-toggle="pill"
+                                href="#pills-top-service" role="tab">Phổ biến</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-low-service-tab" data-bs-toggle="pill"
+                                href="#pills-low-service" role="tab">Ít dùng</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- Phổ biến -->
+                        <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
+                            <ul class="list-group list-group-flush">
+                                @forelse ($topServices as $item)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $item->service->name ?? 'Không xác định' }}</strong><br>
+                                            <small
+                                                class="text-muted">₫{{ number_format($item->service->price ?? 0) }}</small>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">
+                                            {{ $item->usage_count }} lượt
+                                        </span>
+                                    </li>
+                                @empty
+                                    <li class="list-group-item text-center text-muted">Không có dịch vụ nào</li>
+                                @endforelse
+                            </ul>
+                        </div>
+
+                        <!-- Ít dùng -->
+                        <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
+                            <ul class="list-group list-group-flush">
+                                @forelse ($lowUsageServices as $item)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $item->name ?? 'Không xác định' }}</strong><br>
+                                            <small class="text-muted">₫{{ number_format($item->price ?? 0) }}</small>
+                                        </div>
+                                        <span class="badge bg-secondary rounded-pill">
+                                            {{ $item->usage_count }} lượt
+                                        </span>
+                                    </li>
+                                @empty
+                                    <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
+                                @endforelse
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 @endsection
 
