@@ -274,24 +274,7 @@ section {
   color: #333;
 }
 
-.posts-wrapper {
-  position: relative;
-  overflow: hidden;
-  max-width: 1000px;
-  margin: auto;
-}
 
-.posts {
-  display: flex;
-  transition: transform 0.5s ease;
-}
-
-.post {
-  flex: 0 0 calc(100% / 3);
-  /* 3 bài mỗi slide */
-  box-sizing: border-box;
-  padding: 10px;
-}
 
 .image-container {
   width: 100%;
@@ -610,111 +593,88 @@ h2 {
   flex: 1;
 }
 
-footer {
-  flex-shrink: 0;
-  background-color: #000;
-  color: #fff;
-  padding: 40px 15%;
-  /* padding-left: 120px; */
-  /* padding-top: 40px;
-  padding-bottom: 40px; */
+.footer {
+    background-color: #000;
+    color: #fff;
+    padding: 40px 20px;
+    font-family: Arial, sans-serif;
+    text-align: center;
 }
 
-.main-footer {
-  display: flex;
-  justify-content: center;
-  /* Căn giữa các phần nội dung */
-  flex-wrap: wrap;
-  gap: 20px;
-  max-width: 1200px;
-  /* Giới hạn chiều rộng tối đa */
-  margin: 0 auto;
-  /* Căn giữa main-footer trong footer */
+.footer-container {
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
-.description,
-.information,
-.faq,
-.follow-us {
-  flex: 1;
-  min-width: 200px;
-  /* Đảm bảo không bị co quá nhỏ */
-  text-align: left;
-  padding: 20px;
+.footer-top h4,
+.footer-top p {
+    margin: 5px 0;
+    font-weight: bold;
 }
 
-.description .logo img {
-  max-width: 100px;
-  /* Điều chỉnh kích thước logo */
-  height: auto;
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 100px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+    text-align: left;
 }
 
-.description p {
-  font-size: 14px;
-  line-height: 1.6;
-  margin: 20px 0;
+.footer-column h5 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
-.social ul {
-  display: flex;
-  gap: 10px;
-  padding: 0;
-  list-style: none;
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.social ul li a {
-  color: #fff;
-  font-size: 24px;
-  transition: color 0.3s;
+.footer-column ul li {
+    margin-bottom: 8px;
 }
 
-.social ul li a:hover {
-  color: #ccc;
+.footer-column ul li a {
+    color: #fff;
+    text-decoration: none;
+    transition: 0.3s;
 }
 
-.information,
-.faq,
-.follow-us {
-  margin-top: 20px;
+.footer-column ul li a:hover {
+    color: #ccc;
 }
 
-.information ul,
-.faq ul,
-.follow-us ul {
-  list-style: none;
-  padding: 0;
+.footer-logo-cert {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
-.information ul li,
-.faq ul li,
-.follow-us ul li {
-  margin-bottom: 10px;
+.footer-logo-cert img {
+    width: 150px;
+    height: 110px;
 }
 
-.information ul li a,
-.faq ul li a,
-.follow-us ul li a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s;
+.logo-footer {
+    height: 50px;
 }
 
-.information ul li a:hover,
-.faq ul li a:hover,
-.follow-us ul li a:hover {
-  color: #ccc;
+.cert-footer {
+    height: 60px;
 }
 
-.information::before,
-.faq::before,
-.follow-us::before {
-  content: attr(data-title);
-  display: block;
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 15px;
+.footer-bottom p {
+    font-size: 13px;
+    color: #ccc;
+    margin-top: 10px;
 }
+
 
 /* ----------- booking ---------- */
 
@@ -1152,6 +1112,7 @@ footer {
   box-sizing: border-box;
   text-align: center;
   z-index: 1000;
+  border-radius: 8px;
 }
 
 .image-branch .overlay h4 {
@@ -1916,7 +1877,7 @@ footer {
 
 
 .barber-card {
-  border-radius: 18px;
+  border-radius: 8px;
   transition: transform 0.3s, box-shadow 0.3s;
   border: 1px solid #eee;
   overflow: hidden;
@@ -1929,8 +1890,8 @@ footer {
 
 .barber-img-wrapper {
   overflow: hidden;
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
 
 .barber-img {
@@ -1948,7 +1909,7 @@ footer {
   font-size: 0.9rem;
 }
 
-.book-btn {
+/* .book-btn {
   display: inline-block;
   padding: 8px 20px;
   border-radius: 30px;
@@ -1966,7 +1927,7 @@ footer {
   color: #fff;
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(245, 197, 24, 0.4);
-}
+} */
 
 /* Link thợ */
 .top-barber a {

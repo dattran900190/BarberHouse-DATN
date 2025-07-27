@@ -31,7 +31,6 @@
                     @endif
 
                     {{-- Các bài viết thường --}}
-                    <h3 class="mt-4">Bài viết khác</h3>
                     <div class="post-mid">
                         @foreach ($normalPosts as $post)
                             <div class="post">
@@ -113,11 +112,17 @@
 
         /* Featured post styling */
         .post-top {
-            margin-bottom: 3rem;
+            margin-bottom: 1rem;
             background: #fff;
             border-radius: 8px;
             overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             /* box-shadow: 0 4px 12px rgba(0,0,0,0.1); */
+        }
+
+        .post-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .post-top .image-top {
@@ -143,14 +148,14 @@
         }
 
         .post-top h4 {
-            /* padding: 1.5rem 1.5rem 0.5rem; */
+            padding: 10px 10px 0;
             font-size: 1.5rem;
             font-weight: bold;
             /* line-height: 1.3; */
         }
 
         .post-top p {
-            /* padding: 0 1.5rem 1.5rem; */
+            padding: 0 10px 10px;
             color: #666;
             /* line-height: 1.6; */
         }
@@ -173,7 +178,8 @@
 
         .post:hover {
             transform: translateY(-5px);
-            /* box-shadow: 0 8px 25px rgba(0,0,0,0.15); */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
 
         .post .image-mid {
@@ -187,6 +193,7 @@
             height: 100%;
             object-fit: cover;
             transition: transform 0.4s ease;
+            border-radius: 8px;
         }
 
         .post:hover .image-mid img {
@@ -212,7 +219,7 @@
 
         .post-right .post .image-right {
             width: 100%;
-            height: 180px;
+            height: 220px;
             overflow: hidden;
         }
 
@@ -221,6 +228,7 @@
             height: 100%;
             object-fit: cover;
             transition: transform 0.4s ease;
+            border-radius: 8px;
         }
 
         .post-right .post:hover .image-right img {

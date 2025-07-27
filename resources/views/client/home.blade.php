@@ -43,23 +43,28 @@
             <h2>Bài viết nổi bật</h2>
             <div class="posts-wrapper">
                 <button class="prev-posts">‹</button>
-                <div class="posts">
-                    @foreach ($featuredPosts as $post)
-                        <div class="post">
-                            <div class="image-container">
-                                <a href="{{ route('client.detailPost', $post->slug) }}">
-                                    <img src="{{ Storage::url($post->image) }}" alt="{{ $post->title }}">
-                                </a>
+                <div class="posts-track"> <!-- Thêm lớp track -->
+                    <div class="posts">
+                        @foreach ($featuredPosts as $post)
+                            <div class="post">
+                                <div class="image-container">
+                                    <a href="{{ route('client.detailPost', $post->slug) }}">
+                                        <img src="{{ Storage::url($post->image) }}" alt="{{ $post->title }}">
+                                    </a>
+                                </div>
+                                <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
+                                <p>
+                                    <a href="{{ route('client.detailPost', $post->slug) }}">
+                                        {{ Str::limit(strip_tags($post->short_description), 50) }}
+                                    </a>
+                                </p>
                             </div>
-                            <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
-                            <p><a
-                                    href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->short_description), 50) }}</a>
-                            </p>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
                 <button class="next-posts">›</button>
             </div>
+
 
             <div class="posts-nomal">
                 @foreach ($normalPosts as $post)
@@ -71,7 +76,7 @@
                         </div>
                         <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
                         <p><a
-href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->short_description), 50) }}</a>
+                                href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->short_description), 50) }}</a>
                         </p>
                     </div>
                 @endforeach
@@ -122,7 +127,7 @@ href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($p
                                             <button type="submit" class="btn-outline-buy">Mua ngay</button>
                                         @endguest
                                     </form>
-</div>
+                                </div>
                             @endif
                         </div>
                     @endforeach
@@ -153,8 +158,62 @@ href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($p
         </section>
 
     </main>
-@endsection
-@section('css')
+
+    <style>
+        .post-nomal {
+            border-radius: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        .post-nomal img {
+            border-radius: 8px;
+        }
+
+        .post-nomal:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .posts-wrapper {
+            position: relative;
+            overflow: hidden;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .posts-track {
+            overflow: hidden;
+        }
+
+        .posts {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .posts .post {
+            flex: 0 0 calc(100% / 3);
+            /* 3 bài, trừ 2 khoảng cách */
+            box-sizing: border-box;
+            padding: 10px;
+        }
+
+        .posts .post .image-container {
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+
+        .posts img {
+            border-radius: 8px;
+        }
+
+        .posts img:hover {
+            transform: scale(1.05);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 @endsection
 
 @section('scripts')
@@ -199,7 +258,7 @@ href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($p
 
                         Swal.fire({
                             icon: 'warning',
-title: 'Cảnh báo!',
+                            title: 'Cảnh báo!',
                             text: message,
                         });
                     }
@@ -221,6 +280,35 @@ title: 'Cảnh báo!',
                         window.location.href = "{{ route('login') }}";
                     }
                 });
+            });
+        });
+    </script>
+    <script>
+        $(function() {
+            const $posts = $('.posts .post');
+            const $track = $('.posts');
+            const postsPerSlide = 3;
+            const totalSlides = Math.ceil($posts.length / postsPerSlide);
+            let currentSlide = 0;
+
+            function updateSlide() {
+                const postWidth = $posts.outerWidth(true); // tính luôn cả margin
+                const distance = postWidth * postsPerSlide * currentSlide;
+                $track.css('transform', `translateX(-${distance}px)`);
+            }
+
+            $('.next-posts').on('click', function() {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateSlide();
+                }
+            });
+
+            $('.prev-posts').on('click', function() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSlide();
+                }
             });
         });
     </script>

@@ -80,7 +80,10 @@
                                 </div>
 
                                 <div class="card-body text-center">
-                                    <h5 class="card-title mb-1">{{ $product->name }}</h5>
+                                    <h5 class="card-title mb-1">
+                                        <a href="{{ route('client.product.detail', $product->id) }}"
+                                            class="text-decoration-none text-dark">{{ $product->name }}</a>
+                                    </h5>
                                     <p class="mb-1 text-danger fw-bold">{{ number_format($product->price) }} đ</p>
                                     <div class="border-top-0 d-flex justify-content-center gap-2 flex-wrap">
 
