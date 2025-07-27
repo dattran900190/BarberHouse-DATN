@@ -40,7 +40,7 @@
         @endif
 
         <section id="mainPost">
-            <h2>Tin tức nổi bật</h2>
+            <h2>Bài viết nổi bật</h2>
             <div class="posts-wrapper">
                 <button class="prev-posts">‹</button>
                 <div class="posts">

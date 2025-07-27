@@ -7,7 +7,7 @@
             <ul class="navbar-nav d-flex flex-row flex-nowrap me-4">
                 <li class="nav-item mx-2"><a class="nav-link" href="{{ url('/') }}">Trang chủ</a></li>
                 <li class="nav-item mx-2"><a class="nav-link" href="{{ url('san-pham') }}">Sản phẩm</a></li>
-                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('bai-viet') }}">Tin tức</a></li>
+                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('bai-viet') }}">Bài viết</a></li>
                 <li class="nav-item mx-2"><a class="nav-link" href="{{ url('tho-cat') }}">Thợ cắt</a></li>
             </ul>
 

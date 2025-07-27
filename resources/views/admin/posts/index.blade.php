@@ -1,6 +1,6 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Quản lý Tin tức')
+@section('title', 'Quản lý Bài Viết')
 
 @section('content')
     @if (session('success'))
@@ -24,7 +24,7 @@
         $currentRole = Auth::user()->role;
     @endphp
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Tin tức</h3>
+        <h3 class="fw-bold mb-3">Bài viết</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
