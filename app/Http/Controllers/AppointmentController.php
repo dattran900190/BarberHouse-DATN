@@ -135,6 +135,7 @@ class AppointmentController extends Controller
                 'status_before_cancellation' => $appointment->status,
                 'additional_services' => $appointment->additional_services,
                 'cancellation_reason' => $request->input('no_show_reason', 'Khách hàng không đến'),
+                'appointment_time' => $appointment->appointment_time ? $appointment->appointment_time->format('Y-m-d H:i:s') : null,
             ]));
 
             // Xóa bản ghi liên quan trong bảng checkins (nếu có)
