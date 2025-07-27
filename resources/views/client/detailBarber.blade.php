@@ -244,7 +244,7 @@
         }
 
         /* Pagination */
-        .pagination .page-item.active .page-link {
+        /* .pagination .page-item.active .page-link {
             background-color: #000;
             border-color: #000;
         }
@@ -263,7 +263,7 @@
 
         .pagination .page-link:hover {
             background-color: #f8f9fa;
-        }
+        } */
 
         /* Card Styles */
         .card {
