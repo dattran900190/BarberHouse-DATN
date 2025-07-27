@@ -27,7 +27,7 @@
     @endif
 
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Quản lý Checkin</h3>
+        <h3 class="fw-bold mb-3">Quản lý Check-in</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -45,41 +45,15 @@
             </li>
 
             <li class="nav-item">
-                <a href="{{ url('admin/checkins') }}">Checkin</a>
+                <a href="{{ url('admin/checkins') }}">Lịch sử Check-in</a>
             </li>
         </ul>
     </div>
 
-    {{-- <div class="card">
-        <div class="card-header text-white d-flex justify-content-between align-items-center">
-            <div class="card-title">Xác nhận mã Checkin</div>
-        </div>
-
-        <div class="card-body">
-            <form action="{{ route('checkins.store') }}" method="POST">
-                @csrf
-                <div class="mb-3">
-                    <label for="code" class="form-label fw-bold">Nhập mã Checkin (6 chữ số)</label>
-                    <input type="text" name="code" id="code"
-                        class="form-control @error('code') is-invalid @enderror"
-                        maxlength="6" required placeholder="Ví dụ: 123456">
-                    @error('code')
-                        <span class="invalid-feedback d-block mt-1"><strong>{{ $message }}</strong></span>
-                    @enderror
-                </div>
-                <div class="text-end">
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-check-circle"></i> Xác nhận
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div> --}}
-
     {{-- BẢNG DỮ LIỆU --}}
     <div class="card mt-4">
         <div class="card-header text-white d-flex justify-content-between align-items-center">
-            <div class="card-title">Danh sách Checkins</div>
+            <div class="card-title">Danh sách lịch sử Check-in</div>
         </div>
 
         <div class="card-body">
@@ -104,9 +78,9 @@
                                 <td class="text-center"><strong>{{ $checkin->qr_code_value }}</strong></td>
                                 <td class="text-center">
                                     @if ($checkin->is_checked_in)
-                                        <span class="badge bg-success">Đã Checkin</span>
+                                        <span class="badge bg-success">Đã Check-in</span>
                                     @else
-                                        <span class="badge bg-warning text-dark">Chưa Checkin</span>
+                                        <span class="badge bg-warning text-dark">Chưa Check-in</span>
                                     @endif
                                 </td>
                                 <td class="text-center">
@@ -142,7 +116,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center text-muted">Chưa có dữ liệu checkin nào.</td>
+                                <td colspan="8" class="text-center text-muted">Chưa có dữ liệu check-in nào.</td>
                             </tr>
                         @endforelse
                     </tbody>

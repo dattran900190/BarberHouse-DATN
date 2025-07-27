@@ -12,7 +12,7 @@ use App\Mail\CheckinCodeMail;
 use App\Mail\CancelBookingMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Events\AppointmentConfirmed;
+// use App\Events\AppointmentConfirmed;
 use App\Models\CancelledAppointment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;

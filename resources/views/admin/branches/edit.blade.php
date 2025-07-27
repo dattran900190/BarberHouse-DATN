@@ -94,7 +94,7 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-sm btn-outline-warning">
+                <button type="submit" class="btn btn-sm btn-outline-primary">
                     <i class="fa fa-edit me-1"></i> Cập nhật
                 </button>
                 <a href="{{ route('branches.index', ['page' => request('page', 1)]) }}"

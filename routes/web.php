@@ -77,11 +77,6 @@ Route::post('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])-
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
 Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('dat-lich.store');
 Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::class, 'getBarbersByBranch'])->name('getBarbersByBranch');
-// Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}', [ClientAppointmentController::class, 'getAvailableBarbersByDate']);
-// Route::get(
-//   '/get-available-barbers-by-date/{branch_id}/{date}/{time?}/{service_id?}',
-//   [ClientAppointmentController::class, 'getAvailableBarbersByDate']
-// );
 Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time}/{service_id}', [ClientAppointmentController::class, 'getAvailableBarbersByDate'])->name('getAvailableBarbersByDate');
 Route::get('/confirm-booking/{token}', [ClientAppointmentController::class, 'confirmBooking'])->name('confirm.booking');
 
@@ -258,17 +253,15 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
         ->name('branches.restore');
     // Route::delete('admin/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])
     //     ->name('branches.destroy');
+
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);
-    // Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])->name('barber_schedules.showBranch');
-    // Route::get('barber-schedules/create/{branchId}', [BarberScheduleController::class, 'create'])->name('barber_schedules.createForBranch');
-    // // Xử lý lưu
-    // Route::post('/barber-schedules', [BarberScheduleController::class, 'store'])->name('barber_schedules.store');
-    // // Đúng: KHÔNG cần lặp lại 'admin/' vì đã có prefix
-    // // routes/web.php
-    // Route::get('barber-schedules/holiday/edit/{id}', [BarberScheduleController::class, 'editHoliday'])->name('barber_schedules.editHoliday');
-    // Route::put('barber-schedules/holiday/update/{id}', [BarberScheduleController::class, 'updateHoliday'])->name('barber_schedules.updateHoliday');
-    // Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
+    Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])->name('barber_schedules.showBranch');
+    Route::get('barber-schedules/create/{branchId}', [BarberScheduleController::class, 'create'])->name('barber_schedules.createForBranch');
+    Route::post('barber-schedules', [BarberScheduleController::class, 'store'])->name('barber_schedules.store');
+    Route::get('barber-schedules/holiday/edit/{id}', [BarberScheduleController::class, 'editHoliday'])->name('barber_schedules.editHoliday');
+    Route::put('barber-schedules/holiday/update/{id}', [BarberScheduleController::class, 'updateHoliday'])->name('barber_schedules.updateHoliday');
+    Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
 
     // ==== Người dùng ====
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');

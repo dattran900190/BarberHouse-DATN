@@ -59,15 +59,15 @@
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Trạng thái</label>
                         <select name="is_active" class="form-control @error('is_active') is-invalid @enderror">
-                            <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Không hoạt động</option>
                             <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Đang hoạt động</option>
+                            <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Không hoạt động</option>
                         </select>
                         @error('is_active') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
                 </div>
 
                 <button type="submit" class="btn btn-sm btn-outline-success">
-                    <i class="fas fa-save"></i> <span class="ms-2">Lưu Banner</span>
+                    <i class="fas fa-plus me-1"></i><span class="ms-2">Thêm</span>
                 </button>
                 <a href="{{ route('banners.index') }}" class="btn btn-sm btn-outline-secondary">
                     <i class="fa fa-arrow-left me-1"></i> Quay lại

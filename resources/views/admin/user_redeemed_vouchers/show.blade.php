@@ -17,7 +17,6 @@
     </ul>
 </div>
 
-<div class="container-fluid px-4">
     <!-- Card: Thông tin voucher đã đổi -->
     <div class="card shadow-sm mb-4">
         <div class="card-header d-flex align-items-center">
@@ -85,6 +84,6 @@
             </div>
         </div>
     </div>
-</div>
+
 @endsection
  

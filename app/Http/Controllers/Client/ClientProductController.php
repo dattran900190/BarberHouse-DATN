@@ -28,10 +28,13 @@ class ClientProductController extends Controller
             $query->whereBetween('price', [(int)$min * 1000, (int)$max * 1000]);
         }
 
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
 
         $products = $query->with('variants')->latest()->paginate(8);
 
-        return view('client.product', compact('products','globalCategories'));
+        return view('client.product', compact('products', 'globalCategories'));
     }
 
     public function show($id)
