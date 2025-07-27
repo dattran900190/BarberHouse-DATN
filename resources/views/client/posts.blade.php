@@ -12,24 +12,23 @@
                 <div class="post-left">
                     {{-- Bài viết nổi bật --}}
                     @if ($featuredPosts->isNotEmpty())
-                        @php $topPost = $featuredPosts->first(); @endphp
-                        <div class="post-top">
-                            <div class="image-top">
-                                <a href="{{ route('client.detailPost', $topPost->slug) }}">
-                                    <img src="{{ asset('storage/' . $topPost->image) }}" alt="{{ $topPost->title }}" />
-                                </a>
-                            </div>
-                            <h4>
-                                <a href="{{ route('client.detailPost', $topPost->slug) }}">
-                                    {{ $topPost->title }}
-                                </a>
-                            </h4>
-                            <p>{{ Str::limit(strip_tags($topPost->short_description), 100) }}</p>
+                    @php $topPost = $featuredPosts->first(); @endphp
+                
+                    <div class="post-top">
+                        <div class="image-top">
+                            <a href="{{ route('client.detailPost', $topPost->slug) }}">
+                                <img src="{{ asset('storage/' . $topPost->image) }}" alt="{{ $topPost->title }}" />
+                            </a>
                         </div>
-
-                       
-                    @endif
-
+                        <h4>
+                            <a href="{{ route('client.detailPost', $topPost->slug) }}">
+                                {{ $topPost->title }}
+                            </a>
+                        </h4>
+                        <p>{{ Str::limit(strip_tags($topPost->short_description), 100) }}</p>
+                    </div>
+                @endif
+                
                     {{-- Các bài viết thường --}}
                     <div class="post-mid">
                         @foreach ($normalPosts as $post)
@@ -44,7 +43,7 @@
                                         {{ $post->title }}
                                     </a>
                                 </h4>
-                                <p>{{ Str::limit(strip_tags($topPost->short_description), 100) }}</p>
+                                <p>{{ Str::limit(strip_tags($post->short_description), 100) }}</p>
                             </div>
                         @endforeach
                     </div>
@@ -62,7 +61,7 @@
                         <div class="post">
                             <div class="image-right">
                                 <a href="{{ route('client.detailPost', $post->slug) }}">
-                                    <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" />
+<img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" />
                                 </a>
                             </div>
                             <h5>
@@ -181,8 +180,7 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
         }
-
-        .post .image-mid {
+.post .image-mid {
             width: 100%;
             height: 250px;
             overflow: hidden;

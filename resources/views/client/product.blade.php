@@ -106,7 +106,7 @@
                                                     value="{{ $defaultVariant->id }}">
                                                 <input type="hidden" name="quantity" value="1">
                                                 @guest
-                                                    <button type="button" class="btn-outline-buy" title="Mua ngay">
+                                                    <button type="submit" class="btn-outline-buy" title="Mua ngay">
                                                         <span>Mua ngay</span>
                                                     </button>
                                                 @else
