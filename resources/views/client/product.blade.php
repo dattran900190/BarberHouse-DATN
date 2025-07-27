@@ -103,7 +103,7 @@
                                                     value="{{ $defaultVariant->id }}">
                                                 <input type="hidden" name="quantity" value="1">
                                                 @guest
-                                                    <button type="button" class="btn-outline-buy" title="Mua ngay">
+                                                    <button type="submit" class="btn-outline-buy" title="Mua ngay">
                                                         <span>Mua ngay</span>
                                                     </button>
                                                 @else
@@ -114,39 +114,6 @@
                                             </form>
                                         @endif
                                     </div>
-
-                                </a>
-
-                                <div
-                                    class="card-footer bg-white border-top-0 d-flex justify-content-center gap-2 flex-wrap">
-                                    {{-- Thêm vào giỏ hàng --}}
-                                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form m-0 p-0">
-                                        @csrf
-                                        <input type="hidden" name="product_variant_id"
-                                            value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
-                                            <i class="fas fa-cart-plus"></i>
-                                        </button>
-                                    </form>
-
-                                    {{-- Mua ngay --}}
-                                    <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form m-0 p-0">
-                                        @csrf
-                                        <input type="hidden" name="product_variant_id"
-                                            value="{{ $variant->id ?? ($product->default_variant_id ?? $product->id) }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        @guest
-                                            <button type="submit" class="btn-outline-buy" title="Mua ngay">
-                                                <span>Mua ngay</span>
-                                            </button>
-                                        @else
-                                            <button type="submit" class="btn-outline-buy" title="Mua ngay">
-                                                <span>Mua ngay</span>
-                                            </button>
-                                        @endguest
-</form>
-
                                 </div>
                             </div>
                         </div>

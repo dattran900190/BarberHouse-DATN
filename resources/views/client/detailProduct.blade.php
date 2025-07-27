@@ -87,10 +87,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="w-100"></div>
-                            <div class="col-12" id="variant-image-wrapper" style="text-align:center; margin-top:3px;">
-                                <img id="variant-image" src="{{ $variants->first() && $variants->first()->image ? asset('storage/' . $variants->first()->image) : '' }}" alt="Ảnh biến thể" style="max-width:150px; display:{{ $variants->first() && $variants->first()->image ? 'inline-block' : 'none' }};">
-                            </div>
+                      
                         </form>
 
                         {{-- Nút Mua ngay --}}
@@ -235,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     buyNowVariantId.value = this.value;
                 });
             }
-            // Khi chọn số lượng, cập nhật cho "Mua ngay"
+                        // Khi chọn số lượng, cập nhật cho "Mua ngay"
             const quantityInput = document.getElementById('quantity');
             const buyNowQuantity = document.getElementById('buy_now_quantity');
             if (quantityInput && buyNowQuantity) {
@@ -244,22 +241,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            // Hiển thị ảnh biến thể khi chọn thể tích
-            const variantImage = document.getElementById('variant-image');
+            // Thay đổi ảnh đại diện khi chọn biến thể
+            const mainImage = document.getElementById('mainImage');
             const variantImages = @json($variantImages ?? []);
-            if (variantSelect && variantImage) {
+            if (variantSelect && mainImage) {
                 variantSelect.addEventListener('change', function() {
                     const selectedId = this.value;
                     const imgUrl = variantImages[selectedId];
                     if (imgUrl) {
-                        variantImage.src = imgUrl;
-                        variantImage.style.display = 'inline-block';
+                        mainImage.src = imgUrl; // Thay đổi ảnh đại diện thành ảnh biến thể
                     } else {
-                        variantImage.src = '';
-                        variantImage.style.display = 'none';
+                        mainImage.src = "{{ Storage::url($product->image) }}"; // Giữ ảnh đại diện gốc
                     }
                 });
             }
+
+                     
         });
         $(function() {
             $('.btn-buy-now[type="button"]').on('click', function() {
