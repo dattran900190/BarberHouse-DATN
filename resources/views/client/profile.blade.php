@@ -24,15 +24,6 @@
                                 data-tab="account-change-password">
                                 Đổi mật khẩu
                             </a>
-                            <a class="list-group-item list-group-item-action" id="tab-info" data-bs-toggle="list"
-                                href="#account-info" role="tab" aria-controls="account-info" data-tab="account-info">
-                                Thông tin
-                            </a>
-                            <a class="list-group-item list-group-item-action" id="tab-notifications" data-bs-toggle="list"
-                                href="#account-notifications" role="tab" aria-controls="account-notifications"
-                                data-tab="account-notifications">
-                                Thông báo
-                            </a>
                             <a class="list-group-item list-group-item-action" id="tab-point-history" data-bs-toggle="list"
                                 href="#account-point-history" role="tab" aria-controls="account-point-history"
                                 data-tab="account-point-history">
@@ -44,101 +35,7 @@
                         <div class="tab-content">
                             <!-- Tổng quan -->
                             <div class="tab-pane fade active show" id="account-general">
-                                <form action="{{ route('client.update') }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <input type="hidden" name="tab" value="account-general">
-                                    <div class="card-body d-flex align-items-center">
-                                        <div class="position-relative">
-
-                                            <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
-                                                alt="Avatar" class="rounded avatar-preview"
-                                                style="width:80px; height:80px; object-fit:cover;">
-                                        </div>
-                                    </div>
-                                    <hr class="border-light m-0">
-                                    <div class="card-body">
-                                        <div class="form-group mb-3">
-                                            <label class="form-label fw-bold">Tên tài khoản (Email)</label>
-                                            <input type="text" class="form-control mb-1"
-                                                value="{{ auth()->user()->email }}" disabled>
-                                        </div>
-                                        <div class="form-group mb-3">
-                                            <label class="form-label fw-bold">Tên người dùng</label>
-                                            <input type="text" name="name" class="form-control"
-                                                value="{{ old('name', auth()->user()->name) }}" readonly>
-                                            @error('name')
-                                                <div class="text-danger small">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <!-- Đổi mật khẩu -->
-                            <div class="tab-pane fade" id="account-change-password">
-                                <div class="card-body pb-2">
-                                    @if (session('success-password'))
-                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                            {{ session('success-password') }}
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                                aria-label="Close"></button>
-                                        </div>
-                                    @endif
-                                    <form action="{{ route('client.password') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="tab" value="account-change-password">
-                                        <div class="form-group mb-3 position-relative">
-                                            <label class="form-label fw-bold">Mật khẩu cũ</label>
-                                            <div style="position: relative;">
-                                                <input type="password" name="current_password"
-                                                    class="form-control input-field" id="current_password"
-                                                    placeholder="Nhập mật khẩu cũ">
-                                                <span class="toggle-password" data-target="current_password"
-                                                    style="position:absolute; right:10px; top:50%; transform: translateY(-50%); cursor:pointer;">
-                                                    <i class="fa-solid fa-eye" id="icon_current_password"></i>
-                                                </span>
-                                            </div>
-                                            @error('current_password')
-                                                <div class="text-danger small">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="mb-3 position-relative">
-                                            <label class="form-label fw-bold">Mật khẩu mới</label>
-                                            <div style="position: relative;">
-                                                <input type="password" name="new_password"
-                                                    class="form-control input-field" id="new_password"
-                                                    placeholder="Nhập mật khẩu mới">
-                                                <span class="toggle-password" data-target="new_password"
-                                                    style="position:absolute; right:10px; top:50%; transform: translateY(-50%); cursor:pointer;">
-                                                    <i class="fa-solid fa-eye" id="icon_new_password"></i>
-                                                </span>
-                                            </div>
-                                            @error('new_password')
-                                                <div class="text-danger small">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="mb-3 position-relative">
-                                            <label class="form-label fw-bold">Nhập lại mật khẩu mới</label>
-                                            <div style="position: relative;">
-                                                <input type="password" name="new_password_confirmation"
-                                                    class="form-control input-field" id="new_password_confirmation"
-                                                    placeholder="Nhập lại mật khẩu">
-                                                <span class="toggle-password" data-target="new_password_confirmation"
-                                                    style="position:absolute; right:10px; top:50%; transform: translateY(-50%); cursor:pointer;">
-                                                    <i class="fa-solid fa-eye" id="icon_new_password_confirmation"></i>
-                                                </span>
-                                            </div>
-                                            @error('new_password_confirmation')
-                                                <div class="text-danger small">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="text-end mt-3">
-                                            <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                            <!-- Thông tin -->
-                            <div class="tab-pane fade" id="account-info">
+                              
                                 <div class="card-body pb-2">
                                     @if (session('success-info'))
                                         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -221,94 +118,109 @@
                                     </form>
                                 </div>
                             </div>
-                            <!-- Thông báo -->
-                            <div class="tab-pane fade" id="account-notifications">
+                            <!-- Đổi mật khẩu -->
+                            <div class="tab-pane fade" id="account-change-password">
                                 <div class="card-body pb-2">
-                                    <h6 class="mb-4 fw-bold">Hoạt động</h6>
-                                    <div class="form-group mb-3">
-                                        <label class="switcher">
-                                            <input type="checkbox" class="switcher-input" checked>
-                                            <span class="switcher-indicator">
-                                                <span class="switcher-yes"></span>
-                                                <span class="switcher-no"></span>
-                                            </span>
-                                            <span class="switcher-label">Gửi email cho tôi khi ai đó bình luận về bài viết
-                                                của tôi</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <label class="switcher">
-                                            <input type="checkbox" class="switcher-input" checked>
-                                            <span class="switcher-indicator">
-                                                <span class="switcher-yes"></span>
-                                                <span class="switcher-no"></span>
-                                            </span>
-                                            <span class="switcher-label">Gửi email cho tôi khi ai đó trả lời trên chủ đề
-                                                diễn đàn của tôi</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Lịch sử điểm -->
-                            <div class="tab-pane fade" id="account-point-history" role="tabpanel">
-                                <div class="card-body pb-2">
-                                    <h6 class="mb-4 fw-bold">Lịch sử điểm</h6>
-                                    @if (session('success'))
+                                    @if (session('success-password'))
                                         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                            {{ session('success') }}
+                                            {{ session('success-password') }}
                                             <button type="button" class="btn-close" data-bs-dismiss="alert"
                                                 aria-label="Close"></button>
                                         </div>
                                     @endif
-                                    @if ($pointHistories->isEmpty())
-                                        <p class="text-muted">Chưa có lịch sử điểm nào.</p>
-                                    @else
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered table-hover">
-                                                <thead class="table-primary">
-                                                    <tr>
-                                                        <th>Loại</th>
-                                                        <th>Điểm</th>
-                                                        <th>Mã giảm giá/Mã đặt lịch</th>
-                                                        <th>Ngày</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($pointHistories as $history)
-                                                        <tr>
-                                                            <td>{{ $history->type === 'earned' ? 'Tích điểm' : 'Đổi điểm' }}
-                                                            </td>
-                                                            <td
-                                                                class="{{ $history->type === 'earned' ? 'text-success' : 'text-danger' }}">
-                                                                {{ $history->type === 'earned' ? '+' : '-' }}
-                                                                {{ abs($history->points) }} điểm
-                                                            </td>
-
-                                                            <td>
-                                                                @if ($history->type === 'earned' && $history->appointment)
-                                                                    Mã đặt lịch:
-                                                                    {{ $history->appointment->appointment_code ?? 'Không rõ' }}
-                                                                @elseif ($history->type === 'redeemed' && $history->promotion)
-                                                                    Mã khuyễn mãi:
-                                                                    {{ $history->promotion->code ?? 'Không rõ' }}
-                                                                @else
-                                                                    -
-                                                                @endif
-                                                            </td>
-                                                            <td>{{ $history->created_at->format('d/m/Y H:i') }}</td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                    <form action="{{ route('client.password') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="tab" value="account-change-password">
+                                        <div class="form-group mb-3 position-relative">
+                                            <label class="form-label fw-bold">Mật khẩu cũ</label>
+                                            <div style="position: relative;">
+                                                <input type="password" name="current_password"
+                                                    class="form-control input-field" id="current_password"
+                                                    placeholder="Nhập mật khẩu cũ">
+                                                <span class="toggle-password" data-target="current_password"
+                                                    style="position:absolute; right:10px; top:50%; transform: translateY(-50%); cursor:pointer;">
+                                                    <i class="fa-solid fa-eye" id="icon_current_password"></i>
+                                                </span>
+                                            </div>
+                                            @error('current_password')
+                                                <div class="text-danger small">{{ $message }}</div>
+                                            @enderror
                                         </div>
-                                    @endif
-                                    <div class="text-end mb-3">
-                                        <a href="{{ route('client.redeem') }}" class="btn btn-primary">
-                                            Đổi mã giảm giá
-                                        </a>
-                                    </div>
+                                        <div class="mb-3 position-relative">
+                                            <label class="form-label fw-bold">Mật khẩu mới</label>
+                                            <div style="position: relative;">
+                                                <input type="password" name="new_password"
+                                                    class="form-control input-field" id="new_password"
+                                                    placeholder="Nhập mật khẩu mới">
+                                                <span class="toggle-password" data-target="new_password"
+                                                    style="position:absolute; right:10px; top:50%; transform: translateY(-50%); cursor:pointer;">
+                                                    <i class="fa-solid fa-eye" id="icon_new_password"></i>
+                                                </span>
+                                            </div>
+                                            @error('new_password')
+                                                <div class="text-danger small">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="mb-3 position-relative">
+                                            <label class="form-label fw-bold">Nhập lại mật khẩu mới</label>
+                                            <div style="position: relative;">
+                                                <input type="password" name="new_password_confirmation"
+                                                    class="form-control input-field" id="new_password_confirmation"
+                                                    placeholder="Nhập lại mật khẩu">
+                                                <span class="toggle-password" data-target="new_password_confirmation"
+                                                    style="position:absolute; right:10px; top:50%; transform: translateY(-50%); cursor:pointer;">
+                                                    <i class="fa-solid fa-eye" id="icon_new_password_confirmation"></i>
+                                                </span>
+                                            </div>
+                                            @error('new_password_confirmation')
+                                                <div class="text-danger small">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="text-end mt-3">
+                                            <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+                                        </div>
+                                    </form>
                                 </div>
-                            </div>
+                            </div>                        
+                            <!-- Lịch sử điểm -->
+                            <div class="tab-pane fade" id="account-point-history">
+                                <h4 class="mb-4 fw-bold border-bottom pb-2">Lịch sử điểm</h4>
+                                <div class="table-responsive">
+                                  <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                      <tr>
+                                        <th>Loại</th>
+                                        <th>Điểm</th>
+                                        <th>Mã</th>
+                                        <th>Ngày</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      @forelse($pointHistories as $history)
+                                        <tr>
+                                          <td>{{ $history->type==='earned'? 'Tích điểm':'Đổi điểm' }}</td>
+                                          <td class="fw-bold {{ $history->type==='earned'? 'text-success':'text-danger' }}">
+                                            {{ $history->type==='earned'? '+':'-' }}{{ abs($history->points) }}
+                                          </td>
+                                          <td>
+                                            @if($history->type==='earned' && $history->appointment)
+                                              #{{ $history->appointment->appointment_code }}
+                                            @elseif($history->type==='redeemed' && $history->promotion)
+                                              {{ $history->promotion->code }}
+                                            @else - @endif
+                                          </td>
+                                          <td>{{ $history->created_at->format('d/m/Y H:i') }}</td>
+                                        </tr>
+                                      @empty
+                                        <tr><td colspan="4" class="text-center text-muted">Chưa có lịch sử điểm.</td></tr>
+                                      @endforelse
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <div class="text-end m-3">
+                                  <a href="{{ route('client.redeem') }}" class="btn btn-outline-primary">Đổi mã giảm giá</a>
+                                </div>
+                              </div>
                         </div>
                     </div>
                 </div>

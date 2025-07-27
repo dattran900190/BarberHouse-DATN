@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Tin Tức</h3>
+        <h3 class="fw-bold mb-3">Bài Viết</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">

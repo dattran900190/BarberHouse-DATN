@@ -32,16 +32,21 @@
                 @foreach ($branches as $branch)
                     <div class="branch">
                         <div class="image-branch">
-                            <img src="{{ asset('storage/' . $branch->image) }}" alt="{{ $branch->name }}">
+                            <a style="color: white" href="{{ route('client.detailBranch', $branch->id) }}">
+                                <img src="{{ asset('storage/' . $branch->image) }}" alt="{{ $branch->name }}">
+                            </a>
                             <div class="overlaybranch"></div>
                             <div class="overlay">
                                 <h4>
-                                    <a style="color: white"
-                                        href="{{ route('client.detailBranch', $branch->id) }}">
+                                    <a style="color: white" href="{{ route('client.detailBranch', $branch->id) }}">
                                         {{ $branch->name }}
                                     </a>
                                 </h4>
-                                <h6>{{ $branch->address }}</h6>
+                                <h6>
+                                    <a style="color: white" href="{{ route('client.detailBranch', $branch->id) }}">
+                                        {{ $branch->address }}
+                                    </a>
+                                </h6>
                             </div>
                         </div>
                     </div>
@@ -52,6 +57,18 @@
     <style>
         #mainNav {
             background-color: #000;
+        }
+
+        .branchs .branch {
+            border-radius: 18px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #eee;
+            overflow: hidden;
+        }
+
+        .branchs .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
     </style>
 @endsection

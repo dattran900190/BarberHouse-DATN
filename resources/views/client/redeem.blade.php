@@ -7,9 +7,9 @@
 @section('content')
     <main class="container py-4">
         <section class="h-100">
-
-            {{-- Thông tin người dùng --}}
-            <div class="bg-white p-4 rounded shadow mb-4">
+           <div class="main-redeem">
+             {{-- Thông tin người dùng --}}
+             <div class="bg-white p-4 rounded shadow mb-4">
                 <h3 class="mb-4">Thông tin người dùng</h3>
                 <div class="row g-3">
                     <div class="col-md-4">
@@ -28,65 +28,80 @@
             </div>
 
             {{-- Danh sách mã khuyến mãi --}}
-            <div class="bg-white p-4 rounded shadow">
-                <h3 class="mb-4">Danh sách mã khuyến mãi</h3>
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
+            <div class="bg-white p-4 rounded shadow mb-4">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Danh sách Voucher</h3>
 
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
 
-                @if ($promotions->count())
-                    <ul class="list-group">
-                        @foreach ($promotions as $promotion)
-                            <li class="list-group-item d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h6 class="mb-1 text-danger">Mã: <strong>{{ $promotion->code }}</strong></h6>
-                                    <small>
-                                        🎁 Giảm
-                                        @if ($promotion->discount_type === 'percent')
-                                            {{ $promotion->discount_value }}%
-                                        @else
-                                            {{ number_format($promotion->discount_value) }}đ
-                                        @endif
-                                        @if ($promotion->max_discount_amount)
-                                            (Tối đa {{ number_format($promotion->max_discount_amount) }}đ)
-                                        @endif
-                                        <br>
-                                        🎯 Cần: {{ $promotion->required_points }} điểm |
-                                        📦 Còn: {{ $promotion->quantity }} |
-                                        🕒 HSD: {{ $promotion->end_date->format('d/m/Y') }}
-                                    </small>
+                    @if ($promotions->count())
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                            @foreach ($promotions as $promo)
+                                <div class="col">
+                                    <div class="card h-100 voucher-card">
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title text-primary fw-bold">{{ $promo->code }}</h5>
+
+                                            <p class="card-text mb-2">
+                                                <span class="fs-6">Giảm giá: </span>
+                                                <span class="fw-bold fs-6">
+                                                    @if ($promo->discount_type === 'percent')
+                                                        {{ $promo->discount_value }}%
+                                                    @else
+                                                        {{ number_format($promo->discount_value) }}₫
+                                                    @endif
+                                                </span>
+                                                @if ($promo->max_discount_amount)
+                                                    <small class="text-muted d-block">(Max
+                                                        {{ number_format($promo->max_discount_amount) }}₫)</small>
+                                                @endif
+                                            </p>
+
+                                            <ul class="list-unstyled small mb-4">
+                                                <li><strong>Điểm yêu cầu:</strong> {{ $promo->required_points }}</li>
+                                                <li><strong>Số lượng:</strong> {{ $promo->quantity }}</li>
+                                                <li><strong>HSD:</strong> {{ $promo->end_date->format('d/m/Y') }}</li>
+                                            </ul>
+
+                                            <div class="mt-auto text-center">
+                                                <form action="{{ route('client.redeem.store') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="promotion_id" value="{{ $promo->id }}">
+                                                    <button type="submit" class="btn-outline-booking btn-sm" style="padding: 5px 10px;">
+                                                        Đổi Voucher
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <form action="{{ route('client.redeem.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="promotion_id" value="{{ $promotion->id }}">
-                                        <button type="submit" class="btn btn-sm btn-warning">Đổi mã</button>
-                                    </form>
-                                </div>
-                            </li>
-                        @endforeach
-                    </ul>
+                            @endforeach
+                        </div>
 
-                    {{-- Phân trang --}}
-                    <div class="mt-4">
-                        {{ $promotions->links() }}
-                    </div>
-                @else
-                    <div class="text-center mt-4">
-                        <p>😢 Hiện tại bạn chưa đủ điều kiện để đổi mã khuyến mãi.</p>
-                    </div>
-                @endif
+                        <div class="mt-4 d-flex justify-content-center">
+                            {{ $promotions->appends(request()->query())->links() }}
+                        </div>
+                    @else
+                        <div class="text-center py-5">
+                            <p class="text-secondary">Bạn chưa đủ điểm để đổi bất kỳ Voucher nào.</p>
+                        </div>
+                    @endif
+
+                </div>
             </div>
+           </div>
+
         </section>
     </main>
 
@@ -96,55 +111,25 @@
             background-color: #000;
         }
 
-        body {
-            background-color: #f4f6f9;
+        .voucher-card {
+            border-radius: 18px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #eee;
+            overflow: hidden;
         }
 
-        h3 {
-            font-weight: 600;
+        .voucher-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .list-group-item {
-            border: 1px solid #ff5722;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            background-color: #fff3e0;
-            padding: 15px;
-            transition: 0.2s;
+        .main-redeem .bg-white {
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .list-group-item:hover {
-            background-color: #ffe0b2;
-        }
-
-        .btn-warning {
-            background-color: #ff5722;
-            border: none;
-            font-weight: 500;
-            padding: 6px 14px;
-            font-size: 14px;
-        }
-
-        .btn-warning:hover {
-            background-color: #e64a19;
-        }
-
-        .btn-close {
-            float: right;
-        }
-
-        .pagination {
-            justify-content: center;
-        }
-
-        .pagination .page-link {
-            color: #ff5722;
-        }
-
-        .pagination .active .page-link {
-            background-color: #ff5722;
-            border-color: #ff5722;
-            color: #fff;
+        .main-redeem .bg-white:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
     </style>
 @endsection
