@@ -89,9 +89,10 @@ class AppointmentController extends Controller
         $status = $request->input('status');
         $allAppointments = collect();
 
-        // Hàm xây dựng truy vấn chung
+        // Hàm xây dựng truy vấn chung - loại trừ lịch hẹn chưa xác nhận
         $buildQuery = function ($query, $search, $status) {
             $query->with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name'])
+                ->where('status', '!=', 'unconfirmed') // Loại trừ lịch hẹn chưa xác nhận
                 ->when($search, function ($q) use ($search) {
                     $q->where(function ($subQuery) use ($search) {
                         $subQuery->where('appointment_code', 'like', '%' . $search . '%')
@@ -106,7 +107,7 @@ class AppointmentController extends Controller
                 ->when($status, function ($q) use ($status) {
                     if ($status === 'canceled') { // Dùng 'canceled' để khớp với dropdown
                         $q->whereIn('cancellation_type', ['canceled', 'no-show']);
-                    } else {
+                    } elseif ($status !== 'unconfirmed') { // Không cho phép filter theo unconfirmed
                         $q->where('status', $status);
                     }
                 });
@@ -114,15 +115,27 @@ class AppointmentController extends Controller
 
         // Nếu có tìm kiếm hoặc lọc trạng thái, lấy tất cả lịch hẹn từ cả hai bảng
         if ($search || $status) {
-            // Lấy từ bảng appointments
-            $appointmentQuery = Appointment::where('user_id', $userId);
+            // Lấy từ bảng appointments - loại trừ unconfirmed
+            $appointmentQuery = Appointment::where('user_id', $userId)
+                ->where('status', '!=', 'unconfirmed'); // Loại trừ lịch hẹn chưa xác nhận
             $buildQuery($appointmentQuery, $search, $status);
             $appointmentsResult = $appointmentQuery->get();
+            
+            // Đảm bảo không có lịch hẹn unconfirmed trong kết quả
+            $appointmentsResult = $appointmentsResult->filter(function ($appointment) {
+                return $appointment->status !== 'unconfirmed';
+            });
 
             // Lấy từ bảng cancelled_appointments
             $canceledResult = collect();
             if (!$status || in_array($status, ['canceled', 'cancelled'])) {
                 $canceledResult = $this->getCancelledAppointments($userId, $search);
+            }
+            
+            // Nếu status là unconfirmed, không lấy kết quả nào
+            if ($status === 'unconfirmed') {
+                $appointmentsResult = collect();
+                $canceledResult = collect();
             }
 
 
@@ -131,14 +144,20 @@ class AppointmentController extends Controller
                 ->sortByDesc('updated_at')
                 ->take(5);
         } else {
-            // Lấy lịch hẹn từ cả hai bảng mà không lọc
-            $appointmentQuery = Appointment::where('user_id', $userId);
+            // Lấy lịch hẹn từ cả hai bảng mà không lọc - loại trừ unconfirmed
+            $appointmentQuery = Appointment::where('user_id', $userId)
+                ->where('status', '!=', 'unconfirmed'); // Loại trừ lịch hẹn chưa xác nhận
             $buildQuery($appointmentQuery, null, null);
             $appointmentsResult = $appointmentQuery->get();
 
             $canceledQuery = CancelledAppointment::where('user_id', $userId);
             $buildQuery($canceledQuery, null, null);
             $canceledResult = $canceledQuery->get();
+            
+            // Đảm bảo không có lịch hẹn unconfirmed trong kết quả
+            $appointmentsResult = $appointmentsResult->filter(function ($appointment) {
+                return $appointment->status !== 'unconfirmed';
+            });
 
             $allAppointments = $appointmentsResult->merge($canceledResult)
                 ->sortByDesc('updated_at')
@@ -204,6 +223,7 @@ class AppointmentController extends Controller
     public function detailAppointmentHistory($id)
     {
         $appointment = Appointment::where('user_id', Auth::id())
+            ->where('status', '!=', 'unconfirmed') // Không cho phép xem chi tiết lịch hẹn chưa xác nhận
             ->with(['user:id,name', 'barber:id,name', 'service:id,name', 'branch:id,name', 'review'])
             ->findOrFail($id);
 
