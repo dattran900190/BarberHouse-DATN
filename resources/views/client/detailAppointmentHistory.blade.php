@@ -87,11 +87,17 @@
                                         <p class="text-muted mb-1">Lý do huỷ: <span
                                                 class="fw-medium">{{ $appointment->cancellation_reason }}</span></p>
                                     @endif
-                                    <p class="text-muted mb-1">Thời gian lịch hẹn:
-                                        <span class="fw-medium">
-                                            {{ $formattedTime }} {{ $period }}
-                                        </span>
-                                    </p>
+
+                                    @php
+                                    $time = \Carbon\Carbon::parse($appointment->appointment_time);
+                                    $formattedTime = $time->format('d/m/Y - H:i');
+                                    $period = $time->format('H') < 12 ? 'Sáng' : 'Chiều tối';
+                                @endphp
+                                <p class="text-muted mb-1">Thời gian lịch hẹn:
+                                    <span class="fw-medium">
+                                        {{ $formattedTime }} {{ $period }}
+                                    </span>
+                                </p>
                                     <p class="text-muted mb-1">Dịch vụ: <span class="fw-medium">
                                             {{ $appointment->service->name }}
                                         </span></p>
@@ -132,10 +138,12 @@
                                     !($appointment instanceof \App\Models\CancelledAppointment) &&
                                         $appointment->status != 'completed' &&
                                         $appointment->status != 'cancelled')
-                                    <a href="#" class="btn btn-outline-danger btn-sm me-2">Hủy đặt lịch</a>
+                                    <button type="button" class="btn-outline-show cancel-btn"
+                                    data-swal-toggle="modal" data-id="{{ $appointment->id }}" style="padding: 6px 10px;">Hủy đặt
+                                    lịch</button>
                                 @endif
                                 <a href="{{ route('client.appointmentHistory') }}"
-                                    class="btn btn-outline-secondary btn-sm">Quay
+                                    class="btn-outline-show" style="padding: 6px 10px;">Quay
                                     lại</a>
                             </div>
                         </div>
@@ -155,4 +163,121 @@
 @endsection
 
 @section('scripts')
+<script>
+    document.querySelectorAll('.cancel-btn').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault(); // Ngăn hành vi mặc định
+            const appointmentId = this.getAttribute('data-id');
+
+            // Cửa sổ từ chối với textarea
+            Swal.fire({
+                title: 'Hủy lịch hẹn',
+                text: 'Vui lòng nhập lý do hủy',
+                input: 'textarea',
+                inputPlaceholder: 'Nhập lý do hủy (tối thiểu 5 ký tự)...',
+                inputAttributes: {
+                    'rows': 4,
+                    'required': true
+                },
+                customClass: {
+                    popup: 'custom-swal-popup'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Hủy lịch',
+                cancelButtonText: 'Đóng',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Lý do hủy không được để trống!';
+                    }
+                    if (value.length < 5) {
+                        return 'Lý do hủy phải có ít nhất 5 ký tự!';
+                    }
+                    if (value.length > 500) {
+                        return 'Lý do hủy không được vượt quá 500 ký tự!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Cửa sổ loading
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        text: 'Vui lòng chờ trong giây lát.',
+                        allowOutsideClick: false,
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Gửi yêu cầu AJAX
+                    fetch('{{ route('client.appointments.cancel', ':id') }}'.replace(':id',
+                            appointmentId), {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                cancellation_reason: result.value
+                            })
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(
+                                    `HTTP error! Status: ${response.status}`
+                                );
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Đóng cửa sổ loading
+                            Swal.close();
+
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Thành công!',
+                                    text: data.message,
+                                    icon: 'success',
+                                    width: '400px',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                }).then(() => {
+                                    window.location.href = '{{ route('client.appointmentHistory') }}';
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Lỗi!',
+                                    text: data.message,
+                                    icon: 'error',
+                                    width: '400px',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    }
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            // Đóng cửa sổ loading
+                            Swal.close();
+                            console.error('Lỗi AJAX:', error);
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Đã có lỗi xảy ra: ' + error
+                                    .message,
+                                icon: 'error',
+                                width: '400px',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                            });
+                        });
+                }
+            });
+        });
+    });
+</script>
 @endsection

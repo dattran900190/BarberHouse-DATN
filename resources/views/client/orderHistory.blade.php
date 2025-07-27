@@ -153,7 +153,10 @@
                         confirmButtonColor: '#d33',
                         cancelButtonColor: '#aaa',
                         confirmButtonText: 'Vâng, hủy đơn!',
-                        cancelButtonText: 'Không'
+                        cancelButtonText: 'Không',
+                        customClass: {
+                                popup: 'custom-swal-popup'
+                            },
                     }).then((result) => {
                         if (result.isConfirmed) {
                             const form = document.getElementById(`cancel-form-${orderId}`);

@@ -65,55 +65,53 @@
                         </div>
                     </div>
                     <div class="col-lg-12">
-                        <div class="card-body p-4 border-top border-top-dashed">
-                            <h6 class="text-muted text-uppercase fw-semibold fs-15">Địa chỉ nhận hàng</h6>
-                            <div class="row g-3">
-
-                                <div class="col-6">
-                                    <p class="text-muted mb-1">Họ tên: <span class="fw-medium"> {{ $order->name }}
-                                        </span></p>
-                                    <p class="text-muted mb-1">Địa chỉ: <span class="fw-medium"> {{ $order->address }}
-                                        </span></p>
-                                    <p class="text-muted mb-1">Điện thoại: <span class="fw-medium"> {{ $order->phone }}
-                                        </span></p>
-
-
-                                </div>
-                                <div class="col-6">
-
-                                    <p class="text-muted mb-1">Thanh toán: <span class="fw-medium">
-                                            {{ $order->shipping_method == 'standard' ? 'Thanh toán khi nhận hàng' : 'VNPay' }}
-                                        </span></p>
-                                    <p class="text-muted mb-1">Vận chuyển:
-                                        <span class="fw-medium">
-                                            {{ $order->shipping_fee == 25000 ? 'Giao hàng tiêu chuẩn' : 'Giao hàng nhanh' }}
-                                        </span>
+                        <div class="card-body p-4 border-top border-top-dashed d-flex justify-content-between">
+                            {{-- Cột trái: Địa chỉ nhận hàng --}}
+                            <div class="w-50 pe-4">
+                                <h6 class="text-muted text-uppercase fw-semibold fs-15">Địa chỉ nhận hàng</h6>
+                                <p class="text-muted mb-1">Họ tên: <span class="fw-medium">{{ $order->name }}</span></p>
+                                <p class="text-muted mb-1">Địa chỉ: <span class="fw-medium">{{ $order->address }}</span></p>
+                                <p class="text-muted mb-1">Điện thoại: <span class="fw-medium">{{ $order->phone }}</span></p>
+                            </div>
+                    
+                            {{-- Cột phải: Thông tin thanh toán --}}
+                            <div class="w-50 ps-4">
+                                <h6 class="text-muted text-uppercase fw-semibold fs-15">Thông tin thanh toán</h6>
+                                <p class="text-muted mb-1">Thanh toán: 
+                                    <span class="fw-medium">
+                                        {{ $order->shipping_method == 'standard' ? 'Thanh toán khi nhận hàng' : 'VNPay' }}
+                                    </span>
+                                </p>
+                                <p class="text-muted mb-1">Vận chuyển: 
+                                    <span class="fw-medium">
+                                        {{ $order->shipping_fee == 25000 ? 'Giao hàng tiêu chuẩn' : 'Giao hàng nhanh' }}
+                                    </span>
+                                </p>
+                    
+                                @php
+                                    $deliveryDate = null;
+                    
+                                    if (in_array($order->status, ['pending', 'processing'])) {
+                                        $daysToAdd = $order->shipping_fee == 25000 ? 3 : 1;
+                                        $deliveryDate = $order->created_at->copy()->addDays($daysToAdd);
+                                    } elseif ($order->status === 'shipping') {
+                                        $deliveryDate = $order->updated_at->copy()->addDay();
+                                    }
+                                @endphp
+                    
+                                @if ($deliveryDate)
+                                    <p class="text-muted mb-1">Ngày dự kiến giao hàng: 
+                                        <span class="fw-medium">{{ $deliveryDate->format('d/m/Y') }}</span>
                                     </p>
-                                    @php
-                                        $deliveryDate = null;
-
-                                        if (in_array($order->status, ['pending', 'processing'])) {
-                                            // Dự kiến giao theo ngày đặt + thời gian giao tùy phương thức
-                                            $daysToAdd = $order->shipping_fee == 25000 ? 3 : 1;
-                                            $deliveryDate = $order->created_at->copy()->addDays($daysToAdd);
-                                        } elseif ($order->status === 'shipping') {
-                                            // Dự kiến giao là 1 ngày sau khi bắt đầu giao hàng
-                                            $deliveryDate = $order->updated_at->copy()->addDay();
-                                        }
-                                    @endphp
-
-                                    @if ($deliveryDate)
-                                        <p class="text-muted mb-1">Ngày dự kiến giao hàng: <span
-                                                class="fw-medium">{{ $deliveryDate->format('d/m/Y') }}</span></p>
-                                    @elseif ($order->status === 'completed')
-                                        <p>Trạng thái: Đơn hàng đã hoàn thành</p>
-                                    @elseif ($order->status === 'cancelled')
-                                        <p>Trạng thái: Đơn hàng đã bị hủy</p>
-                                    @endif
-                                </div>
+                                @elseif ($order->status === 'completed')
+                                    <p>Trạng thái: Đơn hàng đã hoàn thành</p>
+                                @elseif ($order->status === 'cancelled')
+                                    <p>Trạng thái: Đơn hàng đã bị hủy</p>
+                                @endif
                             </div>
                         </div>
                     </div>
+                    
                     <div class="col-lg-12">
                         <div class="card-body p-4">
                             <div class="table-responsive">

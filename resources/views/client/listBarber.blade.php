@@ -44,8 +44,19 @@
                                 </a>
                             </div>
                             <div class="card-body text-center">
-                                <h5 class="card-title mb-1">{{ $barber->name }}</h5>
-                                <p class="mb-1 text-muted">Chi nhánh: {{ $barber->branch->name ?? 'Không rõ' }}</p>
+                                <h5 class="card-title mb-1">
+                                    <a href="{{ route('client.detailBarber', $barber->id) }}" style="color: #000;">{{ $barber->name }}</a>
+                                </h5>
+                                <p class="mb-1 text-muted">Chi nhánh:
+                                    @if ($barber->branch)
+                                        <a href="{{ route('client.detailBranch', $barber->branch->id) }}" style="color: #000;">
+                                            {{ $barber->branch->name }}
+                                        </a>
+                                    @else
+                                        <span style="color: #888;">Không rõ</span>
+                                    @endif
+                                </p>
+                                
                                 <div class="rating mb-3">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($i <= round($barber->rating_avg))
@@ -56,7 +67,7 @@
                                     @endfor
                                     <span class="ms-1">({{ number_format($barber->rating_avg, 1) }})</span>
                                 </div>
-                                <a href="{{ url('/dat-lich?barber_id=' . $barber->id) }}" class="book-btn">
+                                <a href="{{ url('/dat-lich?barber_id=' . $barber->id) }}" class="btn-outline-buy">
                                     <i class="fas fa-calendar-alt me-1"></i> Đặt lịch
                                 </a>
                             </div>

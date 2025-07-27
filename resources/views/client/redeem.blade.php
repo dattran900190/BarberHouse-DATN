@@ -51,10 +51,10 @@
                                 <div class="col">
                                     <div class="card h-100 voucher-card">
                                         <div class="card-body d-flex flex-column">
-                                            <h5 class="card-title text-primary fw-bold">{{ $promo->code }}</h5>
+                                            <h5 class="card-title text-dark fw-bold">{{ $promo->code }}</h5>
 
                                             <p class="card-text mb-2">
-                                                <span class="fs-6">Giảm giá: </span>
+                                                <span class="fs-6 fw-bold">Giảm giá: </span>
                                                 <span class="fw-bold fs-6">
                                                     @if ($promo->discount_type === 'percent')
                                                         {{ $promo->discount_value }}%

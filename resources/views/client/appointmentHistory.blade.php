@@ -168,7 +168,7 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('js/client.js') }}"></script>
+    {{-- <script src="{{ asset('js/client.js') }}"></script> --}}
     <script>
         document.querySelectorAll('.cancel-btn').forEach(button => {
             button.addEventListener('click', function(event) {

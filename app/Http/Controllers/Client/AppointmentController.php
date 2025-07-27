@@ -119,10 +119,21 @@ class AppointmentController extends Controller
             $buildQuery($appointmentQuery, $search, $status);
             $appointmentsResult = $appointmentQuery->get();
 
+            // Đảm bảo không có lịch hẹn unconfirmed trong kết quả
+            $appointmentsResult = $appointmentsResult->filter(function ($appointment) {
+                return $appointment->status !== 'unconfirmed';
+            });
+
             // Lấy từ bảng cancelled_appointments
             $canceledResult = collect();
             if (!$status || in_array($status, ['canceled', 'cancelled'])) {
                 $canceledResult = $this->getCancelledAppointments($userId, $search);
+            }
+
+            // Nếu status là unconfirmed, không lấy kết quả nào
+            if ($status === 'unconfirmed') {
+                $appointmentsResult = collect();
+                $canceledResult = collect();
             }
 
 
@@ -139,6 +150,11 @@ class AppointmentController extends Controller
             $canceledQuery = CancelledAppointment::where('user_id', $userId);
             $buildQuery($canceledQuery, null, null);
             $canceledResult = $canceledQuery->get();
+
+            // Đảm bảo không có lịch hẹn unconfirmed trong kết quả
+            $appointmentsResult = $appointmentsResult->filter(function ($appointment) {
+                return $appointment->status !== 'unconfirmed';
+            });
 
             $allAppointments = $appointmentsResult->merge($canceledResult)
                 ->sortByDesc('updated_at')
@@ -218,52 +234,65 @@ class AppointmentController extends Controller
 
     public function cancel(Request $request, Appointment $appointment)
     {
-        // Kiểm tra quyền sở hữu
-        if ($appointment->user_id !== Auth::id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bạn không có quyền hủy lịch hẹn này.'
-            ], 403);
-        }
-
-        // Kiểm tra trạng thái hợp lệ
-        if (!in_array($appointment->status, ['pending', 'confirmed'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Lịch hẹn này không thể hủy.'
-            ], 400);
-        }
-
-        // Validate lý do hủy
-        $request->validate([
-            'cancellation_reason' => 'required|string|min:5|max:500',
-        ], [
-            'cancellation_reason.required' => 'Vui lòng nhập lý do hủy.',
-            'cancellation_reason.min' => 'Lý do hủy phải có ít nhất 5 ký tự.',
-            'cancellation_reason.max' => 'Lý do hủy không được vượt quá 500 ký tự.',
-        ]);
-
-        // Tạo bản ghi trong cancelled_appointments với định dạng thời gian phù hợp
         try {
+            // Kiểm tra quyền sở hữu
+            if ($appointment->user_id !== Auth::id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn không có quyền hủy lịch hẹn này.'
+                ], 403);
+            }
+
+            // Kiểm tra trạng thái hợp lệ
+            if (!in_array($appointment->status, ['pending', 'confirmed'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lịch hẹn này không thể hủy.'
+                ], 400);
+            }
+
+            // Kiểm tra xem lịch hẹn đã được hủy trước đó chưa
+            if (CancelledAppointment::where('appointment_code', $appointment->appointment_code)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lịch hẹn này đã được hủy trước đó.'
+                ], 400);
+            }
+
+            // Validate lý do hủy
+            $request->validate([
+                'cancellation_reason' => 'required|string|min:5|max:500',
+            ], [
+                'cancellation_reason.required' => 'Vui lòng nhập lý do hủy.',
+                'cancellation_reason.min' => 'Lý do hủy phải có ít nhất 5 ký tự.',
+                'cancellation_reason.max' => 'Lý do hủy không được vượt quá 500 ký tự.',
+            ]);
+
+            // Tạo bản ghi trong cancelled_appointments
             $appointmentData = array_merge($appointment->toArray(), [
                 'status' => 'cancelled',
-                'payment_status' => $appointment->payment_status, // Sửa thành giá trị hợp lệ
-                'cancellation_type' => 'no-show',
+                'payment_status' => $appointment->payment_status,
+                'cancellation_type' => 'canceled',
                 'status_before_cancellation' => $appointment->status,
                 'additional_services' => $appointment->additional_services,
                 'payment_method' => $appointment->payment_method,
-                'note' => $appointment->note,
-                'cancellation_reason' => $request->input('no_show_reason', 'Khách hàng không đến'),
-                'appointment_time' => $appointment->appointment_time->format('Y-m-d H:i:s'), // Chuyển đổi định dạng
+                'note' => $appointment->note ?? null,
+                'cancellation_reason' => $request->input('cancellation_reason'),
+                'appointment_time' => $appointment->appointment_time ? $appointment->appointment_time->format('Y-m-d H:i:s') : null,
             ]);
 
+            Log::info('appointmentData', $appointmentData);
+
+            // Lưu bản ghi vào cancelled_appointments
             CancelledAppointment::create($appointmentData);
 
-            // Xóa bản ghi liên quan trong bảng checkins (nếu có)
-            DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
+            // Xóa bản ghi liên quan trong bảng checkins
+            $checkinsDeleted = DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
+            Log::info('Checkins deleted', ['appointment_id' => $appointment->id, 'rows_affected' => $checkinsDeleted]);
 
             // Xóa bản ghi khỏi bảng appointments
-            $appointment->delete();
+            $appointmentDeleted = $appointment->delete();
+            Log::info('Appointment deleted', ['appointment_id' => $appointment->id, 'success' => $appointmentDeleted]);
 
             return response()->json([
                 'success' => true,
@@ -271,7 +300,10 @@ class AppointmentController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Cancellation error: ' . $e->getMessage(), ['appointment' => $appointment->toArray()]);
-            return response()->json(['success' => false, 'message' => 'Lỗi máy chủ'], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi máy chủ: ' . $e->getMessage()
+            ], 500);
         }
     }
 
