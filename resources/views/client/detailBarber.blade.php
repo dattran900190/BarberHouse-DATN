@@ -49,11 +49,11 @@
                                                     <h5 class="fw-bold mb-3">Thông tin liên hệ</h5>
                                                     <ul class="list-unstyled">
                                                         <li class="mb-2 d-flex">
-                                                            <i class="fas fa-map-marker-alt text-primary mt-1 me-2"></i>
+                                                            <i class="fas fa-map-marker-alt text-muted mt-1 me-2"></i>
                                                             <span>{{ $barber->branch->address ?? 'Chưa cập nhật địa chỉ' }}</span>
                                                         </li>
                                                         <li class="d-flex">
-                                                            <i class="fas fa-phone-alt text-primary mt-1 me-2"></i>
+                                                            <i class="fas fa-phone-alt text-muted mt-1 me-2"></i>
                                                             <span>{{ $barber->branch->phone ?? 'Chưa cập nhật số điện thoại' }}</span>
                                                         </li>
                                                     </ul>
@@ -62,7 +62,7 @@
 
                                             <div class="mt-auto">
                                                 <a href="{{ route('dat-lich', $barber->id) }}"
-                                                    class="btn btn-book btn-lg px-4 py-2">
+                                                    class="btn-outline-buy">
                                                     <i class="fa-solid fa-calendar-check me-2"></i>Đặt lịch ngay
                                                 </a>
                                             </div>
@@ -78,8 +78,7 @@
                         <div class="col-12">
                             <div class="card shadow-sm border-0 rounded-4">
                                 <div class="card-body p-4">
-                                    <h4 class="mb-4 text-dark fw-bold border-bottom pb-3"><i
-                                            class="fas fa-user-tie me-2"></i>Hồ sơ thợ cắt</h4>
+                                    <h4 class="mb-4 text-dark fw-bold border-bottom pb-3">Hồ sơ thợ cắt</h4>
                                     <div class="profile-content">
                                         {!! $barber->profile ? e($barber->profile) : '<p class="text-muted">Chưa có thông tin hồ sơ.</p>' !!}
                                     </div>
@@ -94,7 +93,7 @@
                             <div class="card shadow-sm border-0 rounded-4">
                                 <div class="card-body p-4">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h4 class="mb-0 text-dark fw-bold"><i class="fas fa-star me-2"></i>Đánh giá</h4>
+                                        <h4 class="mb-0 text-dark fw-bold">Đánh giá</h4>
                                         <div>
                                             <span class="badge bg-warning text-dark">
                                                 {{ $reviews->total() }} đánh giá
@@ -165,7 +164,8 @@
 
         /* Barber Card */
         .barber-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, 
+            box-shadow 0.3s ease;
             border: none;
         }
 
@@ -182,27 +182,6 @@
             justify-content: center;
             font-weight: bold;
             font-size: 1.1rem;
-        }
-
-        /* Book Button */
-        .btn-book {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: #fff;
-            background: linear-gradient(135deg, #000000, #f5c518);
-            border: none;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .btn-book:hover {
-            background: linear-gradient(135deg, #f5c518, #000000);
-            color: #fff;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(245, 197, 24, 0.4);
         }
 
 
@@ -231,7 +210,7 @@
         .skills .badge {
             font-weight: 500;
             padding: 6px 12px;
-            border-radius: 20px;
+            /* border-radius: 20px; */
         }
 
         /* Profile Content */

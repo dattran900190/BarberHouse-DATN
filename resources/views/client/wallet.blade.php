@@ -97,7 +97,7 @@
                             </select>
                         </div>
 
-                        <button type="submit" class="btn btn-success">Gửi yêu cầu hoàn tiền</button>
+                        <button type="submit" class="btn-outline-buy" style="padding: 5px 10px;">Gửi yêu cầu hoàn tiền</button>
                     </form>
 
                     @if ($orders->isEmpty() && $appointments->isEmpty())
@@ -170,6 +170,9 @@
                         title: 'Đang xử lý...',
                         text: 'Vui lòng chờ.',
                         allowOutsideClick: false,
+                        customClass: {
+                                popup: 'custom-swal-popup'
+                            },
                         didOpen: () => {
                             Swal.showLoading();
                         }
@@ -192,6 +195,9 @@
                                 Swal.fire({
                                     title: 'Thành công!',
                                     text: data.message,
+                                    customClass: {
+                                popup: 'custom-swal-popup'
+                            },
                                     icon: 'success'
                                 }).then(() => {
                                     window.location.href = '{{ route("client.detailWallet") }}';
@@ -214,6 +220,9 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Lỗi!',
+                                customClass: {
+                                popup: 'custom-swal-popup'
+                            },
                                 html: errorMessages,
                                 confirmButtonText: 'OK'
                             });
@@ -221,6 +230,9 @@
                             const errorData = await response.json();
                             Swal.fire({
                                 icon: 'error',
+                                customClass: {
+                                popup: 'custom-swal-popup'
+                            },
                                 title: 'Lỗi!',
                                 text: errorData.message || 'Đã có lỗi xảy ra.',
                                 confirmButtonText: 'OK'
@@ -231,6 +243,9 @@
                         Swal.close();
                         Swal.fire({
                             title: 'Lỗi!',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
                             text: 'Đã có lỗi xảy ra: ' + error.message,
                             icon: 'error'
                         });

@@ -17,8 +17,29 @@
                         <form action="{{ route('client.detailWallet') }}" method="GET" class="d-flex w-50">
                             <input type="text" name="search" class="form-control me-2"
                                 placeholder="Tìm kiếm theo mã đơn hàng hoặc mã đặt lịch" value="{{ request('search') }}">
-                            <button type="submit" class="btn btn-primary">Tìm</button>
+                            <button type="submit" class="btn btn-dark">Tìm</button>
                         </form>
+
+                        <form method="GET" action="{{ route('client.detailWallet') }}"
+                        class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+        
+                        <div class="position-relative" style="flex: 1; min-width: 200px">
+                            <input type="text" name="search" placeholder="Tìm kiếm theo tên dịch vụ..."
+                                value="{{ request('search') }}" class="form-control pe-5">
+                            <button type="submit"
+                                class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent text-dark">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+        
+                        <select name="filter" id="filter" class="form-select pe-5"
+                            style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
+                            <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả dịch vụ</option>
+                            <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Còn hoạt động</option>
+                            <option value="deleted" {{ request('filter') == 'deleted' ? 'selected' : '' }}>Đã xoá</option>
+                        </select>
+        
+                    </form>
 
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
@@ -76,7 +97,7 @@
                                     </span>
                                 </div>
                                 <div class="col-md-3 text-center">
-                                    <button class="btn btn-outline-dark btn-sm" type="button"
+                                    <button class="btn-outline-buy" style="padding: 5px 10px;" type="button"
                                         data-bs-toggle="collapse"
                                         data-bs-target="#detail-{{ $refund->id }}"
                                         aria-expanded="false"

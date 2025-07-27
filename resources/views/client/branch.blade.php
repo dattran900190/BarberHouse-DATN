@@ -55,12 +55,8 @@
         </div>
     </main>
     <style>
-        #mainNav {
-            background-color: #000;
-        }
-
         .branchs .branch {
-            border-radius: 18px;
+            border-radius: 8px;
             transition: transform 0.3s, box-shadow 0.3s;
             border: 1px solid #eee;
             overflow: hidden;

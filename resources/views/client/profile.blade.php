@@ -51,7 +51,7 @@
                                         <div class="card-body d-flex align-items-center">
                                             <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
                                                 alt="Avatar" class="rounded  avatar-preview"
-                                                style="width:80px; height:80px; object-fit:cover;">
+                                                style="width:120px; height:120px; object-fit:cover;">
                                             <div class="ms-4">
                                                 <label class="btn btn-outline-primary">
                                                     Tải ảnh mới lên
@@ -113,7 +113,7 @@
                                                 value="{{ auth()->user()->points_balance }}" disabled>
                                         </div>
                                         <div class="text-end mt-3">
-                                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                            <button type="submit" class="btn-outline-buy">Lưu thay đổi</button>
                                         </div>
                                     </form>
                                 </div>
@@ -177,7 +177,7 @@
                                             @enderror
                                         </div>
                                         <div class="text-end mt-3">
-                                            <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+                                            <button type="submit" class="btn-outline-buy">Đổi mật khẩu</button>
                                         </div>
                                     </form>
                                 </div>
@@ -218,7 +218,7 @@
                                   </table>
                                 </div>
                                 <div class="text-end m-3">
-                                  <a href="{{ route('client.redeem') }}" class="btn btn-outline-primary">Đổi mã giảm giá</a>
+                                  <a href="{{ route('client.redeem') }}" class="btn-outline-buy">Đổi mã giảm giá</a>
                                 </div>
                               </div>
                         </div>
