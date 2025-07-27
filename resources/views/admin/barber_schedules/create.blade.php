@@ -127,12 +127,7 @@
             const status = document.getElementById('status').value;
 
             document.getElementById('timeFields').style.display = status === 'custom' ? 'block' : 'none';
-            document.getElementById('holidayFields').style.display = status === 'holiday' ? 'block' : 'none';
 
-            // Ẩn các trường chọn thợ và ngày nếu là nghỉ lễ
-            const hide = status === 'holiday';
-            document.getElementById('barberField').style.display = hide ? 'none' : 'block';
-            document.getElementById('scheduleDateField').style.display = hide ? 'none' : 'block';
         }
 
         document.addEventListener('DOMContentLoaded', function() {
