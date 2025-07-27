@@ -71,8 +71,6 @@
                                 <option value="off" {{ old('status') == 'off' ? 'selected' : '' }}>Nghỉ cả ngày</option>
                                 <option value="custom" {{ old('status') == 'custom' ? 'selected' : '' }}>Thay đổi giờ làm
                                 </option>
-                                <option value="holiday" {{ old('status') == 'holiday' ? 'selected' : '' }}>Nghỉ lễ (toàn hệ
-                                    thống)</option>
                             </select>
                             @error('status')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -104,43 +102,7 @@
                     </div>
                 </div>
 
-                {{-- Form nghỉ lễ toàn hệ thống --}}
-                <div id="holidayFields" style="display: none;" class="mt-4 border-top pt-3">
-                    <h5 class="text-danger mb-3"><i class="fas fa-calendar-alt me-1"></i> Thông tin nghỉ lễ</h5>
 
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="holiday_start_date" class="form-label">Ngày bắt đầu</label>
-                            <input type="date" name="holiday_start_date" id="holiday_start_date"
-                                class="form-control @error('holiday_start_date') is-invalid @enderror"
-                                value="{{ old('holiday_start_date') }}">
-                            @error('holiday_start_date')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label for="holiday_end_date" class="form-label">Ngày kết thúc</label>
-                            <input type="date" name="holiday_end_date" id="holiday_end_date"
-                                class="form-control @error('holiday_end_date') is-invalid @enderror"
-                                value="{{ old('holiday_end_date') }}">
-                            @error('holiday_end_date')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label for="note" class="form-label">Tên kỳ nghỉ lễ</label>
-                            <input type="text" name="note" id="note"
-                                class="form-control @error('note') is-invalid @enderror" value="{{ old('note') }}">
-                            @error('note')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Nút submit --}}
                 <div class="mt-4">
                     <button type="submit" class="btn btn-sm btn-outline-success">
                         <i class="fas fa-plus"></i> <span class="ms-2">Tạo lịch</span>
@@ -165,12 +127,7 @@
             const status = document.getElementById('status').value;
 
             document.getElementById('timeFields').style.display = status === 'custom' ? 'block' : 'none';
-            document.getElementById('holidayFields').style.display = status === 'holiday' ? 'block' : 'none';
 
-            // Ẩn các trường chọn thợ và ngày nếu là nghỉ lễ
-            const hide = status === 'holiday';
-            document.getElementById('barberField').style.display = hide ? 'none' : 'block';
-            document.getElementById('scheduleDateField').style.display = hide ? 'none' : 'block';
         }
 
         document.addEventListener('DOMContentLoaded', function() {
