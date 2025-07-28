@@ -104,8 +104,9 @@
                             </h4>
                             <p>{{ number_format($product->price) }} đ</p>
 
-                            @php $variant = $product->variants->first(); @endphp
-
+                            @php
+                                $variant = $product->variants->where('stock', '>', 0)->first();
+                            @endphp
                             @if ($variant)
                                 <div class="button-group">
                                     <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
@@ -128,6 +129,8 @@
                                         @endguest
                                     </form>
                                 </div>
+                            @else
+                                <span style="color: rgb(232, 184, 12); font-weight: bold; text-align: center;">Hết hàng</span>
                             @endif
                         </div>
                     @endforeach

@@ -67,10 +67,13 @@ class VolumeController extends Controller
 
     public function destroy(Request $request, Volume $volume)
     {
-          if (Auth::user()->role === 'admin_branch') {
+        if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.volumes.index')->with('error', 'Bạn không có quyền xóa   dung tích.');
         }
-        // Bỏ kiểm tra liên kết productVariants ở đây, chỉ xóa mềm
+        // Chỉ cho phép xóa mềm nếu chưa liên kết với biến thể sản phẩm
+        if ($volume->productVariants()->count() > 0) {
+            return redirect()->route('admin.volumes.index')->with('error', 'Không thể xóa dung tích vì đang liên kết với biến thể sản phẩm.');
+        }
         $volume->delete();
 
         $page = $request->query('page');
