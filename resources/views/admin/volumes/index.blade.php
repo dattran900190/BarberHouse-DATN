@@ -107,11 +107,10 @@
                                                 </li>
                                                 <li>
                                                     <form action="{{ route('admin.volumes.forceDelete', $volume->id) }}"
-                                                        method="POST" class="d-inline"
-                                                        onsubmit="return confirm('Xóa vĩnh viễn?');">
+                                                        method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="dropdown-item text-danger">
+                                                        <button type="button" class="dropdown-item text-danger force-delete-btn" data-id="{{ $volume->id }}">
                                                             <i class="fas fa-trash-alt me-2"></i> Xóa vĩnh viễn
                                                         </button>
                                                     </form>
@@ -120,11 +119,10 @@
                                                 <li>
                                                     <form
                                                         action="{{ route('admin.volumes.destroy', $volume) }}?page={{ request()->get('page') }}"
-                                                        method="POST" class="d-inline"
-                                                        onsubmit="return confirm('Xóa mềm?');">
+                                                        method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="dropdown-item text-danger">
+                                                        <button type="button" class="dropdown-item text-danger soft-delete-btn" data-id="{{ $volume->id }}">
                                                             <i class="fas fa-times me-2"></i> Xóa mềm
                                                         </button>
                                                     </form>
@@ -147,4 +145,70 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function handleSwalAction({ selector, title, text, route, method = 'POST' }) {
+        document.querySelectorAll(selector).forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const recordId = this.getAttribute('data-id');
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy',
+                    width: '400px',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = route.replace(':id', recordId);
+                        let csrfToken = document.createElement('input');
+                        csrfToken.type = 'hidden';
+                        csrfToken.name = '_token';
+                        csrfToken.value = '{{ csrf_token() }}';
+                        form.appendChild(csrfToken);
+                        if (method.toUpperCase() !== 'POST') {
+                            let methodInput = document.createElement('input');
+                            methodInput.type = 'hidden';
+                            methodInput.name = '_method';
+                            methodInput.value = method;
+                            form.appendChild(methodInput);
+                        }
+                        // preserve ?page param
+                        const page = new URLSearchParams(window.location.search).get('page');
+                        if (page) {
+                            let pageInput = document.createElement('input');
+                            pageInput.type = 'hidden';
+                            pageInput.name = 'page';
+                            pageInput.value = page;
+                            form.appendChild(pageInput);
+                        }
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    }
+    handleSwalAction({
+        selector: '.soft-delete-btn',
+        title: 'Xoá mềm Dung tích',
+        text: 'Bạn có chắc muốn xoá mềm dung tích này?',
+        route: '{{ route('admin.volumes.destroy', ':id') }}',
+        method: 'DELETE'
+    });
+    handleSwalAction({
+        selector: '.force-delete-btn',
+        title: 'Xoá vĩnh viễn Dung tích',
+        text: 'Bạn có chắc muốn xoá vĩnh viễn? Hành động không thể hoàn tác!',
+        route: '{{ route('admin.volumes.forceDelete', ':id') }}',
+        method: 'DELETE'
+    });
+</script>
 @endsection
