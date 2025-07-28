@@ -40,6 +40,7 @@ use App\Http\Controllers\Client\ReviewController as ClientReviewController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\CustomerImageController;
 use Illuminate\Support\Facades\Broadcast;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
 Broadcast::routes(['middleware' => ['auth']]);
 
@@ -49,6 +50,13 @@ Route::post('login', [AuthController::class, 'postLogin'])->name('postLogin');
 Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('register', [AuthController::class, 'postRegister'])->name('postRegister');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
+Route::post('forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('password.sendOtp');
+
+Route::get('verify-otp', [ForgotPasswordController::class, 'showVerifyForm'])->name('password.verifyForm');
+Route::post('verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('password.verifyOtp');
+
 
 // ==== Trang chủ ====
 Route::get('/', [HomeController::class, 'index'])->name('home');
