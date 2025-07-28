@@ -16,15 +16,23 @@
     <main>
         <div class="login">
             <div class="image-login">
-                <img src="{{ asset('storage/' . ($imageSettings['anh_dang_nhap'] ?? 'default-images/no-banggia.png')) }}" alt="Ảnh đăng nhập" />
+                <img src="{{ asset('storage/' . ($imageSettings['anh_dang_nhap'] ?? 'default-images/no-banggia.png')) }}"
+                    alt="Ảnh đăng nhập" />
             </div>
 
             <div class="form-login">
                 <div class="image">
-                    <img src="{{ asset('storage/' . ($imageSettings['black_logo'] ?? 'default-images/black_logo.png')) }}" alt="">
+                    <img src="{{ asset('storage/' . ($imageSettings['black_logo'] ?? 'default-images/black_logo.png')) }}"
+                        alt="">
                 </div>
-
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
                 <div class="form">
+
                     <h3>Đăng nhập</h3>
                     <form action="{{ route('postLogin') }}" method="POST">
                         @csrf
@@ -59,14 +67,20 @@
                             <small class="form_message text-danger">{{ session('messageError') }}</small>
                         @endif
 
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                            <label class="form-check-label" for="exampleCheck1">Ghi nhớ</label>
+                        <div class="mb-3">
+                            <a href="{{ route('password.request') }}" style="text-decoration: none;"
+                                onmouseover="this.style.textDecoration='underline'"
+                                onmouseout="this.style.textDecoration='none'">
+                                Quên mật khẩu?
+                            </a>
                         </div>
+
 
                         <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
 
-                        <p class="mt-3">Bạn chưa có tài khoản? <a href="{{ asset('register') }}">Đăng ký</a></p>
+                        <p class="mt-3">Bạn chưa có tài khoản? <a href="{{ asset('register') }}"
+                                style="text-decoration: none;" onmouseover="this.style.textDecoration='underline'"
+                                onmouseout="this.style.textDecoration='none'">Đăng ký</a></p>
                     </form>
                 </div>
             </div>
