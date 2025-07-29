@@ -31,19 +31,18 @@
           <div class="footer-column">
               <h5 class="text-uppercase">Về chúng tôi</h5>
               <ul>
-                  <li><a href="#">Home</a></li>
-                  <li><a href="#">Video</a></li>
-                  <li><a href="#">Contact Us</a></li>
-                  <li><a href="#">Chi nhánh 4Rau gần bạn</a></li>
+                  <li><a href="{{ asset('/') }}">Home</a></li>
+                  <li><a href="{{ asset('bai-viet') }}">Bài viết</a></li>
+                  <li><a href="{{ asset('chi-nhanh') }}">Chi nhánh</a></li>
               </ul>
           </div>
           <div class="footer-column">
               <h5>FAQ</h5>
               <ul>
-                  <li><a href="#">Chính sách bảo mật</a></li>
-                  <li><a href="#">Chính sách giao dịch</a></li>
-                  <li><a href="#">Chính sách vận chuyển</a></li>
-                  <li><a href="#">Chính sách bảo hành - đổi trả</a></li>
+                  <li><a href="{{ route('privacy.policy') }}">Chính sách bảo mật</a></li>
+                  <li><a href="{{ route('trading.policy') }}">Chính sách giao dịch</a></li>
+                  <li><a href="{{ route('shipping.policy') }}">Chính sách vận chuyển</a></li>
+                  <li><a href="{{ route('warranty.return.policy') }}">Chính sách bảo hành - đổi trả</a></li>
               </ul>
           </div>
           

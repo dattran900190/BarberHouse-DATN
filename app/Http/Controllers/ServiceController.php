@@ -32,7 +32,7 @@ class ServiceController extends Controller
         }
 
         // Sắp xếp & phân trang
-        $services = $query->orderBy('updated_at', 'DESC')->paginate(5);
+        $services = $query->orderBy('updated_at', 'DESC')->paginate(perPage: 10);
 
         return view('admin.services.index', compact('services', 'filter', 'search'));
     }

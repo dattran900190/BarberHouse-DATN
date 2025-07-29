@@ -149,7 +149,7 @@
         .post-top h4 {
             padding: 10px 10px 0;
             font-size: 1.5rem;
-            font-weight: bold;
+            /* font-weight: bold; */
             /* line-height: 1.3; */
         }
 
@@ -199,7 +199,7 @@
         }
 
         .post h4 {
-            padding: 1rem;
+            padding: 1rem 1rem 0;
             font-size: 1.1rem;
             font-weight: 600;
             /* line-height: 1.4; */

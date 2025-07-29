@@ -27,7 +27,7 @@ class BarberController extends Controller
             ->when($user->role === 'admin_branch', fn($q) => $q->where('branch_id', $user->branch_id))
             ->when($search, fn($q) => $q->where('name', 'like', "%$search%"))
             ->orderByDesc('id')
-            ->paginate(5);
+            ->paginate(10);
 
         return view('admin.barbers.index', compact('barbers', 'search', 'filter'));
     }

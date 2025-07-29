@@ -44,4 +44,24 @@ class HomeController extends Controller
             'customerImages',
         ));
     }
+
+    public function privacyPolicy()
+    {
+        return view('client.privacyPolicy');
+    }
+
+    public function tradingPolicy()
+    {
+        return view('client.tradingPolicy');
+    }
+
+    public function shippingPolicy()
+    {
+        return view('client.shippingPolicy');
+    }
+
+    public function warrantyReturnPolicy()
+    {
+        return view('client.warrantyReturnPolicy');
+    }
 }

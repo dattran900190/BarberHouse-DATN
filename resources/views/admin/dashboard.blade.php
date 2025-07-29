@@ -62,7 +62,7 @@
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
                                 <p class="card-category">Doanh thu dịch vụ</p>
-                                <h4 class="card-title">{{ number_format($serviceRevenue) }} vnđ</h4>
+                                <h4 class="card-title">{{ number_format($serviceRevenue) }} VNĐ</h4>
                             </div>
                         </div>
                     </div>
@@ -81,7 +81,7 @@
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
                                 <p class="card-category">Doanh thu sản phẩm</p>
-                                <h4 class="card-title">{{ number_format($productRevenue) }} vnđ</h4>
+                                <h4 class="card-title">{{ number_format($productRevenue) }} VNĐ</h4>
                             </div>
                         </div>
                     </div>
@@ -317,7 +317,7 @@
                                                     <strong>{{ $item->service->name ?? 'Không xác định' }}</strong><br>
                                                     <small
                                                         class="text-muted">{{ number_format($item->service->price ?? 0) }}
-                                                        vnđ</small>
+                                                        VNĐ</small>
                                                 </div>
                                                 <span class="badge bg-primary rounded-pill">
                                                     {{ $item->usage_count }} lượt
@@ -337,7 +337,7 @@
                                                 <div>
                                                     <strong>{{ $item->name ?? 'Không xác định' }}</strong><br>
                                                     <small class="text-muted">{{ number_format($item->price ?? 0) }}
-                                                        vnđ</small>
+                                                        VNĐ</small>
                                                 </div>
                                                 <span class="badge bg-secondary rounded-pill">
                                                     {{ $item->usage_count }} lượt
@@ -404,7 +404,7 @@
                                             @endif
                                         </td>
                                         <td class="text-end">{{ $transaction->created_at->format('d/m/Y, H:i') }}</td>
-                                        <td class="text-end">{{ number_format($transaction->amount) }} vnđ</td>
+                                        <td class="text-end">{{ number_format($transaction->amount) }} VNĐ</td>
                                         <td class="text-end">
                                             @php
                                                 $status = strtolower($transaction->status);
@@ -484,7 +484,7 @@
                             callbacks: {
                                 label: function(context) {
                                     return context.dataset.label + ': ' + context.parsed.y.toLocaleString() +
-                                        ' vnđ';
+                                        ' VNĐ';
                                 }
                             }
                         }
@@ -499,11 +499,11 @@
                         y: {
                             title: {
                                 display: true,
-                                text: 'Doanh thu (vnđ)'
+                                text: 'Doanh thu (VNĐ)'
                             },
                             ticks: {
                                 callback: function(value) {
-                                    return value.toLocaleString() + ' vnđ';
+                                    return value.toLocaleString() + ' VNĐ';
                                 }
                             }
                         }
@@ -550,7 +550,7 @@
                             callbacks: {
                                 label: function(context) {
                                     return context.dataset.label + ': ' + context.parsed.y.toLocaleString() +
-                                        ' vnđ';
+                                        ' VNĐ';
                                 }
                             }
                         }
@@ -565,11 +565,11 @@
                         y: {
                             title: {
                                 display: true,
-                                text: 'Doanh thu (vnđ)'
+                                text: 'Doanh thu (VNĐ)'
                             },
                             ticks: {
                                 callback: function(value) {
-                                    return value.toLocaleString() + ' vnđ';
+                                    return value.toLocaleString() + ' VNĐ';
                                 }
                             }
                         }

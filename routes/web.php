@@ -61,6 +61,18 @@ Route::post('verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name(
 // ==== Trang chủ ====
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// ==== Chính sách bảo mật ====
+Route::get('/chinh-sach-bao-mat', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');
+
+// ==== Chính sách giao dịch ====
+Route::get('/chinh-sach-giao-dich', [HomeController::class, 'tradingPolicy'])->name('trading.policy');
+
+// ==== Chính sách vận chuyển ====
+Route::get('/chinh-sach-van-chuyen', [HomeController::class, 'shippingPolicy'])->name('shipping.policy');
+
+// ==== Chính sách bảo hành - đổi trả ====
+Route::get('/chinh-sach-bao-hanh-doi-tra', [HomeController::class, 'warrantyReturnPolicy'])->name('warranty.return.policy');
+
 // Giỏ hàng
 Route::get('/gio-hang', [CartController::class, 'show'])->name('cart.show');
 Route::post('/gio-hang/add', [CartController::class, 'addToCart'])->name('cart.add');
@@ -73,7 +85,6 @@ Route::match(['get', 'post'], '/mua-ngay', [CartController::class, 'buyNow'])->n
 Route::get('/mua-ngay/checkout', [CartController::class, 'showBuyNowCheckout'])->name('cart.buyNow.checkout');
 
 //checkout
-
 Route::get('/thanh-toan', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::post('/thanh-toan/process', [CartController::class, 'processCheckout'])->name('cart.checkout.process');
 Route::get('/dat-hang-thanh-cong', function () {
@@ -102,7 +113,7 @@ Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentControll
 Route::get('/lich-su-dat-lich/huy/{id}', [ClientAppointmentController::class, 'showCancelledAppointment'])->name('client.cancelledAppointment.show');
 
 
-// web.php
+// ==== Chi nhánh ====
 Route::get('/chi-nhanh', [ClientBranchController::class, 'index'])->name('client.branch');
 Route::get('/chi-nhanh/{id}', [ClientBranchController::class, 'detail'])->name('client.detailBranch');
 
@@ -167,6 +178,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // Hiển thị giao diện Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // ==== Profile ====
     Route::get('/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
     Route::post('/profile/update', [AdminProfileController::class, 'update'])->name('admin.update');
     Route::post('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('admin.password');
