@@ -2,12 +2,12 @@ html {
   scroll-behavior: smooth;
   height: 100%;
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
 
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
   margin: 0;
   height: 100%;
 }
@@ -319,7 +319,7 @@ section {
   position: absolute;
   top: 35%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
   font-size: 2rem;
@@ -657,7 +657,7 @@ h2 {
 }
 
 .footer-logo-cert img {
-    width: 150px;
+    width: 200px;
     height: 110px;
 }
 
