@@ -278,10 +278,19 @@
                 notifications.forEach((notification, index) => {
                     const notificationItem = document.createElement('div');
                     notificationItem.className = 'notification-item';
+                    
+                    // Tạo link phù hợp dựa trên loại thông báo
+                    let link = '#';
+                    if (notification.appointment_id) {
+                        link = `/lich-su-dat-lich/${notification.appointment_id}`;
+                    } else if (notification.order_id) {
+                        link = `/chi-tiet-don-hang/${notification.order_id}`;
+                    }
+                    
                     notificationItem.innerHTML = `
                         <i class="fas fa-bell"></i>
                         <div>
-                            <a href="/lich-su-dat-lich/${notification.appointment_id || ''}" style="color: #000" data-index="${index}"><p>${notification.message}</p></a>
+                            <a href="${link}" style="color: #000" data-index="${index}"><p>${notification.message}</p></a>
                             <span class="time">${notification.time}</span>
                         </div>
                     `;
@@ -299,9 +308,9 @@
             }
         }
 
-        function addNotification(message, appointment_id) {
+        function addNotification(message, appointment_id, order_id = null) {
             const time = new Date().toLocaleString('vi-VN');
-            notifications.unshift({ message, time, appointment_id });
+            notifications.unshift({ message, time, appointment_id, order_id });
             if (notifications.length > 50) {
                 notifications = notifications.slice(0, 50);
             }
@@ -334,6 +343,12 @@
         channel.bind('AppointmentStatusUpdated', function(data) {
             toastr.success(data.message);
             addNotification(data.message, data.appointment_id);
+        });
+
+        channel.bind('OrderStatusUpdated', function(data) {
+            console.log('OrderStatusUpdated event received:', data);
+            toastr.success(data.message);
+            addNotification(data.message, null, data.order_id);
         });
 
         pusherInstance.connection.bind('error', function(err) {
