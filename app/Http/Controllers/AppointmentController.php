@@ -144,6 +144,9 @@ class AppointmentController extends Controller
             // Xóa bản ghi liên quan trong bảng checkins (nếu có)
             DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
 
+            // Xóa các yêu cầu hoàn tiền liên quan (nếu có)
+            DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
+
             // Xóa bản ghi khỏi bảng appointments
             $appointment->delete();
 
@@ -456,6 +459,9 @@ class AppointmentController extends Controller
                 // Xóa bản ghi liên quan trong bảng checkins (nếu có)
                 DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
 
+                // Xóa các yêu cầu hoàn tiền liên quan (nếu có)
+                DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
+
                 // Xóa bản ghi khỏi bảng appointments
                 $appointment->delete();
 
@@ -511,6 +517,9 @@ class AppointmentController extends Controller
 
         // Xóa bản ghi liên quan trong bảng checkins (nếu có)
         DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
+
+        // Xóa các yêu cầu hoàn tiền liên quan (nếu có)
+        DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
 
         // Xóa bản ghi khỏi bảng appointments
         $appointment->delete();
