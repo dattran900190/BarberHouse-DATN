@@ -53,7 +53,7 @@ class AppointmentController extends Controller
                             });
                     });
                 })
-                ->orderBy('updated_at', 'DESC');
+                ->orderBy('created_at', 'DESC');
         };
         $user = Auth::user();
         // Hàm xây dựng truy vấn cho bảng cancelled_appointments
@@ -74,7 +74,7 @@ class AppointmentController extends Controller
                             });
                     });
                 })
-                ->orderBy('updated_at', 'DESC');
+                ->orderBy('created_at', 'DESC');
         };
 
         // Nếu có tìm kiếm và không có tham số status rõ ràng, điều chỉnh $activeTab

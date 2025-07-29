@@ -124,7 +124,7 @@
                                             <td>{{ $refund->user->name ?? 'N/A' }}</td>
                                             <td>{{ $refund->order->order_code ?? ($refund->appointment->appointment_code ?? 'Không có') }}
                                             </td>
-                                            <td class="text-end">{{ number_format($refund->refund_amount, 0, ',', '.') }} đ
+                                            <td class="text-end">{{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ
                                             </td>
                                             <td class="text-center">
                                                 @php

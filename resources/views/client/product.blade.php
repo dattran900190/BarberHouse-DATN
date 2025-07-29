@@ -85,7 +85,7 @@
                                         <a href="{{ route('client.product.detail', $product->id) }}"
                                             class="text-decoration-none text-dark">{{ $product->name }}</a>
                                     </h5>
-                                    <p class="mb-1 text-danger fw-bold">{{ number_format($product->price) }} đ</p>
+                                    <p class="mb-1 text-danger fw-bold">{{ number_format($product->price) }} VNĐ</p>
                                     <div class="border-top-0 d-flex justify-content-center gap-2 flex-wrap">
 
 

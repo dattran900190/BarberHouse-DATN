@@ -51,7 +51,7 @@
                 {{-- Thông tin sản phẩm --}}
                 <div class="detailPro-right" style="flex: 1; min-width: 300px;">
                     <h3>{{ $product->name }}</h3>
-                    <h5 class="text-danger fw-bold">Giá: {{ number_format($product->price) }} đ</h5>
+                    <h5 class="text-danger fw-bold">Giá: {{ number_format($product->price) }} VNĐ</h5>
                     <p>{{ $product->description }}</p>
                     @php
                         $variants = $product->variants;
@@ -155,7 +155,7 @@ class="btn btn-danger d-flex align-items-center justify-content-center gap-2">
                                         {{ $item->name }}
                                     </a>
                                 </h4>
-                                <p>{{ number_format($item->price) }} đ</p>
+                                <p>{{ number_format($item->price) }} VNĐ</p>
                                 @php $itemVariant = $item->variants->first(); @endphp
                                 @if ($itemVariant)
                                     <div class="button-group">

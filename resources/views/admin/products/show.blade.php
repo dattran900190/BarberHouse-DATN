@@ -29,7 +29,7 @@
                 <br>
                 <p><strong>Tên:</strong> {{ $product->name }}</p>
                 <p><strong>Danh mục:</strong> {{ $product->category->name ?? 'Không có' }}</p>
-                <p><strong>Giá đại diện:</strong> {{ number_format($product->price) }} đ</p>
+                <p><strong>Giá đại diện:</strong> {{ number_format($product->price) }} VNĐ</p>
                 <p><strong>Tồn kho:</strong> {{ $product->stock }}</p>
                 <p><strong>Mô tả:</strong> {{ $product->description ?? 'Không có' }}</p>
                 <p><strong>Mô tả dài:</strong> {{ $product->long_description ?? 'Không có' }}</p>
@@ -67,7 +67,7 @@
                             @foreach ($product->variants as $variant)
                                 <tr>
                                     <td>{{ $variant->volume->name ?? 'N/A' }}</td>
-                                    <td>{{ number_format($variant->price) }} đ</td>
+                                    <td>{{ number_format($variant->price) }} VNĐ</td>
                                     <td>{{ $variant->stock }}</td>
                                     <td>
                                         @if ($variant->image)

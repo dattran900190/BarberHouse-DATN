@@ -63,7 +63,7 @@
                             <input type="number" step="0.01" name="discount_value" class="form-control"
                                 value="{{ old('discount_value') }}" placeholder="Nhập giá trị">
                             <span class="input-group-text"
-                                id="discount_unit">{{ old('discount_type') == 'percent' ? '%' : 'VND' }}</span>
+                                id="discount_unit">{{ old('discount_type') == 'percent' ? '%' : 'VNĐ' }}</span>
                         </div>
                         <small class="form-text text-muted">Nếu là phần trăm, giá trị tối đa là 100%</small>
                         @error('discount_value')
@@ -188,7 +188,7 @@
                 } else {
                     discountValue.removeAttribute('max');
                     discountValue.setAttribute('step', '1000'); // hoặc step="1"
-                    discountUnit.textContent = 'VND';
+                    discountUnit.textContent = 'VNĐ';
                 }
             }
             // Khi form load

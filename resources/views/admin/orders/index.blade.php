@@ -136,7 +136,7 @@
                                             <td>{{ $order->name }}</td>
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
-                                            <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
+                                            <td>{{ number_format($order->total_money, 0, ',', '.') }} VNĐ</td>
                                             <td>
                                                 {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
                                             </td>
@@ -234,7 +234,7 @@
                                             <td>{{ $order->name }}</td>
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
-                                            <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
+                                            <td>{{ number_format($order->total_money, 0, ',', '.') }} VNĐ</td>
                                             <td>
                                                 {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
                                             </td>
@@ -323,7 +323,7 @@
                                             <td>{{ $order->name }}</td>
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
-                                            <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
+                                            <td>{{ number_format($order->total_money, 0, ',', '.') }} VNĐ</td>
                                             <td>
                                                 {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
                                             </td>
@@ -413,7 +413,7 @@
                                             <td>{{ $order->name }}</td>
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
-                                            <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
+                                            <td>{{ number_format($order->total_money, 0, ',', '.') }} VNĐ</td>
                                             <td>
                                                 {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
                                             </td>
@@ -485,7 +485,7 @@
                                             <td>{{ $order->name }}</td>
                                             <td>{{ $order->phone }}</td>
                                             <td>{{ Str::limit($order->address, 30) }}</td>
-                                            <td>{{ number_format($order->total_money, 0, ',', '.') }} đ</td>
+                                            <td>{{ number_format($order->total_money, 0, ',', '.') }} VNĐ</td>
                                             <td>
                                                 {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
                                             </td>

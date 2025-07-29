@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (nextSlideBtn && prevSlideBtn && slides.length) {
     nextSlideBtn.addEventListener("click", () => { idx = (idx + 1) % slides.length; showSlide(idx); });
     prevSlideBtn.addEventListener("click", () => { idx = (idx - 1 + slides.length) % slides.length; showSlide(idx); });
-    setInterval(() => { idx = (idx + 1) % slides.length; showSlide(idx); }, 4000);
+    setInterval(() => { idx = (idx + 1) % slides.length; showSlide(idx); }, 6000);
   }
 
   window.addEventListener("resize", updateSlide);
