@@ -39,7 +39,7 @@
 
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control input-field" id="email" name="email"
+                            <input type="text" class="form-control input-field" id="email" name="email"
                                 placeholder="Nhập email" value="{{ old('email') }}">
                             @error('email')
                                 <small class="form_message text-danger" id="error-email"

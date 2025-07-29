@@ -609,7 +609,7 @@
                 const paymentMethodText = paymentMethodMap[data.payment_method] || data.payment_method || '';
                 let actionButtons = `
                     <li>
-                        <a href="{{ route('admin.orders.show', ':id') }}".replace(':id', ${data.order_id || ''}) class="dropdown-item">
+                        <a href="/admin/orders/${data.order_id || ''}" class="dropdown-item">
                             <i class="fas fa-eye me-2"></i> Xem
                         </a>
                     </li>
@@ -690,6 +690,141 @@
         });
     </script>
     <script>
+        // Sử dụng event delegation để xử lý các button được thêm động
+        document.addEventListener('click', function(event) {
+            // Xử lý confirm button
+            if (event.target.closest('.confirm-btn')) {
+                event.preventDefault();
+                const button = event.target.closest('.confirm-btn');
+                const orderId = button.getAttribute('data-id');
+                
+                Swal.fire({
+                    title: 'Xác nhận đơn hàng',
+                    text: 'Bạn có chắc chắn muốn xác nhận đơn hàng này?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy',
+                    width: '400px',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            didOpen: () => Swal.showLoading()
+                        });
+
+                        fetch('{{ route('admin.orders.confirm', ':id') }}'.replace(':id', orderId), {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            Swal.close();
+                            Swal.fire({
+                                title: data.success ? 'Thành công!' : 'Lỗi!',
+                                text: data.message,
+                                icon: data.success ? 'success' : 'error',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                            }).then(() => {
+                                if (data.success) location.reload();
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.close();
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Đã có lỗi xảy ra: ' + error.message,
+                                icon: 'error',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+
+            // Xử lý destroy button
+            if (event.target.closest('.destroy-btn')) {
+                event.preventDefault();
+                const button = event.target.closest('.destroy-btn');
+                const orderId = button.getAttribute('data-id');
+                
+                Swal.fire({
+                    title: 'Hủy đơn hàng',
+                    text: 'Bạn có chắc chắn muốn hủy đơn hàng này?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy',
+                    width: '400px',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            text: 'Vui lòng chờ trong giây lát.',
+                            allowOutsideClick: false,
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                            didOpen: () => Swal.showLoading()
+                        });
+
+                        fetch('{{ route('admin.orders.destroy', ':id') }}'.replace(':id', orderId), {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            Swal.close();
+                            Swal.fire({
+                                title: data.success ? 'Thành công!' : 'Lỗi!',
+                                text: data.message,
+                                icon: data.success ? 'success' : 'error',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                            }).then(() => {
+                                if (data.success) location.reload();
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.close();
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Đã có lỗi xảy ra: ' + error.message,
+                                icon: 'error',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        });
+
         function handleSwalAction({
             selector,
             title,
