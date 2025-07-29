@@ -14,7 +14,7 @@ class CustomerImageController extends Controller
      */
     public function index()
     {
-        $customerImages = CustomerImage::paginate(5); // Paginate the results to 8 per page
+        $customerImages = CustomerImage::paginate(10); // Paginate the results to 8 per page
 
         return view('admin.custormer_images.index', compact('customerImages'));
     }

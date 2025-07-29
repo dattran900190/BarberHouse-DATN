@@ -69,7 +69,8 @@
                     <a href="{{ route('refunds.index') }}">
                         <i class="icon-docs"></i> {{-- Biểu tượng phù hợp với hoàn tiền --}}
                         <p>Danh sách Hoàn tiền</p>
-                        <span class="badge badge-count-refunds ms-2 bg-danger" id="sidebar-pending-refund-count"
+                        
+                        <span class="badge badge-count-refunds bg-danger" id="sidebar-pending-refund-count"
                             style="{{ $pendingRefundCount > 0 ? '' : 'display: none;' }}">
                             {{ $pendingRefundCount }}
                         </span>

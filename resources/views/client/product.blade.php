@@ -65,7 +65,8 @@
                             $validVariants = $product->variants->filter(function ($variant) {
                                 return $variant->volume &&
                                     $variant->volume->name !== 'Không rõ' &&
-                                    is_null($variant->volume->deleted_at);
+                                    is_null($variant->volume->deleted_at) &&
+                                    $variant->stock > 0; // chỉ lấy biến thể còn hàng
                             });
                             $defaultVariant = $validVariants->first();
                         @endphp
@@ -106,7 +107,7 @@
                                                     value="{{ $defaultVariant->id }}">
                                                 <input type="hidden" name="quantity" value="1">
                                                 @guest
-                                                    <button type="button" class="btn-outline-buy" title="Mua ngay">
+                                                    <button type="submit" class="btn-outline-buy" title="Mua ngay">
                                                         <span>Mua ngay</span>
                                                     </button>
                                                 @else
@@ -115,6 +116,9 @@
                                                     </button>
                                                 @endguest
                                             </form>
+                                        @else
+                                        <span style="color: rgb(232, 184, 12); font-weight: bold;">Hết hàng</span>
+
                                         @endif
                                     </div>
                                 </div>

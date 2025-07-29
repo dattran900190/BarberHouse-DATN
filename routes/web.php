@@ -40,6 +40,7 @@ use App\Http\Controllers\Client\ReviewController as ClientReviewController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\CustomerImageController;
 use Illuminate\Support\Facades\Broadcast;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
 Broadcast::routes(['middleware' => ['auth']]);
 
@@ -49,6 +50,13 @@ Route::post('login', [AuthController::class, 'postLogin'])->name('postLogin');
 Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('register', [AuthController::class, 'postRegister'])->name('postRegister');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
+Route::post('forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('password.sendOtp');
+
+Route::get('verify-otp', [ForgotPasswordController::class, 'showVerifyForm'])->name('password.verifyForm');
+Route::post('verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('password.verifyOtp');
+
 
 // ==== Trang chủ ====
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -105,7 +113,7 @@ Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentControll
 Route::get('/lich-su-dat-lich/huy/{id}', [ClientAppointmentController::class, 'showCancelledAppointment'])->name('client.cancelledAppointment.show');
 
 
-// web.php
+// ==== Chi nhánh ====
 Route::get('/chi-nhanh', [ClientBranchController::class, 'index'])->name('client.branch');
 Route::get('/chi-nhanh/{id}', [ClientBranchController::class, 'detail'])->name('client.detailBranch');
 
@@ -170,6 +178,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // Hiển thị giao diện Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // ==== Profile ====
     Route::get('/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
     Route::post('/profile/update', [AdminProfileController::class, 'update'])->name('admin.update');
     Route::post('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('admin.password');

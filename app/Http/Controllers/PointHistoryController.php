@@ -20,7 +20,7 @@ class PointHistoryController extends Controller
             $query->where('name', 'like', '%' . $search . '%');
         })
             ->orderByDesc('id')
-            ->paginate(5);
+            ->paginate(10);
 
         return view('admin.point_histories.index', compact('users', 'search'));
     }
@@ -33,7 +33,7 @@ class PointHistoryController extends Controller
         $pointHistories = PointHistory::with(['promotion', 'appointment'])
             ->where('user_id', $userId)
             ->orderByDesc('created_at')
-            ->paginate(5);
+            ->paginate(10);
 
         return view('admin.point_histories.user_history', compact('user', 'pointHistories'));
     }

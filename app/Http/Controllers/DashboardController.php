@@ -10,7 +10,7 @@ use App\Models\Barber;
 use App\Models\Appointment;
 use App\Models\OrderItem;
 use App\Models\ProductVariant;
-use App\Models\Service; // Thêm model Service
+use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -44,7 +44,7 @@ class DashboardController extends Controller
         ])
             ->withAvg('reviews as avg_rating', 'rating')
             ->orderByDesc('cut_count')
-            ->take(5)
+            ->take(6)
             ->get()
             ->map(function ($barber) {
                 $barber->avg_rating = $barber->avg_rating ? number_format($barber->avg_rating, 1) : '0.0';
@@ -105,8 +105,25 @@ class DashboardController extends Controller
             ->orderBy('usage_count', 'asc')
             ->take(10)
             ->get();
+        $orderTransactions = Order::select('id', 'order_code as code', 'created_at', 'total_money as amount', 'status')
+            ->addSelect(DB::raw("'order' as type"))
+            ->latest()
+            ->take(10)
+            ->get();
 
-        $latestTransactions = Order::latest()->take(8)->get();
+        $appointmentTransactions = Appointment::select('id', 'appointment_code as code', 'created_at', 'total_amount as amount', 'status')
+            ->addSelect(DB::raw("'appointment' as type"))
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Gộp 2 collection lại và sort theo created_at giảm dần
+        $latestTransactions = $orderTransactions
+            ->merge($appointmentTransactions)
+            ->sortByDesc('created_at')
+            ->take(10)
+            ->values(); // đảm bảo chỉ lấy 10 bản ghi mới nhất sau khi gộp
+
 
         // Xử lý filter cho biểu đồ ngày/tuần
         $weekStart = $request->input('week_start');
@@ -130,6 +147,19 @@ class DashboardController extends Controller
         $currentMonth = date('n');
         $availableMonths = range(1, $currentMonth);
 
+        // Nếu là AJAX request, chỉ trả về dữ liệu JSON cho biểu đồ
+        if ($request->get('ajax')) {
+            return response()->json([
+                'success' => true,
+                'weekLabels' => $weekLabels,
+                'weekServiceRevenue' => $weekServiceRevenue,
+                'weekProductRevenue' => $weekProductRevenue,
+                'monthLabels' => $monthLabels,
+                'monthServiceRevenue' => $monthServiceRevenue,
+                'monthProductRevenue' => $monthProductRevenue,
+            ]);
+        }
+
         return view('admin.dashboard', compact(
             'totalBookings',
             'totalRegistrations',
@@ -141,8 +171,8 @@ class DashboardController extends Controller
             'upcomingAppointments',
             'topProducts',
             'lowSellingProducts',
-            'topServices', // Thêm biến mới
-            'lowUsageServices', // Thêm biến mới
+            'topServices',
+            'lowUsageServices',
             'latestTransactions',
             // Biểu đồ tuần
             'weekLabels',
@@ -166,22 +196,28 @@ class DashboardController extends Controller
             $start = Carbon::parse($weekStart);
             $end = Carbon::parse($weekEnd);
         } else {
-            // Mặc định: tuần hiện tại
-            $start = Carbon::now()->startOfWeek();
-            $end = Carbon::now()->endOfWeek();
+            // Mặc định: 7 ngày gần nhất (thay vì tuần hiện tại để linh hoạt hơn)
+            $start = Carbon::now()->subDays(6);
+            $end = Carbon::now();
         }
 
-        // Hiển thị theo từng ngày trong tuần
+        // Đảm bảo không vượt quá ngày hiện tại
+        $today = Carbon::today();
+        if ($end->gt($today)) {
+            $end = $today;
+        }
+
+        // Hiển thị theo từng ngày trong khoảng thời gian
         for ($date = $start->copy(); $date <= $end; $date->addDay()) {
-            $labels[] = $date->format('d/m (D)'); // Ví dụ: 15/7 (Mon)
+            $labels[] = $date->format('d/m'); // Format ngắn gọn hơn
 
             $serviceRevenue[] = Appointment::whereDate('created_at', $date)
                 ->where('status', 'completed')
-                ->sum('total_amount');
+                ->sum('total_amount') ?: 0; // Đảm bảo trả về 0 thay vì null
 
             $productRevenue[] = Order::whereDate('created_at', $date)
                 ->where('status', 'completed')
-                ->sum('total_money');
+                ->sum('total_money') ?: 0; // Đảm bảo trả về 0 thay vì null
         }
     }
 
@@ -208,27 +244,59 @@ class DashboardController extends Controller
 
                 $serviceRevenue[] = Appointment::whereDate('created_at', $date)
                     ->where('status', 'completed')
-                    ->sum('total_amount');
+                    ->sum('total_amount') ?: 0;
 
                 $productRevenue[] = Order::whereDate('created_at', $date)
                     ->where('status', 'completed')
-                    ->sum('total_money');
+                    ->sum('total_money') ?: 0;
             }
         } else {
             // Hiển thị theo tháng (chỉ các tháng đã qua và tháng hiện tại)
             for ($i = 1; $i <= $currentMonth; $i++) {
-                $labels[] = 'Tháng ' . $i;
+                $labels[] = 'T' . $i; // Format ngắn gọn hơn
 
                 $serviceRevenue[] = Appointment::whereMonth('created_at', $i)
                     ->whereYear('created_at', $year)
                     ->where('status', 'completed')
-                    ->sum('total_amount');
+                    ->sum('total_amount') ?: 0;
 
                 $productRevenue[] = Order::whereMonth('created_at', $i)
                     ->whereYear('created_at', $year)
                     ->where('status', 'completed')
-                    ->sum('total_money');
+                    ->sum('total_money') ?: 0;
             }
         }
+    }
+
+    /**
+     * API endpoint riêng cho AJAX requests (tùy chọn)
+     * Bạn có thể tạo route riêng cho điều này nếu muốn
+     */
+    public function getChartData(Request $request)
+    {
+        $weekStart = $request->input('week_start');
+        $weekEnd = $request->input('week_end');
+        $selectedMonth = $request->input('selected_month');
+        $year = $request->input('year', date('Y'));
+
+        $weekLabels = [];
+        $weekServiceRevenue = [];
+        $weekProductRevenue = [];
+        $this->generateWeekChart($weekStart, $weekEnd, $weekLabels, $weekServiceRevenue, $weekProductRevenue);
+
+        $monthLabels = [];
+        $monthServiceRevenue = [];
+        $monthProductRevenue = [];
+        $this->generateMonthChart($selectedMonth, $year, $monthLabels, $monthServiceRevenue, $monthProductRevenue);
+
+        return response()->json([
+            'success' => true,
+            'weekLabels' => $weekLabels,
+            'weekServiceRevenue' => $weekServiceRevenue,
+            'weekProductRevenue' => $weekProductRevenue,
+            'monthLabels' => $monthLabels,
+            'monthServiceRevenue' => $monthServiceRevenue,
+            'monthProductRevenue' => $monthProductRevenue,
+        ]);
     }
 }
