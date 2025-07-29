@@ -10,6 +10,7 @@ use App\Models\Checkin;
 use App\Models\Service;
 use App\Models\Promotion;
 use App\Models\Appointment;
+use App\Models\BarberSchedule;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Mail\CheckinCodeMail;
@@ -281,25 +282,24 @@ class AppointmentController extends Controller
                 'appointment_time' => $appointment->appointment_time ? $appointment->appointment_time->format('Y-m-d H:i:s') : null,
             ]);
 
-            Log::info('appointmentData', $appointmentData);
 
             // Lưu bản ghi vào cancelled_appointments
             CancelledAppointment::create($appointmentData);
 
             // Xóa bản ghi liên quan trong bảng checkins
             $checkinsDeleted = DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
-            Log::info('Checkins deleted', ['appointment_id' => $appointment->id, 'rows_affected' => $checkinsDeleted]);
+
+            // Xóa các yêu cầu hoàn tiền liên quan (nếu có)
+            $refundRequestsDeleted = DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
 
             // Xóa bản ghi khỏi bảng appointments
             $appointmentDeleted = $appointment->delete();
-            Log::info('Appointment deleted', ['appointment_id' => $appointment->id, 'success' => $appointmentDeleted]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.'
             ]);
         } catch (\Exception $e) {
-            Log::error('Cancellation error: ' . $e->getMessage(), ['appointment' => $appointment->toArray()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi máy chủ: ' . $e->getMessage()
@@ -343,10 +343,7 @@ class AppointmentController extends Controller
 
             return redirect()->route('dat-lich')->with('success', 'Lịch hẹn đã được xác nhận thành công!');
         } catch (\Exception $e) {
-            Log::error('Confirmation error for token: ' . $token, [
-                'error' => $e->getMessage(),
-                'appointment_id' => $appointment ? $appointment->id : null,
-            ]);
+             
             return redirect()->route('home')->with('error', 'Có lỗi xảy ra khi xác nhận lịch hẹn.');
         }
     }
@@ -669,10 +666,7 @@ class AppointmentController extends Controller
             }
             return redirect()->route('appointments.index')->with('success', 'Đặt lịch thành công!');
         } catch (\Exception $e) {
-            Log::error('Booking error: ' . $e->getMessage(), [
-                'request' => $request->all(),
-                'stack_trace' => $e->getTraceAsString()
-            ]);
+               
             session()->flash('error', 'Lỗi khi đặt lịch: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
@@ -684,17 +678,10 @@ class AppointmentController extends Controller
     {
         try {
             // Log toàn bộ tham số để debug
-            Log::info('getAvailableBarbersByDate called', [
-                'branch_id' => $branch_id,
-                'date' => $date,
-                'time' => $time,
-                'service_id' => $service_id,
-                'additional_services' => $request->query('additional_services', [])
-            ]);
+               
 
             // Kiểm tra chi nhánh
             if ($branch_id !== 'null' && (!is_numeric($branch_id) || !Branch::find($branch_id))) {
-                Log::warning('Invalid branch ID', ['branch_id' => $branch_id]);
                 return response()->json(['error' => 'Invalid branch ID'], 400);
             }
 
@@ -704,7 +691,6 @@ class AppointmentController extends Controller
                 try {
                     $parsedDate = Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
                 } catch (\Exception $e) {
-                    Log::warning('Invalid date format', ['date' => $date, 'error' => $e->getMessage()]);
                     return response()->json(['error' => 'Invalid date format'], 400);
                 }
             }
@@ -718,7 +704,6 @@ class AppointmentController extends Controller
                     $parsedTime = Carbon::createFromFormat('H:i', $decodedTime)->format('H:i');
                     $datetime = $parsedDate ? Carbon::parse("{$parsedDate} {$parsedTime}:00") : null;
                 } catch (\Exception $e) {
-                    Log::warning('Invalid time format', ['time' => $time, 'decoded_time' => $decodedTime, 'error' => $e->getMessage()]);
                     return response()->json(['error' => 'Invalid time format'], 400);
                 }
             }
@@ -728,7 +713,6 @@ class AppointmentController extends Controller
             if ($service_id !== 'null') {
                 $srv = Service::find($service_id);
                 if (!$srv) {
-                    Log::warning('Invalid service ID', ['service_id' => $service_id]);
                     return response()->json(['error' => 'Invalid service ID'], 400);
                 }
                 $mainDuration = $srv->duration ?? 0;
@@ -740,11 +724,9 @@ class AppointmentController extends Controller
                 try {
                     $additionalIds = json_decode($additionalIds, true) ?? [];
                     if (!is_array($additionalIds)) {
-                        Log::warning('Invalid additional services format', ['additional_services' => $additionalIds]);
                         return response()->json(['error' => 'Invalid additional services format'], 400);
                     }
                 } catch (\Exception $e) {
-                    Log::warning('Invalid additional services format', ['additional_services' => $additionalIds, 'error' => $e->getMessage()]);
                     return response()->json(['error' => 'Invalid additional services format'], 400);
                 }
             }
@@ -753,7 +735,6 @@ class AppointmentController extends Controller
             if (!empty($additionalIds)) {
                 $additionalServices = Service::whereIn('id', $additionalIds)->get();
                 if (count($additionalServices) !== count($additionalIds)) {
-                    Log::warning('Invalid additional service IDs', ['additional_ids' => $additionalIds]);
                     return response()->json(['error' => 'One or more additional service IDs are invalid'], 400);
                 }
                 $additionalDuration = $additionalServices->sum('duration');
@@ -761,11 +742,7 @@ class AppointmentController extends Controller
             $totalDuration = $mainDuration + $additionalDuration;
 
             // Log thời lượng để debug
-            Log::info('Calculated duration', [
-                'main_duration' => $mainDuration,
-                'additional_duration' => $additionalDuration,
-                'total_duration' => $totalDuration
-            ]);
+               
 
             // Xây dựng query cơ bản
             $query = Barber::query()
@@ -775,6 +752,37 @@ class AppointmentController extends Controller
             // Lọc theo chi nhánh nếu có
             if ($branch_id !== 'null') {
                 $query->where('branch_id', $branch_id);
+            }
+
+            // Kiểm tra lịch nghỉ và lịch làm việc của thợ
+            if ($parsedDate) {
+                $query->whereDoesntHave('schedules', function ($q) use ($parsedDate, $parsedTime, $datetime, $totalDuration) {
+                    $q->where('schedule_date', $parsedDate)
+                        ->where(function ($scheduleQuery) use ($parsedTime, $datetime, $totalDuration) {
+                            // Lịch nghỉ toàn hệ thống (holiday)
+                            $scheduleQuery->where('status', 'holiday')
+                                // Lịch nghỉ cá nhân (off)
+                                ->orWhere('status', 'off')
+                                // Lịch làm việc tùy chỉnh (custom) - kiểm tra thời gian
+                                ->orWhere(function ($customQuery) use ($parsedTime, $datetime, $totalDuration) {
+                                    $customQuery->where('status', 'custom')
+                                        ->where(function ($timeQuery) use ($parsedTime, $datetime, $totalDuration) {
+                                            if ($parsedTime && $totalDuration) {
+                                                $appointmentEnd = $datetime->copy()->addMinutes($totalDuration);
+                                                $appointmentEndTime = $appointmentEnd->format('H:i:s');
+                                                
+                                                // Kiểm tra xung đột thời gian - thợ không có lịch làm việc trong khoảng thời gian này
+                                                $timeQuery->where(function ($tq) use ($parsedTime, $appointmentEndTime) {
+                                                    // Thợ bắt đầu làm việc sau khi lịch hẹn kết thúc
+                                                    $tq->where('start_time', '>', $appointmentEndTime)
+                                                        // Thợ kết thúc làm việc trước khi lịch hẹn bắt đầu
+                                                        ->orWhere('end_time', '<', $parsedTime);
+                                                });
+                                            }
+                                        });
+                                });
+                        });
+                });
             }
 
             // Kiểm tra xung đột lịch hẹn
@@ -793,17 +801,9 @@ class AppointmentController extends Controller
             }
 
             $barbers = $query->get();
-            Log::info('Barbers fetched successfully', ['barbers_count' => $barbers->count(), 'barbers' => $barbers->toArray()]);
             return response()->json($barbers);
         } catch (\Exception $e) {
-            Log::error('Error in getAvailableBarbersByDate: ' . $e->getMessage(), [
-                'branch_id' => $branch_id,
-                'date' => $date,
-                'time' => $time,
-                'service_id' => $service_id,
-                'additional_services' => $request->query('additional_services', []),
-                'stack_trace' => $e->getTraceAsString()
-            ]);
+               
             return response()->json(['error' => 'Server error: Unable to fetch barbers'], 500);
         }
     }
@@ -811,12 +811,35 @@ class AppointmentController extends Controller
     public function getAvailableBarbers($date, $time)
     {
         $datetime = Carbon::parse($date . ' ' . $time);
+        $parsedDate = $datetime->format('Y-m-d');
+        $parsedTime = $datetime->format('H:i:s');
 
         // Lấy danh sách barber KHÔNG có lịch hẹn vào thời điểm này
-        $availableBarbers = Barber::whereDoesntHave('appointments', function ($query) use ($datetime) {
-            $query->where('appointment_time', $datetime)
-                ->whereIn('status', ['pending', 'confirmed']); // chỉ tính lịch chưa bị hủy
-        })->get();
+        $availableBarbers = Barber::where('status', 'idle')
+            ->whereDoesntHave('appointments', function ($query) use ($datetime) {
+                $query->where('appointment_time', $datetime)
+                    ->whereIn('status', ['pending', 'confirmed']); // chỉ tính lịch chưa bị hủy
+            })
+            ->whereDoesntHave('schedules', function ($query) use ($parsedDate, $parsedTime) {
+                $query->where('schedule_date', $parsedDate)
+                    ->where(function ($scheduleQuery) use ($parsedTime) {
+                        // Lịch nghỉ toàn hệ thống (holiday)
+                        $scheduleQuery->where('status', 'holiday')
+                            // Lịch nghỉ cá nhân (off)
+                            ->orWhere('status', 'off')
+                            // Lịch làm việc tùy chỉnh (custom) - kiểm tra thời gian
+                            ->orWhere(function ($customQuery) use ($parsedTime) {
+                                $customQuery->where('status', 'custom')
+                                    ->where(function ($timeQuery) use ($parsedTime) {
+                                        // Thợ bắt đầu làm việc sau thời gian lịch hẹn
+                                        $timeQuery->where('start_time', '>', $parsedTime)
+                                            // Thợ kết thúc làm việc trước thời gian lịch hẹn
+                                            ->orWhere('end_time', '<', $parsedTime);
+                                    });
+                            });
+                    });
+            })
+            ->get();
         return $availableBarbers;
     }
 
@@ -835,7 +858,6 @@ class AppointmentController extends Controller
 
     //         return response()->json(['message' => 'Lịch hẹn đã hoàn thành']);
     //     } catch (\Exception $e) {
-    //         Log::error('Error in completeAppointment: ' . $e->getMessage());
     //         return response()->json(['error' => 'Server error'], 500);
     //     }
     // }
