@@ -132,9 +132,21 @@
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Xác nhận',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
                         cancelButtonText: 'Hủy'
                     }).then((result) => {
                         if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                didOpen: () => Swal.showLoading()
+                            });
+                            
                             fetch(route.replace(':id', postId), {
                                     method,
                                     headers: {
@@ -142,10 +154,16 @@
                                         'Content-Type': 'application/json'
                                     }
                                 })
-                                .then(response => response.json())
+                                .then(response => response.json())  
                                 .then(data => {
-                                    Swal.fire(data.message, '', data.success ? 'success' :
-                                        'error');
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
                                     if (data.success) onSuccess();
                                 });
                         }

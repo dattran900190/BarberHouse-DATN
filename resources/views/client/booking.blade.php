@@ -43,7 +43,7 @@
                 <p class="booking-subtitle">Giờ mở cửa: 08:00 - 19:30</p>
                 <p class="booking-note">
                     <i class="fas fa-exclamation-circle"></i>
-                    Vui lòng nhập thông tin bắt buộc
+                    Vui lòng nhập thông tin bắt buộc để lọc thợ phù hợp
                 </p>
             </div>
 

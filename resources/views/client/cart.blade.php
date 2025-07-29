@@ -114,11 +114,11 @@ style="width: 60px; text-align: center;" />
                                                                         </div>
                                                                     </td>
                                                                     <td class="unit-price">
-                                                                        {{ number_format($item->price, 0, ',', '.') }} ₫
+                                                                        {{ number_format($item->price, 0, ',', '.') }} VNĐ
                                                                     </td>
                                                                     <td class="subtotal">
                                                                         {{ number_format($item->price * $item->quantity, 0, ',', '.') }}
-                                                                        ₫
+                                                                        VNĐ
                                                                     </td>
 
                                                                     <td class="text-end">
@@ -157,14 +157,14 @@ style="width: 60px; text-align: center;" />
                                                 </h5>
                                                 <h5 id="cart-subtotal">
                                                     {{ number_format($cart->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', '.') }}
-                                                    ₫</h5>
+                                                    VNĐ</h5>
                                             </div>
                                             <hr class="my-4">
                                             <div class="d-flex justify-content-between mb-5">
                                                 <h5 class="text-uppercase">Tổng tiền</h5>
                                                 <h5 id="cart-total">
                                                     {{ number_format($cart->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', '.') }}
-                                                    ₫</h5>
+                                                    VNĐ</h5>
                                             </div>
                                             <form id="checkout-form" action="{{ route('cart.checkout') }}" method="GET">
                                                 @guest
@@ -206,7 +206,7 @@ style="width: 60px; text-align: center;" />
                     currency: 'VND',
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0
-                }).replace('₫', '') + ' ₫';
+                }).replace('VNĐ', '') + ' VNĐ';
             };
 
             const updateTotal = () => {
