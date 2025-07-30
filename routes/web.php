@@ -279,7 +279,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('barber-schedules', [BarberScheduleController::class, 'store'])->name('barber_schedules.store');
     Route::get('barber-schedules/holiday/edit/{id}', [BarberScheduleController::class, 'editHoliday'])->name('barber_schedules.editHoliday');
     Route::put('barber-schedules/holiday/update/{id}', [BarberScheduleController::class, 'updateHoliday'])->name('barber_schedules.updateHoliday');
-    Route::delete('barber-schedules/holiday/delete/{id}', [BarberScheduleController::class, 'deleteHoliday'])->name('barber_schedules.deleteHoliday');
+    Route::delete('/barber-schedules/delete-holiday/{id}', [BarberScheduleController::class, 'deleteHoliday'])
+        ->name('barber_schedules.deleteHoliday');
+
 
     // ==== Người dùng ====
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');

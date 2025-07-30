@@ -38,12 +38,19 @@
                         <strong>Số điện thoại:</strong> {{ $branch->phone }}
                     </p>
                     @if ($branch->google_map_url)
-                        <p class="text-muted mb-2">
-                            <i class="fa fa-map me-2 text-success"></i>
-                            <strong>Google Map:</strong>
-                            <a href="{{ $branch->google_map_url }}" target="_blank">Xem bản đồ</a>
-                        </p>
+                        <div class="mb-3">
+                            <p class="text-muted mb-2">
+                                <i class="fa fa-map me-2 text-success"></i>
+                                <strong>Google Map:</strong>
+                            </p>
+                            <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                                <iframe src="{{ $branch->google_map_url }}" style="border:0;" allowfullscreen loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade">
+                                </iframe>
+                            </div>
+                        </div>
                     @endif
+
                     <p class="text-muted mb-2">
                         <i class="fa fa-calendar me-2 text-muted"></i>
                         <strong>Ngày tạo:</strong> {{ $branch->created_at->format('d/m/Y H:i') }}
@@ -98,9 +105,8 @@
                                     <td>{{ $index + 1 }}</td>
                                     <td class="text-center">
                                         @if ($barber->avatar)
-                                            <img src="{{ asset('storage/' . $barber->avatar) }}"
-                                                class="img-thumbnail" style="max-width: 80px; max-height: 60px;"
-                                                alt="Avatar">
+                                            <img src="{{ asset('storage/' . $barber->avatar) }}" class="img-thumbnail"
+                                                style="max-width: 80px; max-height: 60px;" alt="Avatar">
                                         @else
                                             <img src="{{ asset('uploads/avatars/default-avatar.png') }}"
                                                 class="img-thumbnail" style="max-width: 80px; max-height: 60px;"

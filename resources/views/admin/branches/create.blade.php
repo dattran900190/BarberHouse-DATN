@@ -59,12 +59,16 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="google_map_url" class="form-label">Link Google Maps</label>
+                        <label for="google_map_url" class="form-label">Link Google Maps (không phải iframe)</label>
                         <input type="text" class="form-control @error('google_map_url') is-invalid @enderror"
-                            id="google_map_url" name="google_map_url" value="{{ old('google_map_url') }}">
+                            id="google_map_url" name="google_map_url" value="{{ old('google_map_url') }}"
+                            placeholder="https://www.google.com/maps/place/...">
+                        <small class="text-muted">Sao chép link từ Google Maps (bấm Chia sẻ & chọn 'Sao chép liên
+                            kết')</small>
                         @error('google_map_url')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
+
                     </div>
                 </div>
 
