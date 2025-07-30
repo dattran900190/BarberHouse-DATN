@@ -34,6 +34,12 @@
             <li class="nav-item">
                 <a href="{{ url('admin/branches') }}">Quản lý Chi nhánh</a>
             </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/branches') }}">Chi nhánh</a>
+            </li>
         </ul>
     </div>
 

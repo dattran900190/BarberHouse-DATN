@@ -36,6 +36,10 @@
             <li class="nav-item">
                 <a href="{{ route('refunds.index') }}">Quản lý hoàn tiền</a>
             </li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item">
+                <a href="{{ url('admin/refunds') }}">Yêu cầu hoàn tiền</a>
+            </li>
         </ul>
     </div>
 

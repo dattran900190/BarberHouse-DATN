@@ -18,7 +18,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Quản lý chung</a>
+                <a href="{{ url('admin/users') }}">Quản lý chung</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
@@ -30,7 +30,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="#">Chi tiết người dùng</a>
+                <a href="{{ url('admin/users/' . $user->id) }}">Chi tiết người dùng</a>
             </li>
         </ul>
     </div>

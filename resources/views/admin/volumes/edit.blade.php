@@ -32,6 +32,12 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
+                <a href="{{ url('admin/volumes') }}">Quản lý đặt hàng</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
                 <a href="{{ url('admin/volumes/' . $volume->id .'/edit') }}">Chỉnh sửa dung tích</a>
             </li>
         </ul>
