@@ -89,7 +89,7 @@
                     <p><strong>Trạng thái thanh toán:</strong>
                         {{ $paymentMap[$order->payment_status] ?? ucfirst($order->payment_status) }}</p>
                     <p><strong>Ghi chú:</strong> {{ $order->note ?: '-' }}</p>
-                    <p><strong>Tổng tiền:</strong> {{ number_format($order->total_money, 0, ',', '.') }} đ</p>
+                    <p><strong>Tổng tiền:</strong> {{ number_format($order->total_money, 0, ',', '.') }} VNĐ</p>
                     <p><strong>Trạng thái:</strong>
                         <span id="order-status"
                             class="badge bg-{{ $statusColorMap[$order->status] ?? 'secondary' }}">
@@ -136,7 +136,7 @@
                                 @endif
                             </td>
                             <td>{{ $item->quantity }}</td>
-                            <td>{{ number_format($item->price_at_time, 0, ',', '.') }} đ</td>
+                            <td>{{ number_format($item->price_at_time, 0, ',', '.') }} VNĐ</td>
                         </tr>
                     @endforeach
                 </tbody>

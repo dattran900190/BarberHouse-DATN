@@ -18,7 +18,7 @@
                 </tr>
                 <tr>
                     <td style="padding: 8px; border: 1px solid #ddd;"><strong>Số tiền hoàn:</strong></td>
-                    <td style="padding: 8px; border: 1px solid #ddd;">{{ number_format($refund->refund_amount, 0, ',', '.') }} đ</td>
+                    <td style="padding: 8px; border: 1px solid #ddd;">{{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ</td>
                 </tr>
                 <tr>
                     <td style="padding: 8px; border: 1px solid #ddd;"><strong>Ngân hàng:</strong></td>
@@ -41,7 +41,7 @@
                 </tr>
                 <tr>
                     <td style="padding: 8px; border: 1px solid #ddd;"><strong>Số tiền yêu cầu:</strong></td>
-                    <td style="padding: 8px; border: 1px solid #ddd;">{{ number_format($refund->refund_amount, 0, ',', '.') }} đ</td>
+                    <td style="padding: 8px; border: 1px solid #ddd;">{{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ</td>
                 </tr>
                 <tr>
                     <td style="padding: 8px; border: 1px solid #ddd;"><strong>Lý do yêu cầu:</strong></td>

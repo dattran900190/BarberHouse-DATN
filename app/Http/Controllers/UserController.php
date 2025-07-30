@@ -44,8 +44,8 @@ class UserController extends Controller
             $adminsQuery->where('status', 'banned');
         }
 
-        $users = $usersQuery->orderBy('id', 'DESC')->paginate(10);
-        $admins = $adminsQuery->orderBy('id', 'DESC')->paginate(10);
+        $users = $usersQuery->orderBy('created_at', 'DESC')->paginate(10);
+        $admins = $adminsQuery->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('admin.users.index', compact('users', 'admins', 'role', 'search', 'filter'));
     }

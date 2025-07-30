@@ -140,7 +140,7 @@
                     <form method="GET" action="{{ route('client.product') }}" class="d-flex align-items-center">
                         <input type="text" name="search" id="search-input" placeholder="Tìm kiếm sản phẩm..."
                             class="form-control me-2" />
-                        <button type="submit" class="btn btn-primary">Tìm</button>
+                        <button type="submit" class="btn-outline-buy">Tìm</button>
                     </form>
                     <button class="close-btn btn btn-sm btn-danger mt-2">❌</button>
                 </div>

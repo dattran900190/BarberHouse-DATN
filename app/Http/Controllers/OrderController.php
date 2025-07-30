@@ -11,6 +11,7 @@ use App\Mail\OrderSuccessMail;
 use App\Mail\OrderCompletedMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use App\Events\OrderStatusUpdated;
 
 class OrderController extends Controller
 {
@@ -87,6 +88,10 @@ class OrderController extends Controller
             } catch (\Exception $e) {
                 Log::error('Lỗi gửi email xác nhận đơn hàng (admin): ' . $e->getMessage());
             }
+            
+            // Dispatch event để gửi thông báo realtime
+            event(new OrderStatusUpdated($order));
+            
             return response()->json(['success' => true, 'message' => 'Đã xác nhận đơn hàng.']);
         }
         return response()->json(['success' => false, 'message' => 'Đơn hàng không thể xác nhận.']);
@@ -242,6 +247,9 @@ class OrderController extends Controller
         $order->status = 'cancelled';
         $order->save();
 
-        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được hủy và số lượng tồn kho đã được hoàn lại.']);
+        // Dispatch event để gửi thông báo realtime
+        event(new OrderStatusUpdated($order));
+
+        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được hủy.']);
     }
 }

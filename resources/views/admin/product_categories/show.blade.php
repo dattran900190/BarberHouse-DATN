@@ -157,6 +157,9 @@
                                 title: 'Đang xử lý...',
                                 text: 'Vui lòng chờ trong giây lát.',
                                 allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
                                 didOpen: () => {
                                     Swal.showLoading();
                                 }
@@ -180,7 +183,10 @@
                                     Swal.fire({
                                         title: data.success ? 'Thành công!' : 'Lỗi!',
                                         text: data.message,
-                                        icon: data.success ? 'success' : 'error'
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
                                     }).then(() => {
                                         if (data.success) onSuccess();
                                     });
@@ -191,7 +197,10 @@
                                     Swal.fire({
                                         title: 'Lỗi!',
                                         text: 'Đã có lỗi xảy ra: ' + error.message,
-                                        icon: 'error'
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
                                     });
                                 });
                         }

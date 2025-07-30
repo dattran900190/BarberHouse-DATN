@@ -33,7 +33,7 @@ class ProductCategoryController extends Controller
         }
 
         // Lấy kết quả, sắp xếp và phân trang
-        $categories = $query->orderBy('updated_at', 'DESC')->paginate(5);
+        $categories = $query->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('admin.product_categories.index', compact('categories', 'search', 'filter'));
     }

@@ -30,7 +30,7 @@ class ReviewController extends Controller
             });
         }
 
-        $reviews = $query->orderBy('updated_at', 'DESC')->paginate(5);
+        $reviews = $query->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('admin.reviews.index', compact('reviews', 'search', 'filter'));
     }

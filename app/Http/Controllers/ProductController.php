@@ -22,19 +22,25 @@ class ProductController extends Controller
 
         $query = Product::with('category', 'variants.volume', 'images');
 
-        if ($filter === 'deleted') {
-            $query->onlyTrashed();
-        } elseif ($filter === 'active') {
-            // Mặc định là chỉ lấy những product chưa bị xóa mềm, không cần thêm điều kiện
-        } else { // 'all'
-            $query->withTrashed();
-        }
-        
+        // if ($filter === 'deleted') {
+        //     $query->onlyTrashed();
+        // } elseif ($filter === 'active') {
+        //     // Mặc định là chỉ lấy những product chưa bị xóa mềm, không cần thêm điều kiện
+        // } else { // 'all'
+        //     $query->withTrashed();
+        // }
+
+        $query = match ($filter) {
+            'active' => Product::query(), // chỉ product còn hoạt động
+            'deleted' => Product::onlyTrashed(),
+            default => Product::withTrashed(), // tất cả (kể cả đã xoá mềm)
+        };
+
         $products = $query->when($search, function ($query, $search) {
                 return $query->where('name', 'like', '%' . $search . '%');
             })
-            ->latest()
-            ->paginate(10);
+            ->orderBy('created_at', 'DESC')
+            ->paginate(perPage: 10);
             
         return view('admin.products.index', compact('products'));
     }

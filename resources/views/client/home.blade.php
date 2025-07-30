@@ -102,7 +102,7 @@
                                     {{ $product->name }}
                                 </a>
                             </h4>
-                            <p>{{ number_format($product->price) }} đ</p>
+                            <p>{{ number_format($product->price) }} VNĐ</p>
 
                             @php
                                 $variant = $product->variants->where('stock', '>', 0)->first();

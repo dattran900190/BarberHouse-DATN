@@ -17,7 +17,7 @@
             <li><strong>Người nhận:</strong> {{ $order->name }}</li>
             <li><strong>Số điện thoại:</strong> {{ $order->phone }}</li>
             <li><strong>Địa chỉ:</strong> {{ $order->address }}</li>
-            <li><strong>Phí vận chuyển:</strong> {{ number_format($order->shipping_fee) }} đ</li>
+            <li><strong>Phí vận chuyển:</strong> {{ number_format($order->shipping_fee) }} VNĐ</li>
         </ul>
 
         <h4>Danh sách sản phẩm:</h4>
@@ -35,14 +35,14 @@
                     <tr>
                         <td style="border:1px solid #ddd; padding:8px;">{{ $item->productVariant->product->name ?? 'Sản phẩm' }}</td>
                         <td style="border:1px solid #ddd; padding:8px;">{{ $item->quantity }}</td>
-                        <td style="border:1px solid #ddd; padding:8px;">{{ number_format($item->price_at_time) }} đ</td>
-                        <td style="border:1px solid #ddd; padding:8px;">{{ number_format($item->total_price) }} đ</td>
+                        <td style="border:1px solid #ddd; padding:8px;">{{ number_format($item->price_at_time) }} VNĐ</td>
+                        <td style="border:1px solid #ddd; padding:8px;">{{ number_format($item->total_price) }} VNĐ</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
 
-        <p style="margin-top: 20px;"><strong>Tổng tiền:</strong> {{ number_format($order->total_money) }} đ</p>
+        <p style="margin-top: 20px;"><strong>Tổng tiền:</strong> {{ number_format($order->total_money) }} VNĐ</p>
 
         <p>Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi. Nếu có bất kỳ thắc mắc hoặc góp ý nào, vui lòng liên hệ với chúng tôi để được hỗ trợ.</p>
 

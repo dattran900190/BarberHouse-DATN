@@ -36,7 +36,7 @@ class BannerController extends Controller
         }
 
         // Lấy kết quả phân trang
-        $banners = $query->orderBy('id', 'DESC')->paginate(5);
+        $banners = $query->orderBy('created_at', 'DESC')->paginate(10);
 
         // Truyền thêm filter để giữ trạng thái lọc ở view
         return view('admin.banners.index', compact('banners', 'filter', 'search'));

@@ -55,7 +55,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Số tiền hoàn</label>
-                        <div class="form-control-plaintext">{{ number_format($refund->refund_amount, 0, ',', '.') }} đ</div>
+                        <div class="form-control-plaintext">{{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ</div>
                     </div>
 
                     <div class="mb-3">
@@ -116,8 +116,8 @@
                                             <td>{{ $item->productVariant->product->name ?? 'Không có tên' }}</td>
                                             <td>{{ $item->productVariant->volume->name ?? '-' }}</td>
                                             <td>{{ $item->quantity }}</td>
-                                            <td>{{ number_format($item->price_at_time, 0, ',', '.') }} đ</td>
-                                            <td>{{ number_format($item->total_price, 0, ',', '.') }} đ</td>
+                                            <td>{{ number_format($item->price_at_time, 0, ',', '.') }} VNĐ</td>
+                                            <td>{{ number_format($item->total_price, 0, ',', '.') }} VNĐ</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

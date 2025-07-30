@@ -14,11 +14,11 @@ class VolumeController extends Controller
     {
         $filter = $request->get('filter', 'all');
         if ($filter === 'deleted') {
-            $volumes = Volume::onlyTrashed()->orderBy('id', 'desc')->paginate(10);
+            $volumes = Volume::onlyTrashed()->orderBy('created_at', 'desc')->paginate(10);
         } elseif ($filter === 'active') {
-            $volumes = Volume::whereNull('deleted_at')->orderBy('id', 'desc')->paginate(10);
+            $volumes = Volume::whereNull('deleted_at')->orderBy('created_at', 'desc')->paginate(10);
         } else {
-            $volumes = Volume::withTrashed()->orderBy('id', 'desc')->paginate(10);
+            $volumes = Volume::withTrashed()->orderBy('created_at', 'desc')->paginate(10);
         }
         return view('admin.volumes.index', compact('volumes', 'filter'));
     }

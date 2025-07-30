@@ -59,12 +59,12 @@
                                                     @if ($promo->discount_type === 'percent')
                                                         {{ $promo->discount_value }}%
                                                     @else
-                                                        {{ number_format($promo->discount_value) }}₫
+                                                        {{ number_format($promo->discount_value) }}VNĐ
                                                     @endif
                                                 </span>
                                                 @if ($promo->max_discount_amount)
                                                     <small class="text-muted d-block">(Max
-                                                        {{ number_format($promo->max_discount_amount) }}₫)</small>
+                                                        {{ number_format($promo->max_discount_amount) }}VNĐ)</small>
                                                 @endif
                                             </p>
 

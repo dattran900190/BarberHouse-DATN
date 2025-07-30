@@ -203,12 +203,18 @@
                         showCancelButton: true,
                         confirmButtonText: 'Xác nhận',
                         cancelButtonText: 'Hủy',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
                         width: '400px'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             Swal.fire({
                                 title: 'Đang xử lý...',
                                 allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
                                 didOpen: () => Swal.showLoading()
                             });
                             fetch(route.replace(':id', branchId), {
@@ -224,7 +230,10 @@
                                     Swal.fire({
                                         title: data.success ? 'Thành công!' : 'Lỗi!',
                                         text: data.message,
-                                        icon: data.success ? 'success' : 'error'
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
                                     }).then(() => {
                                         if (data.success) onSuccess();
                                     });
@@ -234,7 +243,10 @@
                                     Swal.fire({
                                         title: 'Lỗi!',
                                         text: 'Đã có lỗi xảy ra: ' + error.message,
-                                        icon: 'error'
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
                                     });
                                 });
                         }
