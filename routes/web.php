@@ -245,7 +245,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
     Route::delete('/posts/{id}/force-delete', [PostController::class, 'forceDelete'])->name('posts.forceDelete');
 
-
     // ==== Danh muc ====
     Route::resource('product_categories', ProductCategoryController::class);
     Route::patch('product_categories/{id}/soft-delete', [ProductCategoryController::class, 'softDelete'])->name('product_categories.softDelete');
