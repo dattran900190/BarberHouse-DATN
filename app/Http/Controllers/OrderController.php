@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
-    // Hiển thị danh sách đơn hàng với bộ lọc tìm kiếm và phân trang
+    /**
+     * Hiển thị danh sách đơn hàng với bộ lọc tìm kiếm và phân trang
+     */
     public function index(Request $request)
     {
         $search = $request->input('search');
@@ -30,7 +32,7 @@ class OrderController extends Controller
                         ->orWhere('name', 'like', '%' . $search . '%');
                 });
             })
-            ->orderBy('created_at', 'DESC');
+                ->orderBy('created_at', 'DESC');
         };
 
         // Lấy đơn hàng theo từng trạng thái với phân trang
@@ -68,6 +70,9 @@ class OrderController extends Controller
         ));
     }
 
+    /**
+     * Xác nhận đơn hàng từ trạng thái Chờ xác nhận sang Đang xử lý
+     */
     public function confirm(Order $order)
     {
         if ($order->status === 'pending') {
@@ -87,7 +92,49 @@ class OrderController extends Controller
         return response()->json(['success' => false, 'message' => 'Đơn hàng không thể xác nhận.']);
     }
 
-    // Hiển thị chi tiết đơn hàng, load quan hệ items và productVariant
+    /**
+     * Chuyển trạng thái đơn hàng từ Đang xử lý sang Đang giao hàng
+     */
+    public function ship(Order $order)
+    {
+        if ($order->status !== 'processing') {
+            return response()->json(['success' => false, 'message' => 'Đơn hàng không ở trạng thái Đang xử lý!']);
+        }
+
+        $order->status = 'shipping';
+        $order->save();
+
+        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Đang giao hàng.']);
+    }
+
+    /**
+     * Chuyển trạng thái đơn hàng từ Đang giao hàng sang Hoàn thành
+     */
+    public function complete(Order $order)
+    {
+        if ($order->status !== 'shipping') {
+            return response()->json(['success' => false, 'message' => 'Đơn hàng không ở trạng thái Đang giao hàng!']);
+        }
+
+        $order->status = 'completed';
+        $order->save();
+
+        // Gửi email thông báo hoàn thành đơn hàng
+        try {
+            $order->load('items.productVariant.product');
+            if ($order->email) {
+                Mail::to($order->email)->send(new OrderCompletedMail($order));
+            }
+        } catch (\Exception $e) {
+            Log::error('Lỗi gửi email hoàn thành đơn hàng (admin): ' . $e->getMessage());
+        }
+
+        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Hoàn thành.']);
+    }
+
+    /**
+     * Hiển thị chi tiết đơn hàng, load quan hệ items và productVariant
+     */
     public function show(Order $order)
     {
         if (Auth::user()->role === 'admin_branch') {
@@ -95,17 +142,19 @@ class OrderController extends Controller
         }
         $order->load([
             'items.productVariant' => function ($query) {
-                $query->withTrashed(); // ✅ đúng cách
+                $query->withTrashed();
             },
             'items.productVariant.product' => function ($query) {
-                $query->withTrashed(); // ✅ đúng cách
+                $query->withTrashed();
             },
         ]);
 
         return view('admin.orders.show', compact('order'))->with('title', 'Chi tiết đơn hàng');
     }
 
-    // Cập nhật trạng thái đơn hàng với validate riêng, kiểm tra logic trạng thái và cập nhật tồn kho khi hủy đơn
+    /**
+     * Cập nhật trạng thái đơn hàng với validate riêng, kiểm tra logic trạng thái và cập nhật tồn kho khi hủy đơn
+     */
     public function update(Request $request, Order $order)
     {
         $request->validate([
@@ -114,20 +163,23 @@ class OrderController extends Controller
 
         $newStatus = $request->status;
         $currentStatus = $order->status;
-        $paymentStatus = $order->payment_status;
+        $page = $request->input('page', 1);
 
         // Nếu đơn hàng đã bị hủy
         if ($currentStatus === 'cancelled') {
-            return response()->json(['success' => false, 'message' => 'Đơn hàng đã bị hủy, không thể thay đổi trạng thái!']);
+            return redirect()->route('admin.orders.show', ['order' => $order->id, 'page' => $page])
+                ->with('error', 'Đơn hàng đã bị hủy, không thể thay đổi trạng thái!');
         }
 
         // Nếu đơn hàng đã hoàn thành
         if ($currentStatus === 'completed') {
             if ($newStatus === 'cancelled') {
-                return response()->json(['success' => false, 'message' => 'Đơn hàng đã hoàn thành, không thể hủy đơn!']);
+                return redirect()->route('admin.orders.show', ['order' => $order->id, 'page' => $page])
+                    ->with('error', 'Đơn hàng đã hoàn thành, không thể hủy đơn!');
             }
             if ($newStatus !== 'completed') {
-                return response()->json(['success' => false, 'message' => 'Đơn hàng đã hoàn thành, không thể thay đổi trạng thái!']);
+                return redirect()->route('admin.orders.show', ['order' => $order->id, 'page' => $page])
+                    ->with('error', 'Đơn hàng đã hoàn thành, không thể thay đổi trạng thái!');
             }
         }
 
@@ -136,12 +188,14 @@ class OrderController extends Controller
 
         // Không cho quay lại trạng thái trước đó (trừ khi là hủy)
         if ($newStatus !== 'cancelled' && $statusOrder[$newStatus] <= $statusOrder[$currentStatus]) {
-            return response()->json(['success' => false, 'message' => 'Không thể quay lại trạng thái trước đó!']);
+            return redirect()->route('admin.orders.show', ['order' => $order->id, 'page' => $page])
+                ->with('error', 'Không thể quay lại trạng thái trước đó!');
         }
 
         // Nếu chuyển sang hủy đơn, cộng lại tồn kho
         if ($currentStatus !== 'cancelled' && $newStatus === 'cancelled') {
-            foreach ($order->orderItems as $item) {
+            $order->load('items');
+            foreach ($order->items as $item) {
                 $variant = ProductVariant::find($item->product_variant_id);
                 if ($variant) {
                     $variant->stock += $item->quantity;
@@ -150,32 +204,44 @@ class OrderController extends Controller
             }
         }
 
-        // Nếu chuyển sang hoàn thành đơn hàng
-        if ($currentStatus !== 'completed' && $newStatus === 'completed') {
-            try {
-                $order->load('items.productVariant.product');
-                if ($order->email) {
-                    Mail::to($order->email)->send(new OrderCompletedMail($order));
-                }
-            } catch (\Exception $e) {
-                Log::error('Lỗi gửi email hoàn thành đơn hàng (admin): ' . $e->getMessage());
-            }
-        }
-
         $order->status = $newStatus;
         $order->save();
 
-        return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái đơn hàng thành công.']);
+        return redirect()->route('admin.orders.index', ['page' => $page])
+            ->with('success', 'Cập nhật trạng thái đơn hàng thành công.');
     }
 
+    /**
+     * Hủy đơn hàng và hoàn lại số lượng tồn kho
+     */
     public function destroy(Request $request, Order $order)
     {
         if (Auth::user()->role === 'admin_branch') {
             return response()->json(['success' => false, 'message' => 'Bạn không có quyền truy cập.']);
         }
+
+        // Kiểm tra nếu đơn hàng đã bị hủy hoặc đã hoàn thành
+        if ($order->status === 'cancelled') {
+            return response()->json(['success' => false, 'message' => 'Đơn hàng đã bị hủy trước đó!']);
+        }
+        if ($order->status === 'completed') {
+            return response()->json(['success' => false, 'message' => 'Đơn hàng đã hoàn thành, không thể hủy!']);
+        }
+
+        // Cộng lại số lượng tồn kho
+        $order->load('items');
+        foreach ($order->items as $item) {
+            $variant = ProductVariant::find($item->product_variant_id);
+            if ($variant) {
+                $variant->stock += $item->quantity;
+                $variant->save();
+            }
+        }
+
+        // Cập nhật trạng thái đơn hàng thành 'cancelled'
         $order->status = 'cancelled';
         $order->save();
 
-        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được hủy.']);
+        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được hủy và số lượng tồn kho đã được hoàn lại.']);
     }
 }

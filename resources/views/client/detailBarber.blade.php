@@ -39,10 +39,32 @@
                                                         {{ $barber->branch->name ?? 'Chưa có chi nhánh' }}</span>
                                                 </div>
 
+                                                @php
+                                                    $skillLevels = [
+                                                        'assistant' => 'Thử việc',
+                                                        'junior' => 'Sơ cấp',
+                                                        'senior' => 'Chuyên nghiệp',
+                                                        'master' => 'Bậc thầy',
+                                                        'expert' => 'Chuyên gia',
+                                                    ];
+                                                    $skillLevelColors = [
+                                                        'assistant' => 'secondary',
+                                                        'junior' => 'info',
+                                                        'senior' => 'primary',
+                                                        'master' => 'success',
+                                                        'expert' => 'warning',
+                                                    ];
+                                                    $levelKey = $barber->skill_level;
+                                                @endphp
+
                                                 <div class="skills mb-3">
-                                                    <span class="badge bg-primary me-2 mb-2"><i class="fas fa-cut me-1"></i>
-                                                        {{ $barber->skill_level ?? 'Chuyên nghiệp' }}</span>
+                                                    <span
+                                                        class="badge bg-{{ $skillLevelColors[$levelKey] ?? 'dark' }} me-2 mb-2">
+                                                        <i class="fas fa-cut me-1"></i>
+                                                        {{ $skillLevels[$levelKey] ?? 'Không xác định' }}
+                                                    </span>
                                                 </div>
+
 
                                                 <!-- Contact Information -->
                                                 <div class="contact-info mb-4">
@@ -61,8 +83,7 @@
                                             </div>
 
                                             <div class="mt-auto">
-                                                <a href="{{ route('dat-lich', $barber->id) }}"
-                                                    class="btn-outline-buy">
+                                                <a href="{{ route('dat-lich', $barber->id) }}" class="btn-outline-buy">
                                                     <i class="fa-solid fa-calendar-check me-2"></i>Đặt lịch ngay
                                                 </a>
                                             </div>
@@ -94,10 +115,28 @@
                                 <div class="card-body p-4">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
                                         <h4 class="mb-0 text-dark fw-bold">Đánh giá</h4>
-                                        <div>
-                                            <span class="badge bg-warning text-dark">
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge bg-warning text-dark me-3">
                                                 {{ $reviews->total() }} đánh giá
                                             </span>
+                                            <!-- Bộ lọc số sao -->
+                                            <form action="{{ route('client.detailBarber', $barber->id) }}" method="GET"
+                                                class="d-flex">
+                                                <select name="star" onchange="this.form.submit()" class="form-select"
+                                                    style="width: 150px;">
+                                                    <option value="">Tất cả sao</option>
+                                                    <option value="5" {{ request('star') == '5' ? 'selected' : '' }}>5
+                                                        sao</option>
+                                                    <option value="4" {{ request('star') == '4' ? 'selected' : '' }}>4
+                                                        sao</option>
+                                                    <option value="3" {{ request('star') == '3' ? 'selected' : '' }}>3
+                                                        sao</option>
+                                                    <option value="2" {{ request('star') == '2' ? 'selected' : '' }}>2
+                                                        sao</option>
+                                                    <option value="1" {{ request('star') == '1' ? 'selected' : '' }}>1
+                                                        sao</option>
+                                                </select>
+                                            </form>
                                         </div>
                                     </div>
 
@@ -164,8 +203,8 @@
 
         /* Barber Card */
         .barber-card {
-            transition: transform 0.3s ease, 
-            box-shadow 0.3s ease;
+            transition: transform 0.3s ease,
+                box-shadow 0.3s ease;
             border: none;
         }
 
@@ -224,25 +263,25 @@
 
         /* Pagination */
         /* .pagination .page-item.active .page-link {
-            background-color: #000;
-            border-color: #000;
-        }
+                                background-color: #000;
+                                border-color: #000;
+                            }
 
-        .pagination .page-link {
-            color: #000;
-            border-radius: 50% !important;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 3px;
-            border: 1px solid #dee2e6;
-        }
+                            .pagination .page-link {
+                                color: #000;
+                                border-radius: 50% !important;
+                                width: 40px;
+                                height: 40px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                margin: 0 3px;
+                                border: 1px solid #dee2e6;
+                            }
 
-        .pagination .page-link:hover {
-            background-color: #f8f9fa;
-        } */
+                            .pagination .page-link:hover {
+                                background-color: #f8f9fa;
+                            } */
 
         /* Card Styles */
         .card {

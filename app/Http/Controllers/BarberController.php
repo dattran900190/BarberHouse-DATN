@@ -34,7 +34,7 @@ class BarberController extends Controller
 
     public function create()
     {
-         $user = Auth::user();
+        $user = Auth::user();
 
         // Nếu là admin_branch thì chỉ lấy ra chi nhánh của họ
         if ($user->role === 'admin_branch') {
@@ -44,7 +44,6 @@ class BarberController extends Controller
         }
 
         return view('admin.barbers.create', compact('branches'));
-
     }
 
     public function store(BarberRequest $request)
@@ -104,23 +103,26 @@ class BarberController extends Controller
 
     public function destroy(Barber $barber)
     {
-        $page = request('page', 1);
-
         $hasActiveAppointments = $barber->appointments()
             ->whereNotIn('status', ['cancelled', 'completed'])
             ->exists();
 
         if ($hasActiveAppointments) {
-            return redirect()->route('barbers.index', ['page' => $page])
-                ->with('error', 'Không thể vô hiệu hóa thợ vì còn lịch hẹn chưa hoàn tất.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể vô hiệu hóa thợ vì còn lịch hẹn chưa hoàn tất.'
+            ]);
         }
 
         $barber->status = 'retired';
         $barber->save();
 
-        return redirect()->route('barbers.index', ['page' => $page])
-            ->with('success', 'Thợ đã nghỉ việc.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Thợ đã được cho nghỉ việc.'
+        ]);
     }
+
 
     public function softDelete($id)
     {

@@ -258,8 +258,8 @@
                                                             </li>
                                                             <li>
                                                                 <button type="button"
-                                                                    class="dropdown-item text-success update-btn"
-                                                                    data-id="{{ $order->id }}" data-status="shipping">
+                                                                    class="dropdown-item text-success ship-btn"
+                                                                    data-id="{{ $order->id }}">
                                                                     <i class="fas fa-truck me-2"></i> Chuyển sang giao hàng
                                                                 </button>
                                                             </li>
@@ -347,9 +347,8 @@
                                                             </li>
                                                             <li>
                                                                 <button type="button"
-                                                                    class="dropdown-item text-success update-btn"
-                                                                    data-id="{{ $order->id }}"
-                                                                    data-status="completed">
+                                                                    class="dropdown-item text-success complete-btn"
+                                                                    data-id="{{ $order->id }}">
                                                                     <i class="fas fa-check-circle me-2"></i> Hoàn thành
                                                                 </button>
                                                             </li>
@@ -705,7 +704,6 @@
                 button.addEventListener('click', function(event) {
                     event.preventDefault();
                     const orderId = this.getAttribute('data-id');
-                    const status = this.getAttribute('data-status'); // Lấy trạng thái cho update
 
                     const swalOptions = {
                         title,
@@ -741,11 +739,8 @@
                             });
 
                             const body = withInput ? JSON.stringify({
-                                    reason: result.value || 'Không có lý do'
-                                }) :
-                                status ? JSON.stringify({
-                                    status
-                                }) : undefined;
+                                reason: result.value || 'Không có lý do'
+                            }) : undefined;
 
                             fetch(route.replace(':id', orderId), {
                                     method,
@@ -796,17 +791,25 @@
         });
 
         handleSwalAction({
-            selector: '.update-btn',
-            title: 'Cập nhật trạng thái',
-            text: 'Bạn có chắc chắn muốn cập nhật trạng thái đơn hàng này?',
-            route: '{{ route('admin.orders.update', ':id') }}',
+            selector: '.ship-btn',
+            title: 'Chuyển sang giao hàng',
+            text: 'Bạn có chắc chắn muốn chuyển đơn hàng này sang trạng thái Đang giao hàng?',
+            route: '{{ route('admin.orders.ship', ':id') }}',
+            method: 'PUT'
+        });
+
+        handleSwalAction({
+            selector: '.complete-btn',
+            title: 'Hoàn thành đơn hàng',
+            text: 'Bạn có chắc chắn muốn chuyển đơn hàng này sang trạng thái Hoàn thành?',
+            route: '{{ route('admin.orders.complete', ':id') }}',
             method: 'PUT'
         });
 
         handleSwalAction({
             selector: '.destroy-btn',
             title: 'Hủy đơn hàng',
-            text: 'Bạn có chắc chắn muốn hủy đơn hàng này?',
+            text: 'Bạn có chắc chắn muốn hủy đơn hàng này? Số lượng tồn kho sẽ được hoàn lại.',
             route: '{{ route('admin.orders.destroy', ':id') }}',
             method: 'DELETE'
         });

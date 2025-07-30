@@ -6,15 +6,21 @@
     @php
         $currentRole = Auth::user()->role;
         $isRetired = $barber->status === 'retired';
+
+        $skillLevels = [
+            'assistant' => 'Thử việc',
+            'junior'    => 'Sơ cấp',
+            'senior'    => 'Chuyên ghiệp',
+            'master'    => 'Bậc thầy',
+            'expert'    => 'Chuyên gia',
+        ];
     @endphp
 
     <div class="page-header">
         <h3 class="fw-bold mb-3">Thợ Cắt Tóc</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
-                <a href="{{ url('admin/dashboard') }}">
-                    <i class="icon-home"></i>
-                </a>
+                <a href="{{ url('admin/dashboard') }}"><i class="icon-home"></i></a>
             </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item"><a href="{{ url('admin/dashboard') }}">Quản lý chi nhánh</a></li>
@@ -48,8 +54,14 @@
 
                     <div class="col-md-6 mb-3">
                         <label for="skill_level" class="form-label">Trình độ</label>
-                        <input type="text" id="skill_level" name="skill_level" class="form-control"
-                            value="{{ old('skill_level', $barber->skill_level) }}">
+                        <select id="skill_level" name="skill_level" class="form-control">
+                            <option value="">-- Chọn trình độ --</option>
+                            @foreach ($skillLevels as $key => $label)
+                                <option value="{{ $key }}" {{ old('skill_level', $barber->skill_level) == $key ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
                         @error('skill_level')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -70,16 +82,16 @@
                         <label for="branch_id" class="form-label">Chi nhánh</label>
                         @if ($currentRole === 'admin_branch')
                             <select id="branch_id" name="branch_id" class="form-control" disabled>
-                            @else
-                                <select id="branch_id" name="branch_id" class="form-control">
+                        @else
+                            <select id="branch_id" name="branch_id" class="form-control">
                         @endif
-                        <option value="">-- Chọn chi nhánh --</option>
-                        @foreach ($branches as $branch)
-                            <option value="{{ $branch->id }}"
-                                {{ old('branch_id', $barber->branch_id) == $branch->id ? 'selected' : '' }}>
-                                {{ $branch->name }}
-                            </option>
-                        @endforeach
+                            <option value="">-- Chọn chi nhánh --</option>
+                            @foreach ($branches as $branch)
+                                <option value="{{ $branch->id }}"
+                                    {{ old('branch_id', $barber->branch_id) == $branch->id ? 'selected' : '' }}>
+                                    {{ $branch->name }}
+                                </option>
+                            @endforeach
                         </select>
                         @error('branch_id')
                             <div class="text-danger">{{ $message }}</div>

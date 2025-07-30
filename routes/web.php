@@ -187,6 +187,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Đơn hàng ====
     Route::resource('orders', OrderController::class)->names('admin.orders');
     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
+    Route::put('/{order}/ship', [OrderController::class, 'ship'])->name('admin.orders.ship');
+    Route::put('/{order}/complete', [OrderController::class, 'complete'])->name('admin.orders.complete');
     // Route::put('/orders/{order}', [OrderController::class, 'update'])->name('admin.orders.update'); // Sử dụng PUT cho update
     // Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('admin.orders.destroy');
     // ==== Lịch sử điểm ====

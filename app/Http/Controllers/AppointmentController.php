@@ -394,7 +394,7 @@ class AppointmentController extends Controller
             // Nếu trạng thái là 'pending', gửi email thông báo
             if ($appointment->status === 'confirmed') {
                 // Tạo mã QR check-in
-                $qrCode = rand(100000, 999999); // Mã QR duy nhất;
+                $qrCode = rand(100000, 999999); // Mã QR duy nhất
                 Checkin::create([
                     'appointment_id' => $appointment->id,
                     'qr_code_value' => $qrCode,
@@ -440,20 +440,12 @@ class AppointmentController extends Controller
                 Mail::to($appointment->email)->send(new CancelBookingMail($appointment));
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được cập nhật.',
-                'page' => $currentPage
-            ]);
+            return redirect()->route('appointments.index', ['page' => $currentPage])
+                ->with('success', 'Lịch hẹn ' . $appointment->appointment_code . ' đã được cập nhật.');
         } catch (\Exception $e) {
-            // Log::error('Confirm: Failed', [
-            //     'appointment_id' => $appointment->id,
-            //     'error' => $e->getMessage()
-            // ]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Lỗi khi xác nhận lịch hẹn: ' . $e->getMessage()
-            ], 500);
+            return redirect()->back()
+                ->with('error', 'Lỗi khi cập nhật lịch hẹn: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
