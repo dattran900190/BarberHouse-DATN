@@ -6,6 +6,20 @@
     $currentRole = Auth::user()->role;
 @endphp
 @section('content')
+    @if (session('success'))
+        <div class="alert border-start border-success border-4 alert-dismissible fade show shadow-sm" role="alert">
+            <span class="fw-bold text-dark">{{ session('success') }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert border-start border-danger border-4 alert-dismissible fade show shadow-sm" role="alert">
+            <span class="fw-bold text-dark">{{ session('error') }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    @endif
+
     <div class="page-header mb-4">
         <h3 class="fw-bold mb-0">Lịch làm việc theo chi nhánh</h3>
         <ul class="breadcrumbs mb-3">
@@ -76,8 +90,8 @@
                                     ->where('note', $holiday->note)
                                     ->first();
                             @endphp
-                            <li class="d-flex justify-content-between align-items-center border border-warning p-2 mb-2 rounded bg-light holiday-row"
-                                style="position: relative;">
+                            <li
+                                class="d-flex justify-content-between align-items-center border border-warning p-2 mb-2 rounded bg-light holiday-row">
                                 <span>
                                     <strong>{{ $holiday->note }}</strong>:
                                     {{ \Carbon\Carbon::parse($holiday->holiday_start_date)->format('d/m/Y') }} -
@@ -89,12 +103,18 @@
                                             class="btn btn-sm btn-warning text-white" title="Sửa">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('barber_schedules.deleteHoliday', $first->id) }}"
-                                            method="POST" class="d-inline" onsubmit="return confirm('Xoá kỳ nghỉ này?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Xoá">
+                                        <form id="delete-form-{{ $first->id }}"
+                                            action="{{ route('barber_schedules.deleteHoliday', $first->id) }}"
+                                            method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="btn btn-sm btn-danger btn-delete-holiday"
+                                                data-id="{{ $first->id }}"
+                                                data-route="{{ route('barber_schedules.deleteHoliday', ':id') }}"
+                                                title="Xoá">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
+
                                         </form>
                                     </div>
                                 @endif
@@ -148,11 +168,9 @@
             </div>
         </div>
     </div>
-    @if ($branches instanceof \Illuminate\Pagination\LengthAwarePaginator)
-        <div class="mt-3 d-flex justify-content-center">
-            {{ $branches->links('pagination::bootstrap-5') }}
-        </div>
-    @endif
+    <div class="d-flex justify-content-center mt-3">
+        {{ $branches->links() }}
+    </div>
 @endsection
 
 @section('css')
@@ -248,5 +266,136 @@
         .breadcrumbs .separator {
             margin: 0 6px;
         }
+
+        .custom-swal-popup {
+            border-radius: 1rem !important;
+            padding: 1.5rem;
+            font-size: 15px;
+        }
     </style>
+@endsection
+@section('js')
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            method = 'POST',
+            withInput = false,
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    const id = this.getAttribute('data-id');
+                    const route = this.getAttribute('data-route');
+
+                    const swalOptions = {
+                        title: title,
+                        text: text,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Huỷ',
+                        width: '420px',
+                        customClass: {
+                            popup: 'custom-swal-popup',
+                            confirmButton: 'btn btn-danger me-2',
+                            cancelButton: 'btn btn-secondary'
+                        },
+                        buttonsStyling: false
+                    };
+
+                    if (withInput) {
+                        swalOptions.input = 'textarea';
+                        swalOptions.inputPlaceholder = inputPlaceholder;
+                        if (inputValidator) {
+                            swalOptions.inputValidator = inputValidator;
+                        }
+                    }
+
+                    Swal.fire(swalOptions).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                showConfirmButton: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            const body = withInput ? JSON.stringify({
+                                input: result.value || ''
+                            }) : undefined;
+
+                            fetch(route.replace(':id', id), {
+                                    method: method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector(
+                                            'meta[name="csrf-token"]').getAttribute(
+                                            'content')
+                                    },
+                                    body: body
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        },
+                                        confirmButtonText: 'OK',
+                                        buttonsStyling: false,
+                                        customClass: {
+                                            confirmButton: 'btn btn-primary'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) {
+                                            onSuccess();
+                                        }
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        },
+                                        confirmButtonText: 'OK',
+                                        buttonsStyling: false,
+                                        customClass: {
+                                            confirmButton: 'btn btn-danger'
+                                        }
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        }
+        handleSwalAction({
+            selector: '.btn-delete-holiday',
+            title: 'Bạn có chắc chắn muốn xoá lịch nghỉ lễ này?',
+            text: 'Hành động này sẽ xoá toàn bộ lịch nghỉ lễ giống nhau trong hệ thống.',
+            route: '{{ route('barber_schedules.deleteHoliday', ':id') }}',
+            method: 'DELETE',
+        });
+    </script>
 @endsection

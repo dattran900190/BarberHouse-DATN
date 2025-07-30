@@ -81,7 +81,7 @@
                         <label for="start_time" class="form-label">Giờ bắt đầu</label>
                         <input type="time" name="start_time" id="start_time"
                             class="form-control @error('start_time') is-invalid @enderror"
-                            value="{{ old('start_time') ?? (isset($schedule) ? $schedule->start_time : '') }}">
+                            value="{{ old('start_time') ?? (isset($schedule) ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '') }}">
                         @error('start_time')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -89,7 +89,7 @@
                         <label for="end_time" class="form-label mt-2">Giờ kết thúc</label>
                         <input type="time" name="end_time" id="end_time"
                             class="form-control @error('end_time') is-invalid @enderror"
-                            value="{{ old('end_time') ?? (isset($schedule) ? $schedule->end_time : '') }}">
+                            value="{{ old('end_time') ?? (isset($schedule) ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : '') }}">
                         @error('end_time')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
