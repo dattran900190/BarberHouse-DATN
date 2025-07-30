@@ -5,10 +5,18 @@
 
             {{-- LEFT --}}
             <ul class="navbar-nav d-flex flex-row flex-nowrap me-4">
-                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('/') }}">Trang chủ</a></li>
-                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('san-pham') }}">Sản phẩm</a></li>
-                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('bai-viet') }}">Bài viết</a></li>
-                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('tho-cat') }}">Thợ cắt</a></li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">Trang chủ</a>
+                </li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link {{ request()->is('san-pham*') ? 'active' : '' }}" href="{{ url('san-pham') }}">Sản phẩm</a>
+                </li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link {{ request()->is('bai-viet*') ? 'active' : '' }}" href="{{ url('bai-viet') }}">Bài viết</a>
+                </li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link {{ request()->is('tho-cat*') ? 'active' : '' }}" href="{{ url('tho-cat') }}">Thợ cắt</a>
+                </li>
             </ul>
 
             {{-- LOGO Ở GIỮA --}}
@@ -19,10 +27,14 @@
 
             {{-- RIGHT --}}
             <ul class="navbar-nav d-flex flex-row flex-nowrap ms-4">
-                <li class="nav-item mx-2"><a class="nav-link" href="{{ route('dat-lich') }}">Đặt lịch</a></li>
-                <li class="nav-item mx-2"><a class="nav-link" href="{{ url('chi-nhanh') }}">Chi nhánh</a></li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link {{ request()->is('dat-lich*') ? 'active' : '' }}" href="{{ route('dat-lich') }}">Đặt lịch</a>
+                </li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link {{ request()->is('chi-nhanh*') ? 'active' : '' }}" href="{{ url('chi-nhanh') }}">Chi nhánh</a>
+                </li>
                 <li class="nav-item mx-2 position-relative">
-                    <a class="nav-link" href="{{ url('gio-hang') }}">
+                    <a class="nav-link {{ request()->is('gio-hang*') ? 'active' : '' }}" href="{{ url('gio-hang') }}">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span id="cartCount"
                             class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger"

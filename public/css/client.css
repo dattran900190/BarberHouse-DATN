@@ -2,12 +2,12 @@ html {
   scroll-behavior: smooth;
   height: 100%;
   margin: 0;
-  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
+  font-family: 'Roboto', sans-serif !important;
 
 }
 
 body {
-  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
+  font-family: 'Roboto', sans-serif !important;
   margin: 0;
   height: 100%;
 }
@@ -2323,4 +2323,23 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 .transaction-date {
   font-size: 0.9em;
   color: #6c757d;
+}
+
+/* Active Menu Styles */
+#mainNav .nav-link.active {
+  color: #ccc !important;
+  font-weight: bold;
+}
+
+#mainNav .nav-link.active:hover {
+  color: #ccc !important;
+}
+
+/* Responsive active menu */
+@media (max-width: 768px) {
+  #mainNav .nav-link.active {
+    border-bottom: none;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
 }
