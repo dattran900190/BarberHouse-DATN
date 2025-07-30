@@ -172,6 +172,11 @@
                                     <span class="sub-item">Lịch trình thợ</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('barber_statistics.index') }}">
+                                    <span class="sub-item">Thống kê thợ</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>
