@@ -11,8 +11,11 @@ use App\Models\Appointment;
 use App\Models\OrderItem;
 use App\Models\ProductVariant;
 use App\Models\Service;
+use App\Models\Branch;
+use App\Models\BarberSchedule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -50,6 +53,44 @@ class DashboardController extends Controller
                 $barber->avg_rating = $barber->avg_rating ? number_format($barber->avg_rating, 1) : '0.0';
                 return $barber;
             });
+
+        // Thống kê ngày nghỉ của thợ (Top 5)
+        $user = Auth::user();
+        $selectedLeaveMonth = $request->input('leave_month', date('n'));
+        $selectedBranch = $request->input('leave_branch');
+
+        $leaveMonth = $selectedLeaveMonth ? Carbon::createFromDate(date('Y'), $selectedLeaveMonth, 1) : Carbon::now()->startOfMonth();
+        $leaveMonthEnd = $leaveMonth->copy()->endOfMonth();
+
+        // Lấy danh sách chi nhánh
+        if ($user->role === 'admin_branch') {
+            $branches = Branch::where('id', $user->branch_id)->get();
+            $selectedBranch = $user->branch_id;
+        } else {
+            $branches = Branch::all();
+        }
+
+        // Query thống kê ngày nghỉ
+        $barberLeavesQuery = Barber::select('id', 'name')
+            ->with(['schedules' => function ($q) use ($leaveMonth, $leaveMonthEnd) {
+                $q->whereBetween('schedule_date', [$leaveMonth, $leaveMonthEnd])
+                    ->whereIn('status', ['off', 'holiday']);
+            }]);
+
+        // Lọc theo chi nhánh
+        if ($selectedBranch) {
+            $barberLeavesQuery->where('branch_id', $selectedBranch);
+        } elseif ($user->role === 'admin_branch') {
+            $barberLeavesQuery->where('branch_id', $user->branch_id);
+        }
+
+        $barberLeaves = $barberLeavesQuery->get()
+            ->map(function ($barber) {
+                $barber->total_off = $barber->schedules->count();
+                return $barber;
+            })
+            ->sortByDesc('total_off')
+            ->take(5);
 
         $upcomingAppointments = Appointment::where('appointment_time', '>=', now())
             ->orderBy('appointment_time')
@@ -105,6 +146,7 @@ class DashboardController extends Controller
             ->orderBy('usage_count', 'asc')
             ->take(10)
             ->get();
+
         $orderTransactions = Order::select('id', 'order_code as code', 'created_at', 'total_money as amount', 'status')
             ->addSelect(DB::raw("'order' as type"))
             ->latest()
@@ -123,7 +165,6 @@ class DashboardController extends Controller
             ->sortByDesc('created_at')
             ->take(10)
             ->values(); // đảm bảo chỉ lấy 10 bản ghi mới nhất sau khi gộp
-
 
         // Xử lý filter cho biểu đồ ngày/tuần
         $weekStart = $request->input('week_start');
@@ -157,6 +198,12 @@ class DashboardController extends Controller
                 'monthLabels' => $monthLabels,
                 'monthServiceRevenue' => $monthServiceRevenue,
                 'monthProductRevenue' => $monthProductRevenue,
+                'barberLeaves' => $barberLeaves->map(function ($barber) {
+                    return [
+                        'name' => $barber->name,
+                        'total_off' => $barber->total_off,
+                    ];
+                })->values()->toArray(),
             ]);
         }
 
@@ -167,6 +214,7 @@ class DashboardController extends Controller
             'productRevenue',
             'todayRevenue',
             'barberStats',
+            'barberLeaves',
             'weekRange',
             'upcomingAppointments',
             'topProducts',
@@ -186,7 +234,10 @@ class DashboardController extends Controller
             'monthProductRevenue',
             'selectedMonth',
             'year',
-            'availableMonths'
+            'availableMonths',
+            'selectedLeaveMonth',
+            'selectedBranch',
+            'branches'
         ));
     }
 
