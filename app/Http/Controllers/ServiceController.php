@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Service;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
-use App\Models\ProductCategory;
 use App\Models\CancelledAppointment;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ServiceRequest;
@@ -32,7 +30,7 @@ class ServiceController extends Controller
         }
 
         // Sắp xếp & phân trang
-        $services = $query->orderBy('created_at', 'DESC')->paginate(perPage: 10);
+        $services = $query->orderBy('updated_at', 'DESC')->paginate(5);
 
         return view('admin.services.index', compact('services', 'filter', 'search'));
     }
@@ -106,68 +104,73 @@ class ServiceController extends Controller
             ->with('success', 'Cập nhật thành công');
     }
 
+    public function destroy($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xóa dịch vụ.'
+            ]);
+        }
+
+        // Lấy cả dịch vụ đã bị xóa mềm
+        $service = Service::withTrashed()->findOrFail($id);
+
+        // Kiểm tra nếu dịch vụ đã từng được sử dụng
+        $usedInAppointments = Appointment::where('service_id', $service->id)
+            ->orWhereJsonContains('additional_services', $service->id)
+            ->exists();
+
+        $usedInCancelled = CancelledAppointment::where('service_id', $service->id)
+            ->orWhereJsonContains('additional_services', $service->id)
+            ->exists();
+
+        if ($usedInAppointments || $usedInCancelled) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xoá vĩnh viễn vì dịch vụ đã được sử dụng trong lịch hẹn hoặc lịch sử hủy.'
+            ]);
+        }
+
+        // Xóa ảnh nếu tồn tại
+        if ($service->image && Storage::disk('public')->exists($service->image)) {
+            Storage::disk('public')->delete($service->image);
+        }
+
+        $service->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã xoá vĩnh viễn dịch vụ.'
+        ]);
+    }
+
+
     public function softDelete($id)
     {
         if (Auth::user()->role === 'admin_branch') {
             return response()->json([
                 'success' => false,
-                'message' => 'Bạn không có quyền xoá danh mục.'
+                'message' => 'Bạn không có quyền xóa dịch vụ.'
             ]);
         }
 
-        $category = ProductCategory::findOrFail($id);
-        $category->delete();
-
-        // Ẩn (soft delete) tất cả sản phẩm liên kết
-        Product::where('product_category_id', $category->id)->delete();
-
-        return response()->json(['success' => true, 'message' => 'Đã xoá mềm danh mục.']);
+        $service = Service::findOrFail($id);
+        $service->delete();
+        return response()->json(['success' => true, 'message' => 'Đã xoá mềm dịch vụ.']);
     }
+
 
     public function restore($id)
     {
         if (Auth::user()->role === 'admin_branch') {
             return response()->json([
                 'success' => false,
-                'message' => 'Bạn không có quyền khôi phục danh mục.'
+                'message' => 'Bạn không có quyền xóa dịch vụ.'
             ]);
         }
-
-        $category = ProductCategory::withTrashed()->findOrFail($id);
-        $category->restore();
-
-        // Khôi phục tất cả sản phẩm liên quan
-        Product::onlyTrashed()->where('product_category_id', $category->id)->restore();
-
-        return response()->json(['success' => true, 'message' => 'Khôi phục danh mục thành công.']);
-    }
-
-    public function destroy($id)
-    {
-        if (Auth::user()->role === 'admin_branch') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bạn không có quyền xoá danh mục.'
-            ]);
-        }
-
-        $category = ProductCategory::withTrashed()->findOrFail($id);
-        $hasProducts = Product::withTrashed()
-            ->where('product_category_id', $category->id)
-            ->exists();
-
-        if ($hasProducts) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không thể xoá vĩnh viễn vì vẫn còn sản phẩm thuộc danh mục.'
-            ]);
-        }
-
-        $category->forceDelete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Đã xoá vĩnh viễn danh mục.'
-        ]);
+        $service = Service::withTrashed()->findOrFail($id);
+        $service->restore();
+        return response()->json(['success' => true, 'message' => 'Khôi phục dịch vụ thành công.']);
     }
 }

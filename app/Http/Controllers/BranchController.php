@@ -86,7 +86,7 @@ class BranchController extends Controller
     // Hiển thị form sửa
     public function edit(Branch $branch)
     {
-        
+
         return view('admin.branches.edit', compact('branch'));
     }
 
@@ -126,6 +126,13 @@ class BranchController extends Controller
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('branches.index')->with('error', 'Bạn không có quyền xóa chi nhánh.');
         }
+        $branch = Branch::findOrFail($branch->id);
+        // Kiểm tra xem chi nhánh có thợ cắt tóc hay không
+        // Nếu có thợ cắt tóc thì không cho xoá
+        // Nếu không có thợ cắt tóc thì xoá
+        if ($branch->barbers()->count() > 0) {
+            return redirect()->route('branches.index')->with('error', 'Chi nhánh này có thợ cắt tóc, không thể xoá.');
+        }
         $branch->delete();
         return redirect()->route('branches.index')->with('success', 'Xoá chi nhánh thành công');
     }
@@ -155,16 +162,16 @@ class BranchController extends Controller
         return response()->json(['success' => true, 'message' => 'Đã khôi phục chi nhánh!']);
     }
 
-    public function forceDelete($id)
-    {
-        if (Auth::user()->role === 'admin_branch') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bạn không có quyền xóa chi nhánh'
-            ]);
-        }
-        $branch = Branch::withTrashed()->findOrFail($id);
-        $branch->forceDelete();
-        return response()->json(['success' => true, 'message' => 'Đã xoá vĩnh viễn chi nhánh!']);
-    }
+    // public function forceDelete($id)
+    // {
+    //     if (Auth::user()->role === 'admin_branch') {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Bạn không có quyền xóa chi nhánh'
+    //         ]);
+    //     }
+    //     $branch = Branch::withTrashed()->findOrFail($id);
+    //     $branch->forceDelete();
+    //     return response()->json(['success' => true, 'message' => 'Đã xoá vĩnh viễn chi nhánh!']);
+    // }
 }
