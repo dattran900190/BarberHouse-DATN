@@ -20,7 +20,6 @@
         $currentRole = Auth::user()->role;
     @endphp
 
-    {{-- Header giống trang thợ --}}
     <div class="page-header">
         <h3 class="fw-bold mb-3">Danh sách Chi nhánh</h3>
         <ul class="breadcrumbs mb-3">
@@ -157,15 +156,14 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-muted">Không tìm thấy chi nhánh phù hợp.</td>
+                                <td colspan="7" class="text-muted">Không tìm thấy chi nhánh phù hợp.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-
-            <div class="d-flex justify-content-center mt-4">
-                {{ $branches->links('pagination::bootstrap-5') }}
+            <div class="d-flex justify-content-center mt-3">
+                {{ $branches->links() }}
             </div>
         </div>
     </div>
@@ -209,18 +207,12 @@
                         showCancelButton: true,
                         confirmButtonText: 'Xác nhận',
                         cancelButtonText: 'Hủy',
-                        customClass: {
-                            popup: 'custom-swal-popup'
-                        },
                         width: '400px'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             Swal.fire({
                                 title: 'Đang xử lý...',
                                 allowOutsideClick: false,
-                                customClass: {
-                                    popup: 'custom-swal-popup'
-                                },
                                 didOpen: () => Swal.showLoading()
                             });
                             fetch(route.replace(':id', branchId), {
@@ -236,10 +228,7 @@
                                     Swal.fire({
                                         title: data.success ? 'Thành công!' : 'Lỗi!',
                                         text: data.message,
-                                        icon: data.success ? 'success' : 'error',
-                                        customClass: {
-                                            popup: 'custom-swal-popup'
-                                        }
+                                        icon: data.success ? 'success' : 'error'
                                     }).then(() => {
                                         if (data.success) onSuccess();
                                     });
@@ -249,10 +238,7 @@
                                     Swal.fire({
                                         title: 'Lỗi!',
                                         text: 'Đã có lỗi xảy ra: ' + error.message,
-                                        icon: 'error',
-                                        customClass: {
-                                            popup: 'custom-swal-popup'
-                                        }
+                                        icon: 'error'
                                     });
                                 });
                         }
