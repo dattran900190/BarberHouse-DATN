@@ -33,7 +33,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="">Quản lý đặt hàng</a>
+                <a href="{{ url('admin/product_categories') }}">Quản lý đặt hàng</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>

@@ -200,14 +200,6 @@
         .fw-semibold {
             font-weight: 500 !important;
         }
-
-        .custom-swal-popup {
-            border-radius: 8px !important;
-            padding: 24px !important;
-            font-size: 14px !important;
-            width: 400px !important;
-            max-width: 90vw !important;
-        }
     </style>
 @endsection
 
