@@ -199,6 +199,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Đơn hàng ====
     Route::resource('orders', OrderController::class)->names('admin.orders');
     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
+    Route::put('/{order}/ship', [OrderController::class, 'ship'])->name('admin.orders.ship');
+    Route::put('/{order}/complete', [OrderController::class, 'complete'])->name('admin.orders.complete');
     // Route::put('/orders/{order}', [OrderController::class, 'update'])->name('admin.orders.update'); // Sử dụng PUT cho update
     // Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('admin.orders.destroy');
     // ==== Lịch sử điểm ====
@@ -238,6 +240,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/appointments/{appointment}/reject-cancel', [AppointmentController::class, 'rejectCancel'])->name('appointments.reject-cancel');
     Route::post('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow'])->name('appointments.no-show');
     Route::get('/appointments/cancelled/{cancelledAppointment}', [AppointmentController::class, 'showCancelled'])->name('appointments.show_cancelled');
+
+    // ==== Thống kê thợ ====
+    Route::get('/barber-statistics', [App\Http\Controllers\BarberStatisticsController::class, 'index'])->name('barber_statistics.index');
+    Route::get('/barber-statistics/{barber}', [App\Http\Controllers\BarberStatisticsController::class, 'show'])->name('barber_statistics.show');
+    Route::get('/barber-statistics/export', [App\Http\Controllers\BarberStatisticsController::class, 'export'])->name('barber_statistics.export');
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);

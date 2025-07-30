@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('branch_id')->nullable()->index('branch_id');
             $table->string('name', 100)->nullable();
             $table->text('profile')->nullable();
-            $table->string('skill_level', 50)->nullable();
+             $table->enum('skill_level', ['assistant', 'junior', 'senior', 'master', 'expert'])->nullable();
             $table->string('avatar')->nullable();
             $table->float('rating_avg')->nullable();
             $table->enum('status', ['idle', 'busy', 'retired'])->default('idle');

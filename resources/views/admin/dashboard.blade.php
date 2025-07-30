@@ -200,6 +200,70 @@
                     </div>
                 </div>
 
+                <!-- Thống kê ngày nghỉ của thợ -->
+                <div class="col-12">
+                    <div class="card card-round h-100">
+                        <div class="card-header d-flex flex-column">
+                            <h5 class="card-title mb-1 fw-bold">Ngày nghỉ của thợ (Top 5)</h5>
+                            <div class="d-flex align-items-end gap-2 flex-wrap mt-2">
+                                <div>
+                                    <label for="leave_month" class="form-label small mb-1 text-muted">Chọn tháng:</label>
+                                    <select id="leave_month" class="form-select form-select-sm">
+                                        <option value="">Tháng hiện tại</option>
+                                        @foreach ($availableMonths as $monthNum)
+                                            <option value="{{ $monthNum }}"
+                                                {{ isset($selectedLeaveMonth) && $selectedLeaveMonth == $monthNum ? 'selected' : '' }}>
+                                                Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="leave_branch" class="form-label small mb-1 text-muted">Chi nhánh:</label>
+                                    <select id="leave_branch" class="form-select form-select-sm">
+                                        <option value="">Tất cả chi nhánh</option>
+                                        @foreach ($branches as $branch)
+                                            <option value="{{ $branch->id }}"
+                                                {{ isset($selectedBranch) && $selectedBranch == $branch->id ? 'selected' : '' }}>
+                                                {{ $branch->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <button type="button" id="resetLeaveFilter" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fa fa-refresh me-1"></i>Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="barberLeaveTable" class="table table-hover table-sm align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Nhân viên</th>
+                                            <th class="text-center">Tổng ngày nghỉ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($barberLeaves as $barber)
+                                            <tr>
+                                                <td>{{ $barber->name }}</td>
+                                                <td class="text-center">{{ $barber->total_off }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="2" class="text-center text-muted">Không có dữ liệu ngày nghỉ</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Lịch hẹn sắp tới -->
                 <div class="col-12">
                     <div class="card card-round h-100">
@@ -416,7 +480,6 @@
                                     </tr>
                                 @endforeach
                             </tbody>
-
                         </table>
                     </div>
                 </div>
@@ -639,6 +702,44 @@
                 });
         }
 
+        // Xử lý lọc ngày nghỉ
+        function handleLeaveFilter() {
+            const month = document.getElementById('leave_month').value;
+            const branch = document.getElementById('leave_branch').value;
+
+            // Gửi AJAX request để lấy dữ liệu ngày nghỉ mới
+            fetch('{{ route('dashboard') }}?' + new URLSearchParams({
+                    leave_month: month,
+                    leave_branch: branch,
+                    ajax: '1'
+                }))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Cập nhật bảng ngày nghỉ
+                        const tbody = document.querySelector('#barberLeaveTable tbody');
+                        tbody.innerHTML = '';
+                        
+                        if (data.barberLeaves.length > 0) {
+                            data.barberLeaves.forEach(barber => {
+                                const row = `
+                                    <tr>
+                                        <td>${barber.name}</td>
+                                        <td class="text-center">${barber.total_off}</td>
+                                    </tr>
+                                `;
+                                tbody.innerHTML += row;
+                            });
+                        } else {
+                            tbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">Không có dữ liệu ngày nghỉ</td></tr>';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
         // Event listeners
         document.getElementById('week_start').addEventListener('change', handleWeekFilter);
         document.getElementById('week_end').addEventListener('change', handleWeekFilter);
@@ -657,5 +758,16 @@
             initMonthChart(originalMonthData.labels, originalMonthData.serviceRevenue, originalMonthData
                 .productRevenue);
         });
+
+        // Reset bộ lọc ngày nghỉ
+        document.getElementById('resetLeaveFilter').addEventListener('click', function() {
+            document.getElementById('leave_month').value = '';
+            document.getElementById('leave_branch').value = '';
+            handleLeaveFilter();
+        });
+
+        // Event listeners cho bộ lọc ngày nghỉ
+        document.getElementById('leave_month').addEventListener('change', handleLeaveFilter);
+        document.getElementById('leave_branch').addEventListener('change', handleLeaveFilter);
     </script>
 @endsection
