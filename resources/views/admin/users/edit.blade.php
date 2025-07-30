@@ -34,7 +34,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="#">Sửa người dùng</a>
+                <a href="{{ url('admin/users/' . $user->id . '/edit') }}">Sửa người dùng</a>
             </li>
         </ul>
     </div>

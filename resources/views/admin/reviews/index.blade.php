@@ -33,7 +33,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="#">Quản lý đặt lịch</a>
+                <a href="{{ url('admin/reviews') }}">Quản lý đặt lịch</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>

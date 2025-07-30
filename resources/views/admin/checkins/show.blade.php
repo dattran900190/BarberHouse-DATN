@@ -13,7 +13,7 @@
             </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item">
-                <a href="#">Quản lý đặt lịch</a>
+                <a href="{{ url('admin/checkins') }}">Quản lý đặt lịch</a>
             </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item">
@@ -21,7 +21,7 @@
             </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item">
-                <a href="#">Chi tiết Check-in</a>
+                <a href="{{ url('admin/checkins/' . $checkin->id) }}">Chi tiết Check-in</a>
             </li>
         </ul>
     </div>

@@ -26,7 +26,7 @@
             <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Danh sách sản phẩm</a>
+                <a href="{{ url('admin/products') }}">Danh sách sản phẩm</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>

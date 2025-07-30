@@ -6,8 +6,8 @@
     $currentRole = Auth::user()->role;
 @endphp
 @section('content')
-    <div class="page-header mb-4">
-        <h3 class="fw-bold mb-0">Lịch làm việc theo chi nhánh</h3>
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Lịch làm việc theo chi nhánh</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -18,13 +18,13 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Quản lý Chi nhánh</a>
+                <a href="{{ url('admin/barber_schedules') }}">Quản lý lịch làm việc</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/volumes') }}">Chi nhánh</a>
+                <a href="{{ url('admin/barber_schedules') }}">Lịch làm việc</a>
             </li>
         </ul>
     </div>

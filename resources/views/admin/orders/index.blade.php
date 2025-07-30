@@ -52,6 +52,12 @@
             <li class="nav-item">
                 <a href="{{ url('admin/orders') }}">Danh sách đơn hàng</a>
             </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/orders') }}">Đơn hàng</a>
+            </li>
         </ul>
     </div>
 

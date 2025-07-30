@@ -15,12 +15,12 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Quản lý chung</a>
+                <a href="{{ url('admin/banners') }}">Quản lý chung</a>
             </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
-            <li class="nav-item"><a href="{{ route('banners.index') }}">Banner</a></li>
+            <li class="nav-item"><a href="{{ url('admin/banners') }}">Banner</a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
-            <li class="nav-item"><a href="#">Chỉnh sửa Banner</a></li>
+            <li class="nav-item"><a href="{{ url('admin/banners/' . $banner->id . '/edit') }}">Chỉnh sửa Banner</a></li>
         </ul>
     </div>
 
