@@ -11,7 +11,7 @@ class BarberFactory extends Factory
         return [
             'name' => $this->faker->name,
             'profile' => $this->faker->paragraph,
-            'skill_level' => $this->faker->randomElement(['Beginner', 'Intermediate', 'Expert']),
+            'skill_level' => $this->faker->randomElement(['assistant', 'junior', 'senior', 'master', 'expert']),
             'avatar' => $this->faker->imageUrl(200, 200, 'people'),
             'rating_avg' => $this->faker->randomFloat(1, 1, 5),
             'status' => $this->faker->randomElement(['idle', 'busy', 'retired'])

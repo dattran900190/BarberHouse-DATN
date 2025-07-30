@@ -3,6 +3,23 @@
 @section('title', 'Chi tiết Thợ Cắt Tóc')
 
 @section('content')
+    @php
+        $skillLevels = [
+            'assistant' => 'Thử việc',
+            'junior'    => 'Sơ cấp',
+            'senior'    => 'Chuyên ghiệp',
+            'master'    => 'Bậc thầy',
+            'expert'    => 'Chuyên gia',
+        ];
+        $skillLevelColors = [
+            'assistant' => 'secondary',
+            'junior' => 'info',
+            'senior' => 'primary',
+            'master' => 'success',
+            'expert' => 'warning',
+        ];
+    @endphp
+
     <div class="page-header">
         <h3 class="fw-bold mb-3">Thợ Cắt Tóc</h3>
         <ul class="breadcrumbs mb-3">
@@ -27,7 +44,7 @@
 
         <div class="card-body">
             <div class="row g-3 d-flex align-items-stretch">
-                <!-- Cột ảnh đại diện -->
+                <!-- Avatar -->
                 <div class="col-md-4 d-flex">
                     <div class="border rounded shadow-sm bg-white p-3 w-100 d-flex flex-column justify-content-between">
                         @if ($barber->avatar)
@@ -40,7 +57,7 @@
                     </div>
                 </div>
 
-                <!-- Cột thông tin -->
+                <!-- Thông tin -->
                 <div class="col-md-8 d-flex">
                     <div class="bg-white rounded shadow-sm p-3 w-100 d-flex flex-column justify-content-between">
                         <div>
@@ -53,7 +70,11 @@
 
                             <div class="mb-3">
                                 <label class="fw-semibold">Trình độ:</label>
-                                <div class="text-muted">{{ $barber->skill_level }}</div>
+                                <div>
+                                    <span class="badge bg-{{ $skillLevelColors[$barber->skill_level] ?? 'secondary' }}">
+                                        {{ $skillLevels[$barber->skill_level] ?? 'Không xác định' }}
+                                    </span>
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -88,7 +109,7 @@
                                     @elseif ($barber->status === 'busy')
                                         <span class="badge bg-warning text-dark">Không nhận lịch</span>
                                     @elseif ($barber->status === 'retired')
-                                        <span class="badge bg-secondary">Đã Nghỉ việc</span>
+                                        <span class="badge bg-secondary">Đã nghỉ việc</span>
                                     @else
                                         <span class="badge bg-light text-dark">Không rõ trạng thái</span>
                                     @endif
@@ -96,7 +117,7 @@
                             </div>
                         </div>
 
-                        <!-- Nút hành động -->
+                        <!-- Nút -->
                         <div class="mt-3">
                             @if ($barber->status !== 'retired')
                                 <a href="{{ route('barbers.edit', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
@@ -114,7 +135,6 @@
                 </div>
             </div>
         </div>
-
-
     </div>
+
 @endsection

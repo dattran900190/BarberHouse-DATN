@@ -31,7 +31,7 @@ class PointController extends Controller
             ->whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())
             ->where('required_points', '>', 0)
-            ->paginate(6);
+            ->paginate(8);
 
         return view('client.redeem', compact('promotions'));
     }

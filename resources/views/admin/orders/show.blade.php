@@ -12,7 +12,7 @@
                 </a>
             </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
-            <li class="nav-item"><a href="orders">Danh sách đơn hàng</a></li>
+            <li class="nav-item"><a href="{{ route('admin.orders.index') }}">Danh sách đơn hàng</a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item"><a href="#">Chi tiết đơn hàng</a></li>
         </ul>
@@ -25,7 +25,6 @@
             'momo' => 'Thanh toán qua Momo',
             'card' => 'Thanh toán qua thẻ tín dụng',
         ];
-
         $statusMap = [
             'pending' => 'Chờ xử lý',
             'processing' => 'Đang xử lý',
@@ -45,7 +44,28 @@
         ];
         $statusOrder = ['pending', 'processing', 'shipping', 'completed'];
         $currentIndex = array_search($order->status, $statusOrder);
+        $statusColorMap = [
+            'pending' => 'warning',
+            'processing' => 'primary',
+            'shipping' => 'info',
+            'completed' => 'success',
+            'cancelled' => 'danger',
+        ];
     @endphp
+
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>×</span></button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>×</span></button>
+        </div>
+    @endif
 
     <!-- Card 1: Thông tin đơn hàng -->
     <div class="card shadow-sm mb-4">
@@ -71,8 +91,8 @@
                     <p><strong>Ghi chú:</strong> {{ $order->note ?: '-' }}</p>
                     <p><strong>Tổng tiền:</strong> {{ number_format($order->total_money, 0, ',', '.') }} VNĐ</p>
                     <p><strong>Trạng thái:</strong>
-                        <span
-                            class="badge bg-{{ $order->status == 'pending' ? 'warning' : ($order->status == 'processing' ? 'primary' : ($order->status == 'shipping' ? 'info' : ($order->status == 'completed' ? 'success' : 'danger'))) }}">
+                        <span id="order-status"
+                            class="badge bg-{{ $statusColorMap[$order->status] ?? 'secondary' }}">
                             {{ $statusMap[$order->status] ?? ucfirst($order->status) }}
                         </span>
                     </p>
@@ -82,7 +102,7 @@
     </div>
 
     <!-- Card 2: Sản phẩm -->
-   <div class="card shadow-sm mb-4">
+    <div class="card shadow-sm mb-4">
         <div class="card-header text-white d-flex align-items-center">
             <h4 class="card-title">Sản phẩm trong đơn hàng</h4>
         </div>
@@ -121,7 +141,6 @@
                     @endforeach
                 </tbody>
             </table>
-
         </div>
     </div>
 
@@ -131,7 +150,7 @@
             <h4 class="card-title">Cập nhật trạng thái</h4>
         </div>
         <div class="card-body">
-            <form action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="w-100">
+            <form id="update-order-status-form" action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="w-100">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="page" value="{{ request('page', 1) }}">
@@ -143,10 +162,16 @@
                         @foreach ($statusMap as $key => $label)
                             @php
                                 $statusIndex = array_search($key, $statusOrder);
-                                $disabled =
-                                    $statusIndex !== false && $currentIndex !== false && $statusIndex < $currentIndex;
-                                if ($key === 'cancelled' && $order->status !== 'pending') {
+                                $disabled = false;
+                                if (in_array($order->status, ['completed', 'cancelled'])) {
                                     $disabled = true;
+                                } else {
+                                    if ($statusIndex !== false && $currentIndex !== false) {
+                                        $disabled = $statusIndex > $currentIndex + 1 || $statusIndex < $currentIndex;
+                                    }
+                                    if ($key === 'cancelled' && $order->status !== 'pending') {
+                                        $disabled = true;
+                                    }
                                 }
                             @endphp
                             <option value="{{ $key }}" {{ $order->status == $key ? 'selected' : '' }}
@@ -159,7 +184,7 @@
 
                 @if (!in_array($order->status, ['completed', 'cancelled']))
                     <div class="mt-3 d-flex align-items-center">
-                        <button type="submit" class="btn btn-sm btn-outline-primary me-2">
+                        <button type="submit" class="btn btn-sm btn-outline-primary me-2 update-status-btn">
                             <i class="fas fa-save me-1"></i> Cập nhật
                         </button>
                         <a href="{{ route('admin.orders.index', ['page' => request('page', 1)]) }}"
@@ -175,7 +200,6 @@
                         </a>
                     </div>
                 @endif
-
             </form>
         </div>
     </div>
