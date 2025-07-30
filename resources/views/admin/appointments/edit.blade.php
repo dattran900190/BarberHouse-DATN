@@ -48,22 +48,22 @@
         $paymentLocked = in_array($currentPaymentStatus, ['paid', 'refunded']);
 
         // Quy tắc chuyển đổi trạng thái lịch hẹn
-    $allowedStatusTransitions = [
-        'pending' => ['confirmed', 'cancelled'],
-        'confirmed' => ['checked-in', 'cancelled'],
-        'checked-in' => ['progress'],
-        'progress' => ['completed'],
-        'completed' => [],
-        'cancelled' => [],
-    ];
+        $allowedStatusTransitions = [
+            'pending' => ['confirmed', 'cancelled'],
+            'confirmed' => ['checked-in', 'cancelled'],
+            'checked-in' => ['progress'],
+            'progress' => ['completed'],
+            'completed' => [],
+            'cancelled' => [],
+        ];
 
-    // Quy tắc chuyển đổi trạng thái thanh toán
-    $allowedPaymentTransitions = [
-        'unpaid' => ['paid', 'failed'],
-        'paid' => ['refunded'],
-        'failed' => ['paid'],
-        'refunded' => [],
-    ];
+        // Quy tắc chuyển đổi trạng thái thanh toán
+        $allowedPaymentTransitions = [
+            'unpaid' => ['paid', 'failed'],
+            'paid' => ['refunded'],
+            'failed' => ['paid'],
+            'refunded' => [],
+        ];
 
     @endphp
 
@@ -149,56 +149,55 @@
                     <input type="hidden" name="additional_services" id="additionalServicesInput">
                 </div>
 
-               <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="status" class="form-label">Trạng thái lịch hẹn</label>
-                    <select class="form-control" id="status" name="status"
-                        @if (in_array($currentStatus, ['completed', 'cancelled'])) disabled @endif>
-                        @foreach ($statusOptions as $statusValue => $label)
-                            <option value="{{ $statusValue }}"
-                                {{ old('status', $currentStatus) === $statusValue ? 'selected' : '' }}
-                                @if (!in_array($statusValue, $allowedStatusTransitions[$currentStatus] ?? []) && $statusValue !== $currentStatus)
-                                    disabled
-                                @endif>
-                                {{ $label }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('status')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="status" class="form-label">Trạng thái lịch hẹn</label>
+                        <select class="form-control" id="status" name="status"
+                            @if (in_array($currentStatus, ['completed', 'cancelled'])) disabled @endif>
+                            @foreach ($statusOptions as $statusValue => $label)
+                                <option value="{{ $statusValue }}"
+                                    {{ old('status', $currentStatus) === $statusValue ? 'selected' : '' }}
+                                    @if (!in_array($statusValue, $allowedStatusTransitions[$currentStatus] ?? []) && $statusValue !== $currentStatus) disabled @endif>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('status')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="payment_status" class="form-label">Trạng thái thanh toán</label>
+                        <select class="form-control" id="payment_status" name="payment_status"
+                            {{ $paymentLocked ? 'disabled' : '' }}>
+                            @foreach ($paymentOptions as $payValue => $label)
+                                <option value="{{ $payValue }}"
+                                    {{ old('payment_status', $currentPaymentStatus) === $payValue ? 'selected' : '' }}
+                                    @if (
+                                        !in_array($payValue, $allowedPaymentTransitions[$currentPaymentStatus] ?? []) &&
+                                            $payValue !== $currentPaymentStatus) disabled @endif>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @if ($paymentLocked)
+                            <input type="hidden" name="payment_status" value="{{ $currentPaymentStatus }}">
+                            <small class="text-muted">
+                                Thanh toán đã {{ $currentPaymentStatus === 'refunded' ? 'hoàn trả' : 'thành công' }}, không
+                                thể thay đổi.
+                            </small>
+                        @endif
+                        @error('payment_status')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label for="payment_status" class="form-label">Trạng thái thanh toán</label>
-                    <select class="form-control" id="payment_status" name="payment_status"
-                        {{ $paymentLocked ? 'disabled' : '' }}>
-                        @foreach ($paymentOptions as $payValue => $label)
-                            <option value="{{ $payValue }}"
-                                {{ old('payment_status', $currentPaymentStatus) === $payValue ? 'selected' : '' }}
-                                @if (!in_array($payValue, $allowedPaymentTransitions[$currentPaymentStatus] ?? []) && $payValue !== $currentPaymentStatus)
-                                    disabled
-                                @endif>
-                                {{ $label }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @if ($paymentLocked)
-                        <input type="hidden" name="payment_status" value="{{ $currentPaymentStatus }}">
-                        <small class="text-muted">
-                            Thanh toán đã {{ $currentPaymentStatus === 'refunded' ? 'hoàn trả' : 'thành công' }}, không thể thay đổi.
-                        </small>
-                    @endif
-                    @error('payment_status')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-
-                <button type="submit" class="btn btn-sm btn-outline-primary update-appointment-btn"
-                    data-id="{{ $appointment->id }}">
+                <button type="submit" class="btn btn-sm btn-outline-primary">
                     <i class="fa fa-edit me-1"></i> Cập nhật
                 </button>
+
                 <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}"
                     class="btn btn-sm btn-outline-secondary">
                     <i class="fa fa-arrow-left me-1"></i> Quay lại
@@ -333,103 +332,6 @@
 
             // Khởi tạo giá trị ban đầu
             calculateTotalAmount();
-        });
-    </script>
-    <script>
-        // Xử lý nút "Cập nhật"
-        document.querySelectorAll('.update-appointment-btn').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault(); // Ngăn hành vi mặc định của form
-                const appointmentId = this.getAttribute('data-id');
-                const form = this.closest('form');
-
-                // Cửa sổ xác nhận
-                Swal.fire({
-                    title: 'Xác nhận cập nhật',
-                    text: 'Bạn có chắc chắn muốn cập nhật lịch hẹn này?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Cập nhật',
-                    cancelButtonText: 'Hủy',
-                    customClass: {
-                        popup: 'custom-swal-popup' // CSS
-                    },
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Cửa sổ loading
-                        Swal.fire({
-                            title: 'Đang xử lý...',
-                            text: 'Vui lòng chờ trong giây lát.',
-                            allowOutsideClick: false,
-                            customClass: {
-                                popup: 'custom-swal-popup' // CSS
-                            },
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-
-                        // Thu thập dữ liệu từ form
-                        const formData = new FormData(form);
-
-                        // Gửi yêu cầu AJAX
-                        fetch(form.action, {
-                                method: 'POST',
-                                body: formData,
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                }
-                            })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`HTTP error! Status: ${response.status}`);
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                Swal.close(); // Đóng cửa sổ loading
-
-                                if (data.success) {
-                                    // Cửa sổ thành công
-                                    Swal.fire({
-                                        title: 'Thành công!',
-                                        text: data.message,
-                                        icon: 'success',
-                                        customClass: {
-                                            popup: 'custom-swal-popup' // CSS
-                                        },
-                                    }).then(() => {
-                                        window.location.href =
-                                            '{{ route('appointments.index') }}?page=' +
-                                            formData.get('page');
-                                    });
-                                } else {
-                                    // Cửa sổ lỗi
-                                    Swal.fire({
-                                        title: 'Lỗi!',
-                                        text: data.message,
-                                        icon: 'error',
-                                        customClass: {
-                                            popup: 'custom-swal-popup' // CSS
-                                        }
-                                    });
-                                }
-                            })
-                            .catch(error => {
-                                Swal.close(); // Đóng cửa sổ loading
-                                console.error('Lỗi AJAX:', error);
-                                Swal.fire({
-                                    title: 'Lỗi!',
-                                    text: 'Đã có lỗi xảy ra: ' + error.message,
-                                    icon: 'error',
-                                    customClass: {
-                                        popup: 'custom-swal-popup' // CSS
-                                    }
-                                });
-                            });
-                    }
-                });
-            });
         });
     </script>
 @endsection

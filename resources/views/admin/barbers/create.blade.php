@@ -3,6 +3,16 @@
 @section('title', 'Thêm Thợ Cắt Tóc')
 
 @section('content')
+    @php
+        $skillLevels = [
+            'assistant' => 'Thử việc',
+            'junior'    => 'Sơ cấp',
+            'senior'    => 'Chuyên ghiệp',
+            'master'    => 'Bậc thầy',
+            'expert'    => 'Chuyên gia',
+        ];
+    @endphp
+
     <div class="page-header">
         <h3 class="fw-bold mb-3">Thợ cắt tóc</h3>
         <ul class="breadcrumbs mb-3">
@@ -11,24 +21,12 @@
                     <i class="icon-home"></i>
                 </a>
             </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Quản lý chi nhánh</a>
-            </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('barbers.index') }}">Thợ cắt tóc</a>
-            </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="#">Thêm thợ</a>
-            </li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="{{ url('admin/dashboard') }}">Quản lý chi nhánh</a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="{{ route('barbers.index') }}">Thợ cắt tóc</a></li>
+            <li class="separator"><i class="icon-arrow-right"></i></li>
+            <li class="nav-item"><a href="#">Thêm thợ</a></li>
         </ul>
     </div>
 
@@ -53,8 +51,14 @@
 
                     <div class="col-md-6 mb-3">
                         <label for="skill_level" class="form-label">Trình độ</label>
-                        <input type="text" id="skill_level" name="skill_level" class="form-control"
-                            placeholder="Nhập trình độ" value="{{ old('skill_level') }}">
+                        <select id="skill_level" name="skill_level" class="form-control">
+                            <option value="">-- Chọn trình độ --</option>
+                            @foreach ($skillLevels as $key => $label)
+                                <option value="{{ $key }}" {{ old('skill_level') == $key ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
                         @error('skill_level')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
