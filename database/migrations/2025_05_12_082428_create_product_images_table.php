@@ -15,6 +15,8 @@ return new class extends Migration
             $table->bigInteger('id', true);
             $table->bigInteger('product_id')->nullable()->index('product_id');
             $table->string('image_url')->nullable();
+            $table->timestamp('created_at')->nullable()->useCurrent(); // Ngày tạo
+            $table->timestamp('updated_at')->nullable()->useCurrent()->useCurrentOnUpdate();
         });
     }
 

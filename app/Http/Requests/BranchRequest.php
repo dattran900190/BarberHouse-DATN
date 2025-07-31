@@ -22,8 +22,8 @@ class BranchRequest extends FormRequest
             'address' => 'required|string',
             'phone' => 'required|string|max:20',
             'google_map_url' => ['required', 'url', 'regex:/^https:\/\/www\.google\.com\/maps\/embed\?pb=.*/'],
-            'image' => 'nullable|max:2048',
-            'content' => 'nullable|string', // 
+            'image' => 'required|nullable|max:2048',
+            'content' => 'required|nullable|string',
         ];
     }
 
@@ -37,7 +37,9 @@ class BranchRequest extends FormRequest
             'address.string' => 'Địa chỉ phải là kiểu chuỗi ký tự',
             'phone.required' => 'Số điện thoại không được để trống',
             'phone.string' => 'Số điện thoại phải là kiểu chuỗi ký tự',
+            'content.required' => 'Nội dung không được để trống',
             'phone.max' => 'Số điện thoại không được vượt quá 20 ký tự',
+            'image.required' => 'Ảnh đại diện không được để trống',
             'image.max' => 'Ảnh đại diện không được vượt quá 2MB',
             'image.image' => 'Ảnh đại diện phải là một tệp hình ảnh',
             'image.mimes' => 'Ảnh đại diện phải có định dạng: jpeg, png, jpg, gif, svg',

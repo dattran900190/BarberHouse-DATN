@@ -204,7 +204,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('services', ServiceController::class);
     Route::patch('/services/{id}/soft-delete', [ServiceController::class, 'softDelete'])->name('services.softDelete');
     Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
-
     Route::post('/services/{id}/restore', [ServiceController::class, 'restore'])->name('services.restore');
 
     // ==== settings ====

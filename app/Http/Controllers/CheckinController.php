@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Mail\CheckinCodeMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Events\AppointmentStatusUpdated;
 
 
 class CheckinController extends Controller
@@ -46,6 +47,9 @@ class CheckinController extends Controller
                 'status' => 'progress', // hoặc 'đang_cắt_tóc' tùy vào hệ thống bạn dùng
             ]);
         }
+
+         // thông báo chuyển trạng thái đặt lịch
+         event(new AppointmentStatusUpdated($appointment));
 
         return redirect()->route('appointments.index')->with('success', 'Check-in thành công!');
     }

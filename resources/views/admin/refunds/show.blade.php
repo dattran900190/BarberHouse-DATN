@@ -3,6 +3,16 @@
 @section('title', 'Chi tiết Yêu cầu hoàn tiền')
 
 @section('content')
+    @php
+        $isSoftDeleted = $refund->trashed();
+        $statusMap = [
+            'pending' => ['label' => 'Chờ duyệt', 'class' => 'warning'],
+            'processing' => ['label' => 'Đang xử lý', 'class' => 'primary'],
+            'refunded' => ['label' => 'Đã hoàn tiền', 'class' => 'success'],
+            'rejected' => ['label' => 'Từ chối', 'class' => 'danger'],
+        ];
+    @endphp
+
     <div class="page-header">
         <h3 class="fw-bold mb-3">Yêu cầu hoàn tiền</h3>
         <ul class="breadcrumbs mb-3">
@@ -12,9 +22,9 @@
                 </a>
             </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
-            <li class="nav-item"><a href="#">Đơn hàng</a></li>
-            <li class="separator"><i class="icon-arrow-right"></i></li>
-            <li class="nav-item"><a href="{{ route('refunds.index') }}">Hoàn tiền</a></li>
+            <li class="nav-item">
+                <a href="{{ url('admin/refunds') }}">Danh sách hoàn tiền</a>
+            </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item"><a href="#">Chi tiết</a></li>
         </ul>
@@ -41,7 +51,6 @@
 
         <div class="card-body">
             <div class="row">
-                <!-- Cột thông tin -->
                 <div class="col-md-12">
                     <div class="mb-3">
                         <label class="form-label">Người dùng</label>
@@ -50,16 +59,18 @@
 
                     <div class="mb-3">
                         <label class="form-label">Mã đơn hàng</label>
-                        <div class="form-control-plaintext">{{ $refund->order->order_code ?? 'Không có đơn' }}</div>
+                        <div class="form-control-plaintext">
+                            {{ $refund->order->order_code ?? ($refund->appointment->appointment_code ?? 'Không có') }}</div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Số tiền hoàn</label>
-                        <div class="form-control-plaintext">{{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ</div>
+                        <div class="form-control-plaintext">{{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Lý do</label>
+                        <label class="form-label">Lý do yêu cầu</label>
                         <div class="form-control-plaintext">{{ $refund->reason }}</div>
                     </div>
 
@@ -74,12 +85,6 @@
                     <div class="mb-3">
                         <label class="form-label">Trạng thái</label>
                         @php
-                            $statusMap = [
-                                'pending' => ['label' => 'Chờ duyệt', 'class' => 'warning'],
-                                'processing' => ['label' => 'Đang xử lý', 'class' => 'primary'],
-                                'refunded' => ['label' => 'Đã hoàn tiền', 'class' => 'success'],
-                                'rejected' => ['label' => 'Từ chối', 'class' => 'danger'],
-                            ];
                             $info = $statusMap[$refund->refund_status] ?? [
                                 'label' => ucfirst($refund->refund_status),
                                 'class' => 'secondary',
@@ -87,8 +92,18 @@
                         @endphp
                         <div class="form-control-plaintext">
                             <span class="badge bg-{{ $info['class'] }}">{{ $info['label'] }}</span>
+                            @if ($isSoftDeleted)
+                                <span class="badge bg-danger ms-2">Đã xóa mềm</span>
+                            @endif
                         </div>
                     </div>
+
+                    @if ($refund->refund_status === 'rejected' && $refund->reject_reason)
+                        <div class="mb-3">
+                            <label class="form-label">Lý do từ chối</label>
+                            <div class="form-control-plaintext">{{ $refund->reject_reason }}</div>
+                        </div>
+                    @endif
 
                     @if ($refund->refund_status === 'refunded' && $refund->refunded_at)
                         <div class="mb-3">
@@ -131,7 +146,7 @@
                         $currentOrder = $statusOrder[$currentStatus];
                     @endphp
 
-                    @if (!$refund->trashed() && !in_array($currentStatus, ['refunded', 'rejected']))
+                    @if (!$isSoftDeleted && !in_array($currentStatus, ['refunded', 'rejected']))
                         <form action="{{ route('refunds.update', $refund->id) }}" method="POST"
                             onsubmit="return confirm('Bạn chắc chắn muốn cập nhật trạng thái?');">
                             @csrf
@@ -139,42 +154,209 @@
 
                             <div class="form-group mt-3">
                                 <label for="refund_status" class="form-label">Cập nhật trạng thái hoàn tiền</label>
-                                <select name="refund_status" id="refund_status" class="form-control" required>
+                                <select name="refund_status" id="refund_status" class="form-control" required
+                                    onchange="toggleRejectReason(this)">
                                     @foreach ($statusOrder as $value => $order)
-                                        <option value="{{ $value }}"
-                                            {{ $currentStatus === $value ? 'selected' : '' }}
-                                            {{ $order < $currentOrder ? 'disabled' : '' }}>
+                                        @php
+                                            $isCurrent = $currentStatus === $value;
+                                            $isAllowed =
+                                                ($currentStatus === 'pending' && $value === 'processing') ||
+                                                ($currentStatus === 'processing' &&
+                                                    in_array($value, ['refunded', 'rejected'])) ||
+                                                $isCurrent;
+                                        @endphp
+                                        <option value="{{ $value }}" {{ $isCurrent ? 'selected' : '' }}
+                                            {{ !$isAllowed ? 'disabled' : '' }}>
                                             {{ $statusMap[$value]['label'] ?? ucfirst($value) }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
 
-                            <div class="mt-3 d-flex align-items-center">
-                                <button type="submit" class="btn btn-sm btn-outline-primary me-2">
+                            <div class="form-group mt-3" id="reject_reason_container" style="display: none;">
+                                <label for="reject_reason" class="form-label">Lý do từ chối</label>
+                                <textarea name="reject_reason" id="reject_reason" class="form-control" placeholder="Nhập lý do từ chối" rows="4"></textarea>
+                                @error('reject_reason')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mt-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-save me-1"></i> Cập nhật
                                 </button>
-                                <a href="{{ route('refunds.index') }}" class="btn btn-sm btn-outline-secondary">
+                                <a href="{{ route('refunds.index', ['page' => request('page', 1)]) }}" class="btn btn-sm btn-outline-secondary">
                                     <i class="fa fa-arrow-left me-1"></i> Quay lại
                                 </a>
                             </div>
                         </form>
-                    @elseif ($refund->trashed())
+
+                        <script>
+                            function toggleRejectReason(select) {
+                                const rejectReasonContainer = document.getElementById('reject_reason_container');
+                                rejectReasonContainer.style.display = select.value === 'rejected' ? 'block' : 'none';
+                            }
+                        </script>
+                    @elseif (!$isSoftDeleted && in_array($currentStatus, ['refunded', 'rejected']))
+                        <div class="alert alert-secondary mt-4">
+                            Yêu cầu đã {{ $currentStatus === 'refunded' ? 'hoàn tiền' : 'bị từ chối' }}.
+                        </div>
+                        
+                        <!-- Nút hành động cho trạng thái đã hoàn thành -->
+                        <div class="mt-3 d-flex gap-2">
+                            @if ($currentStatus === 'rejected' || $currentStatus === 'refunded')
+                                <button class="btn btn-sm btn-outline-danger soft-delete-btn"
+                                    data-id="{{ $refund->id }}"
+                                    data-page="{{ request('page', 1) }}">
+                                    <i class="fa fa-trash me-1"></i> Xóa mềm
+                                </button>
+                            @endif
+                            <a href="{{ route('refunds.index', ['page' => request('page', 1)]) }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa fa-arrow-left me-1"></i> Quay lại
+                            </a>
+                        </div>
+                    @elseif ($isSoftDeleted)
                         <div class="alert alert-warning mt-4">
                             Yêu cầu này đã bị xóa mềm. Không thể cập nhật trạng thái.
                         </div>
-                    @else
-                        <div class="alert alert-secondary mt-4">
-                            Yêu cầu đã {{ $currentStatus === 'refunded' ? 'hoàn tiền' : 'bị từ chối' }}, không thể cập
-                            nhật.
+                        
+                        <!-- Nút khôi phục -->
+                        <div class="mt-3 d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-success restore-btn"
+                                data-id="{{ $refund->id }}"
+                                data-page="{{ request('page', 1) }}">
+                                <i class="fa fa-undo me-1"></i> Khôi phục
+                            </button>
+                            <a href="{{ route('refunds.index', ['page' => request('page', 1)]) }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa fa-arrow-left me-1"></i> Quay lại
+                            </a>
                         </div>
-                        <a href="{{ route('refunds.index') }}" class="btn btn-outline-secondary mt-2">
-                            <i class="fa fa-arrow-left me-1"></i> Quay lại
-                        </a>
                     @endif
-
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            withInput = false,
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const id = this.getAttribute('data-id');
+                    const page = this.getAttribute('data-page');
+
+                    const swalOptions = {
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    };
+
+                    if (withInput) {
+                        swalOptions.input = 'textarea';
+                        swalOptions.inputPlaceholder = inputPlaceholder;
+                        if (inputValidator) {
+                            swalOptions.inputValidator = inputValidator;
+                        }
+                    }
+
+                    Swal.fire(swalOptions).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            const body = withInput ? JSON.stringify({
+                                input: result.value || ''
+                            }) : undefined;
+
+                            fetch(route.replace(':id', id) + (page ? `?page=${page}` : ''), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Phản hồi không hợp lệ từ máy chủ.');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        }
+
+        // Xử lý nút Xóa mềm
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Xóa mềm yêu cầu hoàn tiền',
+            text: 'Bạn có chắc muốn xóa mềm yêu cầu hoàn tiền này?',
+            route: '{{ route('refunds.softDelete', ':id') }}',
+            method: 'PATCH'
+        });
+
+        // Xử lý nút Khôi phục
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục yêu cầu hoàn tiền',
+            text: 'Bạn có chắc muốn khôi phục yêu cầu hoàn tiền này?',
+            route: '{{ route('refunds.restore', ':id') }}',
+            method: 'POST'
+        });
+    </script>
 @endsection

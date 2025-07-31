@@ -9,7 +9,7 @@
     @if (session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
-    <div class="container py-5">
+    <div class="container py-5 mt-5">
         <h3 class="mb-4">Xác minh mã OTP</h3>
 
         <form method="POST" action="{{ route('password.verifyOtp') }}">
@@ -43,11 +43,16 @@
                 <span>Thời gian còn lại: <span id="countdown">02:00</span></span>
             </div>
 
-            <button type="submit" class="btn btn-success">Đổi mật khẩu</button>
+            <button type="submit" class="btn-outline-buy">Đổi mật khẩu</button>
 
         </form>
 
     </div>
+    <style>
+        #mainNav {
+            background-color: #000;
+        }
+    </style>
 @endsection
 
 @section('scripts')

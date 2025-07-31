@@ -92,7 +92,7 @@
                                             <li>
                                                 <a class="dropdown-item"
                                                     href="{{ route('point_histories.user', ['id' => $user->id, 'page' => request('page', 1)]) }}">
-                                                    <i class="fas fa-eye me-2"></i> Xem chi tiết
+                                                    <i class="fas fa-eye me-2"></i> Xem
                                                 </a>
                                             </li>
                                         </ul>

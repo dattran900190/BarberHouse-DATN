@@ -6,18 +6,6 @@
 
 @section('content')
     <main class="container" style="padding: 10% 0;">
-        {{-- 
-        @if (session('success'))
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">×</span>
-            </button>
-        @endif
-
-        @if (session('error'))
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">×</span>
-            </button>
-        @endif --}}
         @if (session('success'))
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
