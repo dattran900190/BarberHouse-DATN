@@ -79,7 +79,7 @@
                     @endif
                 </p>
                 <div class="mt-3">
-                    <p class="fa fa-info-circle text-muted mb-2"><strong> Nội dung:</strong></p>
+                    <p class="text-muted mb-2"><strong><i class="fa fa-file-alt me-2 text-muted"></i> Nội dung:</strong></p>
                     <div>{!! $post->content !!}</div>
                 </div>
             </div>
@@ -100,7 +100,7 @@
 
                 @if (!$post->trashed())
                     <button class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $post->id }}">
-                        <i class="fa fa-trash-alt me-1"></i> Xoá mềm
+                        <i class="fas fa-trash me-2"></i> Xoá
                     </button>
                 @endif
 
