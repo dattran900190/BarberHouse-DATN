@@ -210,15 +210,11 @@
                             <div class="hstack gap-2 justify-content-end d-print-none mt-4">
                                 @if ($order->status === 'pending')
                                     <button type="button" class="btn-outline-show cancel-order-btn"
-                                        data-order-id="{{ $order->id }}">
+                                        data-order-id="{{ $order->id }}"
+                                        data-cancel-url="{{ route('client.orders.cancel', $order->id) }}">
                                         Hủy đơn hàng
                                     </button>
 
-                                    <form id="cancel-form-{{ $order->id }}"
-                                        action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
-                                        style="display: none;">
-                                        @csrf
-                                    </form>
                                 @endif
                                 <a href="{{ route('client.orderHistory') }}" class="btn-outline-show">Quay lại</a>
                             </div>
