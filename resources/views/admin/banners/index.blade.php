@@ -128,11 +128,13 @@
                                                     <i class="fas fa-eye me-2"></i> Xem
                                                 </a>
                                             </li>
+                                            @if (!$banner->trashed())
                                             <li>
                                                 <a class="dropdown-item" href="{{ route('banners.edit', $banner->id) }}">
                                                     <i class="fas fa-edit me-2"></i> Sửa
                                                 </a>
                                             </li>
+                                            @endif
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>
