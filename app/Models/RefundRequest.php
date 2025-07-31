@@ -20,6 +20,7 @@ class RefundRequest extends Model
         'bank_account_number',
         'bank_name',
         'refund_status',
+        'reject_reason',
         'refunded_at',
     ];
 

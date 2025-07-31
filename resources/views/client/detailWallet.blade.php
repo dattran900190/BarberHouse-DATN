@@ -10,6 +10,11 @@
             <div class="card wallet-page mt-4 shadow-sm">
                 <div class="card-header border-0 d-flex justify-content-between align-items-center">
                     <h3 class="mb-0 fw-bold">Lịch sử yêu cầu hoàn tiền</h3>
+                    <a href="{{ route('client.wallet') }}"
+                        class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm">
+                        <span>Gửi yêu cầu hoàn tiền</span>
+                    </a>
+
                 </div>
                 <div class="card-body">
                     {{-- Bộ lọc tìm kiếm --}}
@@ -71,7 +76,8 @@
                                     @endif
 
                                     <span class="text-muted">Lý do: {{ $refund->reason }}</span><br>
-                                    <span class="text-muted">Số tiền hoàn: {{ number_format($refund->refund_amount) }}
+                                    <span class="text-muted">Số tiền hoàn:
+                                        {{ number_format($refund->refund_amount, 0, ',', '.') }}
                                         VNĐ</span><br>
                                     <span class="text-muted">Ngày yêu cầu:
                                         {{ $refund->created_at->format('d/m/Y') }}</span>
@@ -79,8 +85,8 @@
                                         <br><span class="text-muted">Ngày hoàn tiền:
                                             {{ $refund->refunded_at->format('d/m/Y') }}</span>
                                     @endif
-                                    @if ($refund->refund_status === 'rejected' && $refund->rejection_reason)
-                                        <br><span class="text-muted">Lý do từ chối: {{ $refund->rejection_reason }}</span>
+                                    @if ($refund->refund_status === 'rejected' && $refund->reject_reason)
+                                        <br><span class="text-muted">Lý do từ chối: {{ $refund->reject_reason }}</span>
                                     @endif
                                 </div>
                                 <div class="col-md-2 text-center">
@@ -117,8 +123,8 @@
                                         ({{ $refund->bank_account_name }})
                                     </p>
                                     <p><strong>Lý do yêu cầu:</strong> {{ $refund->reason }}</p>
-                                    @if ($refund->refund_status === 'rejected' && $refund->rejection_reason)
-                                        <p><strong>Lý do từ chối:</strong> {{ $refund->rejection_reason }}</p>
+                                    @if ($refund->refund_status === 'rejected' && $refund->reject_reason)
+                                        <p><strong>Lý do từ chối:</strong> {{ $refund->reject_reason }}</p>
                                     @endif
                                     <p><strong>Số tiền hoàn:</strong>
                                         {{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ
