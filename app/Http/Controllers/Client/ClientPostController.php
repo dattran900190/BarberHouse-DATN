@@ -35,8 +35,14 @@ class ClientPostController extends Controller
             ->take(5)
             ->get();
 
+        $posts = Post::where('status', 'published')
+            ->where('id', '!=', $post->id)
+            ->latest()
+            ->take(5)
+            ->get();
 
-        return view('client.detailPost', compact('post', 'relatedPosts'));
+
+        return view('client.detailPost', compact('post', 'relatedPosts', 'posts'));
     }
 
 

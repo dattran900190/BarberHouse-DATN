@@ -305,6 +305,7 @@
                 `,
                     showCancelButton: true,
                     confirmButtonText: 'Gửi đánh giá',
+                    cancelButtonText: 'Huỷ',
                     focusConfirm: false,
                     preConfirm: () => {
                         const selected = document.querySelectorAll(

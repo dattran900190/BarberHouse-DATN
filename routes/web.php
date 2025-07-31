@@ -204,7 +204,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('services', ServiceController::class);
     Route::patch('/services/{id}/soft-delete', [ServiceController::class, 'softDelete'])->name('services.softDelete');
     Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
-
     Route::post('/services/{id}/restore', [ServiceController::class, 'restore'])->name('services.restore');
 
     // ==== settings ====
@@ -262,7 +261,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('banners', BannerController::class);
     Route::patch('banners/{id}/soft-delete', [BannerController::class, 'softDelete'])->name('banners.softDelete');
     Route::post('banners/{id}/restore', [BannerController::class, 'restore'])->name('banners.restore');
-    // Route::delete('banners/{id}', [BannerController::class, 'destroy'])->name('banners.destroy');
+    Route::delete('banners/{id}', [BannerController::class, 'destroy'])->name('banners.destroy');
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
@@ -271,7 +270,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('admin/branches/{id}/restore', [BranchController::class, 'restore'])
         ->name('branches.restore');
     Route::delete('admin/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])
-        ->name('branches.destroy');
+        ->name('branches.forceDelete');
 
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);
@@ -295,18 +294,12 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::delete('/{id}/soft-delete', [PromotionController::class, 'softDelete'])->name('promotions.softDelete');
     Route::put('/{id}/restore', [PromotionController::class, 'restore'])->name('promotions.restore');
     // ==== Sản phẩm ====
-    Route::get('/products', [ProductController::class, 'index'])->name('admin.products.index');
-    Route::get('/products/create', [ProductController::class, 'create'])->name('admin.products.create');
-    Route::post('/products', [ProductController::class, 'store'])->name('admin.products.store');
-    Route::get('/products/{product}', [ProductController::class, 'show'])->name('admin.products.show');
-    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('admin.products.edit');
-    Route::put('/products/{product}', [ProductController::class, 'update'])->name('admin.products.update');
-    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
+    Route::resource('products', ProductController::class)->names('admin.products');
     Route::post('/products/{id}/restore', [ProductController::class, 'restore'])->name('admin.products.restore');
     Route::delete('/products/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('admin.products.forceDelete');
     Route::get('/products/search', [ProductController::class, 'search'])->name('admin.products.search');
-    Route::post('admin/product-variants/{id}/restore', [App\Http\Controllers\ProductController::class, 'restoreVariant'])->name('admin.product-variants.restore');
-    Route::post('admin/product-variants/{id}/soft-delete', [App\Http\Controllers\ProductController::class, 'softDeleteVariant'])->name('admin.product-variants.softDelete');
+    Route::post('admin/product-variants/{id}/restore', [ProductController::class, 'restoreVariant'])->name('admin.product-variants.restore');
+    Route::post('admin/product-variants/{id}/soft-delete', [ProductController::class, 'softDeleteVariant'])->name('admin.product-variants.softDelete');
 });
 
 // ==== profile ====

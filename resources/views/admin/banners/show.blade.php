@@ -85,13 +85,15 @@
         </div>
         <div class="card-body">
             <div class="d-flex gap-2">
-                <a href="{{ route('banners.edit', $banner->id) }}" class="btn btn-outline-primary btn-sm">
-                    <i class="fa fa-edit me-1"></i> Sửa
-                </a>
+                @if (!$banner->trashed())
+                    <a href="{{ route('banners.edit', $banner->id) }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fa fa-edit me-1"></i> Sửa
+                    </a>
+                @endif
 
                 @if (!$banner->trashed())
                     <button class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $banner->id }}">
-                        <i class="fa fa-trash-alt me-1"></i> Xoá mềm
+                        <i class="fas fa-trash me-2"></i> Xoá
                     </button>
                 @endif
 

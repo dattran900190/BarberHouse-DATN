@@ -231,7 +231,8 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <button type="button" id="resetLeaveFilter" class="btn btn-sm btn-outline-secondary">
+                                    <button type="button" id="resetLeaveFilter"
+                                        class="btn btn-sm btn-outline-secondary">
                                         <i class="fa fa-refresh me-1"></i>Reset
                                     </button>
                                 </div>
@@ -254,7 +255,8 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="2" class="text-center text-muted">Không có dữ liệu ngày nghỉ</td>
+                                                <td colspan="2" class="text-center text-muted">Không có dữ liệu ngày
+                                                    nghỉ</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -265,7 +267,7 @@
                 </div>
 
                 <!-- Lịch hẹn sắp tới -->
-                <div class="col-12">
+                {{-- <div class="col-12">
                     <div class="card card-round h-100">
                         <div class="card-header">
                             <h5 class="card-title mb-0 fw-bold">Lịch hẹn sắp tới</h5>
@@ -288,7 +290,7 @@
                             </ul>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
 
@@ -719,7 +721,7 @@
                         // Cập nhật bảng ngày nghỉ
                         const tbody = document.querySelector('#barberLeaveTable tbody');
                         tbody.innerHTML = '';
-                        
+
                         if (data.barberLeaves.length > 0) {
                             data.barberLeaves.forEach(barber => {
                                 const row = `
@@ -731,7 +733,8 @@
                                 tbody.innerHTML += row;
                             });
                         } else {
-                            tbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">Không có dữ liệu ngày nghỉ</td></tr>';
+                            tbody.innerHTML =
+                                '<tr><td colspan="2" class="text-center text-muted">Không có dữ liệu ngày nghỉ</td></tr>';
                         }
                     }
                 })

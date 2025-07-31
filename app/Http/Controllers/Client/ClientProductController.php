@@ -32,7 +32,7 @@ class ClientProductController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $products = $query->with('variants')->latest()->paginate(8);
+        $products = $query->with('variants')->latest()->paginate(16);
 
         return view('client.product', compact('products', 'globalCategories'));
     }

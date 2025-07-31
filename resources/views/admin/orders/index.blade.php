@@ -269,16 +269,6 @@
                                                                     <i class="fas fa-truck me-2"></i> Chuyển sang giao hàng
                                                                 </button>
                                                             </li>
-                                                            <li>
-                                                                <hr class="dropdown-divider">
-                                                            </li>
-                                                            <li>
-                                                                <button type="button"
-                                                                    class="dropdown-item text-danger destroy-btn"
-                                                                    data-id="{{ $order->id }}">
-                                                                    <i class="fas fa-times-circle me-2"></i> Hủy
-                                                                </button>
-                                                            </li>
                                                         </ul>
                                                     </div>
                                                 </td>
@@ -356,16 +346,6 @@
                                                                     class="dropdown-item text-success complete-btn"
                                                                     data-id="{{ $order->id }}">
                                                                     <i class="fas fa-check-circle me-2"></i> Hoàn thành
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <hr class="dropdown-divider">
-                                                            </li>
-                                                            <li>
-                                                                <button type="button"
-                                                                    class="dropdown-item text-danger destroy-btn"
-                                                                    data-id="{{ $order->id }}">
-                                                                    <i class="fas fa-times-circle me-2"></i> Hủy
                                                                 </button>
                                                             </li>
                                                         </ul>
@@ -576,22 +556,10 @@
     </script>
     <script>
         const paymentMap = {
-            paid: {
-                class: 'bg-success',
-                text: 'Đã thanh toán'
-            },
-            unpaid: {
-                class: 'bg-warning',
-                text: 'Chưa thanh toán'
-            },
-            failed: {
-                class: 'bg-danger',
-                text: 'Thanh toán thất bại'
-            },
-            refunded: {
-                class: 'bg-secondary',
-                text: 'Đã hoàn tiền'
-            }
+            paid: { class: 'bg-success', text: 'Đã thanh toán' },
+            unpaid: { class: 'bg-warning', text: 'Chưa thanh toán' },
+            failed: { class: 'bg-danger', text: 'Thanh toán thất bại' },
+            refunded: { class: 'bg-secondary', text: 'Đã hoàn tiền' }
         };
 
         const paymentMethodMap = {

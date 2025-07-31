@@ -87,7 +87,7 @@
         </div>
         <div class="card-body">
             <a href="{{ route('checkins.index') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="fa fa-arrow-left me-1"></i> Quay lại danh sách
+                <i class="fa fa-arrow-left me-1"></i> Quay lại
             </a>
         </div>
     </div>

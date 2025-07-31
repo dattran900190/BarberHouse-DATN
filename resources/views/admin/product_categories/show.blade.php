@@ -64,7 +64,7 @@
                     <p class="text-muted mb-2">
                         <i class="fa fa-check-circle me-2 text-success"></i><strong>Trạng thái:</strong>
                         @if ($category->deleted_at)
-                            <span class="badge bg-danger">Đã xóa</span>
+                            <span class="badge bg-danger">Đã xoá mềm</span>
                         @else
                             <span class="badge bg-success">Đang hoạt động</span>
                         @endif
@@ -82,13 +82,15 @@
         </div>
         <div class="card-body">
             <div class="d-flex gap-2">
-                <a href="{{ route('product_categories.edit', $category->id) }}" class="btn btn-outline-primary btn-sm">
-                    <i class="fa fa-edit me-1"></i> Sửa
-                </a>
+                @if (!$category->trashed())
+                    <a href="{{ route('product_categories.edit', $category->id) }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fa fa-edit me-1"></i> Sửa
+                    </a>
+                @endif
                 {{-- Nút xoá mềm --}}
                 @if (!$category->trashed())
                     <button class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $category->id }}">
-                        <i class="fa fa-trash-alt me-1"></i> Xoá mềm
+                        <i class="fas fa-trash me-2"></i> Xoá
                     </button>
                 @endif
 

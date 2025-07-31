@@ -7,8 +7,7 @@ use App\Models\Order;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Mail\OrderSuccessMail;
-use App\Mail\OrderCompletedMail;
+use App\Mail\OrderStatusMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Events\OrderStatusUpdated;
@@ -83,7 +82,7 @@ class OrderController extends Controller
             try {
                 $order->load('items.productVariant.product');
                 if ($order->email) {
-                    Mail::to($order->email)->send(new OrderSuccessMail($order));
+                    Mail::to($order->email)->send(new OrderStatusMail($order, 'processing'));
                 }
             } catch (\Exception $e) {
                 Log::error('Lỗi gửi email xác nhận đơn hàng (admin): ' . $e->getMessage());
@@ -109,6 +108,19 @@ class OrderController extends Controller
         $order->status = 'shipping';
         $order->save();
 
+        // Gửi email thông báo đơn hàng đang giao
+        try {
+            $order->load('items.productVariant.product');
+            if ($order->email) {
+                Mail::to($order->email)->send(new OrderStatusMail($order, 'shipping'));
+            }
+        } catch (\Exception $e) {
+            Log::error('Lỗi gửi email đơn hàng đang giao (admin): ' . $e->getMessage());
+        }
+
+        // Dispatch event để gửi thông báo realtime
+        event(new OrderStatusUpdated($order));
+
         return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Đang giao hàng.']);
     }
 
@@ -128,11 +140,14 @@ class OrderController extends Controller
         try {
             $order->load('items.productVariant.product');
             if ($order->email) {
-                Mail::to($order->email)->send(new OrderCompletedMail($order));
+                Mail::to($order->email)->send(new OrderStatusMail($order, 'completed'));
             }
         } catch (\Exception $e) {
             Log::error('Lỗi gửi email hoàn thành đơn hàng (admin): ' . $e->getMessage());
         }
+
+        // Dispatch event để gửi thông báo realtime
+        event(new OrderStatusUpdated($order));
 
         return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Hoàn thành.']);
     }
@@ -212,6 +227,19 @@ class OrderController extends Controller
         $order->status = $newStatus;
         $order->save();
 
+        // Gửi email thông báo thay đổi trạng thái
+        try {
+            $order->load('items.productVariant.product');
+            if ($order->email) {
+                Mail::to($order->email)->send(new OrderStatusMail($order, $newStatus));
+            }
+        } catch (\Exception $e) {
+            Log::error('Lỗi gửi email thay đổi trạng thái đơn hàng (admin): ' . $e->getMessage());
+        }
+
+        // Dispatch event để gửi thông báo realtime
+        event(new OrderStatusUpdated($order));
+
         return redirect()->route('admin.orders.index', ['page' => $page])
             ->with('success', 'Cập nhật trạng thái đơn hàng thành công.');
     }
@@ -246,6 +274,16 @@ class OrderController extends Controller
         // Cập nhật trạng thái đơn hàng thành 'cancelled'
         $order->status = 'cancelled';
         $order->save();
+
+        // Gửi email thông báo hủy đơn hàng
+        try {
+            $order->load('items.productVariant.product');
+            if ($order->email) {
+                Mail::to($order->email)->send(new OrderStatusMail($order, 'cancelled'));
+            }
+        } catch (\Exception $e) {
+            Log::error('Lỗi gửi email hủy đơn hàng (admin): ' . $e->getMessage());
+        }
 
         // Dispatch event để gửi thông báo realtime
         event(new OrderStatusUpdated($order));

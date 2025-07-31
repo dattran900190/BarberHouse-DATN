@@ -41,7 +41,6 @@
 
         <div class="card-body">
             <div class="row">
-                <!-- Cột thông tin -->
                 <div class="col-md-12">
                     <div class="mb-3">
                         <label class="form-label">Người dùng</label>
@@ -50,16 +49,18 @@
 
                     <div class="mb-3">
                         <label class="form-label">Mã đơn hàng</label>
-                        <div class="form-control-plaintext">{{ $refund->order->order_code ?? 'Không có đơn' }}</div>
+                        <div class="form-control-plaintext">
+                            {{ $refund->order->order_code ?? ($refund->appointment->appointment_code ?? 'Không có') }}</div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Số tiền hoàn</label>
-                        <div class="form-control-plaintext">{{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ</div>
+                        <div class="form-control-plaintext">{{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Lý do</label>
+                        <label class="form-label">Lý do yêu cầu</label>
                         <div class="form-control-plaintext">{{ $refund->reason }}</div>
                     </div>
 
@@ -89,6 +90,13 @@
                             <span class="badge bg-{{ $info['class'] }}">{{ $info['label'] }}</span>
                         </div>
                     </div>
+
+                    @if ($refund->refund_status === 'rejected' && $refund->reject_reason)
+                        <div class="mb-3">
+                            <label class="form-label">Lý do từ chối</label>
+                            <div class="form-control-plaintext">{{ $refund->reject_reason }}</div>
+                        </div>
+                    @endif
 
                     @if ($refund->refund_status === 'refunded' && $refund->refunded_at)
                         <div class="mb-3">
@@ -139,15 +147,32 @@
 
                             <div class="form-group mt-3">
                                 <label for="refund_status" class="form-label">Cập nhật trạng thái hoàn tiền</label>
-                                <select name="refund_status" id="refund_status" class="form-control" required>
+                                <select name="refund_status" id="refund_status" class="form-control" required
+                                    onchange="toggleRejectReason(this)">
                                     @foreach ($statusOrder as $value => $order)
-                                        <option value="{{ $value }}"
-                                            {{ $currentStatus === $value ? 'selected' : '' }}
-                                            {{ $order < $currentOrder ? 'disabled' : '' }}>
+                                        @php
+                                            $isCurrent = $currentStatus === $value;
+                                            $isAllowed =
+                                                ($currentStatus === 'pending' && $value === 'processing') ||
+                                                ($currentStatus === 'processing' &&
+                                                    in_array($value, ['refunded', 'rejected'])) ||
+                                                $isCurrent;
+                                        @endphp
+                                        <option value="{{ $value }}" {{ $isCurrent ? 'selected' : '' }}
+                                            {{ !$isAllowed ? 'disabled' : '' }}>
                                             {{ $statusMap[$value]['label'] ?? ucfirst($value) }}
                                         </option>
                                     @endforeach
+
                                 </select>
+                            </div>
+
+                            <div class="form-group mt-3" id="reject_reason_container" style="display: none;">
+                                <label for="reject_reason" class="form-label">Lý do từ chối</label>
+                                <textarea name="reject_reason" id="reject_reason" class="form-control" placeholder="Nhập lý do từ chối" rows="4"></textarea>
+                                @error('reject_reason')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="mt-3 d-flex align-items-center">
@@ -159,20 +184,25 @@
                                 </a>
                             </div>
                         </form>
+
+                        <script>
+                            function toggleRejectReason(select) {
+                                const rejectReasonContainer = document.getElementById('reject_reason_container');
+                                rejectReasonContainer.style.display = select.value === 'rejected' ? 'block' : 'none';
+                            }
+                        </script>
                     @elseif ($refund->trashed())
                         <div class="alert alert-warning mt-4">
                             Yêu cầu này đã bị xóa mềm. Không thể cập nhật trạng thái.
                         </div>
                     @else
                         <div class="alert alert-secondary mt-4">
-                            Yêu cầu đã {{ $currentStatus === 'refunded' ? 'hoàn tiền' : 'bị từ chối' }}, không thể cập
-                            nhật.
+                            Yêu cầu đã {{ $currentStatus === 'refunded' ? 'hoàn tiền' : 'bị từ chối' }}.
                         </div>
                         <a href="{{ route('refunds.index') }}" class="btn btn-outline-secondary mt-2">
                             <i class="fa fa-arrow-left me-1"></i> Quay lại
                         </a>
                     @endif
-
                 </div>
             </div>
         </div>
