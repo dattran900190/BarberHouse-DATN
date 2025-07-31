@@ -231,7 +231,8 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <button type="button" id="resetLeaveFilter" class="btn btn-sm btn-outline-secondary">
+                                    <button type="button" id="resetLeaveFilter"
+                                        class="btn btn-sm btn-outline-secondary">
                                         <i class="fa fa-refresh me-1"></i>Reset
                                     </button>
                                 </div>
@@ -254,7 +255,8 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="2" class="text-center text-muted">Không có dữ liệu ngày nghỉ</td>
+                                                <td colspan="2" class="text-center text-muted">Không có dữ liệu ngày
+                                                    nghỉ</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -719,7 +721,7 @@
                         // Cập nhật bảng ngày nghỉ
                         const tbody = document.querySelector('#barberLeaveTable tbody');
                         tbody.innerHTML = '';
-                        
+
                         if (data.barberLeaves.length > 0) {
                             data.barberLeaves.forEach(barber => {
                                 const row = `
@@ -731,7 +733,8 @@
                                 tbody.innerHTML += row;
                             });
                         } else {
-                            tbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">Không có dữ liệu ngày nghỉ</td></tr>';
+                            tbody.innerHTML =
+                                '<tr><td colspan="2" class="text-center text-muted">Không có dữ liệu ngày nghỉ</td></tr>';
                         }
                     }
                 })

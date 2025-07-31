@@ -19,7 +19,7 @@ class RefundRequestController extends Controller
     {
         $status = $request->query('status');
         $search = $request->query('search');
-        $filter = $request->query('filter', 'all'); // 'all', 'active', 'deleted'
+        $filter = $request->query('filter', 'all');
 
         $query = match ($filter) {
             'deleted' => RefundRequest::onlyTrashed()->with(['user', 'order', 'appointment']),
@@ -94,6 +94,12 @@ class RefundRequestController extends Controller
                 return back()->withErrors(['error' => 'Không thể quay lại trạng thái trước đó.']);
             }
 
+            $updateData = ['refund_status' => $newStatus];
+
+            if ($newStatus === 'rejected') {
+                $updateData['reject_reason'] = $request->input('reject_reason');
+            }
+
             if ($newStatus === 'refunded') {
                 if ($refund->order_id) {
                     $order = Order::findOrFail($refund->order_id);
@@ -113,18 +119,13 @@ class RefundRequestController extends Controller
                     $appointment->update(['status' => 'cancelled', 'payment_status' => 'refunded']);
                 }
 
-                $refund->update([
-                    'refund_status' => 'refunded',
-                    'refunded_at' => now(),
-                ]);
+                $updateData['refunded_at'] = now();
+            }
 
-                Mail::to($refund->user->email)->send(new RefundStatusMail($refund, 'refunded'));
-            } else {
-                $refund->update(['refund_status' => $newStatus]);
+            $refund->update($updateData);
 
-                if ($newStatus === 'rejected') {
-                    Mail::to($refund->user->email)->send(new RefundStatusMail($refund, 'rejected'));
-                }
+            if ($newStatus === 'refunded' || $newStatus === 'rejected') {
+                Mail::to($refund->user->email)->send(new RefundStatusMail($refund, $newStatus));
             }
 
             DB::commit();

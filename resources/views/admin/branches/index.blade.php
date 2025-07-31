@@ -124,6 +124,11 @@
                                                     href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"> --}}
 
                                             <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
+                                                    <i class="fas fa-eye me-2"></i> Xem
+                                                </a>
+
                                                 @if ($branch->trashed())
                                                     <button type="button" class="dropdown-item text-success restore-btn"
                                                         data-id="{{ $branch->id }}">
@@ -136,10 +141,6 @@
                                                     </button>
                                                 @else
                                                     <a class="dropdown-item"
-                                                        href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
-                                                        <i class="fas fa-eye me-2"></i> Xem
-                                                    </a>
-                                                    <a class="dropdown-item"
                                                         href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
                                                         <i class="fas fa-edit me-2"></i> Sửa
                                                     </a>
@@ -149,6 +150,7 @@
                                                         <i class="fas fa-times me-2"></i> Xoá mềm
                                                     </button>
                                                 @endif
+
                                             </li>
                                         </ul>
                                     </div>
@@ -194,33 +196,62 @@
             text,
             route,
             method = 'POST',
-            onSuccess = () => location.reload()
+            withInput = false, // Thêm tùy chọn hiển thị input
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload() // Thay reload bằng callback linh hoạt
         }) {
             document.querySelectorAll(selector).forEach(button => {
                 button.addEventListener('click', function(event) {
                     event.preventDefault();
-                    const branchId = this.getAttribute('data-id');
-                    Swal.fire({
+                    const appointmentId = this.getAttribute('data-id');
+
+                    const swalOptions = {
                         title,
                         text,
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: 'Xác nhận',
                         cancelButtonText: 'Hủy',
-                        width: '400px'
-                    }).then((result) => {
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    };
+
+                    if (withInput) {
+                        swalOptions.input = 'textarea';
+                        swalOptions.inputPlaceholder = inputPlaceholder;
+                        if (inputValidator) {
+                            swalOptions.inputValidator = inputValidator;
+                        }
+                    }
+
+                    Swal.fire(swalOptions).then((result) => {
                         if (result.isConfirmed) {
                             Swal.fire({
                                 title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
                                 allowOutsideClick: false,
-                                didOpen: () => Swal.showLoading()
+                                customClass: {
+                                    popup: 'custom-swal-popup' // CSS
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
                             });
-                            fetch(route.replace(':id', branchId), {
+
+                            const body = withInput ? JSON.stringify({
+                                no_show_reason: result.value || 'Không có lý do'
+                            }) : undefined;
+
+                            fetch(route.replace(':id', appointmentId), {
                                     method,
                                     headers: {
                                         'Content-Type': 'application/json',
                                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                    }
+                                    },
+                                    body
                                 })
                                 .then(response => response.json())
                                 .then(data => {
@@ -228,17 +259,24 @@
                                     Swal.fire({
                                         title: data.success ? 'Thành công!' : 'Lỗi!',
                                         text: data.message,
-                                        icon: data.success ? 'success' : 'error'
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
                                     }).then(() => {
                                         if (data.success) onSuccess();
                                     });
                                 })
                                 .catch(error => {
+                                    console.error('Error:', error);
                                     Swal.close();
                                     Swal.fire({
                                         title: 'Lỗi!',
                                         text: 'Đã có lỗi xảy ra: ' + error.message,
-                                        icon: 'error'
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
                                     });
                                 });
                         }
@@ -261,7 +299,7 @@
             selector: '.force-delete-btn',
             title: 'Xoá vĩnh viễn',
             text: 'Bạn có chắc chắn muốn xoá vĩnh viễn chi nhánh này? Hành động này không thể hoàn tác.',
-            route: '{{ route('branches.destroy', ':id') }}',
+            route: '{{ route('branches.forceDelete', ':id') }}',
             method: 'DELETE'
         });
 

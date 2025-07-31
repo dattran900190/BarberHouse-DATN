@@ -6,10 +6,22 @@
     $currentRole = Auth::user()->role;
 @endphp
 @section('content')
+    @if (session('success'))
+        <div class="alert border-start border-success border-4 alert-dismissible fade show shadow-sm" role="alert">
+            <span class="fw-bold text-dark">{{ session('success') }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    @endif
 
-    <div class="page-header">
-        <h3 class="fw-bold mb-3">Lịch làm việc theo chi nhánh</h3>
+    @if (session('error'))
+        <div class="alert border-start border-danger border-4 alert-dismissible fade show shadow-sm" role="alert">
+            <span class="fw-bold text-dark">{{ session('error') }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    @endif
 
+    <div class="page-header mb-4">
+        <h3 class="fw-bold mb-0">Lịch làm việc theo chi nhánh</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -20,13 +32,13 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/barber_schedules') }}">Quản lý lịch làm việc</a>
+                <a href="{{ url('admin/dashboard') }}">Quản lý Chi nhánh</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/barber_schedules') }}">Lịch làm việc</a>
+                <a href="{{ url('admin/volumes') }}">Chi nhánh</a>
             </li>
         </ul>
     </div>
@@ -254,12 +266,6 @@
         .breadcrumbs .separator {
             margin: 0 6px;
         }
-
-        .custom-swal-popup {
-            border-radius: 1rem !important;
-            padding: 1.5rem;
-            font-size: 15px;
-        }
     </style>
 @endsection
 @section('js')
@@ -268,35 +274,29 @@
             selector,
             title,
             text,
+            route,
             method = 'POST',
-            withInput = false,
+            withInput = false, // Thêm tùy chọn hiển thị input
             inputPlaceholder = '',
             inputValidator = null,
-            onSuccess = () => location.reload()
+            onSuccess = () => location.reload() // Thay reload bằng callback linh hoạt
         }) {
             document.querySelectorAll(selector).forEach(button => {
                 button.addEventListener('click', function(event) {
                     event.preventDefault();
-
-                    const id = this.getAttribute('data-id');
-                    const route = this.getAttribute('data-route');
+                    const appointmentId = this.getAttribute('data-id');
 
                     const swalOptions = {
-                        title: title,
-                        text: text,
-                        icon: 'warning',
+                        title,
+                        text,
+                        icon: 'question',
                         showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#6c757d',
                         confirmButtonText: 'Xác nhận',
-                        cancelButtonText: 'Huỷ',
-                        width: '420px',
+                        cancelButtonText: 'Hủy',
+                        width: '400px',
                         customClass: {
-                            popup: 'custom-swal-popup',
-                            confirmButton: 'btn btn-danger me-2',
-                            cancelButton: 'btn btn-secondary'
-                        },
-                        buttonsStyling: false
+                            popup: 'custom-swal-popup'
+                        }
                     };
 
                     if (withInput) {
@@ -313,9 +313,8 @@
                                 title: 'Đang xử lý...',
                                 text: 'Vui lòng chờ trong giây lát.',
                                 allowOutsideClick: false,
-                                showConfirmButton: false,
                                 customClass: {
-                                    popup: 'custom-swal-popup'
+                                    popup: 'custom-swal-popup' // CSS
                                 },
                                 didOpen: () => {
                                     Swal.showLoading();
@@ -323,18 +322,16 @@
                             });
 
                             const body = withInput ? JSON.stringify({
-                                input: result.value || ''
+                                no_show_reason: result.value || 'Không có lý do'
                             }) : undefined;
 
-                            fetch(route.replace(':id', id), {
-                                    method: method,
+                            fetch(route.replace(':id', appointmentId), {
+                                    method,
                                     headers: {
                                         'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector(
-                                            'meta[name="csrf-token"]').getAttribute(
-                                            'content')
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                     },
-                                    body: body
+                                    body
                                 })
                                 .then(response => response.json())
                                 .then(data => {
@@ -345,19 +342,13 @@
                                         icon: data.success ? 'success' : 'error',
                                         customClass: {
                                             popup: 'custom-swal-popup'
-                                        },
-                                        confirmButtonText: 'OK',
-                                        buttonsStyling: false,
-                                        customClass: {
-                                            confirmButton: 'btn btn-primary'
                                         }
                                     }).then(() => {
-                                        if (data.success) {
-                                            onSuccess();
-                                        }
+                                        if (data.success) onSuccess();
                                     });
                                 })
                                 .catch(error => {
+                                    console.error('Error:', error);
                                     Swal.close();
                                     Swal.fire({
                                         title: 'Lỗi!',
@@ -365,11 +356,6 @@
                                         icon: 'error',
                                         customClass: {
                                             popup: 'custom-swal-popup'
-                                        },
-                                        confirmButtonText: 'OK',
-                                        buttonsStyling: false,
-                                        customClass: {
-                                            confirmButton: 'btn btn-danger'
                                         }
                                     });
                                 });
