@@ -12,31 +12,6 @@
                 </div>
             @endif
         @endforeach
-        {{-- @if (session('success'))
-            <script>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công',
-                    text: '{{ session('success') }}',
-                    customClass: {
-                        popup: 'custom-swal-popup'
-                    }
-                });
-            </script>
-        @endif
-
-        @if (session('error'))
-            <script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: '{{ session('error') }}',
-                    customClass: {
-                        popup: 'custom-swal-popup'
-                    }
-                });
-            </script>
-        @endif --}}
     </div>
 
     @php
@@ -186,6 +161,13 @@
 
                                                             @if ($currentRole === 'admin')
                                                                 @if ($user->trashed())
+                                                                    <li>
+                                                                        <a class="dropdown-item"
+                                                                            href="{{ route('users.show', ['user' => $user->id, 'role' => 'user', 'page' => request('page', 1)]) }}">
+                                                                            <i class="fas fa-eye me-2"></i> Xem
+                                                                        </a>
+                                                                    </li>
+                                                                    <hr class="dropdown-divider">
                                                                     <li>
                                                                         <button type="button"
                                                                             class="dropdown-item text-success restore-btn"

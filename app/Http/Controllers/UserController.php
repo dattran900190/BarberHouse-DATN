@@ -102,16 +102,23 @@ class UserController extends Controller
     }
 
 
-    public function show(User $user, Request $request)
+    public function show($id, Request $request)
     {
         $role = $request->input('role', 'user');
+
+        // 👉 Lấy user bao gồm đã bị xóa mềm
+        $user = User::withTrashed()->findOrFail($id);
+
+        // Kiểm tra quyền theo role
         if (($role === 'user' && $user->role !== 'user') ||
             ($role === 'admin' && !in_array($user->role, ['admin', 'admin_branch']))
         ) {
             abort(403, 'Không có quyền truy cập');
         }
+
         return view('admin.users.show', compact('user', 'role'));
     }
+
 
     public function edit(User $user, Request $request)
     {

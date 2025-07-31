@@ -91,14 +91,10 @@
                                             href="{{ route('client.detailOrderHistory', $order->id) }}">Xem chi tiết</a>
                                         @if ($order->status === 'pending')
                                             <button type="button" class="btn-outline-show cancel-order-btn"
-                                                data-order-id="{{ $order->id }}">
+                                                data-order-id="{{ $order->id }}"
+                                                data-cancel-url="{{ route('client.orders.cancel', $order->id) }}">
                                                 Hủy đơn hàng
                                             </button>
-                                            <form id="cancel-form-{{ $order->id }}"
-                                                action="{{ route('client.orders.cancel', $order->id) }}" method="POST"
-                                                style="display: none;">
-                                                @csrf
-                                            </form>
                                         @endif
 
                                         @if (
@@ -139,30 +135,83 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const cancelButtons = document.querySelectorAll('.cancel-order-btn');
-
-            cancelButtons.forEach(button => {
+            document.querySelectorAll('.cancel-order-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const orderId = this.getAttribute('data-order-id');
+                    const cancelUrl = this.getAttribute('data-cancel-url');
 
                     Swal.fire({
-                        title: 'Xác nhận hủy đơn hàng?',
-                        text: "Bạn sẽ không thể khôi phục thao tác này!",
-                        icon: 'warning',
+                        title: 'Hủy đơn hàng',
+                        text: 'Vui lòng nhập lý do hủy',
+                        input: 'textarea',
+                        inputPlaceholder: 'Nhập lý do hủy (tối thiểu 5 ký tự)...',
+                        inputAttributes: {
+                            rows: 4
+                        },
                         showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#aaa',
-                        confirmButtonText: 'Vâng, hủy đơn!',
-                        cancelButtonText: 'Không',
+                        confirmButtonText: 'Hủy đơn',
+                        cancelButtonText: 'Đóng',
+                        inputValidator: (value) => {
+                            if (!value) return 'Lý do hủy không được để trống!';
+                            if (value.length < 5)
+                                return 'Lý do hủy phải có ít nhất 5 ký tự!';
+                            if (value.length > 500)
+                                return 'Lý do hủy không được vượt quá 500 ký tự!';
+                        },
                         customClass: {
-                                popup: 'custom-swal-popup'
-                            },
+                            popup: 'custom-swal-popup'
+                        }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            const form = document.getElementById(`cancel-form-${orderId}`);
-                            if (form) {
-                                form.submit();
-                            }
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                didOpen: () => Swal.showLoading()
+                            });
+
+                            fetch(cancelUrl, {
+                                    method: 'PATCH',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body: JSON.stringify({
+                                        cancellation_reason: result.value
+                                    })
+                                })
+                                .then(response => {
+                                    if (!response.ok) throw new Error(
+                                        `HTTP error: ${response.status}`);
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' :
+                                            'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' :
+                                            'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) location.reload();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error
+                                            .message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
                         }
                     });
                 });
