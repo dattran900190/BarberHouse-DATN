@@ -97,20 +97,18 @@
                                             </li>
                                             @if ($volume->trashed())
                                                 <li>
-                                                    <form action="{{ route('admin.volumes.restore', $volume->id) }}"
-                                                        method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="dropdown-item text-success">
-                                                            <i class="fas fa-undo me-2"></i> Khôi phục
-                                                        </button>
-                                                    </form>
+                                                    <button type="button" class="dropdown-item text-success restore-btn" data-id="{{ $volume->id }}">
+                                                        <i class="fas fa-undo me-2"></i> Khôi phục
+                                                    </button>
                                                 </li>
                                                 <li>
                                                     <form action="{{ route('admin.volumes.forceDelete', $volume->id) }}"
                                                         method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="button" class="dropdown-item text-danger force-delete-btn" data-id="{{ $volume->id }}">
+                                                        <button type="button"
+                                                            class="dropdown-item text-danger force-delete-btn"
+                                                            data-id="{{ $volume->id }}">
                                                             <i class="fas fa-trash-alt me-2"></i> Xóa vĩnh viễn
                                                         </button>
                                                     </form>
@@ -122,7 +120,9 @@
                                                         method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="button" class="dropdown-item text-danger soft-delete-btn" data-id="{{ $volume->id }}">
+                                                        <button type="button"
+                                                            class="dropdown-item text-danger soft-delete-btn"
+                                                            data-id="{{ $volume->id }}">
                                                             <i class="fas fa-times me-2"></i> Xóa mềm
                                                         </button>
                                                     </form>
@@ -148,67 +148,108 @@
 @endsection
 
 @section('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    function handleSwalAction({ selector, title, text, route, method = 'POST' }) {
-        document.querySelectorAll(selector).forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                const recordId = this.getAttribute('data-id');
-                Swal.fire({
-                    title: title,
-                    text: text,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Xác nhận',
-                    cancelButtonText: 'Hủy',
-                    width: '400px',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        let form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = route.replace(':id', recordId);
-                        let csrfToken = document.createElement('input');
-                        csrfToken.type = 'hidden';
-                        csrfToken.name = '_token';
-                        csrfToken.value = '{{ csrf_token() }}';
-                        form.appendChild(csrfToken);
-                        if (method.toUpperCase() !== 'POST') {
-                            let methodInput = document.createElement('input');
-                            methodInput.type = 'hidden';
-                            methodInput.name = '_method';
-                            methodInput.value = method;
-                            form.appendChild(methodInput);
+   
+    <script>
+         function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                                         const recordId = this.getAttribute('data-id');
+
+                    Swal.fire({
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
                         }
-                        // preserve ?page param
-                        const page = new URLSearchParams(window.location.search).get('page');
-                        if (page) {
-                            let pageInput = document.createElement('input');
-                            pageInput.type = 'hidden';
-                            pageInput.name = 'page';
-                            pageInput.value = page;
-                            form.appendChild(pageInput);
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                didOpen: () => Swal.showLoading()
+                            });
+
+                                                         fetch(route.replace(':id', recordId), {
+                                     method,
+                                     headers: {
+                                         'Accept': 'application/json',
+                                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                     }
+                                 })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
                         }
-                        document.body.appendChild(form);
-                        form.submit();
-                    }
+                    });
                 });
             });
+        }
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Xoá mềm Dung tích',
+            text: 'Bạn có chắc muốn xoá mềm dung tích này?',
+            route: '{{ route('admin.volumes.destroy', ':id') }}',
+            method: 'DELETE',
+            successMessage: 'Đã xóa mềm dung tích thành công!'
         });
-    }
-    handleSwalAction({
-        selector: '.soft-delete-btn',
-        title: 'Xoá mềm Dung tích',
-        text: 'Bạn có chắc muốn xoá mềm dung tích này?',
-        route: '{{ route('admin.volumes.destroy', ':id') }}',
-        method: 'DELETE'
-    });
-    handleSwalAction({
-        selector: '.force-delete-btn',
-        title: 'Xoá vĩnh viễn Dung tích',
-        text: 'Bạn có chắc muốn xoá vĩnh viễn? Hành động không thể hoàn tác!',
-        route: '{{ route('admin.volumes.forceDelete', ':id') }}',
-        method: 'DELETE'
-    });
-</script>
+        handleSwalAction({
+            selector: '.force-delete-btn',
+            title: 'Xoá vĩnh viễn Dung tích',
+            text: 'Bạn có chắc muốn xoá vĩnh viễn? Hành động không thể hoàn tác!',
+            route: '{{ route('admin.volumes.forceDelete', ':id') }}',
+            method: 'DELETE',
+            successMessage: 'Đã xóa vĩnh viễn dung tích thành công!'
+        });
+        
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục Dung tích',
+            text: 'Bạn có chắc muốn khôi phục dung tích này?',
+            route: '{{ route('admin.volumes.restore', ':id') }}',
+            method: 'POST',
+            successMessage: 'Đã khôi phục dung tích thành công!'
+        });
+    </script>
 @endsection

@@ -58,11 +58,11 @@
                         </button>
                     </div>
                     <select name="filter" id="filter" class="form-select pe-5"
-                    style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
-                    <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả sản phẩm</option>
-                    <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Còn hoạt động</option>
-                    <option value="deleted" {{ request('filter') == 'deleted' ? 'selected' : '' }}>Đã xoá</option>
-                </select>
+                        style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
+                        <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả sản phẩm</option>
+                        <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Còn hoạt động</option>
+                        <option value="deleted" {{ request('filter') == 'deleted' ? 'selected' : '' }}>Đã xoá</option>
+                    </select>
                 </div>
             </form>
 
@@ -145,6 +145,11 @@
                                                     data-id="{{ $product->id }}">
                                                     <i class="fas fa-undo me-2"></i> Khôi phục
                                                 </button>
+                                            </li>
+                                            <li>
+                                                <a href="{{route('admin.products.showTrashed', $product->id)}}"    class="dropdown-item">
+                                                    <i class="fas fa-eye me-2"></i>Xem
+                                                </a>
                                             </li>
                                             <li>
                                                 <button type="button" class="dropdown-item text-danger force-delete-btn"

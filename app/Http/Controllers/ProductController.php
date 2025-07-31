@@ -371,4 +371,17 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')->with('error', 'Sản phẩm cần được xóa mềm trước.');
     }
+    public function showTrashed($id)
+    {
+        $product = Product::withTrashed()
+            ->where('id', $id)
+            ->whereNotNull('deleted_at')
+            ->with(['category', 'images', 'variants' => function ($query) {
+                $query->withTrashed()->with('volume');
+            }])
+            ->firstOrFail();
+    
+        return view('admin.products.show-trashed', compact('product'));
+    }
+    
 }
