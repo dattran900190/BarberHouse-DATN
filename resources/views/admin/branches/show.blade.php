@@ -19,11 +19,11 @@
             <li class="nav-item"><a href="#">Chi tiết</a></li>
         </ul>
     </div>
-    @if ($branch->trashed())
+    {{-- @if ($branch->trashed())
         <div class="alert alert-warning">
             <i class="fa fa-exclamation-circle me-1"></i> Chi nhánh này đã bị xoá mềm. Bạn chỉ có thể xem thông tin.
         </div>
-    @endif
+    @endif --}}
 
     <!-- Card: Thông tin chi nhánh -->
     <div class="card shadow-sm mb-4">
@@ -167,18 +167,167 @@
         </div>
         <div class="card-body">
             <div class="d-flex gap-2">
-                @if (!$branch->trashed())
-                    <a href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"
-                        class="btn btn-outline-primary btn-sm">
+                {{-- nếu dịch vụ xoá mềm thì không hiện sửa xoá chỉ hiện quay lại --}}
+                @if ($branch->deleted_at)
+
+                    @if (!$branch->trashed())
+                        <button class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $branch->id }}">
+                            <i class="fas fa-trash me-2"></i> Xoá
+                        </button>
+                    @endif
+
+                    @if ($branch->trashed())
+                        <button class="btn btn-outline-success btn-sm restore-btn" data-id="{{ $branch->id }}">
+                            <i class="fa fa-undo me-1"></i> Khôi phục
+                        </button>
+
+                        <button class="btn btn-outline-danger btn-sm force-delete-btn" data-id="{{ $branch->id }}">
+                            <i class="fa fa-times-circle me-1"></i> Xoá vĩnh viễn
+                        </button>
+                    @endif
+                    <a href="{{ route('branches.index', ['page' => request('page', 1)]) }}"
+                        class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"></i> Quay lại
+                    </a>
+                @else
+                    <a href="{{ route('branches.edit', $branch->id) }}" class="btn btn-outline-primary btn-sm">
                         <i class="fa fa-edit me-1"></i> Sửa
                     </a>
+                    <button type="button" class="btn btn-outline-danger btn-sm soft-delete-btn"
+                        data-id="{{ $branch->id }}">
+                        <i class="fas fa-trash me-2"></i> Xoá
+                    </button>
+                    <a href="{{ route('branches.index', ['page' => request('page', 1)]) }}"
+                        class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"></i> Quay lại
+                    </a>
                 @endif
-                <a href="{{ route('branches.index', ['page' => request('page', 1)]) }}"
-                    class="btn btn-outline-secondary btn-sm">
-                    <i class="fa fa-arrow-left me-1"></i> Quay lại
-                </a>
             </div>
-
         </div>
     </div>
+@endsection
+@section('js')
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            withInput = false, // Thêm tùy chọn hiển thị input
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload() // Thay reload bằng callback linh hoạt
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const appointmentId = this.getAttribute('data-id');
+
+                    const swalOptions = {
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    };
+
+                    if (withInput) {
+                        swalOptions.input = 'textarea';
+                        swalOptions.inputPlaceholder = inputPlaceholder;
+                        if (inputValidator) {
+                            swalOptions.inputValidator = inputValidator;
+                        }
+                    }
+
+                    Swal.fire(swalOptions).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup' // CSS
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            const body = withInput ? JSON.stringify({
+                                no_show_reason: result.value || 'Không có lý do'
+                            }) : undefined;
+
+                            fetch(route.replace(':id', appointmentId), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        }
+
+        // Xoá mềm
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Xoá mềm chi nhánh',
+            text: 'Bạn có chắc chắn muốn xoá mềm chi nhánh này?',
+            route: '{{ route('branches.softDelete', ':id') }}',
+            method: 'PATCH'
+        });
+
+        // Xoá cứng
+        handleSwalAction({
+            selector: '.force-delete-btn',
+            title: 'Xoá vĩnh viễn',
+            text: 'Bạn có chắc chắn muốn xoá vĩnh viễn chi nhánh này? Hành động này không thể hoàn tác.',
+            route: '{{ route('branches.forceDelete', ':id') }}',
+            method: 'DELETE'
+        });
+
+        // Khôi phục
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục chi nhánh',
+            text: 'Bạn có chắc chắn muốn khôi phục chi nhánh này?',
+            route: '{{ route('branches.restore', ':id') }}',
+            method: 'POST'
+        });
+    </script>
 @endsection
