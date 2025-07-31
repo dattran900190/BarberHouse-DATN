@@ -858,7 +858,7 @@ h2 {
 }
 
 .booking-container .add-service-btn:hover {
-  background-color: #c9c9c9;
+  background-color: #ccc;
 }
 
 .booking-container .service-info {
@@ -933,7 +933,7 @@ h2 {
   resize: vertical;
 }
 
-.booking-container .booking-btn {
+/* .booking-container .booking-btn {
   width: 100%;
   padding: 18px;
   background-color: #000000;
@@ -949,14 +949,13 @@ h2 {
 
 .booking-container .booking-btn:hover {
   background-color: #444;
-  /* transform: translateY(-2px); */
-}
+} */
 
-.booking-container .booking-btn:disabled {
+/* .booking-container .booking-btn:disabled {
   background-color: #ccc;
   cursor: not-allowed;
   transform: none;
-}
+} */
 
 .booking-container .position-relative {
   position: relative;
