@@ -294,6 +294,13 @@
                                                             @if ($currentRole === 'admin')
                                                                 @if ($admin->trashed())
                                                                     <li>
+                                                                        <a class="dropdown-item"
+                                                                            href="{{ route('users.show', ['user' => $admin->id, 'role' => 'admin', 'page' => request('page', 1)]) }}">
+                                                                            <i class="fas fa-eye me-2"></i> Xem
+                                                                        </a>
+                                                                    </li>
+                                                                    <hr class="dropdown-divider">
+                                                                    <li>
                                                                         <button type="button"
                                                                             class="dropdown-item text-success restore-btn"
                                                                             data-id="{{ $admin->id }}">
