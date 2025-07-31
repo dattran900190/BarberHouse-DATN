@@ -87,6 +87,21 @@
         <div class="card-body">
             <div class="d-flex gap-2">
                 @if ($review->deleted_at)
+                @if (!$review->trashed())
+                    <button class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $review->id }}">
+                        <i class="fas fa-trash me-2"></i> Xoá
+                    </button>
+                @endif
+
+                @if ($review->trashed())
+                    <button class="btn btn-outline-success btn-sm restore-btn" data-id="{{ $review->id }}">
+                        <i class="fa fa-undo me-1"></i> Khôi phục
+                    </button>
+
+                    <button class="btn btn-outline-danger btn-sm force-delete-btn" data-id="{{ $review->id }}">
+                        <i class="fa fa-times-circle me-1"></i> Xoá vĩnh viễn
+                    </button>
+                @endif
                     <a href="{{ route('reviews.index', ['page' => request('page', 1)]) }}"
                         class="btn btn-outline-secondary btn-sm">
                         <i class="fa fa-arrow-left me-1"></i> Quay lại
@@ -213,6 +228,27 @@
             text: 'Bạn có chắc chắn muốn xoá mềm dịch vụ này?',
             route: '{{ route('reviews.softDelete', ':id') }}',
             method: 'PATCH'
+        });
+
+        // Khôi phục
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục dịch vụ',
+            text: 'Bạn có chắc chắn muốn khôi phục dịch vụ này?',
+            route: '{{ route('reviews.restore', ':id') }}',
+            method: 'POST'
+        });     
+
+        // Xoá vĩnh viễn
+        handleSwalAction({
+            selector: '.force-delete-btn',
+            title: 'Xoá vĩnh viễn',
+            text: 'Bạn có chắc chắn muốn xoá vĩnh viễn dịch vụ này?',
+            route: '{{ route('reviews.destroy', ':id') }}',
+            method: 'DELETE',
+            onSuccess: () => {
+                window.location.href = '{{ route('reviews.index') }}';
+            }
         });
     </script>
 @endsection
