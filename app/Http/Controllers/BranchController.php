@@ -7,6 +7,8 @@ use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use function Pest\Laravel\json;
+
 class BranchController extends Controller
 {
     // Hiển thị danh sách chi nhánh
@@ -67,11 +69,14 @@ class BranchController extends Controller
     }
 
     // Hiển thị chi tiết chi nhánh
-    public function show(Request $request, Branch $branch)
+    public function show(Request $request, $id)
     {
         $search = $request->input('search');
 
-        // Lấy thợ thuộc chi nhánh này, có tìm kiếm tên thợ và phân trang
+        // Lấy chi nhánh đã xoá mềm nếu có
+        $branch = Branch::withTrashed()->findOrFail($id);
+
+        // Lấy danh sách thợ của chi nhánh (nếu cần)
         $barbers = $branch->barbers()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
@@ -83,10 +88,11 @@ class BranchController extends Controller
 
 
 
+
     // Hiển thị form sửa
     public function edit(Branch $branch)
     {
-        
+
         return view('admin.branches.edit', compact('branch'));
     }
 
@@ -121,14 +127,14 @@ class BranchController extends Controller
 
 
     // Xoá chi nhánh
-    public function destroy(Branch $branch)
-    {
-        if (Auth::user()->role === 'admin_branch') {
-            return redirect()->route('branches.index')->with('error', 'Bạn không có quyền xóa chi nhánh.');
-        }
-        $branch->delete();
-        return redirect()->route('branches.index')->with('success', 'Xoá chi nhánh thành công');
-    }
+    // public function destroy(Branch $branch)
+    // {
+    //     if (Auth::user()->role === 'admin_branch') {
+    //         return redirect()->route('branches.index')->with('error', 'Bạn không có quyền xóa chi nhánh.');
+    //     }
+    //     $branch->delete();
+    //     return redirect()->route('branches.index')->with('success', 'Xoá chi nhánh thành công');
+    // }
     public function softDelete($id)
     {
         if (Auth::user()->role === 'admin_branch') {
@@ -164,6 +170,9 @@ class BranchController extends Controller
             ]);
         }
         $branch = Branch::withTrashed()->findOrFail($id);
+        if ($branch->barbers()->count() > 0) {
+            return response()->json(['error' => true, 'message' => 'Chi nhánh có thợ cắt tóc không thể xóa!']);
+        }
         $branch->forceDelete();
         return response()->json(['success' => true, 'message' => 'Đã xoá vĩnh viễn chi nhánh!']);
     }
