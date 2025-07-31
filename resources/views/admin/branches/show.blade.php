@@ -19,6 +19,11 @@
             <li class="nav-item"><a href="#">Chi tiết</a></li>
         </ul>
     </div>
+    @if ($branch->trashed())
+        <div class="alert alert-warning">
+            <i class="fa fa-exclamation-circle me-1"></i> Chi nhánh này đã bị xoá mềm. Bạn chỉ có thể xem thông tin.
+        </div>
+    @endif
 
     <!-- Card: Thông tin chi nhánh -->
     <div class="card shadow-sm mb-4">
@@ -162,15 +167,18 @@
         </div>
         <div class="card-body">
             <div class="d-flex gap-2">
-                <a href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"
-                    class="btn btn-outline-primary btn-sm">
-                    <i class="fa fa-edit me-1"></i> Sửa
-                </a>
+                @if (!$branch->trashed())
+                    <a href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"
+                        class="btn btn-outline-primary btn-sm">
+                        <i class="fa fa-edit me-1"></i> Sửa
+                    </a>
+                @endif
                 <a href="{{ route('branches.index', ['page' => request('page', 1)]) }}"
                     class="btn btn-outline-secondary btn-sm">
                     <i class="fa fa-arrow-left me-1"></i> Quay lại
                 </a>
             </div>
+
         </div>
     </div>
 @endsection

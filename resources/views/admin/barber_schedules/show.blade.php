@@ -117,6 +117,9 @@
                                             @endforeach
                                         </tbody>
                                     </table>
+                                    <div class="d-flex justify-content-center mt-3">
+                                        {{ $barber->schedules->links() }}
+                                    </div>
                                 </div>
                                 <div class="p-2 text-muted small">
                                     * Những ngày khác, {{ $barber->name }} làm việc như bình thường.
@@ -126,9 +129,7 @@
                                     theo bộ lọc.</div>
                             @endif
                         </div>
-                    </div>
-                    <div class="d-flex justify-content-center mt-3">
-                        {{ $barber->schedules->links() }}
+
                     </div>
                 @endforeach
 
@@ -148,6 +149,9 @@
                 </div>
                 <a href="{{ route('barber_schedules.index') }}" class="btn btn-outline-secondary mt-3">← Quay lại</a>
             @endif
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+            {{ $barbers->links() }}
         </div>
     </div>
 @endsection

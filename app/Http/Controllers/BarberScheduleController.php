@@ -43,6 +43,7 @@ class BarberScheduleController extends Controller
 
     public function show($id)
     {
+
         return redirect()->route('admin.barber_schedules.index')
             ->with('error', 'Trang này không tồn tại hoặc không được hỗ trợ.');
     }
@@ -51,9 +52,10 @@ class BarberScheduleController extends Controller
     {
         $branch = Branch::with(['barbers.schedules'])->findOrFail($branchId);
         $barbers = $branch->barbers;
+        $barbers = $branch->barbers()->paginate(10); // 10 thợ mỗi trang
         //phân trang lịch trình thợ 
         foreach ($barbers as $barber) {
-            $barber->schedules = $barber->schedules()->paginate(10);
+            $barber->schedules = $barber->schedules()->paginate(3);
         }
         return view('admin.barber_schedules.show', compact('branch', 'barbers'));
     }

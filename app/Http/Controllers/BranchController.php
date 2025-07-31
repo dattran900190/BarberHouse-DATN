@@ -69,11 +69,14 @@ class BranchController extends Controller
     }
 
     // Hiển thị chi tiết chi nhánh
-    public function show(Request $request, Branch $branch)
+    public function show(Request $request, $id)
     {
         $search = $request->input('search');
 
-        // Lấy thợ thuộc chi nhánh này, có tìm kiếm tên thợ và phân trang
+        // Lấy chi nhánh đã xoá mềm nếu có
+        $branch = Branch::withTrashed()->findOrFail($id);
+
+        // Lấy danh sách thợ của chi nhánh (nếu cần)
         $barbers = $branch->barbers()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
@@ -82,6 +85,7 @@ class BranchController extends Controller
 
         return view('admin.branches.show', compact('branch', 'barbers', 'search'));
     }
+
 
 
 
