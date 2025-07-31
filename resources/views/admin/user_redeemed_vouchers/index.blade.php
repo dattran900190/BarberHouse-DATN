@@ -17,7 +17,7 @@
         </div>
     @endif
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Sản phẩm</h3>
+        <h3 class="fw-bold mb-3">Quản lý Voucher đã đổi</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -28,20 +28,20 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/user_redeemed_vouchers') }}">Quản lý đặt lịch</a>
+                <a href="{{ url('admin/user_redeemed_vouchers') }}">Quản lý Voucher đã đổi</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/user_redeemed_vouchers') }}">Lịch sử đổi Voucher</a>
+                <a href="{{ url('admin/user_redeemed_vouchers') }}">Danh sách người dùng đã đổi Voucher</a>
             </li>
         </ul>
         
     </div>
     <div class="card shadow mb-4">
         <div class="card-header bg- text-black">
-            <h4 class="mb-0"></i>Danh sách Voucher đã đổi</h4>
+            <h4 class="mb-0"></i>Danh sách người dùng đã đổi Voucher</h4>
         </div>
 
         <div class="card-body">
@@ -64,52 +64,54 @@
                         <tr>
                             <th>ID</th>
                             <th>Người dùng</th>
-                            <th>Mã khuyến mãi</th>
-                            <th>Ngày đổi</th>
-                            <th>Trạng thái</th>
-                            <th>Ngày sử dụng</th>
+                            <th>Email</th>
+                            <th>Số điện thoại</th>
+                            <th>Tổng voucher đã đổi</th>
+                            <th>Voucher đã sử dụng</th>
+                            <th>Voucher chưa sử dụng</th>
                             <th>Hành động</th>
-
                         </tr>
                     </thead>
                     <tbody>
-                        @if (count($items) > 0)
-                            @foreach ($items as $item)
+                        @if (count($users) > 0)
+                            @foreach ($users as $user)
                                 <tr>
-                                    <td>{{ $item->id }}</td>
-                                    <td>{{ $item->user->name ?? 'Không rõ' }}</td>
-                                    <td>{{ $item->promotion->code ?? 'Không rõ' }}</td>
-                                    <td>{{ $item->redeemed_at ? \Carbon\Carbon::parse($item->redeemed_at)->format('d/m/Y H:i') : '-' }}
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $user->email }}</td>
+                                    <td>{{ $user->phone ?? 'N/A' }}</td>
+                                    <td>
+                                        <span class="badge badge-primary">{{ $user->redeemed_vouchers_count }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-{{ $item->is_used ? 'success' : 'secondary' }}">
-                                            {{ $item->is_used ? 'Đã dùng' : 'Chưa dùng' }}
-                                        </span>
+                                        <span class="badge badge-success">{{ $user->used_vouchers_count }}</span>
                                     </td>
                                     <td>
-                                        {{ $item->used_at ? \Carbon\Carbon::parse($item->used_at)->format('d/m/Y H:i') : '-' }}
+                                        <span class="badge badge-warning">{{ $user->unused_vouchers_count }}</span>
                                     </td>
                                     <td class="text-center">
                                         <div class="dropdown">
                                             <button class="btn btn-sm btn-outline-secondary" type="button"
-                                                id="actionMenu{{ $item->id }}" data-bs-toggle="dropdown"
+                                                id="actionMenu{{ $user->id }}" data-bs-toggle="dropdown"
                                                 aria-expanded="false">
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end"
-                                                aria-labelledby="actionMenu{{ $item->id }}">
-                                                <li> <a href="{{ route('admin.user_redeemed_vouchers.show', $item->id) }}"
+                                                aria-labelledby="actionMenu{{ $user->id }}">
+                                                <li> 
+                                                    <a href="{{ route('admin.user_redeemed_vouchers.show', $user->id) }}"
                                                         class="dropdown-item">
-                                                        <i class="fas fa-eye me-2"></i> Xem
-                                                    </a></li>
-
+                                                        <i class="fas fa-eye me-2"></i> Xem chi tiết voucher
+                                                    </a>
+                                                </li>
+                                            </ul>
                                         </div>
                                     </td>
                                 </tr>
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="7" class="text-muted">Không có dữ liệu</td>
+                                <td colspan="8" class="text-muted">Không có dữ liệu</td>
                             </tr>
                         @endif
                     </tbody>
@@ -117,9 +119,9 @@
                 </table>
             </div>
 
-            @if ($items->hasPages())
+            @if ($users->hasPages())
                 <div class="mt-3 d-flex justify-content-center">
-                    {{ $items->links() }}
+                    {{ $users->links() }}
                 </div>
             @endif
         </div>

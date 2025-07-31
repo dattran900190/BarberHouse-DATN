@@ -68,41 +68,40 @@ class VolumeController extends Controller
     public function destroy(Request $request, Volume $volume)
     {
         if (Auth::user()->role === 'admin_branch') {
-            return redirect()->route('admin.volumes.index')->with('error', 'Bạn không có quyền xóa   dung tích.');
+            return response()->json(['success' => false, 'message' => 'Bạn không có quyền xóa dung tích.']);
         }
+        
         // Chỉ cho phép xóa mềm nếu chưa liên kết với biến thể sản phẩm
         if ($volume->productVariants()->count() > 0) {
-            return redirect()->route('admin.volumes.index')->with('error', 'Không thể xóa dung tích vì đang liên kết với biến thể sản phẩm.');
+            return response()->json(['success' => false, 'message' => 'Không thể xóa dung tích vì đang liên kết với biến thể sản phẩm.']);
         }
+        
         $volume->delete();
-
-        $page = $request->query('page');
-        return redirect()->route('admin.volumes.index', ['page' => $page])
-                         ->with('success', 'Xóa dung tích thành công!');
+        return response()->json(['success' => true, 'message' => 'Xóa dung tích thành công!']);
     }
 
     // Khôi phục dung tích đã xóa mềm
-    public function restore($id)
+    public function restore(Request $request, $id)
     {
         $volume = Volume::withTrashed()->findOrFail($id);
         if ($volume->trashed()) {
             $volume->restore();
-            return redirect()->route('admin.volumes.index')->with('success', 'Khôi phục dung tích thành công!');
+            return response()->json(['success' => true, 'message' => 'Khôi phục dung tích thành công!']);
         }
-        return redirect()->route('admin.volumes.index')->with('error', 'Dung tích này chưa bị xóa.');
+        return response()->json(['success' => false, 'message' => 'Dung tích này chưa bị xóa.']);
     }
 
     // Xóa vĩnh viễn dung tích đã xóa mềm
-    public function forceDelete($id)
+    public function forceDelete(Request $request, $id)
     {
         $volume = Volume::withTrashed()->findOrFail($id);
         if ($volume->productVariants()->count() > 0) {
-            return redirect()->back()->with('error', 'Không thể xóa vĩnh viễn vì có sản phẩm đang sử dụng dung tích này.');
+            return response()->json(['success' => false, 'message' => 'Không thể xóa vĩnh viễn vì có sản phẩm đang sử dụng dung tích này.']);
         }
         if ($volume->trashed()) {
             $volume->forceDelete();
-            return redirect()->route('admin.volumes.index')->with('success', 'Xóa vĩnh viễn dung tích thành công!');
+            return response()->json(['success' => true, 'message' => 'Xóa vĩnh viễn dung tích thành công!']);
         }
-        return redirect()->route('admin.volumes.index')->with('error', 'Dung tích này chưa bị xóa mềm.');
+        return response()->json(['success' => false, 'message' => 'Dung tích này chưa bị xóa mềm.']);
     }
 }
