@@ -14,8 +14,8 @@
                             <div class="d-sm-flex">
                                 <div class="flex-grow-1">
                                     {{-- Logo công ty --}}
-                                    <img src="{{ asset('storage/' . ($imageSettings['black_logo'] ?? 'default-images/black_logo.png')) }}" class="card-logo card-logo-dark"
-                                        alt="logo tối" height="56">
+                                    <img src="{{ asset('storage/' . ($imageSettings['black_logo'] ?? 'default-images/black_logo.png')) }}"
+                                        class="card-logo card-logo-dark" alt="logo tối" height="56">
 
                                 </div>
                                 <div class="flex-shrink-0 mt-sm-0 mt-3">
@@ -71,26 +71,27 @@
                                 <h6 class="text-muted text-uppercase fw-semibold fs-15">Địa chỉ nhận hàng</h6>
                                 <p class="text-muted mb-1">Họ tên: <span class="fw-medium">{{ $order->name }}</span></p>
                                 <p class="text-muted mb-1">Địa chỉ: <span class="fw-medium">{{ $order->address }}</span></p>
-                                <p class="text-muted mb-1">Điện thoại: <span class="fw-medium">{{ $order->phone }}</span></p>
+                                <p class="text-muted mb-1">Điện thoại: <span class="fw-medium">{{ $order->phone }}</span>
+                                </p>
                             </div>
-                    
+
                             {{-- Cột phải: Thông tin thanh toán --}}
                             <div class="w-50 ps-4">
                                 <h6 class="text-muted text-uppercase fw-semibold fs-15">Thông tin thanh toán</h6>
-                                <p class="text-muted mb-1">Thanh toán: 
+                                <p class="text-muted mb-1">Thanh toán:
                                     <span class="fw-medium">
                                         {{ $order->shipping_method == 'standard' ? 'Thanh toán khi nhận hàng' : 'VNPay' }}
                                     </span>
                                 </p>
-                                <p class="text-muted mb-1">Vận chuyển: 
+                                <p class="text-muted mb-1">Vận chuyển:
                                     <span class="fw-medium">
                                         {{ $order->shipping_fee == 25000 ? 'Giao hàng tiêu chuẩn' : 'Giao hàng nhanh' }}
                                     </span>
                                 </p>
-                    
+
                                 @php
                                     $deliveryDate = null;
-                    
+
                                     if (in_array($order->status, ['pending', 'processing'])) {
                                         $daysToAdd = $order->shipping_fee == 25000 ? 3 : 1;
                                         $deliveryDate = $order->created_at->copy()->addDays($daysToAdd);
@@ -98,9 +99,9 @@
                                         $deliveryDate = $order->updated_at->copy()->addDay();
                                     }
                                 @endphp
-                    
+
                                 @if ($deliveryDate)
-                                    <p class="text-muted mb-1">Ngày dự kiến giao hàng: 
+                                    <p class="text-muted mb-1">Ngày dự kiến giao hàng:
                                         <span class="fw-medium">{{ $deliveryDate->format('d/m/Y') }}</span>
                                     </p>
                                 @elseif ($order->status === 'completed')
@@ -111,7 +112,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="col-lg-12">
                         <div class="card-body p-4">
                             <div class="table-responsive">
@@ -208,15 +209,14 @@
                             </div>
                             <div class="hstack gap-2 justify-content-end d-print-none mt-4">
                                 @if ($order->status === 'pending')
-                                    <form id="cancelOrderForm" action="{{ route('client.orders.cancel', $order->id) }}"
-                                        method="POST" style="display:inline-block;">
-                                        @csrf
-                                        <button type="button" class="btn btn-outline-danger btn-sm" id="cancelOrderBtn">Hủy
-                                            đơn hàng</button>
-                                    </form>
+                                    <button type="button" class="btn-outline-show cancel-order-btn"
+                                        data-order-id="{{ $order->id }}"
+                                        data-cancel-url="{{ route('client.orders.cancel', $order->id) }}">
+                                        Hủy đơn hàng
+                                    </button>
+
                                 @endif
-                                <a href="{{ route('client.orderHistory') }}" class="btn btn-outline-secondary btn-sm">Quay
-                                    lại</a>
+                                <a href="{{ route('client.orderHistory') }}" class="btn-outline-show">Quay lại</a>
                             </div>
                         </div>
                     </div>
@@ -236,22 +236,88 @@
 
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
-        document.getElementById('cancelOrderBtn')?.addEventListener('click', function(e) {
-            Swal.fire({
-                title: 'Xác nhận hủy đơn hàng?',
-                text: "Bạn sẽ không thể khôi phục thao tác này!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#aaa',
-                confirmButtonText: 'Vâng, hủy đơn!',
-                cancelButtonText: 'Không'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('cancelOrderForm').submit();
-                }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.cancel-order-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-order-id');
+                    const cancelUrl = this.getAttribute('data-cancel-url');
+
+                    Swal.fire({
+                        title: 'Hủy đơn hàng',
+                        text: 'Vui lòng nhập lý do hủy',
+                        input: 'textarea',
+                        inputPlaceholder: 'Nhập lý do hủy (tối thiểu 5 ký tự)...',
+                        inputAttributes: {
+                            rows: 4
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Hủy đơn',
+                        cancelButtonText: 'Đóng',
+                        inputValidator: (value) => {
+                            if (!value) return 'Lý do hủy không được để trống!';
+                            if (value.length < 5)
+                                return 'Lý do hủy phải có ít nhất 5 ký tự!';
+                            if (value.length > 500)
+                                return 'Lý do hủy không được vượt quá 500 ký tự!';
+                        },
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                didOpen: () => Swal.showLoading()
+                            });
+
+                            fetch(cancelUrl, {
+                                    method: 'PATCH',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body: JSON.stringify({
+                                        cancellation_reason: result.value
+                                    })
+                                })
+                                .then(response => {
+                                    if (!response.ok) throw new Error(
+                                        `HTTP error: ${response.status}`);
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' :
+                                            'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' :
+                                            'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) location.reload();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error
+                                            .message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
+                        }
+                    });
+                });
             });
         });
     </script>

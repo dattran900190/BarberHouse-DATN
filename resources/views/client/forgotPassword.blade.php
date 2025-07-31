@@ -33,7 +33,7 @@
                         @csrf
                         <div class="mb-3">
                             <label>Email</label>
-                            <input type="email" name="email" class="form-control" placeholder="Nhập email " >
+                            <input type="text" name="email" class="form-control" placeholder="Nhập email " >
                             @error('email')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror

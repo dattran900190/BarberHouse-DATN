@@ -70,13 +70,13 @@
                     <div class="col-md-6 mb-3">
                         <label for="discount_value">Giá trị giảm giá</label>
                         <div class="input-group">
-                            <input type="number" name="discount_value" id="discount_value" class="form-control"
+                              <input type="text" name="discount_value" class="form-control" id="discount_value"
                                 value="{{ old('discount_value', $promotion->discount_value) }}" placeholder="Nhập giá trị">
                             <span class="input-group-text" id="discount_unit">
                                 {{ old('discount_type', $promotion->discount_type) === 'percent' ? '%' : 'VNĐ' }}
                             </span>
                         </div>
-                        <small class="form-text text-muted">Nếu là phần trăm, tối đa 100%.</small>
+                        <small class="form-text text-muted">Nếu là phần trăm, tối đa 100%.</small><br>
                         @error('discount_value')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -105,7 +105,7 @@
                     {{-- Số lượng --}}
                     <div class="col-md-6 mb-3">
                         <label for="quantity">Số lượng</label>
-                        <input type="number" name="quantity" min="1" max="999" class="form-control"
+                        <input type="number" name="quantity" class="form-control"
                             value="{{ old('quantity', $promotion->quantity) }}">
                         @error('quantity')
                             <small class="text-danger">{{ $message }}</small>

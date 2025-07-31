@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -20,6 +20,7 @@ class ForgotPasswordController extends Controller
 
     public function sendOtp(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|exists:users,email',
         ], [
@@ -32,6 +33,7 @@ class ForgotPasswordController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        $user = User::where('email', $request->email)->first();
         // Xoá OTP cũ
         Otp::where('email', $request->email)->delete();
 
@@ -42,12 +44,17 @@ class ForgotPasswordController extends Controller
             'email' => $request->email,
             'otp' => $otp,
             'expires_at' => $expiresAt,
+            'name' => $user->name, // Lưu tên người dùng
         ]);
 
         // Gửi mail
-        Mail::raw("Mã OTP của bạn là: $otp. Có hiệu lực trong 2 phút.", function ($message) use ($request) {
+        Mail::send('emails.forgotPassword', [
+            'otp' => $otp,
+            'name' => $user->name // ✅ đúng
+        ], function ($message) use ($request) {
             $message->to($request->email)->subject('Mã OTP khôi phục mật khẩu');
         });
+
 
         return redirect()->route('password.verifyForm')->with('email', $request->email);
     }
