@@ -10,7 +10,7 @@
             <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Quản lý đặt lịch</a>
+                <a href="{{ url('admin/promotions') }}">Quản lý đặt lịch</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
@@ -60,12 +60,12 @@
                     <div class="col-md-6">
                         <label for="discount_value" class="form-label">Giá trị giảm giá</label>
                         <div class="input-group">
-                            <input type="number" step="0.01" name="discount_value" class="form-control"
+                            <input type="text" name="discount_value" class="form-control"
                                 value="{{ old('discount_value') }}" placeholder="Nhập giá trị">
                             <span class="input-group-text"
                                 id="discount_unit">{{ old('discount_type') == 'percent' ? '%' : 'VNĐ' }}</span>
                         </div>
-                        <small class="form-text text-muted">Nếu là phần trăm, giá trị tối đa là 100%</small>
+                        <small class="form-text text-muted">Nếu là phần trăm, giá trị tối đa là 100%</small><br>
                         @error('discount_value')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -93,7 +93,7 @@
                     <div class="col-md-6">
                         <label for="quantity" class="form-label">Số lượng</label>
                         <input type="number" name="quantity" class="form-control" value="{{ old('quantity') }}"
-                            placeholder="Nhập số lượng" min="1" max="999">
+                            placeholder="Nhập số lượng">
                         @error('quantity')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -110,10 +110,10 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label for="required_point" class="form-label">Điểm yêu cầu</label>
-                        <input type="number" name="required_point" class="form-control"
-                            value="{{ old('required_point', 0) }}" placeholder="Điểm cần để đổi mã">
-                        @error('required_point')
+                        <label for="required_points" class="form-label">Điểm yêu cầu</label>
+                        <input type="number" name="required_points" class="form-control"
+                            value="{{ old('required_points', 0) }}" placeholder="Điểm cần để đổi mã">
+                        @error('required_points')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>

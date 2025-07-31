@@ -33,6 +33,12 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
+                <a href="{{ url('admin/volumes') }}">Quản lý đặt hàng</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
                 <a href="{{ url('admin/volumes/create') }}">Thêm dung tích</a>
             </li>
         </ul>

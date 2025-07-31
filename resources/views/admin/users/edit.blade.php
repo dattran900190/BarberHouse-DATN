@@ -34,7 +34,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="#">Sửa người dùng</a>
+                <a href="{{ url('admin/users/' . $user->id . '/edit') }}">Sửa người dùng</a>
             </li>
         </ul>
     </div>
@@ -64,7 +64,7 @@
                     </div>
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" value="{{ old('email', $user->email) }}"
+                        <input type="text" class="form-control" name="email" value="{{ old('email', $user->email) }}"
                             readonly>
                         @error('email')
                             <div class="text-danger">{{ $message }}</div>
@@ -140,7 +140,7 @@
                         <select class="form-control" name="status" {{ $canEditStatus  ? '' : 'disabled' }}>
                             <option value="active" {{ old('status', $user->status) == 'active' ? 'selected' : '' }}>Đang
                                 hoạt động</option>
-                            <option value="banned" {{ old('status', $user->status) == 'banned' ? 'selected' : '' }}>Bị khóa
+                            <option value="banned" {{ old('status', $user->status) == 'banned' ? 'selected' : '' }}>Không hoạt động
                             </option>
                         </select>
 

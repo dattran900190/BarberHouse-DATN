@@ -3,6 +3,15 @@
 @section('title', 'Tạo lịch thợ')
 
 @section('content')
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div class="page-header">
         <h3 class="fw-bold mb-3">Tạo Lịch Nghỉ </h3>
         <ul class="breadcrumbs mb-3">
@@ -65,8 +74,8 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="status" class="form-label">Loại lịch</label>
-                            <select name="status" id="status" class="form-control @error('status') is-invalid @enderror"
-                                required>
+                            <select name="status" id="status"
+                                class="form-control @error('status') is-invalid @enderror">
                                 <option value="">-- Chọn loại lịch --</option>
                                 <option value="off" {{ old('status') == 'off' ? 'selected' : '' }}>Nghỉ cả ngày</option>
                                 <option value="custom" {{ old('status') == 'custom' ? 'selected' : '' }}>Thay đổi giờ làm

@@ -35,7 +35,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Quản lý đặt lịch</a>
+                <a href="{{ url('admin/services') }}">Quản lý đặt lịch</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
@@ -49,12 +49,12 @@
     <div class="card">
         <div class="card-header text-white d-flex justify-content-between align-items-center">
             <div class="card-title">Danh sách dịch vụ</div>
-             @if ($currentRole == 'admin')
-            <a href="{{ route('services.create') }}"
-                class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
-                <i class="fas fa-plus"></i>
-                <span class="ms-2">Thêm dịch vụ</span>
-            </a>
+            @if ($currentRole == 'admin')
+                <a href="{{ route('services.create') }}"
+                    class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
+                    <i class="fas fa-plus"></i>
+                    <span class="ms-2">Thêm dịch vụ</span>
+                </a>
             @endif
         </div>
 

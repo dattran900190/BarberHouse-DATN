@@ -15,7 +15,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Quản lý chung</a>
+                <a href="{{ url('admin/users') }}">Quản lý chung</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
@@ -49,7 +49,7 @@
                     </div>
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" value="{{ old('email') }}">
+                        <input type="text" class="form-control" name="email" value="{{ old('email') }}">
                         @error('email')<div class="text-danger">{{ $message }}</div>@enderror
                     </div>
                 </div>

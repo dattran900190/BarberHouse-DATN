@@ -12,7 +12,7 @@ class PromotionController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $filter = $request->input('filter', 'all'); 
+        $filter = $request->input('filter', 'all');
 
         $query = match ($filter) {
             '1' => Promotion::query(),
@@ -76,60 +76,60 @@ class PromotionController extends Controller
         return redirect()->route('promotions.index', ['page' => $currentPage])->with('success', 'Mã giảm giá đã được cập nhật.');
     }
 
-    public function show(Promotion $promotion)
+    public function show($id)
     {
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('promotions.index')->with('error', 'Bạn không có quyền xem chi tiết mã giảm giá.');
         }
-
+        $promotion = Promotion::withTrashed()->findOrFail($id);
         return view('admin.promotions.show', compact('promotion'));
     }
 
     /**
      * Xóa vĩnh viễn mã giảm giá (chỉ nếu đã soft delete trước đó)
      */
-   public function destroy($id)
-{
-    if (Auth::user()->role === 'admin_branch') {
-        return response()->json([
-            'success' => false,
-            'message' => 'Bạn không có quyền xóa mã giảm giá.'
-        ]);
-    }
-
-    $promotion = Promotion::withTrashed()->findOrFail($id);
-
-    // Nếu mã chưa bị xóa mềm thì không cho xóa cứng luôn
-    if (!$promotion->trashed()) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Bạn cần xóa mềm trước khi xoá vĩnh viễn.'
-        ]);
-    }
-
-    try {
-        $promotion->forceDelete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Đã xoá vĩnh viễn mã giảm giá.'
-        ]);
-    } catch (\Illuminate\Database\QueryException $e) {
-        // Kiểm tra mã lỗi SQL nếu muốn chính xác hơn (1451 là "Cannot delete or update a parent row...")
-        if ($e->getCode() == 23000) {
+    public function destroy($id)
+    {
+        if (Auth::user()->role === 'admin_branch') {
             return response()->json([
                 'success' => false,
-                'message' => 'Mã giảm giá đang được sử dụng và không thể xóa.'
+                'message' => 'Bạn không có quyền xóa mã giảm giá.'
             ]);
         }
 
-        // Trường hợp lỗi khác
-        return response()->json([
-            'success' => false,
-            'message' => 'Đã xảy ra lỗi khi xóa: ' . $e->getMessage()
-        ]);
+        $promotion = Promotion::withTrashed()->findOrFail($id);
+
+        // Nếu mã chưa bị xóa mềm thì không cho xóa cứng luôn
+        if (!$promotion->trashed()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn cần xóa mềm trước khi xoá vĩnh viễn.'
+            ]);
+        }
+
+        try {
+            $promotion->forceDelete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã xoá vĩnh viễn mã giảm giá.'
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Kiểm tra mã lỗi SQL nếu muốn chính xác hơn (1451 là "Cannot delete or update a parent row...")
+            if ($e->getCode() == 23000) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Mã giảm giá đang được sử dụng và không thể xóa.'
+                ]);
+            }
+
+            // Trường hợp lỗi khác
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi xóa: ' . $e->getMessage()
+            ]);
+        }
     }
-}
 
     /**
      * Xoá mềm mã giảm giá

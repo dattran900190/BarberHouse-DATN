@@ -21,7 +21,7 @@ class BranchRequest extends FormRequest
             'name' => 'required|string|max:255',
             'address' => 'required|string',
             'phone' => 'required|string|max:20',
-            'google_map_url' => 'nullable|url',
+            'google_map_url' => ['required', 'url', 'regex:/^https:\/\/www\.google\.com\/maps\/embed\?pb=.*/'],
             'image' => 'nullable|max:2048',
             'content' => 'nullable|string', // 
         ];
@@ -37,10 +37,15 @@ class BranchRequest extends FormRequest
             'address.string' => 'Địa chỉ phải là kiểu chuỗi ký tự',
             'phone.required' => 'Số điện thoại không được để trống',
             'phone.string' => 'Số điện thoại phải là kiểu chuỗi ký tự',
-            'phone.max' => 'Số điện thoại không được vượt quá 10 ký tự',
+            'phone.max' => 'Số điện thoại không được vượt quá 20 ký tự',
             'image.max' => 'Ảnh đại diện không được vượt quá 2MB',
+            'image.image' => 'Ảnh đại diện phải là một tệp hình ảnh',
+            'image.mimes' => 'Ảnh đại diện phải có định dạng: jpeg, png, jpg, gif, svg',
             'content.string' => 'Nội dung phải là kiểu chuỗi ký tự',
-            'google_map_url' => ['nullable', 'url', 'regex:/^https:\/\/www\.google\.com\/maps\/embed\?pb=.*/'],
+            'google_map_url.required' => 'URL Google Map không được để trống',
+            'google_map_url.url' => 'URL Google Map không hợp lệ',
+            'google_map_url.regex' => 'URL Google Map không hợp lệ. Vui lòng sử dụng định dạng https://www.google.com/maps/embed?pb=...',
+
 
         ];
     }

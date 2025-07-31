@@ -16,19 +16,20 @@ class BarberScheduleController extends Controller
         $search = $request->input('search');
         $user = Auth::user();
 
-        // Nếu là admin_branch, chỉ lấy chi nhánh của chính họ
+        // Nếu là admin_branch, chỉ lấy chi nhánh của chính họ (không cần phân trang vì chỉ 1 chi nhánh)
         if ($user->role === 'admin_branch') {
             $branches = Branch::where('id', $user->branch_id)
                 ->when($search, function ($query) use ($search) {
                     return $query->where('name', 'like', "%{$search}%");
                 })
-                ->get();
+                ->paginate(10); // vẫn dùng paginate để giữ cấu trúc
         } else {
-            // Nếu là admin thường, lấy tất cả
+            // Nếu là admin thường, lấy tất cả chi nhánh có phân trang
             $branches = Branch::when($search, function ($query) use ($search) {
                 return $query->where('name', 'like', "%{$search}%");
             })
-                ->orderBy('created_at', 'desc')->get();
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
         }
 
         $holidays = BarberSchedule::where('status', 'holiday')
@@ -40,9 +41,9 @@ class BarberScheduleController extends Controller
         return view('admin.barber_schedules.index', compact('branches', 'search', 'holidays'));
     }
 
-
     public function show($id)
     {
+
         return redirect()->route('admin.barber_schedules.index')
             ->with('error', 'Trang này không tồn tại hoặc không được hỗ trợ.');
     }
@@ -51,13 +52,16 @@ class BarberScheduleController extends Controller
     {
         $branch = Branch::with(['barbers.schedules'])->findOrFail($branchId);
         $barbers = $branch->barbers;
-
+        $barbers = $branch->barbers()->paginate(10); // 10 thợ mỗi trang
+        //phân trang lịch trình thợ 
+        foreach ($barbers as $barber) {
+            $barber->schedules = $barber->schedules()->paginate(3);
+        }
         return view('admin.barber_schedules.show', compact('branch', 'barbers'));
     }
 
     public function create($branchId = null)
     {
-
         $branch = $branchId ? Branch::findOrFail($branchId) : null;
         $barbers = $branch ? $branch->barbers()->whereNotNull('branch_id')->get() : Barber::whereNotNull('branch_id')->get();
 
@@ -115,8 +119,6 @@ class BarberScheduleController extends Controller
         return redirect()->route('barber_schedules.index')->with('success', 'Tạo lịch nghỉ lễ thành công!');
     }
 
-
-
     public function editHoliday($id)
     {
         if (Auth::user()->role === 'admin_branch') {
@@ -171,12 +173,15 @@ class BarberScheduleController extends Controller
         return redirect()->route('barber_schedules.index')->with('success', 'Cập nhật lịch nghỉ lễ thành công!');
     }
 
-
     public function deleteHoliday($id)
     {
         if (Auth::user()->role === 'admin_branch') {
-            return redirect()->route('barber_schedules.index')->with('error', 'Bạn không có quyền xóa lịch nghỉ lễ.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xoá lịch nghỉ lễ.'
+            ], 403);
         }
+
         $schedule = BarberSchedule::findOrFail($id);
 
         BarberSchedule::where('status', 'holiday')
@@ -185,10 +190,64 @@ class BarberScheduleController extends Controller
             ->where('note', $schedule->note)
             ->delete();
 
-        return redirect()->route('barber_schedules.index')->with('success', 'Đã xoá lịch nghỉ lễ thành công!');
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã xoá lịch nghỉ lễ thành công!'
+        ]);
     }
 
+    /**
+     * Kiểm tra trùng lịch cho thợ trong ngày cụ thể
+     */
+    private function checkScheduleConflict($barberId, $scheduleDate, $status, $startTime = null, $endTime = null, $excludeId = null)
+    {
+        $query = BarberSchedule::where('barber_id', $barberId)
+            ->where('schedule_date', $scheduleDate);
 
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        $existingSchedules = $query->get();
+
+        foreach ($existingSchedules as $existing) {
+            // Nếu có lịch nghỉ cả ngày hoặc nghỉ lễ trong ngày đó
+            if (in_array($existing->status, ['off', 'holiday'])) {
+                return [
+                    'conflict' => true,
+                    'message' => $existing->status === 'off'
+                        ? 'Thợ đã có lịch nghỉ cả ngày trong ngày này.'
+                        : 'Ngày này là lịch nghỉ lễ.'
+                ];
+            }
+
+            // Nếu đang tạo lịch nghỉ cả ngày nhưng đã có lịch khác
+            if ($status === 'off') {
+                return [
+                    'conflict' => true,
+                    'message' => 'Không thể tạo lịch nghỉ cả ngày vì thợ đã có lịch làm việc trong ngày này.'
+                ];
+            }
+
+            // Kiểm tra trùng giờ cho lịch custom
+            if ($status === 'custom' && $existing->status === 'custom' && $existing->start_time && $existing->end_time) {
+                $existingStart = Carbon::parse($existing->start_time);
+                $existingEnd = Carbon::parse($existing->end_time);
+                $newStart = Carbon::parse($startTime);
+                $newEnd = Carbon::parse($endTime);
+
+                // Kiểm tra overlap
+                if ($newStart->lt($existingEnd) && $newEnd->gt($existingStart)) {
+                    return [
+                        'conflict' => true,
+                        'message' => "Thời gian bị trùng với lịch hiện tại ({$existing->start_time} - {$existing->end_time})."
+                    ];
+                }
+            }
+        }
+
+        return ['conflict' => false];
+    }
 
     public function store(BarberSchedulesRequest $request)
     {
@@ -203,6 +262,16 @@ class BarberScheduleController extends Controller
             $data['end_time'] = null;
         }
 
+        // ❗ Kiểm tra trùng lịch trong cùng ngày (với bất kỳ status nào)
+        $exists = BarberSchedule::where('barber_id', $data['barber_id'])
+            ->where('schedule_date', $data['schedule_date'])
+            ->exists();
+
+        if ($exists) {
+            return back()->withErrors(['msg' => 'Đã tồn tại lịch làm việc cho thợ này trong ngày đã chọn.'])->withInput();
+        }
+
+        // Nếu là custom, tiếp tục kiểm tra trùng giờ
         if ($data['status'] === 'custom') {
             $exists = BarberSchedule::where('barber_id', $data['barber_id'])
                 ->where('schedule_date', $data['schedule_date'])
@@ -233,13 +302,17 @@ class BarberScheduleController extends Controller
             ->with('success', 'Thêm lịch thành công!');
     }
 
+
     public function edit($id)
     {
         $schedule = BarberSchedule::findOrFail($id);
         $branch = $schedule->barber->branch;
         $barbers = $branch->barbers;
 
-        $schedule->schedule_date = optional($schedule->schedule_date)->format('Y-m-d');
+        // Sửa tại đây
+        if ($schedule->schedule_date) {
+            $schedule->schedule_date = Carbon::parse($schedule->schedule_date)->format('Y-m-d');
+        }
 
         return view('admin.barber_schedules.edit', compact('schedule', 'branch', 'barbers'));
     }
@@ -247,32 +320,35 @@ class BarberScheduleController extends Controller
     public function update(BarberSchedulesRequest $request, $id)
     {
         $data = $request->validated();
-
-        if ($data['status'] === 'off') {
-            $data['start_time'] = null;
-            $data['end_time'] = null;
-        }
-
-        if ($data['status'] === 'custom') {
+        if ($data['status'] !== 'custom') {
             $exists = BarberSchedule::where('barber_id', $data['barber_id'])
                 ->where('schedule_date', $data['schedule_date'])
                 ->where('id', '!=', $id)
-                ->where(function ($query) use ($data) {
-                    $query->where(function ($q) use ($data) {
-                        $q->where('start_time', '<=', $data['start_time'])
-                            ->where('end_time', '>', $data['start_time']);
-                    })->orWhere(function ($q) use ($data) {
-                        $q->where('start_time', '<', $data['end_time'])
-                            ->where('end_time', '>=', $data['end_time']);
-                    })->orWhere(function ($q) use ($data) {
-                        $q->where('start_time', '>=', $data['start_time'])
-                            ->where('end_time', '<=', $data['end_time']);
-                    });
-                })->exists();
+                ->exists();
 
             if ($exists) {
-                return back()->withErrors(['msg' => 'Thời gian bị trùng với lịch hiện tại của thợ.'])->withInput();
+                return back()->withErrors(['msg' => 'Đã tồn tại lịch khác trong ngày này.'])->withInput();
             }
+        }
+
+        // Kiểm tra trùng lịch (loại trừ record hiện tại)
+        $conflictCheck = $this->checkScheduleConflict(
+            $data['barber_id'],
+            $data['schedule_date'],
+            $data['status'],
+            $data['start_time'] ?? null,
+            $data['end_time'] ?? null,
+            $id // loại trừ record hiện tại
+        );
+
+        if ($conflictCheck['conflict']) {
+            return back()->withErrors(['msg' => $conflictCheck['message']])->withInput();
+        }
+
+        // Xử lý dữ liệu theo status
+        if ($data['status'] === 'off') {
+            $data['start_time'] = null;
+            $data['end_time'] = null;
         }
 
         $schedule = BarberSchedule::findOrFail($id);
@@ -284,9 +360,19 @@ class BarberScheduleController extends Controller
 
     public function destroy($id)
     {
-        $schedule = BarberSchedule::findOrFail($id);
-        $schedule->delete();
+        try {
+            $schedule = BarberSchedule::findOrFail($id);
+            $schedule->delete();
 
-        return redirect()->back()->with('success', 'Hủy lịch thành công!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Xóa lịch làm việc thành công!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

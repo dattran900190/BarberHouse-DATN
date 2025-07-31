@@ -63,7 +63,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Quản lý đặt lịch</a>
+                <a href="{{ url('admin/appointments') }}">Quản lý đặt lịch</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>

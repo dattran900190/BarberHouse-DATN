@@ -20,7 +20,6 @@
         $currentRole = Auth::user()->role;
     @endphp
 
-    {{-- Header giống trang thợ --}}
     <div class="page-header">
         <h3 class="fw-bold mb-3">Danh sách Chi nhánh</h3>
         <ul class="breadcrumbs mb-3">
@@ -34,6 +33,12 @@
             </li>
             <li class="nav-item">
                 <a href="{{ url('admin/branches') }}">Quản lý Chi nhánh</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/branches') }}">Chi nhánh</a>
             </li>
         </ul>
     </div>
@@ -119,6 +124,11 @@
                                                     href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}"> --}}
 
                                             <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
+                                                    <i class="fas fa-eye me-2"></i> Xem
+                                                </a>
+
                                                 @if ($branch->trashed())
                                                     <button type="button" class="dropdown-item text-success restore-btn"
                                                         data-id="{{ $branch->id }}">
@@ -131,10 +141,6 @@
                                                     </button>
                                                 @else
                                                     <a class="dropdown-item"
-                                                        href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
-                                                        <i class="fas fa-eye me-2"></i> Xem
-                                                    </a>
-                                                    <a class="dropdown-item"
                                                         href="{{ route('branches.edit', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
                                                         <i class="fas fa-edit me-2"></i> Sửa
                                                     </a>
@@ -144,6 +150,7 @@
                                                         <i class="fas fa-times me-2"></i> Xoá mềm
                                                     </button>
                                                 @endif
+
                                             </li>
                                         </ul>
                                     </div>
@@ -151,15 +158,14 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-muted">Không tìm thấy chi nhánh phù hợp.</td>
+                                <td colspan="7" class="text-muted">Không tìm thấy chi nhánh phù hợp.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-
-            <div class="d-flex justify-content-center mt-4">
-                {{ $branches->links('pagination::bootstrap-5') }}
+            <div class="d-flex justify-content-center mt-3">
+                {{ $branches->links() }}
             </div>
         </div>
     </div>
@@ -190,39 +196,62 @@
             text,
             route,
             method = 'POST',
-            onSuccess = () => location.reload()
+            withInput = false, // Thêm tùy chọn hiển thị input
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload() // Thay reload bằng callback linh hoạt
         }) {
             document.querySelectorAll(selector).forEach(button => {
                 button.addEventListener('click', function(event) {
                     event.preventDefault();
-                    const branchId = this.getAttribute('data-id');
-                    Swal.fire({
+                    const appointmentId = this.getAttribute('data-id');
+
+                    const swalOptions = {
                         title,
                         text,
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: 'Xác nhận',
                         cancelButtonText: 'Hủy',
+                        width: '400px',
                         customClass: {
                             popup: 'custom-swal-popup'
-                        },
-                        width: '400px'
-                    }).then((result) => {
+                        }
+                    };
+
+                    if (withInput) {
+                        swalOptions.input = 'textarea';
+                        swalOptions.inputPlaceholder = inputPlaceholder;
+                        if (inputValidator) {
+                            swalOptions.inputValidator = inputValidator;
+                        }
+                    }
+
+                    Swal.fire(swalOptions).then((result) => {
                         if (result.isConfirmed) {
                             Swal.fire({
                                 title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
                                 allowOutsideClick: false,
                                 customClass: {
-                                    popup: 'custom-swal-popup'
+                                    popup: 'custom-swal-popup' // CSS
                                 },
-                                didOpen: () => Swal.showLoading()
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
                             });
-                            fetch(route.replace(':id', branchId), {
+
+                            const body = withInput ? JSON.stringify({
+                                no_show_reason: result.value || 'Không có lý do'
+                            }) : undefined;
+
+                            fetch(route.replace(':id', appointmentId), {
                                     method,
                                     headers: {
                                         'Content-Type': 'application/json',
                                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                    }
+                                    },
+                                    body
                                 })
                                 .then(response => response.json())
                                 .then(data => {
@@ -239,6 +268,7 @@
                                     });
                                 })
                                 .catch(error => {
+                                    console.error('Error:', error);
                                     Swal.close();
                                     Swal.fire({
                                         title: 'Lỗi!',
@@ -269,7 +299,7 @@
             selector: '.force-delete-btn',
             title: 'Xoá vĩnh viễn',
             text: 'Bạn có chắc chắn muốn xoá vĩnh viễn chi nhánh này? Hành động này không thể hoàn tác.',
-            route: '{{ route('branches.destroy', ':id') }}',
+            route: '{{ route('branches.forceDelete', ':id') }}',
             method: 'DELETE'
         });
 
