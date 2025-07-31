@@ -34,11 +34,7 @@
             </li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
             <li class="nav-item">
-                <a href="{{ route('refunds.index') }}">Quản lý hoàn tiền</a>
-            </li>
-            <li class="separator"><i class="icon-arrow-right"></i></li>
-            <li class="nav-item">
-                <a href="{{ url('admin/refunds') }}">Yêu cầu hoàn tiền</a>
+                <a href="{{ url('admin/refunds') }}">Danh sách hoàn tiền</a>
             </li>
         </ul>
     </div>
@@ -57,7 +53,8 @@
                         <i class="fa fa-search"></i>
                     </button>
                 </div>
-                <select name="filter" class="form-select" style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
+                <select name="filter" class="form-select"
+                    style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
                     <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả</option>
                     <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Còn hoạt động</option>
                     <option value="deleted" {{ request('filter') == 'deleted' ? 'selected' : '' }}>Đã xoá</option>
@@ -114,7 +111,10 @@
                                         <th>Mã đơn hàng</th>
                                         <th>Số tiền hoàn</th>
                                         <th>Trạng thái</th>
-                                        <th>Lý do từ chối</th>
+                                        @if ($key === 'rejected')
+                                            <th>Lý do từ chối</th>
+                                        @endif
+
                                         <th>Ngày tạo</th>
                                         <th>Tình trạng</th>
                                         @if ($currentRole == 'admin')
@@ -127,8 +127,10 @@
                                         <tr data-refund-id="{{ $refund->id }}">
                                             <td>{{ $refunds->firstItem() + $index }}</td>
                                             <td>{{ $refund->user->name ?? 'N/A' }}</td>
-                                            <td>{{ $refund->order->order_code ?? ($refund->appointment->appointment_code ?? 'Không có') }}</td>
-                                            <td class="text-end">{{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ</td>
+                                            <td>{{ $refund->order->order_code ?? ($refund->appointment->appointment_code ?? 'Không có') }}
+                                            </td>
+                                            <td class="text-end">{{ number_format($refund->refund_amount, 0, ',', '.') }}
+                                                VNĐ</td>
                                             <td class="text-center">
                                                 @php
                                                     $map = [
@@ -144,7 +146,9 @@
                                                 @endphp
                                                 <span class="badge bg-{{ $info['class'] }}">{{ $info['label'] }}</span>
                                             </td>
-                                            <td>{{ $refund->reject_reason ?? 'N/A' }}</td>
+                                            @if ($key === 'rejected')
+                                                <td>{{ $refund->reject_reason ?? 'N/A' }}</td>
+                                            @endif
                                             <td>{{ $refund->created_at->format('d/m/Y H:i') }}</td>
                                             <td class="text-center">
                                                 @if ($refund->trashed())
@@ -174,7 +178,7 @@
                                                                         <i class="fas fa-undo me-2"></i> Khôi phục
                                                                     </button>
                                                                 </li>
-                                                            @else
+                                                            @elseif (in_array($refund->refund_status, ['refunded', 'rejected']))
                                                                 <li>
                                                                     <button
                                                                         class="dropdown-item text-danger soft-delete-btn"
@@ -183,6 +187,7 @@
                                                                     </button>
                                                                 </li>
                                                             @endif
+
                                                         </ul>
                                                     </div>
                                                 </td>
@@ -190,7 +195,15 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="{{ $currentRole == 'admin' ? 9 : 8 }}" class="text-center text-muted">Không có yêu cầu nào.</td>
+                                            @php
+                                                $colspan = $currentRole == 'admin' ? 8 : 7;
+                                                if ($key === 'rejected') {
+                                                    $colspan += 1;
+                                                } // thêm cột lý do
+                                            @endphp
+                                            <td colspan="{{ $colspan }}" class="text-center text-muted">Không có yêu
+                                                cầu nào.</td>
+
                                         </tr>
                                     @endforelse
                                 </tbody>
