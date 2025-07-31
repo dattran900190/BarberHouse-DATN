@@ -24,7 +24,7 @@ class PromotionRequest extends FormRequest
                 'max:10',
                 Rule::unique('promotions')->ignore($promotionId),
             ],
-            'required_points' => 'nullable|integer|min:10',
+            'required_points' => 'nullable|integer|min:0',
             'usage_limit' => 'required|integer|min:1',
             'discount_type' => 'required|in:fixed,percent',
             'discount_value' => 'required|numeric|min:0.01',
@@ -35,7 +35,6 @@ class PromotionRequest extends FormRequest
             'end_date' => 'required|date|after:start_date',
             'is_active' => 'nullable|boolean',
             'description' => 'nullable|string|max:300',
-            'required_point' => 'min:5'
         ];
     }
 
@@ -55,7 +54,7 @@ class PromotionRequest extends FormRequest
             'end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
             'is_active.boolean' => 'Trạng thái hoạt động phải là có hoặc không.',
             'required_points.integer' => 'Điểm yêu cầu phải là số nguyên.',
-            'required_points.min' => 'Điểm yêu cầu phải lớn hơn hoặc bằng 10.',
+            'required_points.min' => 'Điểm yêu cầu phải lớn hơn hoặc bằng 0.',
             'usage_limit.integer' => 'Giới hạn sử dụng phải là số nguyên.',
             'usage_limit.min' => 'Giới hạn sử dụng phải lớn hơn hoặc bằng 1.',
             'discount_value.numeric' => 'Giá trị giảm giá phải là số.',
@@ -69,7 +68,7 @@ class PromotionRequest extends FormRequest
             'quantity.min' => 'Số lượng mã giảm giá phải lớn hơn hoặc bằng 1.',
             'description.string' => 'Mô tả phải là chuỗi.',
             'description.max' => 'Mô tả không được vượt quá 300 ký tự.',
-            'required_point.min' => 'Điểm thấp nhất là 5 điểm'
+           
         ];
     }
     public function withValidator($validator)

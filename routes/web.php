@@ -40,7 +40,7 @@ use App\Http\Controllers\Client\ReviewController as ClientReviewController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\CustomerImageController;
 use Illuminate\Support\Facades\Broadcast;
-use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Client\ForgotPasswordController;
 
 Broadcast::routes(['middleware' => ['auth']]);
 
@@ -87,10 +87,10 @@ Route::get('/mua-ngay/checkout', [CartController::class, 'showBuyNowCheckout'])-
 //checkout
 Route::get('/thanh-toan', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::post('/thanh-toan/process', [CartController::class, 'processCheckout'])->name('cart.checkout.process');
-Route::get('/dat-hang-thanh-cong', function () {
-    return view('client.order-success');
-})->name('order.success');
-Route::post('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('client.orders.cancel');
+// Route::get('/dat-hang-thanh-cong', function () {
+//     return view('client.order-success');
+// })->name('order.success');
+Route::patch('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('client.orders.cancel');
 
 // ==== Đặt lịch ====
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');

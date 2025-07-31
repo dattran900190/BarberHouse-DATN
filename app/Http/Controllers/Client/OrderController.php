@@ -56,33 +56,29 @@ class OrderController extends Controller
         ]);
     }
 
-    public function cancel(Order $order)
+    public function cancel(Request $request, $id)
     {
-        if ($order->user_id !== Auth::id()) {
-            abort(403, 'Không có quyền truy cập đơn hàng này.');
+        $order = Order::findOrFail($id);
+
+        if ($order->status !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ có thể hủy đơn hàng khi đang chờ xử lý.'
+            ], 400);
         }
 
-        if ($order->status === 'cancelled') {
-            return redirect()->route('client.orderHistory')->with('error', 'Đơn hàng đã được hủy trước đó!');
-        }
+        $validated = $request->validate([
+            'cancellation_reason' => 'required|string|min:5|max:500',
+        ]);
 
-        DB::transaction(function () use ($order) {
-            $order->status = 'cancelled';
-            $order->save();
+        $order->status = 'cancelled';
+        $order->cancellation_reason = $validated['cancellation_reason'];
+        $order->cancellation_type = 'user'; // Hoặc gì đó bạn dùng
+        $order->save();
 
-            foreach ($order->items as $item) {
-                $variant = \App\Models\ProductVariant::find($item->product_variant_id);
-                if ($variant) {
-                    $variant->increment('stock', $item->quantity);
-
-                    $product = $variant->product;
-                    if ($product) {
-                        $product->updateStockFromVariants();
-                    }
-                }
-            }
-        });
-
-        return redirect()->route('client.orderHistory')->with('success', 'Đơn hàng đã được hủy và hàng đã trả về kho.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Đơn hàng đã được hủy thành công.'
+        ]);
     }
 }

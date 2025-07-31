@@ -13,7 +13,7 @@
         @endif
     @endforeach
 
-      @php
+    @php
         $currentRole = Auth::user()->role;
     @endphp
     <div class="page-header">
@@ -37,11 +37,11 @@
         <div class="card-header text-white d-flex justify-content-between align-items-center">
             <div class="card-title">Danh sách mã giảm giá</div>
             @if ($currentRole == 'admin')
-            <a href="{{ route('promotions.create') }}"
-                class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
-                <i class="fas fa-plus"></i>
-                <span class="ms-2">Thêm mã giảm giá</span>
-            </a>
+                <a href="{{ route('promotions.create') }}"
+                    class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
+                    <i class="fas fa-plus"></i>
+                    <span class="ms-2">Thêm mã giảm giá</span>
+                </a>
             @endif
         </div>
 
@@ -108,6 +108,13 @@
                                         <ul class="dropdown-menu dropdown-menu-end"
                                             aria-labelledby="promotionActions{{ $promo->id }}">
                                             @if ($promo->trashed())
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('promotions.show', ['promotion' => $promo->id]) }}">
+                                                        <i class="fas fa-eye me-1"></i> Xem
+                                                    </a>
+                                                </li>
+                                               <hr class="dropdown-divider">
                                                 <li>
                                                     <button type="button" class="dropdown-item text-success restore-btn"
                                                         data-id="{{ $promo->id }}">
@@ -200,7 +207,9 @@
                             popup: 'custom-swal-popup'
                         },
                         width: '400px',
-                        customClass: { popup: 'custom-swal-popup' }
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             Swal.fire({
@@ -214,37 +223,37 @@
                             });
 
                             fetch(route.replace(':id', promoId), {
-                                method,
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                }
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                Swal.close();
-                                Swal.fire({
-                                    title: data.success ? 'Thành công!' : 'Lỗi!',
-                                    text: data.message,
-                                    icon: data.success ? 'success' : 'error',
-                                    customClass: {
-                                        popup: 'custom-swal-popup'
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                     }
-                                }).then(() => {
-                                    if (data.success) onSuccess();
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
                                 });
-                            })
-                            .catch(error => {
-                                Swal.close();
-                                Swal.fire({
-                                    title: 'Lỗi!',
-                                    text: 'Đã có lỗi xảy ra: ' + error.message,
-                                    icon: 'error',
-                                    customClass: {
-                                        popup: 'custom-swal-popup'
-                                    }
-                                });
-                            });
                         }
                     });
                 });
@@ -279,4 +288,3 @@
         });
     </script>
 @endsection
-
