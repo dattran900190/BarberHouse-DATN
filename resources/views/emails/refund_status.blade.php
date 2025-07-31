@@ -14,7 +14,7 @@
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
                 <tr>
                     <td style="padding: 8px; border: 1px solid #ddd;"><strong>Mã đơn hàng:</strong></td>
-                    <td style="padding: 8px; border: 1px solid #ddd;">{{ $order->order_code ?? 'N/A' }}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd;">{{ $order->order_code ?? ($appointment->appointment_code ?? 'N/A') }}</td>
                 </tr>
                 <tr>
                     <td style="padding: 8px; border: 1px solid #ddd;"><strong>Số tiền hoàn:</strong></td>
@@ -37,7 +37,7 @@
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
                 <tr>
                     <td style="padding: 8px; border: 1px solid #ddd;"><strong>Mã đơn hàng:</strong></td>
-                    <td style="padding: 8px; border: 1px solid #ddd;">{{ $order->order_code ?? 'N/A' }}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd;">{{ $order->order_code ?? ($appointment->appointment_code ?? 'N/A') }}</td>
                 </tr>
                 <tr>
                     <td style="padding: 8px; border: 1px solid #ddd;"><strong>Số tiền yêu cầu:</strong></td>
@@ -47,6 +47,12 @@
                     <td style="padding: 8px; border: 1px solid #ddd;"><strong>Lý do yêu cầu:</strong></td>
                     <td style="padding: 8px; border: 1px solid #ddd;">{{ $refund->reason }}</td>
                 </tr>
+                @if ($reject_reason)
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Lý do từ chối:</strong></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ $reject_reason }}</td>
+                    </tr>
+                @endif
             </table>
         @endif
 

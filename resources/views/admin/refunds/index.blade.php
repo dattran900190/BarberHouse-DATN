@@ -114,6 +114,7 @@
                                         <th>Mã đơn hàng</th>
                                         <th>Số tiền hoàn</th>
                                         <th>Trạng thái</th>
+                                        <th>Lý do từ chối</th>
                                         <th>Ngày tạo</th>
                                         <th>Tình trạng</th>
                                         @if ($currentRole == 'admin')
@@ -126,10 +127,8 @@
                                         <tr data-refund-id="{{ $refund->id }}">
                                             <td>{{ $refunds->firstItem() + $index }}</td>
                                             <td>{{ $refund->user->name ?? 'N/A' }}</td>
-                                            <td>{{ $refund->order->order_code ?? ($refund->appointment->appointment_code ?? 'Không có') }}
-                                            </td>
-                                            <td class="text-end">{{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ
-                                            </td>
+                                            <td>{{ $refund->order->order_code ?? ($refund->appointment->appointment_code ?? 'Không có') }}</td>
+                                            <td class="text-end">{{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ</td>
                                             <td class="text-center">
                                                 @php
                                                     $map = [
@@ -145,6 +144,7 @@
                                                 @endphp
                                                 <span class="badge bg-{{ $info['class'] }}">{{ $info['label'] }}</span>
                                             </td>
+                                            <td>{{ $refund->reject_reason ?? 'N/A' }}</td>
                                             <td>{{ $refund->created_at->format('d/m/Y H:i') }}</td>
                                             <td class="text-center">
                                                 @if ($refund->trashed())
@@ -190,7 +190,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="8" class="text-center text-muted">Không có yêu cầu nào.</td>
+                                            <td colspan="{{ $currentRole == 'admin' ? 9 : 8 }}" class="text-center text-muted">Không có yêu cầu nào.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

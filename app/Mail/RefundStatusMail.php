@@ -31,8 +31,10 @@ class RefundStatusMail extends Mailable
                     ->with([
                         'user' => $this->refund->user,
                         'order' => $this->refund->order,
+                        'appointment' => $this->refund->appointment,
                         'refund' => $this->refund,
                         'status' => $this->status,
+                        'reject_reason' => $this->status === 'rejected' ? $this->refund->reject_reason : null,
                     ]);
     }
 }
