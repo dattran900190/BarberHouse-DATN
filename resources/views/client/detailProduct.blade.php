@@ -101,7 +101,7 @@
                                 <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
 
                                 @guest
-                                    <button type="button"
+                                    <button type="submit"
 class="btn btn-danger d-flex align-items-center justify-content-center gap-2">
                                         <i class="fas fa-bolt"></i> <span>Mua ngay</span>
                                     </button>
@@ -172,7 +172,7 @@ class="btn btn-danger d-flex align-items-center justify-content-center gap-2">
                                             <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
                                             <input type="hidden" name="quantity" value="1">
                                             @guest
-                                                <button type="button" class="btn-outline-buy">Mua ngay</button>
+                                                <button type="submit" class="btn-outline-buy">Mua ngay</button>
                                             @else
                                                 <button type="submit" class="btn-outline-buy">Mua ngay</button>
                                             @endguest
