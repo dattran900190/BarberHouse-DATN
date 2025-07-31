@@ -32,7 +32,7 @@
         </ul>
     </div>
 
-   <!-- Card 1: Thông tin dịch vụ -->
+    <!-- Card 1: Thông tin dịch vụ -->
     <div class="card shadow-sm mb-4">
         <div class="card-header text-white d-flex align-items-center">
             <h4 class="card-title">Chi tiết dịch vụ</h4>
@@ -42,11 +42,16 @@
                 @if ($service->image)
                     <div class="col-md-4 text-center">
                         <img src="{{ asset('storage/' . $service->image) }}" alt="Ảnh dịch vụ"
-                            class="img-fluid rounded mb-3" style="max-height: 250px; object-fit: cover; border: 1px solid #dee2e6;">
+                            class="img-fluid rounded mb-3"
+                            style="max-height: 250px; object-fit: cover; border: 1px solid #dee2e6;">
                     </div>
                 @endif
                 <div class="col-md-{{ $service->image ? '8' : '12' }}">
-                    <h4 class="fw-bold mb-3">{{ $service->name }}</h4>
+                    <h4 class="fw-bold mb-3">{{ $service->name }}
+                        @if ($service->deleted_at)
+                            <span class="badge bg-danger">Đã xoá mềm</span>
+                        @endif
+                    </h4>
                     <p class="text-muted mb-3">
                         <i class="fa fa-info-circle me-2 text-primary"></i>
                         {{ $service->description ?? 'Không có mô tả' }}
@@ -94,21 +99,133 @@
         </div>
         <div class="card-body">
             <div class="d-flex gap-2">
-                <a href="{{ route('services.edit', $service->id) }}" class="btn btn-outline-primary btn-sm">
-                    <i class="fa fa-edit me-1"></i> Sửa
-                </a>
-                <form action="{{ route('services.destroy', $service->id) }}" method="POST"
-                    onsubmit="return confirm('Bạn có chắc chắn muốn xoá dịch vụ này không?');">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                {{-- nếu dịch vụ xoá mềm thì không hiện sửa xoá chỉ hiện quay lại --}}
+                @if ($service->deleted_at)
+                    <a href="{{ route('services.index', ['page' => request('page', 1)]) }}"
+                        class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"></i> Quay lại
+                    </a>
+                @else
+                    <a href="{{ route('services.edit', $service->id) }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fa fa-edit me-1"></i> Sửa
+                    </a>
+                    <button type="button" class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $service->id }}">
                         <i class="fas fa-trash me-2"></i> Xoá
                     </button>
-                </form>
-                <a href="{{ route('services.index', ['page' => request('page', 1)]) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="fa fa-arrow-left me-1"></i> Quay lại
-                </a>
+                    <a href="{{ route('services.index', ['page' => request('page', 1)]) }}"
+                        class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-arrow-left me-1"></i> Quay lại
+                    </a>
+                @endif
             </div>
         </div>
     </div>
 
+@endsection
+@section('js')
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            withInput = false, // Thêm tùy chọn hiển thị input
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload() // Thay reload bằng callback linh hoạt
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const appointmentId = this.getAttribute('data-id');
+
+                    const swalOptions = {
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    };
+
+                    if (withInput) {
+                        swalOptions.input = 'textarea';
+                        swalOptions.inputPlaceholder = inputPlaceholder;
+                        if (inputValidator) {
+                            swalOptions.inputValidator = inputValidator;
+                        }
+                    }
+
+                    Swal.fire(swalOptions).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup' // CSS
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            const body = withInput ? JSON.stringify({
+                                no_show_reason: result.value || 'Không có lý do'
+                            }) : undefined;
+
+                            fetch(route.replace(':id', appointmentId), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        }
+
+        // Xoá mềm
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Xoá mềm dịch vụ',
+            text: 'Bạn có chắc chắn muốn xoá mềm dịch vụ này?',
+            route: '{{ route('services.softDelete', ':id') }}',
+            method: 'PATCH'
+        });
+    </script>
 @endsection
