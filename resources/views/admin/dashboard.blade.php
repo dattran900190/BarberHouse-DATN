@@ -265,7 +265,7 @@
                 </div>
 
                 <!-- Lịch hẹn sắp tới -->
-                <div class="col-12">
+                {{-- <div class="col-12">
                     <div class="card card-round h-100">
                         <div class="card-header">
                             <h5 class="card-title mb-0 fw-bold">Lịch hẹn sắp tới</h5>
@@ -288,7 +288,7 @@
                             </ul>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
 

@@ -274,7 +274,7 @@
 
 
                 <div class="form-btn mt-3">
-                    <button type="submit" class="submit-btn booking-btn booking-btn" data-id="{{ $service->id }}">
+                    <button type="submit" class="submit-btn booking-btn" data-id="{{ $service->id }}">
                         Đặt lịch
                     </button>
                 </div>
@@ -325,50 +325,6 @@
     </script>
 
     <script>
-        // // Initialize booking system
-        let selectedBranch = null;
-        let selectedTime = null;
-        let barberSilent = false;
-        let services = [];
-        let serviceCounter = 0;
-
-        document.addEventListener('DOMContentLoaded', function() {
-            setupBranchSelection();
-            setupTimeSelection();
-            setupBarberCheckbox();
-            setupServiceManagement();
-            setupFormValidation();
-            setMinDate();
-        });
-
-        document.querySelectorAll('.branch-icon').forEach(icon => {
-            icon.addEventListener('click', function(event) {
-                event.stopPropagation(); // Ngăn sự kiện lan ra .branch-item
-                const googleMapUrl = this.getAttribute('data-value');
-                if (googleMapUrl) {
-                    window.open(googleMapUrl, '_blank'); // Mở Google Maps trong tab mới
-                }
-            });
-        });
-
-        // // Branch selection with improved layout
-        function setupBranchSelection() {
-            const branchItems = document.querySelectorAll('.branch-item');
-            branchItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    // Remove previous selection
-                    branchItems.forEach(branch => branch.classList.remove('selected'));
-
-                    // Select current branch
-                    this.classList.add('selected');
-                    selectedBranch = this.dataset.branch;
-
-                    validateForm();
-                });
-            });
-        }
-    </script>
-    <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Khai báo các phần tử DOM
             const branchContainer = document.getElementById('branch');
@@ -383,6 +339,17 @@
             const additionalServicesContainer = document.getElementById('additionalServicesContainer');
 
             let lastRequest = null;
+
+            // Xử lý click icon Google Maps
+            document.querySelectorAll('.branch-icon').forEach(icon => {
+                icon.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Ngăn sự kiện lan ra .branch-item
+                    const googleMapUrl = this.getAttribute('data-value');
+                    if (googleMapUrl) {
+                        window.open(googleMapUrl, '_blank'); // Mở Google Maps trong tab mới
+                    }
+                });
+            });
 
             // Hàm cập nhật danh sách kỹ thuật viên
             function updateBarbers() {
@@ -581,9 +548,14 @@
         });
     </script>
     <script>
-        serviceSelect.addEventListener('change', function() {
-            const sel = this.options[this.selectedIndex];
-            // console.log('DEBUG sel.dataset =', sel.dataset);…
+        document.addEventListener('DOMContentLoaded', function() {
+            const serviceSelect = document.getElementById('service');
+            if (serviceSelect) {
+                serviceSelect.addEventListener('change', function() {
+                    const sel = this.options[this.selectedIndex];
+                    // console.log('DEBUG sel.dataset =', sel.dataset);
+                });
+            }
         });
     </script>
 
