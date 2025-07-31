@@ -94,10 +94,11 @@
         </div>
         <div class="card-body">
             <div class="d-flex gap-2">
+                @if (!$post->trashed())
                 <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-outline-primary btn-sm">
                     <i class="fa fa-edit me-1"></i> Sửa
                 </a>
-
+                @endif
                 @if (!$post->trashed())
                     <button class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $post->id }}">
                         <i class="fas fa-trash me-2"></i> Xoá

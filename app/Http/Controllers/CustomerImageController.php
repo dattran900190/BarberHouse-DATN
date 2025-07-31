@@ -136,6 +136,9 @@ class CustomerImageController extends Controller
         // Xoá bản ghi trong DB
         $customerImage->delete();
 
-        return redirect()->route('customer-images.index')->with('success', 'Xóa ảnh thành công!');
+        return response()->json([
+            'success' => true,
+            'message' => 'Xóa ảnh thành công!',
+        ]);
     }
 }
