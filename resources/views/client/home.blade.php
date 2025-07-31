@@ -123,7 +123,7 @@
                                         <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
                                         <input type="hidden" name="quantity" value="1">
                                         @guest
-                                            <button type="button" class="btn-outline-buy">Mua ngay</button>
+                                            <button type="submit" class="btn-outline-buy">Mua ngay</button>
                                         @else
                                             <button type="submit" class="btn-outline-buy">Mua ngay</button>
                                         @endguest

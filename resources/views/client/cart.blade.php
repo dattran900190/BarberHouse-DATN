@@ -47,7 +47,7 @@
                                                                 <th scope="col">Tên sản phẩm</th>
                                                                 <th scope="col">Hình ảnh</th>
                                                                 <th scope="col">Số lượng</th>
-<th scope="col">Đơn giá</th>
+                                                                <th scope="col">Đơn giá</th>
                                                                 <th scope="col">Thành tiền</th>
                                                                 <th scope="col"></th>
                                                             </tr>
@@ -79,7 +79,7 @@
                                                                                 class="form-select form-select-sm mt-1"
                                                                                 onchange="this.form.submit()">
                                                                                 @foreach ($variants as $variant)
-<option value="{{ $variant->id }}"
+                                                                                    <option value="{{ $variant->id }}"
                                                                                         {{ $variant->id == $currentVariantId ? 'selected' : '' }}>
                                                                                         {{ $variant->volume->name ?? ($variant->name ?? 'Không rõ') }}
                                                                                     </option>
@@ -106,7 +106,7 @@
                                                                                 max="{{ $item->productVariant->stock }}"
                                                                                 data-item-id="{{ $item->id }}"
                                                                                 data-price="{{ $item->price }}"
-style="width: 60px; text-align: center;" />
+                                                                                style="width: 60px; text-align: center;" />
                                                                             <button type="button"
                                                                                 class="btn btn-outline-dark btn-sm quantity-plus"
                                                                                 data-item-id="{{ $item->id }}"
@@ -140,7 +140,7 @@ style="width: 60px; text-align: center;" />
                                                     </table>
                                                 </div>
                                             @endif
-<div class="pt-5">
+                                            <div class="pt-5">
                                                 <h6 class="mb-0"><a href="/" class="text-body"><i
                                                             class="fas fa-long-arrow-alt-left me-2"></i>Quay lại cửa
                                                         hàng</a></h6>
@@ -183,7 +183,7 @@ style="width: 60px; text-align: center;" />
                         </div>
                     </div>
                 </div>
-</div>
+            </div>
         </section>
     </main>
     <style>
@@ -202,12 +202,11 @@ style="width: 60px; text-align: center;" />
         window.onload = function() {
             const formatVND = n => {
                 return Number(n).toLocaleString('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND',
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0
-                }).replace('VNĐ', '') + ' VNĐ';
+                }) + ' VNĐ';
             };
+
 
             const updateTotal = () => {
                 const checkedBoxes = [...document.querySelectorAll('.cart-item-checkbox:checked')];
@@ -256,7 +255,7 @@ style="width: 60px; text-align: center;" />
                             'Accept': 'application/json'
                         },
                         body: JSON.stringify(d)
-})
+                    })
                     .then(r => r.ok ? r.json() : r.text().then(t => {
                         throw Error(`HTTP ${r.status}: ${t}`);
                     }))
@@ -322,7 +321,7 @@ style="width: 60px; text-align: center;" />
                     const id = btn.dataset.itemId;
                     const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
                     let value = parseInt(input.value) || 1;
-const max = parseInt(input.getAttribute('max')) || Infinity;
+                    const max = parseInt(input.getAttribute('max')) || Infinity;
 
                     if (value < max) {
                         input.value = ++value;
@@ -394,7 +393,7 @@ const max = parseInt(input.getAttribute('max')) || Infinity;
             const checkoutForm = document.getElementById('checkout-form');
             if (checkoutForm) {
                 checkoutForm.addEventListener('submit', function(e) {
-const checkedBoxes = [...document.querySelectorAll('.cart-item-checkbox:checked')];
+                    const checkedBoxes = [...document.querySelectorAll('.cart-item-checkbox:checked')];
                     const items = checkedBoxes.map(box => {
                         const id = box.dataset.itemId;
                         const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
@@ -464,7 +463,7 @@ const checkedBoxes = [...document.querySelectorAll('.cart-item-checkbox:checked'
                             showConfirmButton: false,
                             timer: 1500
                         });
-if (response.cart_count !== undefined) {
+                        if (response.cart_count !== undefined) {
                             $('#cartCount').text(response.cart_count);
                         }
                     } else {

@@ -84,7 +84,7 @@
                     <span
                         class="badge 
                     {{ $user->status == 'active' ? 'bg-success' : ($user->status == 'inactive' ? 'bg-warning' : 'bg-danger') }}">
-                        {{ $user->status == 'active' ? 'Đang hoạt động' : ($user->status == 'inactive' ? 'Không hoạt động' : 'Bị khóa') }}
+                        {{ $user->status == 'active' ? 'Đang hoạt động' : ($user->status == 'inactive' ? 'Không hoạt động' : 'Đã xóa') }}
                     </span>
                 </div>
 
