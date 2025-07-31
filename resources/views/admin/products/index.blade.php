@@ -240,7 +240,13 @@
                         showCancelButton: true,
                         confirmButtonText: 'Xác nhận',
                         cancelButtonText: 'Hủy',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
                         width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             let form = document.createElement('form');
