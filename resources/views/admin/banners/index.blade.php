@@ -61,9 +61,15 @@
 
 
         <div class="card-body">
-            <form method="GET" action="{{ route('banners.index') }}" class="mb-3 d-flex">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm tiêu đề"
-                    class="form-control me-2" />
+            <form method="GET" action="{{ route('banners.index') }}" class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+                <div class="position-relative" style="flex: 1; min-width: 200px">
+                    <input type="text" name="search" placeholder="Tìm kiếm theo tiêu đề"
+                        value="{{ request('search') }}" class="form-control pe-5">
+                    <button type="submit"
+                        class="btn position-absolute end-0 top-0 bottom-0 px-3 border-0 bg-transparent text-dark">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
                 <select name="filter" id="filter" class="form-select pe-5"
                     style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
                     <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả</option>
@@ -128,11 +134,13 @@
                                                     <i class="fas fa-eye me-2"></i> Xem
                                                 </a>
                                             </li>
+                                            @if (!$banner->trashed())
                                             <li>
                                                 <a class="dropdown-item" href="{{ route('banners.edit', $banner->id) }}">
                                                     <i class="fas fa-edit me-2"></i> Sửa
                                                 </a>
                                             </li>
+                                            @endif
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>

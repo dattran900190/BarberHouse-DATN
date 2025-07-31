@@ -119,12 +119,14 @@
                                                     <i class="fas fa-eye me-2"></i> Xem
                                                 </a>
                                             </li>
-                                            <li>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('product_categories.edit', $category->id) }}">
-                                                    <i class="fas fa-edit me-2"></i> Sửa
-                                                </a>
-                                            </li>
+                                            @if (!$category->trashed())
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('product_categories.edit', $category->id) }}">
+                                                        <i class="fas fa-edit me-2"></i> Sửa
+                                                    </a>
+                                                </li>
+                                            @endif
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>

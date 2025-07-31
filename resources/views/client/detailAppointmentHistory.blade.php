@@ -48,7 +48,7 @@
                             <div class="row g-3">
                                 <div class="col-lg-3 col-6">
                                     <p class="text-muted mb-2 text-uppercase fw-semibold fs-14">Mã đặt lịch</p>
-                                    <h5 class="fs-15 mb-0">{{ $appointment->appointment_code }}</h5>
+                                    <h5 class="fs-15 mb-0">{{ $appointment->appointment_code ?? 'Không xác định' }}</h5>
                                 </div>
                                 <div class="col-lg-3 col-6">
                                     <p class="text-muted mb-2 text-uppercase fw-semibold fs-14">Ngày đặt</p>
@@ -75,13 +75,13 @@
                                 <div class="col-6">
                                     <h6 class="text-muted text-uppercase fw-semibold fs-15 mb-3">Thông tin chi tiết</h6>
                                     <p class="text-muted mb-1">Chi nhánh: <span class="fw-medium">
-                                            {{ $appointment->branch->name }}
+                                            {{ $appointment->branch->name ?? 'Không xác định' }}
                                         </span></p>
                                     <p class="text-muted mb-1">Điện thoại: <span class="fw-medium">
                                             {{ $appointment->phone }}
                                         </span></p>
                                     <p class="text-muted mb-1">Thợ: <span class="fw-medium">
-                                            {{ $appointment->barber->name }}
+                                            {{ $appointment->barber->name ?? 'Không xác định' }}
                                         </span></p>
                                     @if ($appointment->status === 'cancelled' && $appointment->cancellation_reason)
                                         <p class="text-muted mb-1">Lý do huỷ: <span
@@ -99,14 +99,14 @@
                                     </span>
                                 </p>
                                     <p class="text-muted mb-1">Dịch vụ: <span class="fw-medium">
-                                            {{ $appointment->service->name }}
+                                            {{ $appointment->service->name ?? 'Không xác định' }}
                                         </span></p>
                                     @if ($additionalServices->isNotEmpty())
                                         <p class="text-muted mb-1">Dịch vụ bổ xung: <span class="fw-medium">
                                                 <ul class="m-2 mt-1 ps-3">
                                                     @foreach ($additionalServices as $service)
                                                         <li>
-                                                            {{ $service->name }}
+                                                            {{ $service->name ?? 'Không xác định' }}
                                                         </li>
                                                     @endforeach
                                                 </ul>

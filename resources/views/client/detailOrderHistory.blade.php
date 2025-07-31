@@ -20,11 +20,11 @@
                                 </div>
                                 <div class="flex-shrink-0 mt-sm-0 mt-3">
 
-                                    <h6><span class="text-muted fw-normal">Email:</span> {{ $order->email }}
+                                    <h6><span class="text-muted fw-normal">Email:</span> {{ $order->email ?? 'Không xác định' }}
                                     </h6>
 
                                     <h6 class="mb-0"><span class="text-muted fw-normal">Điện thoại:</span>
-                                        {{ $order->phone }}</h6>
+                                        {{ $order->phone ?? 'Không xác định' }}</h6>
                                 </div>
                             </div>
                         </div>
@@ -34,7 +34,7 @@
                             <div class="row g-3">
                                 <div class="col-lg-3 col-6">
                                     <p class="text-muted mb-2 text-uppercase fw-semibold fs-14">Mã đơn hàng</p>
-                                    <h5 class="fs-15 mb-0">{{ $order->order_code }}</h5>
+                                    <h5 class="fs-15 mb-0">{{ $order->order_code ?? 'Không xác định' }}</h5>
                                 </div>
                                 <div class="col-lg-3 col-6">
                                     <p class="text-muted mb-2 text-uppercase fw-semibold fs-14">Ngày đặt</p>
@@ -69,9 +69,9 @@
                             {{-- Cột trái: Địa chỉ nhận hàng --}}
                             <div class="w-50 pe-4">
                                 <h6 class="text-muted text-uppercase fw-semibold fs-15">Địa chỉ nhận hàng</h6>
-                                <p class="text-muted mb-1">Họ tên: <span class="fw-medium">{{ $order->name }}</span></p>
-                                <p class="text-muted mb-1">Địa chỉ: <span class="fw-medium">{{ $order->address }}</span></p>
-                                <p class="text-muted mb-1">Điện thoại: <span class="fw-medium">{{ $order->phone }}</span>
+                                <p class="text-muted mb-1">Họ tên: <span class="fw-medium">{{ $order->name ?? 'Không xác định' }}</span></p>
+                                <p class="text-muted mb-1">Địa chỉ: <span class="fw-medium">{{ $order->address ?? 'Không xác định' }}</span></p>
+                                <p class="text-muted mb-1">Điện thoại: <span class="fw-medium">{{ $order->phone ?? 'Không xác định' }}</span>
                                 </p>
                             </div>
 
@@ -144,17 +144,17 @@
                                                 </th>
                                                 {{-- Hình ảnh --}}
                                                 <td>
-                                                    <img src="{{ $product?->image ? asset('storage/' . $product->image) : asset('images/no-image.png') }}"
+                                                    <img src="{{ $product?->image ? asset('storage/' . $product->image) : asset('images/no-image.png') ?? 'Không xác định' }}"
                                                         alt="Hình ảnh" width="80">
                                                 </td>
                                                 {{-- Tên sản phẩm và mô tả --}}
                                                 <td class="text-start">
-                                                    <span class="fw-medium">{{ $product?->name ?? '—' }}</span>
-                                                    <p class="text-muted mb-0">{{ $variant?->description ?? '' }}</p>
+                                                    <span class="fw-medium">{{ $product?->name ?? 'Không xác định' }}</span>
+                                                    <p class="text-muted mb-0">{{ $variant?->description ?? 'Không xác định' }}</p>
                                                 </td>
                                                 {{-- Dung tích --}}
                                                 <td>
-                                                    {{ $item->volume_name }}
+                                                    {{ $item->volume_name ?? 'Không xác định' }}
                                                 </td>
                                                 {{-- Giá và số lượng --}}
                                                 <td>{{ number_format($item->price_at_time, 0, ',', '.') }} VNĐ</td>

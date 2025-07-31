@@ -14,18 +14,18 @@
                     <p>
                         <a href="{{ route('client.branch') }}">Chi nhánh Barber House</a>
                         <i class="fa-solid fa-angle-right"></i>
-                        {{ $branch->name }}
+                        {{ $branch->name ?? 'Không xác định' }}
                     </p>
                 </div>
 
-                <h2>{{ $branch->name }}</h2>
+                <h2>{{ $branch->name ?? 'Không xác định' }}</h2>
 
                 <div class="short-description">
-                    {{ $branch->address }}
+                    {{ $branch->address ?? 'Không xác định' }}
                 </div>
 
                 <div class="detail-post">
-                    <img src="{{ asset('storage/' . $branch->image) }}" alt="{{ $branch->name }}">
+                    <img src="{{ asset('storage/' . $branch->image) }}" alt="{{ $branch->name ?? 'Không xác định' }}">
 
                     {!! $branch->content !!}
                 </div>
@@ -33,9 +33,9 @@
                 <br /><br />
 
                 <div style="text-align: center; margin-bottom: 5%;">
-                    <h3>{{ $branch->name }}</h3>
-                    <h3>{{ $branch->address }}</h3>
-                    <h3>HOTLINE : {{ $branch->phone }}</h3>
+                    <h3>{{ $branch->name ?? 'Không xác định' }}</h3>
+                    <h3>{{ $branch->address ?? 'Không xác định' }}</h3>
+                    <h3>HOTLINE : {{ $branch->phone ?? 'Không xác định' }}</h3>
                     <iframe src="{{ $branch->google_map_url }}" frameborder="0" height="500" width="750"></iframe>
 
                 </div>
