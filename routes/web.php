@@ -154,6 +154,9 @@ Route::get('/payment/vnpay/callback', [PaymentController::class, 'vnpayCallback'
 Route::match(['get', 'post'], '/payment/vnpay/order', [PaymentController::class, 'vnpayOrderPayment'])->name('client.payment.vnpay.order');
 Route::get('/payment/vnpay/order/callback', [PaymentController::class, 'vnpayOrderCallback'])->name('client.payment.vnpay.order.callback');
 
+// Route cho VNPAY checkout callback
+Route::get('/payment/vnpay/checkout/callback', [CartController::class, 'vnpayCheckoutCallback'])->name('client.payment.vnpay.checkout.callback');
+
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
         ->name('barber_schedules.showBranch');
