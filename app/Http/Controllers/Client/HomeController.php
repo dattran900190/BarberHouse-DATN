@@ -25,7 +25,7 @@ class HomeController extends Controller
         $normalPosts = Post::where('status', 'published')
             ->where('is_featured', false)
             ->latest('published_at')
-            ->take(8)
+            ->take(4)
             ->get();
 
         // Sản phẩm
