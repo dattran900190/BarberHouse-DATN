@@ -9,6 +9,7 @@ use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Events\OrderPaymentStatusUpdated;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
@@ -173,6 +174,17 @@ class PaymentController extends Controller
             $order->payment_status = 'paid';
             $order->payment_method = 'vnpay';
             $order->save();
+            
+            // Gửi email xác nhận khi thanh toán thành công
+            try {
+                $order->load('items.productVariant.product');
+                if ($order->email) {
+                    Mail::to($order->email)->send(new \App\Mail\OrderSuccessMail($order));
+                }
+            } catch (\Exception $e) {
+                Log::error('Lỗi gửi email xác nhận đơn hàng VNPAY: ' . $e->getMessage());
+            }
+            
             event(new OrderPaymentStatusUpdated($order));
             return redirect()->route('client.orderHistory')->with('success', 'Thanh toán thành công!');
         } else {
