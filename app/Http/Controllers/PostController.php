@@ -39,7 +39,7 @@ public function index(Request $request)
     }
 
     // Phân trang
-    $posts = $query->orderBy('created_at', 'desc')->paginate(5);
+    $posts = $query->orderBy('created_at', 'desc')->paginate(10);
 
     // Lấy featured & normal (nếu cần hiển thị ở nơi khác)
     $featuredPosts = Post::where('is_featured', true)
