@@ -267,6 +267,15 @@ class ProductController extends Controller
     public function restore($id)
     {
         $product = Product::withTrashed()->findOrFail($id);
+        if (Auth::user()->role === 'admin_branch') {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn không có quyền xóa sản phẩm.'
+                ]);
+            }
+            return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền xóa sản phẩm.');
+        }
         if ($product->trashed()) {
             // Khôi phục sản phẩm
             $product->restore();
