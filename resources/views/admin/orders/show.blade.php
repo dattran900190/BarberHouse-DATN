@@ -51,6 +51,12 @@
             'completed' => 'success',
             'cancelled' => 'danger',
         ];
+        $paymentColorMap = [
+            'unpaid' => 'warning',
+            'paid' => 'success',
+            'failed' => 'danger',
+            'refunded' => 'info',
+        ]
     @endphp
 
     @if (session('success'))
@@ -87,7 +93,7 @@
                     <p><strong>Phương thức giao hàng:</strong>
                         {{ $shippingMap[$order->shipping_method] ?? ucfirst($order->shipping_method) }}</p>
                     <p><strong>Trạng thái thanh toán:</strong>
-                        <span style="background-color: #ffc107; color:#f5f5f5; border-radius: 2px; padding: 2px;">
+                        <span class="badge bg-{{ $paymentColorMap[$order->payment_status] ?? 'secondary' }}">
                             {{ $paymentMap[$order->payment_status] ?? ucfirst($order->payment_status) }}
                         </span>
                         </p>
