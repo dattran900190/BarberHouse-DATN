@@ -87,7 +87,10 @@
                     <p><strong>Phương thức giao hàng:</strong>
                         {{ $shippingMap[$order->shipping_method] ?? ucfirst($order->shipping_method) }}</p>
                     <p><strong>Trạng thái thanh toán:</strong>
-                        {{ $paymentMap[$order->payment_status] ?? ucfirst($order->payment_status) }}</p>
+                        <span style="background-color: #ffc107; color:#f5f5f5; border-radius: 2px; padding: 2px;">
+                            {{ $paymentMap[$order->payment_status] ?? ucfirst($order->payment_status) }}
+                        </span>
+                        </p>
                     <p><strong>Ghi chú:</strong> {{ $order->note ?: '-' }}</p>
                     <p><strong>Tổng tiền:</strong> {{ number_format($order->total_money, 0, ',', '.') }} VNĐ</p>
                     <p><strong>Trạng thái:</strong>
