@@ -86,10 +86,11 @@
                         <div class="mb-3">
                             <label class="form-label">Trạng thái</label>
                             <select name="status" class="form-control @error('status') is-invalid @enderror">
-                                <option value="draft" {{ old('status', $post->status) == 'draft' ? 'selected' : '' }}>Bản
-                                    nháp</option>
+                                <option value="draft" {{ old('status', $post->status) == 'draft' ? 'selected' : '' }}>
+                                    Không hoạt động</option>
                                 <option value="published"
-                                    {{ old('status', $post->status) == 'published' ? 'selected' : '' }}>Đã xuất bản
+                                    {{ old('status', $post->status) == 'published' ? 'selected' : '' }}>Đang hoạt động
+                                    
                                 </option>
                             </select>
                             @error('status')
@@ -114,7 +115,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="mb-3">
                     <label class="form-label">Ảnh mới (nếu muốn thay)</label>
                     <input type="file" name="image" class="form-control @error('image') is-invalid @enderror">

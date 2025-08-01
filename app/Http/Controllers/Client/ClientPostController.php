@@ -19,7 +19,7 @@ class ClientPostController extends Controller
         $normalPosts = Post::where('status', 'published')
             ->where('is_featured', false)
             ->latest('published_at')
-            ->paginate(10);
+            ->paginate(6);
 
         return view('client.posts', compact('featuredPosts', 'normalPosts'));
     }
