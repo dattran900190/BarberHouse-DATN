@@ -85,8 +85,11 @@
                         <div class="mb-3">
                             <label class="form-label">Trạng thái</label>
                             <select name="status" class="form-control @error('status') is-invalid @enderror">
-                                <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Bản nháp</option>
-                                <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Đã xuất bản
+                                <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Đang hoạt
+                                    động</option>
+                                <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Không hoạt động
+                                </option>
+
                                 </option>
                             </select>
                             @error('status')
@@ -97,10 +100,11 @@
                         <div class="mb-3">
                             <label class="form-label">Nổi bật</label>
                             <select name="is_featured" class="form-control @error('is_featured') is-invalid @enderror">
-                                <option value="0" {{ old('is_featured') == '0' ? 'selected' : '' }}>Không nổi bật
-                                </option>
                                 <option value="1" {{ old('is_featured', '0') == '1' ? 'selected' : '' }}>Nổi bật
                                 </option>
+                                <option value="0" {{ old('is_featured') == '0' ? 'selected' : '' }}>Không nổi bật
+                                </option>
+
                             </select>
                             @error('is_featured')
                                 <div class="text-danger">{{ $message }}</div>
