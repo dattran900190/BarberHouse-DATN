@@ -1,11 +1,11 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Chi tiết thống kê thợ')
+@section('title', 'Chi tiết thống kê lịch thợ')
 
 @section('content')
     <div class="page-inner">
         <div class="page-header">
-            <h4 class="page-title">Chi tiết thống kê thợ: {{ $barber->name }}</h4>
+            <h4 class="page-title">Chi tiết thống kê lịch thợ: {{ $barber->name }}</h4>
             <ul class="breadcrumbs">
                 <li class="nav-home">
                     <a href="{{ url('admin/dashboard') }}">
@@ -22,7 +22,7 @@
                     <i class="icon-arrow-right"></i>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('barber_statistics.index') }}">Thống kê thợ</a>
+                    <a href="{{ route('barber_statistics.index') }}">Thống kê lịch thợ</a>
                 </li>
                 <li class="separator">
                     <i class="icon-arrow-right"></i>
@@ -57,19 +57,17 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <p><strong>Tên:</strong> {{ $barber->name }}</p>
-                                        <p><strong>Chi nhánh:</strong> {{ $barber->branch->name ?? 'Không xác định'}}</p>
+                                        <p><strong>Chi nhánh:</strong> {{ $barber->branch->name ?? 'Không xác định' }}</p>
                                         <p><strong>Trạng thái:</strong>
-                                            <span
-                                                class="badge badge-{{ $barber->status == 'idle' ? 'success' : 'warning' }}">
+                                            <span class="badge badge-{{ $barber->status == 'idle' ? 'success' : 'warning' }}">
                                                 {{ $barber->status == 'idle' ? 'Đang làm việc' : 'Nghỉ việc' }}
                                             </span>
                                         </p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p><strong>Tháng/Năm:</strong> {{ $selectedMonth }}/{{ $selectedYear }}</p>
-                                        <p><strong>Tổng ngày nghỉ:</strong>
-                                            {{ $stats['off_days']->count() + $stats['holiday_days']->count() }}</p>
-                                        <p><strong>Ngày làm việc:</strong> {{ $stats['custom_days']->count() }}</p>
+                                        <p><strong>Tháng/Năm:</strong> {{ $selectedMonth == 'all' ? 'Tất cả tháng' : 'Tháng ' . $selectedMonth }}/{{ $selectedYear }}</p>
+                                        <p><strong>Tổng ngày nghỉ:</strong> {{ $stats['off_days_count'] + $stats['holiday_days_count'] }}</p>
+                                        <p><strong>Ngày làm việc:</strong> {{ $stats['working_days'] }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -86,9 +84,10 @@
                     </div>
                     <div class="card-body">
                         <form method="GET" action="{{ route('barber_statistics.show', $barber->id) }}" class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label>Tháng</label>
                                 <select name="month" class="form-control">
+                                    <option value="all" {{ $selectedMonth == 'all' ? 'selected' : '' }}>Tất cả tháng</option>
                                     @foreach ($availableMonths as $month)
                                         <option value="{{ $month }}"
                                             {{ $selectedMonth == $month ? 'selected' : '' }}>
@@ -97,7 +96,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label>Năm</label>
                                 <select name="year" class="form-control">
                                     @foreach ($availableYears as $year)
@@ -108,15 +107,22 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <label>&nbsp;</label>
-                                <div>
-                                    <button type="submit" class="btn btn-primary">Lọc</button>
-                                    <a href="{{ route('barber_statistics.index') }}?month={{ $selectedMonth }}&year={{ $selectedYear }}"
-                                        class="btn btn-secondary">
-                                        <i class="fas fa-arrow-left"></i> Quay lại
-                                    </a>
-                                </div>
+                            <div class="col-md-3">
+                                <label>Từ ngày</label>
+                                <input type="date" name="start_date" class="form-control" value="{{ $startDate ?? '' }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label>Đến ngày</label>
+                                <input type="date" name="end_date" class="form-control" value="{{ $endDate ?? '' }}">
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-filter"></i> Lọc
+                                </button>
+                                <a href="{{ route('barber_statistics.index') }}?month={{ $selectedMonth }}&year={{ $selectedYear }}"
+                                    class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-arrow-left"></i> Quay lại
+                                </a>
                             </div>
                         </form>
                     </div>
@@ -127,10 +133,14 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Tổng quan ngày nghỉ trong tháng</h4>
+                        <h4 class="card-title">Tổng quan ngày nghỉ trong tháng
+                            @if ($stats['off_days_count'] > 0)
+                                <span class="badge badge-warning">{{ $stats['off_days_count'] }} ngày</span>
+                            @endif
+                        </h4>
                     </div>
                     <div class="card-body">
-                        @if ($stats['off_days']->count() > 0)
+                        @if ($stats['off_days_count'] > 0)
                             <div class="row">
                                 @foreach ($stats['off_days'] as $schedule)
                                     <div class="col-md-4 mb-3">
@@ -153,6 +163,9 @@
                                     </div>
                                 @endforeach
                             </div>
+                            <div class="d-flex justify-content-center">
+                                {{ $stats['off_days_paginator']->appends(['month' => $selectedMonth, 'year' => $selectedYear, 'holiday_page' => $holidayPage, 'custom_page' => $customPage])->links() }}
+                            </div>
                         @else
                             <p class="text-muted text-center">Không có ngày nghỉ trong tháng này</p>
                         @endif
@@ -164,28 +177,23 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Tổng quan nghỉ lễ trong tháng</h4>
+                        <h4 class="card-title">Tổng quan nghỉ lễ trong tháng
+                            @if ($stats['holiday_days_count'] > 0)
+                                <span class="badge badge-success">{{ $stats['holiday_days_count'] }} ngày</span>
+                            @endif
+                        </h4>
                     </div>
                     <div class="card-body">
-                        @if ($stats['holiday_days']->count() > 0)
+                        @if ($stats['holiday_days_count'] > 0)
                             <div class="row">
                                 @php
                                     $holidayGroups = [];
                                     foreach ($stats['holiday_days'] as $schedule) {
-                                        $key =
-                                            $schedule->holiday_start_date .
-                                            '_' .
-                                            $schedule->holiday_end_date .
-                                            '_' .
-                                            $schedule->note;
+                                        $key = $schedule->holiday_start_date . '_' . $schedule->holiday_end_date . '_' . $schedule->note;
                                         if (!isset($holidayGroups[$key])) {
                                             $holidayGroups[$key] = [
-                                                'start_date' => \Carbon\Carbon::parse(
-                                                    $schedule->holiday_start_date,
-                                                )->format('d/m/Y'),
-                                                'end_date' => \Carbon\Carbon::parse(
-                                                    $schedule->holiday_end_date,
-                                                )->format('d/m/Y'),
+                                                'start_date' => \Carbon\Carbon::parse($schedule->holiday_start_date)->format('d/m/Y'),
+                                                'end_date' => \Carbon\Carbon::parse($schedule->holiday_end_date)->format('d/m/Y'),
                                                 'note' => $schedule->note,
                                                 'days_count' => 0,
                                             ];
@@ -201,8 +209,7 @@
                                                     <i class="fas fa-calendar-check"></i> Nghỉ lễ
                                                 </h6>
                                                 <p class="card-text">
-                                                    <strong>Thời gian:</strong> {{ $holiday['start_date'] }} -
-                                                    {{ $holiday['end_date'] }}<br>
+                                                    <strong>Thời gian:</strong> {{ $holiday['start_date'] }} - {{ $holiday['end_date'] }}<br>
                                                     <strong>Số ngày:</strong> {{ $holiday['days_count'] }} ngày<br>
                                                     @if ($holiday['note'])
                                                         <strong>Ghi chú:</strong> {{ $holiday['note'] }}
@@ -212,6 +219,9 @@
                                         </div>
                                     </div>
                                 @endforeach
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                {{ $stats['holiday_days_paginator']->appends(['month' => $selectedMonth, 'year' => $selectedYear, 'off_page' => $offPage, 'custom_page' => $customPage])->links() }}
                             </div>
                         @else
                             <p class="text-muted text-center">Không có nghỉ lễ trong tháng này</p>
@@ -224,10 +234,14 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Tổng quan đổi ca trong tháng</h4>
+                        <h4 class="card-title">Tổng quan đổi ca trong tháng
+                            @if ($stats['custom_days_count'] > 0)
+                                <span class="badge badge-info">{{ $stats['custom_days_count'] }} ngày</span>
+                            @endif
+                        </h4>
                     </div>
                     <div class="card-body">
-                        @if ($stats['custom_days']->count() > 0)
+                        @if ($stats['custom_days_count'] > 0)
                             <div class="row">
                                 @foreach ($stats['custom_days'] as $schedule)
                                     <div class="col-md-4 mb-3">
@@ -254,6 +268,9 @@
                                         </div>
                                     </div>
                                 @endforeach
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                {{ $stats['custom_days_paginator']->appends(['month' => $selectedMonth, 'year' => $selectedYear, 'off_page' => $offPage, 'holiday_page' => $holidayPage])->links() }}
                             </div>
                         @else
                             <p class="text-muted text-center">Không có đổi ca trong tháng này</p>
@@ -307,14 +324,12 @@
                                             </td>
                                             <td>
                                                 @if ($week['holiday_days'] > 0)
-                                                    <span class="badge badge-success">{{ $week['holiday_days'] }}
-                                                        ngày</span>
+                                                    <span class="badge badge-success">{{ $week['holiday_days'] }} ngày</span>
                                                     @if (isset($week['holiday_details']) && count($week['holiday_details']) > 0)
                                                         <div class="mt-1">
                                                             @foreach ($week['holiday_details'] as $holiday)
                                                                 <small class="text-muted d-block">
-                                                                    {{ $holiday['start_date'] }} -
-                                                                    {{ $holiday['end_date'] }}
+                                                                    {{ $holiday['start_date'] }} - {{ $holiday['end_date'] }}
                                                                     @if ($holiday['note'])
                                                                         <br><em>{{ $holiday['note'] }}</em>
                                                                     @endif
@@ -335,8 +350,7 @@
                                                                 <small class="text-muted d-block">
                                                                     {{ $custom['date'] }}
                                                                     @if ($custom['start_time'] && $custom['end_time'])
-                                                                        <br>{{ $custom['start_time'] }} -
-                                                                        {{ $custom['end_time'] }}
+                                                                        <br>{{ $custom['start_time'] }} - {{ $custom['end_time'] }}
                                                                     @endif
                                                                     @if ($custom['note'])
                                                                         <br><em>{{ $custom['note'] }}</em>
@@ -387,8 +401,7 @@
                                     @forelse($schedules as $schedule)
                                         <tr>
                                             <td>{{ \Carbon\Carbon::parse($schedule->schedule_date)->format('d/m/Y') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($schedule->schedule_date)->locale('vi')->isoFormat('dddd') }}
-                                            </td>
+                                            <td>{{ \Carbon\Carbon::parse($schedule->schedule_date)->locale('vi')->isoFormat('dddd') }}</td>
                                             <td>
                                                 @if ($schedule->status == 'off')
                                                     <span class="badge badge-warning">Nghỉ</span>
@@ -396,8 +409,7 @@
                                                     <span class="badge badge-success">Nghỉ lễ</span>
                                                     @if ($schedule->holiday_start_date && $schedule->holiday_end_date)
                                                         <br><small class="text-muted">
-                                                            {{ \Carbon\Carbon::parse($schedule->holiday_start_date)->format('d/m/Y') }}
-                                                            -
+                                                            {{ \Carbon\Carbon::parse($schedule->holiday_start_date)->format('d/m/Y') }} -
                                                             {{ \Carbon\Carbon::parse($schedule->holiday_end_date)->format('d/m/Y') }}
                                                         </small>
                                                     @endif
@@ -442,7 +454,7 @@
                                     <div class="col col-stats ml-3 ml-sm-0">
                                         <div class="numbers">
                                             <p class="card-category">Ngày nghỉ</p>
-                                            <h4 class="card-title">{{ $stats['off_days']->count() }}</h4>
+                                            <h4 class="card-title">{{ $stats['off_days_count'] }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -461,7 +473,7 @@
                                     <div class="col col-stats ml-3 ml-sm-0">
                                         <div class="numbers">
                                             <p class="card-category">Nghỉ lễ</p>
-                                            <h4 class="card-title">{{ $stats['holiday_days']->count() }}</h4>
+                                            <h4 class="card-title">{{ $stats['holiday_days_count'] }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -480,7 +492,7 @@
                                     <div class="col col-stats ml-3 ml-sm-0">
                                         <div class="numbers">
                                             <p class="card-category">Đổi ca</p>
-                                            <h4 class="card-title">{{ $stats['custom_days']->count() }}</h4>
+                                            <h4 class="card-title">{{ $stats['custom_days_count'] }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -499,7 +511,7 @@
                                     <div class="col col-stats ml-3 ml-sm-0">
                                         <div class="numbers">
                                             <p class="card-category">Làm việc</p>
-                                            <h4 class="card-title">{{ $stats['custom_days']->count() }}</h4>
+                                            <h4 class="card-title">{{ $stats['working_days'] }}</h4>
                                         </div>
                                     </div>
                                 </div>

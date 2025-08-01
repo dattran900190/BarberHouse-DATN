@@ -179,6 +179,24 @@ body a:hover {
   color: #ccc;
 }
 
+/* Active Menu Styles */
+#mainNav .nav-link.active {
+  color: #ccc !important;
+  font-weight: bold;
+}
+
+#mainNav .nav-link.active:hover {
+  color: #ccc !important;
+}
+
+@media (max-width: 768px) {
+  #mainNav .nav-link.active {
+    border-bottom: none;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+}
+
 /* Đảm bảo dropdown menu trắng, text tối */
 #mainNav .dropdown-menu {
   background: #fff;
@@ -858,7 +876,7 @@ h2 {
 }
 
 .booking-container .add-service-btn:hover {
-  background-color: #c9c9c9;
+  background-color: #ccc;
 }
 
 .booking-container .service-info {
@@ -933,7 +951,7 @@ h2 {
   resize: vertical;
 }
 
-.booking-container .booking-btn {
+/* .booking-container .booking-btn {
   width: 100%;
   padding: 18px;
   background-color: #000000;
@@ -949,14 +967,13 @@ h2 {
 
 .booking-container .booking-btn:hover {
   background-color: #444;
-  /* transform: translateY(-2px); */
-}
+} */
 
-.booking-container .booking-btn:disabled {
+/* .booking-container .booking-btn:disabled {
   background-color: #ccc;
   cursor: not-allowed;
   transform: none;
-}
+} */
 
 .booking-container .position-relative {
   position: relative;
@@ -2325,21 +2342,89 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
   color: #6c757d;
 }
 
-/* Active Menu Styles */
-#mainNav .nav-link.active {
-  color: #ccc !important;
+
+
+/* Breadcrumb styles */
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  color: #6c757d;
   font-weight: bold;
 }
 
-#mainNav .nav-link.active:hover {
-  color: #ccc !important;
+.breadcrumb-item a {
+  color: #007bff;
+  text-decoration: none;
 }
 
-/* Responsive active menu */
+.breadcrumb-item a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+  color: #6c757d;
+}
+
+/* Product page title styles */
+#product h2 {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* Product filters responsive */
 @media (max-width: 768px) {
-  #mainNav .nav-link.active {
+  .product-filters {
+    padding: 1rem;
+  }
+  
+  .product-filters .row {
+    margin: 0;
+  }
+  
+  .product-filters .col-md-6 {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Responsive dropdown for mobile */
+@media (max-width: 768px) {
+  .nav-item.dropdown-product .dropdown-menu {
+    position: static;
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: none;
+    margin-top: 5px;
+  }
+  
+  .nav-item.dropdown-product .dropdown-menu.show {
+    display: block;
+  }
+  
+  /* Disable hover on mobile */
+  .nav-item.dropdown-product:hover .dropdown-menu {
+    display: none;
+  }
+  
+  /* Style dropdown items on mobile */
+  .nav-i.dropdown-product .dropdown-item {
+    color: #333;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .nav-item.dropdown-product .dropdown-item:last-child {
     border-bottom: none;
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+  }
+  
+  .nav-item.dropdown-product .dropdown-item:hover {
+    background-color: #f8f9fa;
   }
 }

@@ -262,7 +262,7 @@
 
 
                 <div class="form-btn mt-3">
-                    <button type="submit" class="submit-btn booking-btn booking-btn" data-id="{{ $service->id }}">
+                    <button type="submit" class="booking-btn btn-outline-booking " style="padding: 16px 24px;" data-id="{{ $service->id }}">
                         Đặt lịch
                     </button>
                 </div>
