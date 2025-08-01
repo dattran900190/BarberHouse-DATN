@@ -20,7 +20,7 @@
         </li>
     </ul>
 </div>
-    <div class="container">
+   
 
         <h1>Chi tiết sản phẩm: {{ $product->name }}</h1>
         <div class="card">
@@ -89,5 +89,5 @@
                 <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-sm">Quay lại</a>
             </div>
         </div>
-    </div>
+    
 @endsection

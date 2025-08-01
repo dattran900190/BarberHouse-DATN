@@ -237,6 +237,12 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         if (Auth::user()->role === 'admin_branch') {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn không có quyền xóa sản phẩm.'
+                ]);
+            }
             return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền xóa sản phẩm.');
         }
 
@@ -247,6 +253,13 @@ class ProductController extends Controller
 
         // Xóa mềm sản phẩm
         $product->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Sản phẩm đã được xóa mềm thành công!'
+            ]);
+        }
 
         return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được xóa mềm thành công!');
     }
@@ -263,7 +276,20 @@ class ProductController extends Controller
                 $variant->restore();
             });
             
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Sản phẩm đã được khôi phục thành công!'
+                ]);
+            }
             return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được khôi phục thành công!');
+        }
+        
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sản phẩm không ở trong thùng rác.'
+            ]);
         }
         return redirect()->route('admin.products.index')->with('error', 'Sản phẩm không ở trong thùng rác.');
     }
@@ -331,6 +357,12 @@ class ProductController extends Controller
     {
         $product = Product::withTrashed()->findOrFail($id);
         if (Auth::user()->role === 'admin_branch') {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn không có quyền xóa sản phẩm.'
+                ]);
+            }
             return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền xóa sản phẩm.');
         }
 
@@ -342,6 +374,12 @@ class ProductController extends Controller
                 ->exists();
 
             if ($isInOrder) {
+                if (request()->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Không thể xóa vĩnh viễn sản phẩm vì đã tồn tại trong đơn hàng.'
+                    ]);
+                }
                 return redirect()->route('admin.products.index')->with('error', 'Không thể xóa vĩnh viễn sản phẩm vì đã tồn tại trong đơn hàng.');
             }
 
@@ -362,13 +400,32 @@ class ProductController extends Controller
 
                 // Xóa vĩnh viễn
                 $product->forceDelete();
+                
+                if (request()->expectsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Sản phẩm đã được xóa vĩnh viễn!'
+                    ]);
+                }
                 return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được xóa vĩnh viễn!');
             } catch (\Exception $e) {
                 // Phòng trường hợp có lỗi khác
+                if (request()->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Đã xảy ra lỗi khi xóa sản phẩm vì sản phẩm còn liên quan tới các sản phẩm khác: '
+                    ]);
+                }
                 return redirect()->route('admin.products.index')->with('error', 'Đã xảy ra lỗi khi xóa sản phẩm vì sản phẩm còn liên quan tới các sản phẩm khác: ');
             }
         }
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sản phẩm cần được xóa mềm trước.'
+            ]);
+        }
         return redirect()->route('admin.products.index')->with('error', 'Sản phẩm cần được xóa mềm trước.');
     }
     public function showTrashed($id)
