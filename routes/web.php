@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
+use Illuminate\Support\Facades\Broadcast;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BarberController;
 use App\Http\Controllers\BranchController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\VolumeController;
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\AppointmentController;
@@ -22,25 +24,24 @@ use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
-use App\Http\Controllers\SettingController;
 use App\Http\Controllers\Client\WalletController;
+use App\Http\Controllers\CustomerImageController;
 use App\Http\Controllers\RefundRequestController;
 use App\Http\Controllers\BarberScheduleController;
 use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\BarberStatisticsController;
 use App\Http\Controllers\Client\ClientPostController;
 use App\Http\Controllers\Client\ClientBranchController;
 use App\Http\Controllers\UserRedeemedVoucherController;
 use App\Http\Controllers\Client\ClientProductController;
+use App\Http\Controllers\Client\ForgotPasswordController;
 use App\Http\Controllers\ProfileController as AdminProfileController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\ReviewController as ClientReviewController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
-use App\Http\Controllers\CustomerImageController;
-use Illuminate\Support\Facades\Broadcast;
-use App\Http\Controllers\Client\ForgotPasswordController;
 
 Broadcast::routes(['middleware' => ['auth']]);
 
@@ -233,10 +234,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow'])->name('appointments.no-show');
     Route::get('/appointments/cancelled/{cancelledAppointment}', [AppointmentController::class, 'showCancelled'])->name('appointments.show_cancelled');
 
-    // ==== Thống kê thợ ====
-    Route::get('/barber-statistics', [App\Http\Controllers\BarberStatisticsController::class, 'index'])->name('barber_statistics.index');
-    Route::get('/barber-statistics/{barber}', [App\Http\Controllers\BarberStatisticsController::class, 'show'])->name('barber_statistics.show');
-    Route::get('/barber-statistics/export', [App\Http\Controllers\BarberStatisticsController::class, 'export'])->name('barber_statistics.export');
+    // ==== Thống kê lịch thợ ====
+    Route::get('/barber-statistics', [BarberStatisticsController::class, 'index'])->name('barber_statistics.index');
+    Route::get('/barber-statistics/{barber}', [BarberStatisticsController::class, 'show'])->name('barber_statistics.show');
+    // Route::get('/barber-statistics/export', [BarberStatisticsController::class, 'export'])->name('barber_statistics.export');
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);

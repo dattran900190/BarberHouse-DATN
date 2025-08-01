@@ -174,7 +174,7 @@
                             </li>
                             <li>
                                 <a href="{{ route('barber_statistics.index') }}">
-                                    <span class="sub-item">Thống kê thợ</span>
+                                    <span class="sub-item">Thống kê lịch thợ</span>
                                 </a>
                             </li>
                         </ul>
