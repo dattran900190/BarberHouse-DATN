@@ -17,7 +17,7 @@
     <main>
         <div class="login">
             <div class="image-login">
-                <img src="{{ asset('storage/' . ($imageSettings['anh_danh_ky'] ?? 'default-images/no-banggia.png')) }}" alt="Bảng đăng ký" />
+                <img src="{{ asset('storage/' . ($imageSettings['anh_dang_ky'] ?? 'default-images/no-image.png')) }}" alt="Đăng ký" />
             </div>
 
             <div class="form-login">

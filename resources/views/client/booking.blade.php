@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <main class="container" style="padding: 10% 0;">
+    <main class="container" style="padding: 3% 0;">
         @if (session('success'))
             <script>
                 document.addEventListener('DOMContentLoaded', function() {

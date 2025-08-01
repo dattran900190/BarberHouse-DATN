@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <main class="container-fluid">
+    <main class="container">
         <section class="h-custom">
             <div class="padding-5vh">
                 <div class="flex-center">

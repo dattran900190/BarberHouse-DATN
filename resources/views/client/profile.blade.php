@@ -47,7 +47,7 @@
                                     <form action="{{ route('client.update') }}" method="POST"
                                         enctype="multipart/form-data">
                                         @csrf
-                                        <input type="hidden" name="tab" value="account-info">
+                                        <input type="hidden" name="tab" value="account-general">
                                         <div class="card-body d-flex align-items-center">
                                             <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
                                                 alt="Avatar" class="rounded  avatar-preview"
