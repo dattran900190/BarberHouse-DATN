@@ -221,21 +221,22 @@
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function handleSwalAction({
+         function handleSwalAction({
             selector,
             title,
             text,
             route,
-            method = 'POST'
+            method = 'POST',
+            onSuccess = () => location.reload()
         }) {
             document.querySelectorAll(selector).forEach(button => {
                 button.addEventListener('click', function(event) {
                     event.preventDefault();
-                    const recordId = this.getAttribute('data-id');
+                    const promoId = this.getAttribute('data-id');
 
                     Swal.fire({
-                        title: title,
-                        text: text,
+                        title,
+                        text,
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: 'Xác nhận',
@@ -249,26 +250,54 @@
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            let form = document.createElement('form');
-                            form.method = 'POST';
-                            form.action = route.replace(':id', recordId);
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                didOpen: () => Swal.showLoading()
+                            });
 
-                            let csrfToken = document.createElement('input');
-                            csrfToken.type = 'hidden';
-                            csrfToken.name = '_token';
-                            csrfToken.value = '{{ csrf_token() }}';
-                            form.appendChild(csrfToken);
-
-                            if (method.toUpperCase() !== 'POST') {
-                                let methodInput = document.createElement('input');
-                                methodInput.type = 'hidden';
-                                methodInput.name = '_method';
-                                methodInput.value = method;
-                                form.appendChild(methodInput);
-                            }
-
-                            document.body.appendChild(form);
-                            form.submit();
+                            fetch(route.replace(':id', promoId), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra. Vui lòng thử lại sau.',
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
                         }
                     });
                 });

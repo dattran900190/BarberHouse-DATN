@@ -288,6 +288,13 @@
                     showCancelButton: true,
                     confirmButtonText: 'Ẩn',
                     cancelButtonText: 'Hủy',
+                    customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                 }).then((result) => {
                     if (result.isConfirmed) {
                         fetch("{{ route('admin.product-variants.softDelete', ['id' => 'VARIANT_ID']) }}"
@@ -329,7 +336,7 @@
                                         '<span class="badge bg-secondary">Đã ẩn</span>';
                                     row.querySelector('td:nth-child(6)').innerHTML =
                                         '<button type="button" class="btn btn-success btn-sm btn-restore-variant" data-variant-id="' +
-                                        variantId + '">Kích hoạt lại</button>';
+                                        variantId + '">Khôi phục</button>';
                                 } else {
                                     Swal.fire('Lỗi', data.message ||
                                         'Không thể ẩn biến thể cuối cùng!', 'error');
@@ -354,6 +361,13 @@
                     showCancelButton: true,
                     confirmButtonText: 'Kích hoạt',
                     cancelButtonText: 'Hủy',
+                    customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                 }).then((result) => {
                     if (result.isConfirmed) {
                         fetch("{{ route('admin.product-variants.restore', ['id' => 'VARIANT_ID']) }}"
