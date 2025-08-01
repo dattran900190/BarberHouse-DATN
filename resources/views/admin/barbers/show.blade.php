@@ -18,6 +18,7 @@
             'master' => 'success',
             'expert' => 'warning',
         ];
+        $isSoftDeleted = $barber->trashed();
     @endphp
 
     <div class="page-header">
@@ -113,19 +114,40 @@
                                     @else
                                         <span class="badge bg-light text-dark">Không rõ trạng thái</span>
                                     @endif
+                                    
+                                    @if ($isSoftDeleted)
+                                        <span class="badge bg-danger ms-2">Đã xóa mềm</span>
+                                    @endif
                                 </div>
                             </div>
                         </div>
 
                         <!-- Nút -->
-                        <div class="mt-3">
-                            @if ($barber->status !== 'retired')
+                        <div class="mt-3 d-flex gap-2">
+                            @if (!$isSoftDeleted && $barber->status !== 'retired')
                                 <a href="{{ route('barbers.edit', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
-                                    class="btn btn-sm btn-outline-primary me-2">
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="fa fa-edit me-1"></i> Sửa
                                 </a>
+                                <button class="btn btn-sm btn-outline-warning retire-btn"
+                                    data-id="{{ $barber->id }}"
+                                    data-page="{{ request('page', 1) }}">
+                                    <i class="fas fa-user-slash me-1"></i> Nghỉ việc
+                                </button>
                             @endif
-
+                            @if (!$isSoftDeleted && $barber->status === 'retired')
+                                <button class="btn btn-sm btn-outline-danger soft-delete-btn"
+                                    data-id="{{ $barber->id }}"
+                                    data-page="{{ request('page', 1) }}">
+                                    <i class="fa fa-trash me-1"></i> Xóa mềm
+                                </button>
+                            @elseif ($isSoftDeleted)
+                                <button class="btn btn-sm btn-outline-success restore-btn"
+                                    data-id="{{ $barber->id }}"
+                                    data-page="{{ request('page', 1) }}">
+                                    <i class="fa fa-undo me-1"></i> Khôi phục
+                                </button>
+                            @endif
                             <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}"
                                 class="btn btn-sm btn-outline-secondary">
                                 <i class="fa fa-arrow-left me-1"></i> Quay lại
@@ -136,5 +158,136 @@
             </div>
         </div>
     </div>
+@endsection
 
+@section('js')
+    <script>
+        function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            withInput = false,
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const id = this.getAttribute('data-id');
+                    const page = this.getAttribute('data-page');
+
+                    const swalOptions = {
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    };
+
+                    if (withInput) {
+                        swalOptions.input = 'textarea';
+                        swalOptions.inputPlaceholder = inputPlaceholder;
+                        if (inputValidator) {
+                            swalOptions.inputValidator = inputValidator;
+                        }
+                    }
+
+                    Swal.fire(swalOptions).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            const body = withInput ? JSON.stringify({
+                                input: result.value || ''
+                            }) : undefined;
+
+                            fetch(route.replace(':id', id) + (page ? `?page=${page}` : ''), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Phản hồi không hợp lệ từ máy chủ.');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        }
+
+        // Xử lý nút Xóa mềm
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Xóa mềm thợ',
+            text: 'Bạn có chắc muốn xóa mềm thợ này?',
+            route: '{{ route('barbers.softDelete', ':id') }}',
+            method: 'PATCH'
+        });
+
+        // Xử lý nút Khôi phục
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục thợ',
+            text: 'Bạn có chắc muốn khôi phục thợ này?',
+            route: '{{ route('barbers.restore', ':id') }}',
+            method: 'POST'
+        });
+
+        // Áp dụng cho nút Nghỉ việc
+        handleSwalAction({
+            selector: '.retire-btn',
+            title: 'Cho thợ nghỉ việc',
+            text: 'Bạn có chắc muốn cho thợ này nghỉ việc?',
+            route: '{{ route('barbers.destroy', ':id') }}?page={{ request('page', 1) }}',
+            method: 'DELETE'
+        });
+    </script>
 @endsection

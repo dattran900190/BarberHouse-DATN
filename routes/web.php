@@ -262,7 +262,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('banners', BannerController::class);
     Route::patch('banners/{id}/soft-delete', [BannerController::class, 'softDelete'])->name('banners.softDelete');
     Route::post('banners/{id}/restore', [BannerController::class, 'restore'])->name('banners.restore');
-    Route::delete('banners/{id}', [BannerController::class, 'destroy'])->name('banners.destroy');
+    // Route::delete('banners/{id}', [BannerController::class, 'destroy'])->name('banners.destroy');
 
     // ==== Chi nhánh ====
     Route::resource('branches', BranchController::class);
@@ -271,7 +271,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('admin/branches/{id}/restore', [BranchController::class, 'restore'])
         ->name('branches.restore');
     Route::delete('admin/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])
-        ->name('branches.forceDelete');
+        ->name('branches.destroy');
 
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);
@@ -301,6 +301,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/products/search', [ProductController::class, 'search'])->name('admin.products.search');
     Route::post('admin/product-variants/{id}/restore', [ProductController::class, 'restoreVariant'])->name('admin.product-variants.restore');
     Route::post('admin/product-variants/{id}/soft-delete', [ProductController::class, 'softDeleteVariant'])->name('admin.product-variants.softDelete');
+    Route::get('/products/trashed/{id}', [ProductController::class, 'showTrashed'])->name('admin.products.showTrashed');
+
 });
 
 // ==== profile ====
