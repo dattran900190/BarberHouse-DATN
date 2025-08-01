@@ -1,11 +1,11 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Thống kê thợ')
+@section('title', 'Thống kê lịch thợ')
 
 @section('content')
     <div class="page-inner">
         <div class="page-header">
-            <h4 class="page-title">Thống kê thợ theo chi nhánh</h4>
+            <h3 class="fw-bold mb-3">Thống kê lịch thợ theo chi nhánh</h3>
             <ul class="breadcrumbs mb-3">
                 <li class="nav-home">
                     <a href="{{ url('admin/dashboard') }}">
@@ -16,13 +16,13 @@
                     <i class="icon-arrow-right"></i>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ url('admin/dashboard') }}">Quản lý Chi nhánh</a>
+                    <a href="{{ url('admin/barber-statistics') }}">Quản lý lịch thợ</a>
                 </li>
                 <li class="separator">
                     <i class="icon-arrow-right"></i>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ url('admin/barber-statistics') }}">Thống kê thợ</a>
+                    <a href="{{ url('admin/barber-statistics') }}">Thống kê lịch thợ</a>
                 </li>
             </ul>
         </div>
@@ -39,6 +39,7 @@
                             <div class="col-md-3">
                                 <label>Tháng</label>
                                 <select name="month" class="form-control">
+                                    <option value="all" {{ $selectedMonth == 'all' ? 'selected' : '' }}>Tất cả tháng</option>
                                     @foreach ($availableMonths as $month)
                                         <option value="{{ $month }}"
                                             {{ $selectedMonth == $month ? 'selected' : '' }}>
@@ -72,13 +73,16 @@
                                 </div>
                             @endif
                             <div class="col-md-3">
+                                <label>Tìm kiếm theo tên</label>
+                                <input type="text" name="search" class="form-control" value="{{ request()->input('search') }}"
+                                    placeholder="Nhập tên thợ">
+                            </div>
+                            <div class="col-md-3">
                                 <label>&nbsp;</label>
                                 <div>
-                                    <button type="submit" class="btn btn-primary">Lọc</button>
-                                    <a href="{{ route('barber_statistics.export', request()->query()) }}"
-                                        class="btn btn-success">
-                                        <i class="fas fa-download"></i> Xuất Excel
-                                    </a>
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-filter"></i> Lọc
+                                    </button>
                                 </div>
                             </div>
                         </form>
@@ -89,7 +93,7 @@
             <!-- Thống kê tổng quan -->
             <div class="col-md-12">
                 <div class="row">
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="card card-stats card-round">
                             <div class="card-body">
                                 <div class="row align-items-center">
@@ -108,7 +112,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="card card-stats card-round">
                             <div class="card-body">
                                 <div class="row align-items-center">
@@ -127,7 +131,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="card card-stats card-round">
                             <div class="card-body">
                                 <div class="row align-items-center">
@@ -146,7 +150,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="card card-stats card-round">
                             <div class="card-body">
                                 <div class="row align-items-center">
@@ -165,7 +169,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="card card-stats card-round">
                             <div class="card-body">
                                 <div class="row align-items-center">
@@ -244,11 +248,9 @@
                                             <td class="text-center">
                                                 <span class="badge badge-primary">{{ $barber->working_days }}</span>
                                             </td>
-                                            <td class="text-center">
-                                                <a href="{{ route('barber_statistics.show', $barber->id) }}?month={{ $selectedMonth }}&year={{ $selectedYear }}"
-                                                    class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-eye"></i> Chi tiết
-                                                </a>
+                                            <td>
+                                                <a href="{{ route('barber_statistics.show', $barber->id) }}"
+                                                    class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Xem</a>
                                             </td>
                                         </tr>
                                     @empty
@@ -258,6 +260,9 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                            <div class="d-flex justify-content-center">
+                                {{ $barbers->appends(request()->query())->links() }}
+                            </div>
                         </div>
                     </div>
                 </div>

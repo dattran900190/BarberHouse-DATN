@@ -66,6 +66,50 @@ document.addEventListener("DOMContentLoaded", function () {
     chatClose.addEventListener('click', () => chatBox.style.display = 'none');
   }
 
+  // —— Product dropdown for mobile ——
+  const dropdownProduct = document.querySelector('.nav-item.dropdown-product');
+  if (dropdownProduct) {
+    const dropdownMenu = dropdownProduct.querySelector('.dropdown-menu');
+    const dropdownLink = dropdownProduct.querySelector('.nav-link');
+    
+    // On mobile, use click instead of hover
+    if (window.innerWidth <= 768) {
+      dropdownLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        dropdownMenu.classList.toggle('show');
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!dropdownProduct.contains(e.target)) {
+          dropdownMenu.classList.remove('show');
+        }
+      });
+    }
+  }
 
+  // —— Filter form improvements ——
+  const filterForm = document.querySelector('.product-filters');
+  if (filterForm) {
+    // Add loading state when form submits
+    filterForm.addEventListener('submit', function() {
+      const submitBtn = this.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lọc...';
+      }
+    });
+    
+    // Add smooth transition when changing filters
+    const selects = filterForm.querySelectorAll('select');
+    selects.forEach(select => {
+      select.addEventListener('change', function() {
+        // Add a small delay to show the change
+        setTimeout(() => {
+          this.form.submit();
+        }, 100);
+      });
+    });
+  }
 
 });
