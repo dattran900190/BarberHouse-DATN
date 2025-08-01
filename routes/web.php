@@ -271,7 +271,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('admin/branches/{id}/restore', [BranchController::class, 'restore'])
         ->name('branches.restore');
     Route::delete('admin/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])
-        ->name('branches.destroy');
+        ->name('branches.forceDelete');
 
     // ==== Lịch trình ====
     Route::resource('barber_schedules', BarberScheduleController::class);
