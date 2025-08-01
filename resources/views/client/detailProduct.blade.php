@@ -151,7 +151,7 @@ class="btn btn-danger d-flex align-items-center justify-content-center gap-2">
                                     </a>
                                 </div>
                                 <h4>
-                                    <a href="{{ route('client.product.detail', $item->id) }}" class="product-link">
+                                    <a  href="{{ route('client.product.detail', $item->id) }}" class="product-link" style="color: #000 !important">
                                         {{ $item->name }}
                                     </a>
                                 </h4>

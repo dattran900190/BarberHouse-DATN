@@ -464,7 +464,7 @@ section {
 /* Card chung */
 .product {
   background: #fff;
-  border-radius: 18px;               /* như barber-card */
+  border-radius: 6px;               /* như barber-card */
   border: 1px solid #eee;
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
@@ -504,6 +504,7 @@ section {
 .product p {
   margin: 0 12px;
   text-align: center;
+  
 }
 
 .product h4 {
