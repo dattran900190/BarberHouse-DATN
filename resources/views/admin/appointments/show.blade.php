@@ -262,42 +262,16 @@
         </div>
         <div class="card-body">
             <div class="d-flex gap-2">
-                @if (!$isCancelled)
+                {{-- nếu là trạng thái thành công hoặc huỷ thì không hiển thị nút sửa và hủy --}}
+                @if (!$isCancelled && $appointment->status == 'pending')
                     <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-outline-primary btn-sm"><i
                             class="fa fa-edit me-1"></i> Sửa</a>
-                    <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal"><i
-                            class="fa fa-times me-1"></i> Hủy lịch</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $appointment->id }}">
+                        <i class="fas fa-trash me-2"></i> Hủy lịch
+                    </button>
                 @endif
                 <a href="{{ route('appointments.index', ['page' => request('page', 1)]) }}"
                     class="btn btn-outline-secondary btn-sm"><i class="fa fa-arrow-left me-1"></i> Quay lại</a>
-                <button class="btn btn-outline-success btn-sm" onclick="exportPDF()"><i class="fa fa-file-pdf me-1"></i>
-                    Xuất
-                    PDF</button>
-                {{-- <button class="btn btn-outline-info btn-sm" onclick="resendEmail()"><i class="fa fa-envelope me-1"></i> Gửi lại
-                        email</button> --}}
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal cho hủy lịch -->
-    <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cancelModalLabel">Xác nhận hủy lịch</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Bạn có chắc muốn hủy lịch hẹn <strong>{{ $appointment->appointment_code }}</strong>?</p>
-                    <div class="mb-3">
-                        <label for="cancelReason" class="form-label">Lý do hủy</label>
-                        <textarea class="form-control" id="cancelReason" name="no_show_reason" rows="4"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-outline-danger" onclick="submitCancel()">Xác nhận</button>
-                </div>
             </div>
         </div>
     </div>
@@ -360,31 +334,112 @@
 @endsection
 
 <script>
-    function exportPDF() {
-        // Logic để xuất PDF, sử dụng thư viện như dompdf hoặc jsPDF
-        alert('Chức năng xuất PDF đang được phát triển!');
-    }
+     function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            withInput = false, // Thêm tùy chọn hiển thị input
+            inputPlaceholder = '',
+            inputValidator = null,
+            onSuccess = () => location.reload() // Thay reload bằng callback linh hoạt
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const appointmentId = this.getAttribute('data-id');
 
+                    const swalOptions = {
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    };
 
+                    if (withInput) {
+                        swalOptions.input = 'textarea';
+                        swalOptions.inputPlaceholder = inputPlaceholder;
+                        if (inputValidator) {
+                            swalOptions.inputValidator = inputValidator;
+                        }
+                    }
 
-    function submitCancel() {
-        const reason = document.getElementById('cancelReason').value;
-        fetch('{{ route('appointments.cancel', $appointment->id) }}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    no_show_reason: reason
-                })
-            }).then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                if (data.success) {
-                    window.location.reload();
-                }
-            })
-            .catch(error => alert('Lỗi: ' + error.message));
-    }
+                    Swal.fire(swalOptions).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup' // CSS
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            const body = withInput ? JSON.stringify({
+                                no_show_reason: result.value || 'Không có lý do'
+                            }) : undefined;
+
+                            fetch(route.replace(':id', appointmentId), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra: ' + error.message,
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        }
+
+        handleSwalAction({
+            selector: '.cancel-action',
+            title: 'Huỷ lịch hẹn',
+            text: 'Vui lòng nhập lý do (tùy chọn)',
+            route: '{{ route('appointments.cancel', ':id') }}',
+            withInput: true,
+            inputPlaceholder: 'Nhập lý do cancel (tối đa 255 ký tự)...',
+            inputValidator: (value) => {
+                if (value && value.length > 255) return 'Lý do không được vượt quá 255 ký tự!';
+            },
+            onSuccess: () => window.location.href = '{{ route('appointments.index') }}'
+        });
+
 </script>

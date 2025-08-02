@@ -470,6 +470,13 @@ class AppointmentController extends Controller
                 Mail::to($appointment->email)->send(new CancelBookingMail($appointment));
             }
 
+            // Nếu trạng thái là 'completed', gửi email thông báo
+            if ($appointment->status === 'completed') {
+                $appointment->payment_status = 'paid';
+                $appointment->save();
+                // Mail::to($appointment->email)->send(new CompleteBookingMail($appointment));
+            }
+
             return redirect()->route('appointments.index', ['page' => $currentPage])
                 ->with('success', 'Lịch hẹn ' . $appointment->appointment_code . ' đã được cập nhật.');
         } catch (\Exception $e) {
