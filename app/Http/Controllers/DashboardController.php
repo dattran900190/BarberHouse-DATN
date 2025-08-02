@@ -170,6 +170,13 @@ class DashboardController extends Controller
         $weekStart = $request->input('week_start');
         $weekEnd = $request->input('week_end');
 
+        if (!$weekStart || !$weekEnd) {
+            // Nếu không chọn khoảng ngày, mặc định lấy 21 ngày gần nhất
+            $weekStart = Carbon::now()->subDays(30)->toDateString();
+            $weekEnd = Carbon::now()->toDateString();
+        }
+        $viewWeekStart = $weekStart;
+        $viewWeekEnd = $weekEnd;
         $weekLabels = [];
         $weekServiceRevenue = [];
         $weekProductRevenue = [];
@@ -228,6 +235,8 @@ class DashboardController extends Controller
             'weekProductRevenue',
             'weekStart',
             'weekEnd',
+            'viewWeekStart',
+            'viewWeekEnd',
             // Biểu đồ tháng
             'monthLabels',
             'monthServiceRevenue',

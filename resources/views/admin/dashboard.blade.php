@@ -101,12 +101,12 @@
                         <div>
                             <label for="week_start" class="form-label small mb-1">Từ ngày:</label>
                             <input type="date" id="week_start" class="form-control form-control-sm"
-                                value="{{ $weekStart ?? '' }}" max="{{ date('Y-m-d') }}">
+                                value="{{ $viewWeekStart ?? '' }}" max="{{ date('Y-m-d') }}">
                         </div>
                         <div>
                             <label for="week_end" class="form-label small mb-1">Đến ngày:</label>
                             <input type="date" id="week_end" class="form-control form-control-sm"
-                                value="{{ $weekEnd ?? '' }}" max="{{ date('Y-m-d') }}">
+                                value="{{ $viewWeekEnd ?? '' }}" max="{{ date('Y-m-d') }}">
                         </div>
                         <div>
                             <button type="button" id="resetWeekFilter" class="btn btn-sm btn-outline-secondary">
@@ -122,6 +122,7 @@
                 </div>
             </div>
         </div>
+
 
         <!-- Biểu đồ theo tháng -->
         <div class="col-lg-6">
