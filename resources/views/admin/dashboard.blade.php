@@ -11,8 +11,9 @@
     </div>
 
     <!-- Stats Cards -->
+    <!-- Stats Cards -->
     <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-lg-3">
+        <div class="col-sm-6 col-xl-3">
             <div class="card card-stats card-round h-100">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -31,7 +32,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-6 col-lg-3">
+
+        <div class="col-sm-6 col-xl-3">
             <div class="card card-stats card-round h-100">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -50,7 +52,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-6 col-lg-3">
+
+        <div class="col-sm-6 col-xl-3">
             <div class="card card-stats card-round h-100">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -69,7 +72,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-6 col-lg-3">
+
+        <div class="col-sm-6 col-xl-3">
             <div class="card card-stats card-round h-100">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -90,6 +94,37 @@
         </div>
     </div>
 
+    <!-- Doanh thu hôm nay -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-4">
+            <div class="card card-stats card-round h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-icon">
+                            <div class="icon-big text-center icon-warning bubble-shadow-small">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                        <div class="col col-stats ms-3 ms-sm-0">
+                            <div class="numbers">
+                                <p class="card-category">Doanh thu hôm nay</p>
+                                <h4 class="card-title">{{ number_format($todayRevenue) }} VNĐ</h4>
+                                <small class="text-muted">
+                                    Dịch vụ: {{ number_format($todayServiceRevenue) }} VNĐ<br>
+                                    Sản phẩm: {{ number_format($todayProductRevenue) }} VNĐ
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Có thể thêm các card khác ở đây -->
+        <div class="col-lg-8">
+            <!-- Phần khác của dashboard -->
+        </div>
+    </div>
     <!-- Chart Section -->
     <div class="row g-3 mb-4">
         <!-- Biểu đồ theo tuần/khoảng ngày -->
