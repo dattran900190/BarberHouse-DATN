@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Models\Post;
 use App\Models\Banner;
+use App\Models\Barber;
 use App\Models\Product;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -15,6 +16,12 @@ class HomeController extends Controller
 
     public function index()
     {
+        // Lấy danh sách thợ cắt (chỉ trạng thái 1,2)
+        $barbers = Barber::with('branch')
+            ->whereIn('status', [1, 2])
+            ->latest()
+            ->take(6) // giới hạn số lượng hiển thị
+            ->get();
         // Bài viết nổi bật (status = published, is_featured = true)
         $featuredPosts = Post::where('status', 'published')
             ->where('is_featured', true)
@@ -38,6 +45,7 @@ class HomeController extends Controller
             ->get();
 
         return view('client.home', compact(
+            'barbers',
             'featuredPosts',
             'normalPosts',
             'products',

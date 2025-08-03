@@ -38,6 +38,32 @@
                 });
             </script>
         @endif
+        <section id="barbers">
+            <h2>Đội ngũ thợ cắt tóc</h2>
+            <div class="barbers">
+                @foreach ($barbers->take(6) as $barber)
+                    <div class="barber">
+                        <div class="image-barber">
+                            <img src="{{ asset('storage/' . $barber->avatar) }}" alt="{{ $barber->name }}">
+                        </div>
+                        <div class="barber-info">
+                            <h4>{{ $barber->name }}</h4>
+                            <p><span class="label">Kỹ năng:</span> {{ ucfirst($barber->skill_level) }}</p>
+                            <p><span class="label">Chi nhánh:</span> {{ $barber->branch->name ?? 'N/A' }}</p>
+                            <p><span class="label">Đánh giá:</span> {{ number_format($barber->rating_avg, 1) }}/5</p>
+                            {{-- @if (!empty($barber->profile))
+                                <p class="barber-profile">{{ Str::limit(strip_tags($barber->profile), 60) }}</p>
+                            @endif --}}
+                        </div>
+
+                    </div>
+                @endforeach
+            </div>
+            <div class="text-center mt-3">
+                <a href="{{ route('client.listBarber') }}" class="btn-xem-them">Xem thêm</a>
+            </div>
+        </section>
+
 
         <section id="mainPost">
             <h2>Bài viết nổi bật</h2>
@@ -130,7 +156,8 @@
                                     </form>
                                 </div>
                             @else
-                                <span style="color: rgb(232, 184, 12); font-weight: bold; text-align: center;">Hết hàng</span>
+                                <span style="color: rgb(232, 184, 12); font-weight: bold; text-align: center;">Hết
+                                    hàng</span>
                             @endif
                         </div>
                     @endforeach
@@ -163,6 +190,10 @@
     </main>
 
     <style>
+        #mainPost h2 {
+            font-weight: bold;
+        }
+
         .post-nomal {
             border-radius: 8px;
             transition: transform 0.3s, box-shadow 0.3s;
@@ -215,6 +246,80 @@
             transform: scale(1.05);
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #barbers h2 {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }
+
+        .barbers {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .barber {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+
+        .barber:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .image-barber {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .image-barber img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .barber:hover .image-barber img {
+            transform: scale(1.05);
+        }
+
+        .barber-info {
+            padding: 15px 10px;
+        }
+
+        .barber-info h4 {
+            margin-bottom: 8px;
+
+        }
+
+        .barber-profile {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .btn-xem-them {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #000;
+            color: #fff;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-xem-them:hover {
+            background: #444;
         }
     </style>
 @endsection
