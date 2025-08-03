@@ -151,7 +151,7 @@ class AppointmentController extends Controller
             $appointment->delete();
 
             // Gửi email thông báo
-            Mail::to($appointment->email)->send(new CustomerNoShow($appointment));
+            Mail::to($appointment->email)->queue(new CustomerNoShow($appointment));
 
             return response()->json([
                 'success' => true,
@@ -206,7 +206,7 @@ class AppointmentController extends Controller
 
             // Gửi email mã QR
             $checkin = Checkin::where('appointment_id', $appointment->id)->first();
-            Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment, $additionalServices));
+            Mail::to($appointment->email)->queue(new CheckinCodeMail($checkin->qr_code_value, $appointment, $additionalServices));
 
             // Trigger event
             // event(new AppointmentConfirmed($appointment));
@@ -292,7 +292,7 @@ class AppointmentController extends Controller
             // Xóa bản ghi khỏi bảng appointments
             $appointment->delete();
 
-            Mail::to($appointment->email)->send(new CancelBookingMail($appointment));
+            Mail::to($appointment->email)->queue(new CancelBookingMail($appointment));
 
             event(new AppointmentStatusUpdated($appointment));
 
@@ -439,7 +439,7 @@ class AppointmentController extends Controller
 
                 // Gửi email mã QR
                 $checkin = Checkin::where('appointment_id', $appointment->id)->first();
-                Mail::to($appointment->email)->send(new CheckinCodeMail($checkin->qr_code_value, $appointment, $additionalServices));
+                Mail::to($appointment->email)->queue(new CheckinCodeMail($checkin->qr_code_value, $appointment, $additionalServices));
             }
 
             // Nếu trạng thái là 'cancelled', lưu vào bảng cancelled_appointments
@@ -467,7 +467,7 @@ class AppointmentController extends Controller
 
                 event(new AppointmentStatusUpdated($appointment));
 
-                Mail::to($appointment->email)->send(new CancelBookingMail($appointment));
+                Mail::to($appointment->email)->queue(new CancelBookingMail($appointment));
             }
 
             return redirect()->route('appointments.index', ['page' => $currentPage])

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class RefundRequestController extends Controller
 {
@@ -119,13 +120,26 @@ class RefundRequestController extends Controller
                     $appointment->update(['status' => 'cancelled', 'payment_status' => 'refunded']);
                 }
 
+                // Xử lý upload hình ảnh minh chứng
+                if ($request->hasFile('proof_image')) {
+                    $file = $request->file('proof_image');
+                    if ($file->isValid()) {
+                        // Lưu file vào storage (thư mục public/proof_images)
+                        $path = $file->store('proof_images', 'public');
+                        $updateData['proof_image'] = $path;
+                    } else {
+                        return back()->withErrors(['error' => 'Hình ảnh minh chứng không hợp lệ.']);
+                    }
+                }
+
                 $updateData['refunded_at'] = now();
             }
 
             $refund->update($updateData);
 
             if ($newStatus === 'refunded' || $newStatus === 'rejected') {
-                Mail::to($refund->user->email)->send(new RefundStatusMail($refund, $newStatus));
+                // Sử dụng queue thay vì send trực tiếp
+                Mail::to($refund->user->email)->queue(new RefundStatusMail($refund, $newStatus));
             }
 
             DB::commit();
