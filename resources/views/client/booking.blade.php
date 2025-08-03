@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <main class="container" style="padding: 3% 0;">
+    <main class="container" style="padding: 10% 0;">
         @if (session('success'))
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -92,7 +92,7 @@
                     <label class="form-label">Ngày đặt lịch <span class="required">*</span></label>
                     <div class="date-input">
                         <input type="text" class="form-control" id="appointment_date" name="appointment_date"
-                            placeholder="Chọn thời điểm" style="background-color: #fff" readonly>
+                            placeholder="Chọn thời điểm" readonly>
                     </div>
                     @error('appointment_date')
                         <small class="text-danger">{{ $message }}</small>
@@ -101,21 +101,36 @@
 
                 <div class="form-group">
                     <label class="form-label">Chọn chi nhánh <span class="required">*</span></label>
-                    <div id="branch" name="branch_id" class="branch-list">
+                    <div class="position-relative">
+                        <!-- Hidden input for form submission -->
                         <input type="hidden" id="branch_input" name="branch_id" value="{{ old('branch_id') }}">
-                        @foreach ($branches as $branch)
-                            <div class="branch-item {{ old('branch_id') == $branch->id ? 'active' : '' }}"
-                                data-id="{{ $branch->id }}">
-                                <i class="fas fa-map-marker-alt branch-icon"
-                                    data-value="{{ $branch->google_map_url }}"></i>
-                                <span class="branch-name">{{ $branch->name }}</span>
-                                <div class="branch-radio"></div>
-                            </div>
-                        @endforeach
+                        
+                        <!-- Branch selection cards -->
+                        <div class="branch-cards-container" id="branchCards">
+                            @foreach ($branches as $branch)
+                                <div class="branch-card" data-branch-id="{{ $branch->id }}" data-branch-name="{{ $branch->name }}">
+                                    <div class="branch-icon-wrapper">
+                                        <i class="fas fa-map-marker-alt branch-icon" data-value="{{ $branch->google_map_url }}"></i>
+                                    </div>
+                                    <div class="branch-info">
+                                        <h6 class="branch-name">{{ $branch->name }}</h6>
+                                        <div class="branch-address">
+                                            <i class="fas fa-map-pin"></i>
+                                            <span>{{ $branch->address ?? 'Địa chỉ chi nhánh' }}</span>
+                                        </div>
+                                        <div class="branch-hours">
+                                            <i class="fas fa-clock"></i>
+                                            <span>08:00 - 19:30</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        
+                        @error('branch_id')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
                     </div>
-                    @error('branch_id')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
                 </div>
 
                 <div class="form-group">
@@ -185,7 +200,8 @@
                 <div class="form-group">
                     <label class="form-label">Yêu cầu kĩ thuật viên <span class="required">*</span></label>
                     <div class="position-relative">
-                        <select class="form-select" id="barber" name="barber_id">
+                        <!-- Hidden select for form submission -->
+                        <select class="form-select d-none" id="barber" name="barber_id">
                             <option value="">Chọn kĩ thuật viên</option>
                             @foreach ($barbers as $barber)
                                 <option value="{{ $barber->id }}"
@@ -193,6 +209,73 @@
                                     {{ $barber->name }}</option>
                             @endforeach
                         </select>
+                        
+                        <!-- Barber selection cards -->
+                        <div class="barber-cards-wrapper">
+                            @if(!request('branch_id'))
+                                <div class="all-barbers-notice">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Đang hiển thị tất cả thợ. Vui lòng chọn chi nhánh để xem thợ cụ thể.</span>
+                                </div>
+                            @endif
+                            <div class="barber-cards-container" id="barberCards">
+                                @foreach ($barbers as $barber)
+                                    <div class="barber-card" data-barber-id="{{ $barber->id }}" data-barber-name="{{ $barber->name }}">
+                                        <div class="barber-avatar">
+                                            @if($barber->avatar)
+                                                <img src="{{ asset('storage/' . $barber->avatar) }}" alt="{{ $barber->name }}" class="barber-img">
+                                            @else
+                                                <div class="barber-img-placeholder">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="barber-info">
+                                            <h6 class="barber-name">{{ $barber->name }}</h6>
+                                            <div class="barber-rating">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    @if($i <= $barber->rating_avg)
+                                                        <i class="fas fa-star text-warning"></i>
+                                                    @else
+                                                        <i class="far fa-star text-muted"></i>
+                                                    @endif
+                                                @endfor
+                                                <span class="rating-text">({{ number_format($barber->rating_avg, 1) }})</span>
+                                            </div>
+                                                                                    <div class="barber-skill">
+                                            @php
+                                                $skillLevels = [
+                                                    'assistant' => 'Thử việc',
+                                                    'junior' => 'Sơ cấp',
+                                                    'senior' => 'Chuyên nghiệp',
+                                                    'master' => 'Bậc thầy',
+                                                    'expert' => 'Chuyên gia'
+                                                ];
+                                                $skillLevelColors = [
+                                                    'assistant' => 'secondary',
+                                                    'junior' => 'info',
+                                                    'senior' => 'primary',
+                                                    'master' => 'success',
+                                                    'expert' => 'warning'
+                                                ];
+                                                $levelKey = $barber->skill_level;
+                                                $levelText = $skillLevels[$levelKey] ?? 'Chuyên nghiệp';
+                                                $levelColor = $skillLevelColors[$levelKey] ?? 'dark';
+                                            @endphp
+                                            <span class="skill-badge bg-{{ $levelColor }}">{{ $levelText }}</span>
+                                        </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @if(count($barbers) > 5)
+                                <div class="scroll-indicator">
+                                    <i class="fas fa-chevron-down"></i>
+                                    <span>Cuộn để xem thêm thợ</span>
+                                </div>
+                            @endif
+                        </div>
+                        
                         @error('barber_id')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -274,6 +357,403 @@
         #mainNav {
             background-color: #000;
         }
+        
+        /* Barber Cards Styles */
+        .barber-cards-wrapper {
+            position: relative;
+        }
+        
+        .all-barbers-notice {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            color: #856404;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .all-barbers-notice i {
+            color: #f39c12;
+            font-size: 14px;
+        }
+        
+        .barber-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+            padding-top: 10px;
+            padding-bottom: 25px;
+            max-height: 400px; /* Giới hạn chiều cao */
+            overflow-y: auto; /* Cho phép scroll */
+            padding-right: 10px; /* Tạo khoảng cách cho scrollbar */
+        }
+        
+        .scroll-indicator {
+            text-align: center;
+            padding: 10px;
+            color: #6c757d;
+            font-size: 12px;
+            background: linear-gradient(to bottom, transparent, #fff);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        
+        .scroll-indicator i {
+            margin-right: 5px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-5px);
+            }
+            60% {
+                transform: translateY(-3px);
+            }
+        }
+        
+        /* Custom scrollbar cho barber cards */
+        .barber-cards-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .barber-cards-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .barber-cards-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .barber-cards-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        .barber-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .barber-card:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .barber-card.selected {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+        }
+        
+        .barber-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .barber-avatar {
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .barber-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #f8f9fa;
+        }
+        
+        .barber-img-placeholder {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #e9ecef;
+        }
+        
+        .barber-img-placeholder i {
+            font-size: 24px;
+            color: #6c757d;
+        }
+        
+        .barber-info {
+            flex: 1;
+        }
+        
+        .barber-name {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .barber-rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .barber-rating i {
+            font-size: 14px;
+            margin-right: 2px;
+        }
+        
+        .rating-text {
+            margin-left: 5px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .barber-skill {
+            margin-top: 5px;
+        }
+        
+        .skill-badge {
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .skill-badge.bg-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
+        }
+        
+        .skill-badge.bg-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        }
+        
+        .skill-badge.bg-primary {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        }
+        
+        .skill-badge.bg-success {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        }
+        
+        .skill-badge.bg-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            color: #212529;
+        }
+        
+        .skill-badge.bg-dark {
+            background: linear-gradient(135deg, #343a40 0%, #1d2124 100%);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .barber-cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .barber-card {
+                padding: 12px;
+            }
+            
+            .barber-img, .barber-img-placeholder {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .barber-name {
+                font-size: 14px;
+            }
+        }
+        
+        /* Branch Cards Styles */
+        .branch-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .branch-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .branch-card:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .branch-card.selected {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+        }
+        
+        .branch-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .branch-icon-wrapper {
+            margin-right: 15px;
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .branch-icon {
+            color: white;
+            font-size: 20px;
+        }
+        
+        .branch-info {
+            flex: 1;
+        }
+        
+        .branch-name {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .branch-address, .branch-hours {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .branch-address i, .branch-hours i {
+            margin-right: 5px;
+            font-size: 10px;
+        }
+        
+        /* Time Grid Styles */
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .time-slot {
+            padding: 12px 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            background: #fff;
+            position: relative;
+        }
+        
+        .time-slot:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+        }
+        
+        .time-slot.selected {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+            color: #155724;
+        }
+        
+        .time-slot.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #28a745;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        /* Responsive cho time grid */
+        @media (max-width: 768px) {
+            .time-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .time-slot {
+                padding: 10px 6px;
+                font-size: 13px;
+            }
+        }
     </style>
 @endsection
 
@@ -282,6 +762,13 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Barber card selection
+            setupBarberCardSelection();
+            // Branch card selection
+            setupBranchCardSelection();
+            // Time card selection
+            setupTimeCardSelection();
+            
             @if (session('success'))
                 Swal.fire({
                     icon: 'success',
@@ -310,6 +797,112 @@
                 });
             @endif
         });
+        
+        // Setup barber card selection
+        function setupBarberCardSelection() {
+            const barberCards = document.querySelectorAll('.barber-card');
+            const barberSelect = document.getElementById('barber');
+            
+            barberCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove previous selection
+                    barberCards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Select current card
+                    this.classList.add('selected');
+                    
+                    // Update hidden select
+                    const barberId = this.dataset.barberId;
+                    const barberName = this.dataset.barberName;
+                    
+                    // Clear previous options
+                    barberSelect.innerHTML = '<option value="">Chọn kỹ thuật viên</option>';
+                    
+                    // Add selected option
+                    const option = document.createElement('option');
+                    option.value = barberId;
+                    option.textContent = barberName;
+                    option.selected = true;
+                    barberSelect.appendChild(option);
+                    
+                    // Trigger change event for any existing listeners
+                    barberSelect.dispatchEvent(new Event('change'));
+                });
+            });
+            
+            // Set initial selection if there's a pre-selected value
+            const preSelectedBarberId = barberSelect.value;
+            if (preSelectedBarberId) {
+                const selectedCard = document.querySelector(`[data-barber-id="${preSelectedBarberId}"]`);
+                if (selectedCard) {
+                    selectedCard.classList.add('selected');
+                }
+            }
+        }
+        
+        // Setup branch card selection
+        function setupBranchCardSelection() {
+            const branchCards = document.querySelectorAll('.branch-card');
+            const branchInput = document.getElementById('branch_input');
+            
+            branchCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove previous selection
+                    branchCards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Select current card
+                    this.classList.add('selected');
+                    
+                    // Update hidden input
+                    const branchId = this.dataset.branchId;
+                    branchInput.value = branchId;
+                    
+                    // Trigger change event for any existing listeners
+                    branchInput.dispatchEvent(new Event('change'));
+                });
+            });
+            
+            // Set initial selection if there's a pre-selected value
+            const preSelectedBranchId = branchInput.value;
+            if (preSelectedBranchId) {
+                const selectedCard = document.querySelector(`[data-branch-id="${preSelectedBranchId}"]`);
+                if (selectedCard) {
+                    selectedCard.classList.add('selected');
+                }
+            }
+        }
+        
+        // Setup time card selection
+        function setupTimeCardSelection() {
+            const timeSlots = document.querySelectorAll('.time-slot');
+            const timeInput = document.getElementById('appointment_time');
+            
+            timeSlots.forEach(slot => {
+                slot.addEventListener('click', function() {
+                    // Remove previous selection
+                    timeSlots.forEach(s => s.classList.remove('selected'));
+                    
+                    // Select current slot
+                    this.classList.add('selected');
+                    
+                    // Update hidden input
+                    const timeValue = this.dataset.value;
+                    timeInput.value = timeValue;
+                    
+                    // Trigger change event for any existing listeners
+                    timeInput.dispatchEvent(new Event('change'));
+                });
+            });
+            
+            // Set initial selection if there's a pre-selected value
+            const preSelectedTime = timeInput.value;
+            if (preSelectedTime) {
+                const selectedSlot = document.querySelector(`[data-value="${preSelectedTime}"]`);
+                if (selectedSlot) {
+                    selectedSlot.classList.add('selected');
+                }
+            }
+        }
     </script>
 
     <script>
@@ -407,22 +1000,133 @@
                         }
                         return response.json();
                     })
-                    .then(data => {
-                        barberSelect.innerHTML = '<option value="">Chọn kỹ thuật viên</option>';
-                        if (data.error) {
-                            barberSelect.innerHTML = `<option value="">${data.error}</option>`;
-                        } else if (data.length > 0) {
-                            data.forEach(barber => {
-                                const option = document.createElement('option');
-                                option.value = barber.id;
-                                option.text = barber.name;
-                                barberSelect.appendChild(option);
-                            });
-                        } else {
-                            barberSelect.innerHTML =
-                                '<option value="">Không có kỹ thuật viên khả dụng</option>';
+                                    .then(data => {
+                    // Update hidden select
+                    barberSelect.innerHTML = '<option value="">Chọn kỹ thuật viên</option>';
+                    
+                    // Update barber cards container
+                    const barberCardsContainer = document.getElementById('barberCards');
+                    const barberCardsWrapper = barberCardsContainer.parentElement;
+                    
+                    // Remove existing notice
+                    const existingNotice = barberCardsWrapper.querySelector('.all-barbers-notice');
+                    if (existingNotice) existingNotice.remove();
+                    
+                    if (data.error) {
+                        barberSelect.innerHTML = `<option value="">${data.error}</option>`;
+                        barberCardsContainer.innerHTML = `<div class="text-center text-muted py-4">${data.error}</div>`;
+                        // Remove scroll indicator if exists
+                        const existingIndicator = barberCardsWrapper.querySelector('.scroll-indicator');
+                        if (existingIndicator) existingIndicator.remove();
+                    } else if (data.length > 0) {
+                        // Clear existing cards
+                        barberCardsContainer.innerHTML = '';
+                        
+                        data.forEach(barber => {
+                            // Add to hidden select
+                            const option = document.createElement('option');
+                            option.value = barber.id;
+                            option.text = barber.name;
+                            barberSelect.appendChild(option);
+                            
+                            // Create barber card
+                            const card = document.createElement('div');
+                            card.className = 'barber-card';
+                            card.dataset.barberId = barber.id;
+                            card.dataset.barberName = barber.name;
+
+                            const skillLevels = {
+                                'assistant': 'Thử việc',
+                                'junior': 'Sơ cấp',
+                                'senior': 'Chuyên nghiệp',
+                                'master': 'Bậc thầy',
+                                'expert': 'Chuyên gia'
+                            };
+                            const skillLevelColors = {
+                                'assistant': 'secondary',
+                                'junior': 'info',
+                                'senior': 'primary',
+                                'master': 'success',
+                                'expert': 'warning'
+                            };
+                            const levelKey = barber.skill_level;
+                            
+                            const avatar = barber.avatar 
+                                ? `<img src="/storage/${barber.avatar}" alt="${barber.name}" class="barber-img">`
+                                : `<div class="barber-img-placeholder"><i class="fas fa-user"></i></div>`;
+                            
+                            const ratingStars = Array.from({length: 5}, (_, i) => {
+                                const starClass = i < barber.rating_avg ? 'fas fa-star text-warning' : 'far fa-star text-muted';
+                                return `<i class="${starClass}"></i>`;
+                            }).join('');
+                            
+                            card.innerHTML = `
+                                <div class="barber-avatar">
+                                    ${avatar}
+                                </div>
+                                <div class="barber-info">
+                                    <h6 class="barber-name">${barber.name}</h6>
+                                    <div class="barber-rating">
+                                        ${ratingStars}
+                                        <span class="rating-text">(${parseFloat(barber.rating_avg || 0).toFixed(1)})</span>
+                                    </div>
+                                    <div class="barber-skill">
+                                        <span class="skill-badge bg-${skillLevelColors[levelKey] || 'dark'}">${skillLevels[levelKey] || 'Chuyên nghiệp'}</span>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            barberCardsContainer.appendChild(card);
+                        });
+                        
+                        // Add scroll indicator if more than 5 barbers
+                        const existingIndicator = barberCardsWrapper.querySelector('.scroll-indicator');
+                        if (existingIndicator) existingIndicator.remove();
+                        
+                        if (data.length > 5) {
+                            const scrollIndicator = document.createElement('div');
+                            scrollIndicator.className = 'scroll-indicator';
+                            scrollIndicator.innerHTML = `
+                                <i class="fas fa-chevron-down"></i>
+                                <span>Cuộn để xem thêm thợ</span>
+                            `;
+                            barberCardsWrapper.appendChild(scrollIndicator);
                         }
-                    })
+                        
+                        // Add notice if no branch is selected
+                        const branchInput = document.getElementById('branch_input');
+                        if (!branchInput.value) {
+                            const notice = document.createElement('div');
+                            notice.className = 'all-barbers-notice';
+                            notice.innerHTML = `
+                                <i class="fas fa-info-circle"></i>
+                                <span>Đang hiển thị tất cả thợ. Vui lòng chọn chi nhánh để xem thợ cụ thể.</span>
+                            `;
+                            barberCardsWrapper.insertBefore(notice, barberCardsContainer);
+                        }
+                        
+                        // Re-setup barber card selection
+                        setupBarberCardSelection();
+                    } else {
+                        barberSelect.innerHTML = '<option value="">Không có kỹ thuật viên khả dụng</option>';
+                        barberCardsContainer.innerHTML = '<div class="text-center text-muted py-4">Không có kỹ thuật viên khả dụng</div>';
+                        // Remove scroll indicator if exists
+                        const existingIndicator = barberCardsWrapper.querySelector('.scroll-indicator');
+                        if (existingIndicator) existingIndicator.remove();
+                        
+                        // Add notice if no branch is selected
+                        const branchInput = document.getElementById('branch_input');
+                        if (!branchInput.value) {
+                            const notice = document.createElement('div');
+                            notice.className = 'all-barbers-notice';
+                            notice.innerHTML = `
+                                <i class="fas fa-info-circle"></i>
+                                <span>Đang hiển thị tất cả thợ. Vui lòng chọn chi nhánh để xem thợ cụ thể.</span>
+                            `;
+                            barberCardsWrapper.insertBefore(notice, barberCardsContainer);
+                        }
+                    }
+                })
                     .catch(error => {
                         console.error('Error fetching barbers:', error.message);
                         barberSelect.innerHTML = `<option value="">Lỗi: ${error.message}</option>`;
@@ -448,19 +1152,8 @@
                     if (slot) slot.classList.add('selected');
                 }
             }
+            
 
-            // Xử lý click chi nhánh
-            if (branchContainer) {
-                branchContainer.querySelectorAll('.branch-item').forEach(item => {
-                    item.addEventListener('click', () => {
-                        branchContainer.querySelectorAll('.branch-item').forEach(el => el.classList
-                            .remove('active'));
-                        item.classList.add('active');
-                        branchInput.value = item.getAttribute('data-id');
-                        updateBarbers();
-                    });
-                });
-            }
 
             // Xử lý thêm/xóa dịch vụ bổ sung
             if (addServiceBtn && additionalServicesContainer) {
@@ -521,7 +1214,27 @@
             appointmentTime.addEventListener('change', updateBarbers);
             serviceSelect.addEventListener('change', updateBarbers);
             additionalServicesInput.addEventListener('change', updateBarbers);
+            
+            // Xử lý sự kiện nhấp chuột trên các ô giờ
+            if (timeGrid) {
+                timeGrid.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.addEventListener('click', function() {
+                        timeGrid.querySelectorAll('.time-slot').forEach(s => s.classList.remove(
+                            'selected'));
+                        this.classList.add('selected');
+                        appointmentTime.value = this.getAttribute('data-value');
+                        updateBarbers();
+                    });
+                });
 
+                // Đánh dấu ô giờ nếu có giá trị cũ
+                const oldTime = appointmentTime.value;
+                if (oldTime) {
+                    const slot = timeGrid.querySelector(`.time-slot[data-value="${oldTime}"]`);
+                    if (slot) slot.classList.add('selected');
+                }
+            }
+            
             // Khởi tạo flatpickr
             flatpickr(appointmentDate, {
                 locale: 'vn',

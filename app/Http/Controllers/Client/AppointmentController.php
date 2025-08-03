@@ -73,11 +73,21 @@ class AppointmentController extends Controller
                 return true; // Hiển thị nếu không có giới hạn hoặc người dùng chưa đăng nhập
             });
 
-        // Mặc định: hiển thị tất cả barber nếu chưa chọn thời gian
+        // Logic hiển thị barber
         if ($request->filled('appointment_date') && $request->filled('appointment_time')) {
+            // Nếu đã chọn thời gian, lấy barber khả dụng theo thời gian
             $barbers = $this->getAvailableBarbers($request->appointment_date, $request->appointment_time);
+        } elseif ($request->filled('branch_id')) {
+            // Nếu đã chọn chi nhánh, lấy barber theo chi nhánh
+            $barbers = Barber::select('id', 'name', 'avatar', 'rating_avg', 'skill_level')
+                ->where('branch_id', $request->input('branch_id'))
+                ->where('status', 'idle')
+                ->get();
         } else {
-            $barbers = Barber::where('branch_id', $request->input('branch_id'))->get();
+            // Nếu chưa chọn chi nhánh, hiển thị toàn bộ barber
+            $barbers = Barber::select('id', 'name', 'avatar', 'rating_avg', 'skill_level')
+                ->where('status', 'idle')
+                ->get();
         }
 
         return view('client.booking', compact('barbers', 'services', 'branches', 'vouchers', 'publicPromotions'));
@@ -746,7 +756,7 @@ class AppointmentController extends Controller
 
             // Xây dựng query cơ bản
             $query = Barber::query()
-                ->select('barbers.id', 'barbers.name')
+                ->select('barbers.id', 'barbers.name', 'barbers.avatar', 'barbers.rating_avg', 'barbers.skill_level')
                 ->where('status', 'idle');
 
             // Lọc theo chi nhánh nếu có
@@ -815,7 +825,7 @@ class AppointmentController extends Controller
         $parsedTime = $datetime->format('H:i:s');
 
         // Lấy danh sách barber KHÔNG có lịch hẹn vào thời điểm này
-        $availableBarbers = Barber::where('status', 'idle')
+        $availableBarbers = Barber::select('id', 'name', 'avatar', 'rating_avg', 'skill_level')->where('status', 'idle')
             ->whereDoesntHave('appointments', function ($query) use ($datetime) {
                 $query->where('appointment_time', $datetime)
                     ->whereIn('status', ['pending', 'confirmed']); // chỉ tính lịch chưa bị hủy
