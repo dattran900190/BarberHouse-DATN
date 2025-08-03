@@ -21,15 +21,30 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        // Đếm tổng lượt đặt lịch hoàn thành
         $totalBookings = Appointment::where('status', 'completed')->count();
+
+        // Đếm tổng số đăng ký người dùng
         $totalRegistrations = User::count();
 
+        // Tổng doanh thu dịch vụ (chỉ tính những appointment hoàn thành)
         $serviceRevenue = Appointment::where('status', 'completed')->sum('total_amount');
+
+        // Tổng doanh thu sản phẩm (chỉ tính những đơn hàng hoàn thành - đã thanh toán)
         $productRevenue = Order::where('status', 'completed')->sum('total_money');
 
+        // Doanh thu hôm nay
         $today = Carbon::today();
-        $todayRevenue = Appointment::whereDate('created_at', $today)->sum('total_amount') +
-            Order::whereDate('created_at', $today)->sum('total_money');
+        $todayServiceRevenue = Appointment::whereDate('created_at', $today)
+            ->where('status', 'completed')
+            ->sum('total_amount');
+
+        $todayProductRevenue = Order::whereDate('created_at', $today)
+            ->where('status', 'completed')
+            ->sum('total_money');
+
+        // Tổng doanh thu hôm nay (sản phẩm + dịch vụ)
+        $todayRevenue = $todayServiceRevenue + $todayProductRevenue;
 
         // Lấy tuần hiện tại cho hiển thị
         $startOfWeek = Carbon::now()->startOfWeek();
@@ -99,6 +114,9 @@ class DashboardController extends Controller
 
         // Top sản phẩm bán chạy (10 sản phẩm)
         $topProducts = OrderItem::select('product_variant_id', DB::raw('SUM(quantity) as total_sold'))
+            ->whereHas('order', function ($q) {
+                $q->where('status', 'completed'); // Chỉ tính đơn hàng hoàn thành
+            })
             ->groupBy('product_variant_id')
             ->orderByDesc('total_sold')
             ->take(10)
@@ -170,6 +188,13 @@ class DashboardController extends Controller
         $weekStart = $request->input('week_start');
         $weekEnd = $request->input('week_end');
 
+        if (!$weekStart || !$weekEnd) {
+            // Nếu không chọn khoảng ngày, mặc định lấy 21 ngày gần nhất
+            $weekStart = Carbon::now()->subDays(30)->toDateString();
+            $weekEnd = Carbon::now()->toDateString();
+        }
+        $viewWeekStart = $weekStart;
+        $viewWeekEnd = $weekEnd;
         $weekLabels = [];
         $weekServiceRevenue = [];
         $weekProductRevenue = [];
@@ -213,6 +238,8 @@ class DashboardController extends Controller
             'serviceRevenue',
             'productRevenue',
             'todayRevenue',
+            'todayServiceRevenue',
+            'todayProductRevenue',
             'barberStats',
             'barberLeaves',
             'weekRange',
@@ -228,6 +255,8 @@ class DashboardController extends Controller
             'weekProductRevenue',
             'weekStart',
             'weekEnd',
+            'viewWeekStart',
+            'viewWeekEnd',
             // Biểu đồ tháng
             'monthLabels',
             'monthServiceRevenue',

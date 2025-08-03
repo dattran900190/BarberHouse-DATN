@@ -134,6 +134,7 @@ class OrderController extends Controller
         }
 
         $order->status = 'completed';
+        $order->payment_status = 'paid'; // Cập nhật trạng thái thanh toán thành đã thanh toán
         $order->save();
 
         // Gửi email thông báo hoàn thành đơn hàng
@@ -225,6 +226,12 @@ class OrderController extends Controller
         }
 
         $order->status = $newStatus;
+        
+        // Nếu chuyển sang trạng thái hoàn thành, cập nhật trạng thái thanh toán thành đã thanh toán
+        if ($newStatus === 'completed') {
+            $order->payment_status = 'paid';
+        }
+        
         $order->save();
 
         // Gửi email thông báo thay đổi trạng thái
