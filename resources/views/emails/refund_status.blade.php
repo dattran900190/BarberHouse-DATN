@@ -28,6 +28,16 @@
                     <td style="padding: 8px; border: 1px solid #ddd;"><strong>Ngày hoàn tiền:</strong></td>
                     <td style="padding: 8px; border: 1px solid #ddd;">{{ $refund->refunded_at->format('d/m/Y H:i') }}</td>
                 </tr>
+                @if ($refund->proof_image)
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Hình ảnh minh chứng:</strong></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">
+                            <a href="{{ url(Storage::url($refund->proof_image)) }}" target="_blank">
+                                <img src="{{ url(Storage::url($refund->proof_image)) }}" alt="Proof Image" style="max-width: 200px; max-height: 200px;">
+                            </a>
+                        </td>
+                    </tr>
+                @endif
             </table>
         @else
             <h2 style="color: #dc3545;">Yêu cầu hoàn tiền bị từ chối</h2>

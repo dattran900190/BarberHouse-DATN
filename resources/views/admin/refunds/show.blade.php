@@ -105,6 +105,17 @@
                         </div>
                     @endif
 
+                    @if ($refund->refund_status === 'refunded' && $refund->proof_image)
+                        <div class="mb-3">
+                            <label class="form-label">Hình ảnh minh chứng</label>
+                            <div class="form-control-plaintext">
+                                <a href="{{ Storage::url($refund->proof_image) }}" target="_blank">
+                                    <img src="{{ Storage::url($refund->proof_image) }}" alt="Proof Image" style="max-width: 200px; max-height: 200px;">
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+
                     @if ($refund->refund_status === 'refunded' && $refund->refunded_at)
                         <div class="mb-3">
                             <label class="form-label">Ngày hoàn tiền</label>
@@ -147,7 +158,7 @@
                     @endphp
 
                     @if (!$isSoftDeleted && !in_array($currentStatus, ['refunded', 'rejected']))
-                        <form action="{{ route('refunds.update', $refund->id) }}" method="POST"
+                        <form action="{{ route('refunds.update', $refund->id) }}" method="POST" enctype="multipart/form-data"
                             onsubmit="return confirm('Bạn chắc chắn muốn cập nhật trạng thái?');">
                             @csrf
                             @method('PUT')
@@ -181,6 +192,14 @@
                                 @enderror
                             </div>
 
+                            <div class="form-group mt-3" id="proof_image_container" style="display: none;">
+                                <label for="proof_image" class="form-label">Hình ảnh minh chứng</label>
+                                <input type="file" name="proof_image" id="proof_image" class="form-control">
+                                @error('proof_image')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <div class="mt-3 d-flex gap-2">
                                 <button type="submit" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-save me-1"></i> Cập nhật
@@ -194,7 +213,9 @@
                         <script>
                             function toggleRejectReason(select) {
                                 const rejectReasonContainer = document.getElementById('reject_reason_container');
+                                const proofImageContainer = document.getElementById('proof_image_container');
                                 rejectReasonContainer.style.display = select.value === 'rejected' ? 'block' : 'none';
+                                proofImageContainer.style.display = select.value === 'refunded' ? 'block' : 'none';
                             }
                         </script>
                     @elseif (!$isSoftDeleted && in_array($currentStatus, ['refunded', 'rejected']))

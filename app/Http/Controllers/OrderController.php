@@ -82,7 +82,7 @@ class OrderController extends Controller
             try {
                 $order->load('items.productVariant.product');
                 if ($order->email) {
-                    Mail::to($order->email)->send(new OrderStatusMail($order, 'processing'));
+                    Mail::to($order->email)->queue(new OrderStatusMail($order, 'processing'));
                 }
             } catch (\Exception $e) {
                 Log::error('Lỗi gửi email xác nhận đơn hàng (admin): ' . $e->getMessage());
@@ -112,7 +112,7 @@ class OrderController extends Controller
         try {
             $order->load('items.productVariant.product');
             if ($order->email) {
-                Mail::to($order->email)->send(new OrderStatusMail($order, 'shipping'));
+                Mail::to($order->email)->queue(new OrderStatusMail($order, 'shipping'));
             }
         } catch (\Exception $e) {
             Log::error('Lỗi gửi email đơn hàng đang giao (admin): ' . $e->getMessage());
@@ -140,7 +140,7 @@ class OrderController extends Controller
         try {
             $order->load('items.productVariant.product');
             if ($order->email) {
-                Mail::to($order->email)->send(new OrderStatusMail($order, 'completed'));
+                Mail::to($order->email)->queue(new OrderStatusMail($order, 'completed'));
             }
         } catch (\Exception $e) {
             Log::error('Lỗi gửi email hoàn thành đơn hàng (admin): ' . $e->getMessage());
@@ -231,7 +231,7 @@ class OrderController extends Controller
         try {
             $order->load('items.productVariant.product');
             if ($order->email) {
-                Mail::to($order->email)->send(new OrderStatusMail($order, $newStatus));
+                Mail::to($order->email)->queue(new OrderStatusMail($order, $newStatus));
             }
         } catch (\Exception $e) {
             Log::error('Lỗi gửi email thay đổi trạng thái đơn hàng (admin): ' . $e->getMessage());
@@ -279,7 +279,7 @@ class OrderController extends Controller
         try {
             $order->load('items.productVariant.product');
             if ($order->email) {
-                Mail::to($order->email)->send(new OrderStatusMail($order, 'cancelled'));
+                Mail::to($order->email)->queue(new OrderStatusMail($order, 'cancelled'));
             }
         } catch (\Exception $e) {
             Log::error('Lỗi gửi email hủy đơn hàng (admin): ' . $e->getMessage());
