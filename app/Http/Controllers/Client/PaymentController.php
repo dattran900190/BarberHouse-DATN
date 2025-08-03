@@ -179,7 +179,7 @@ class PaymentController extends Controller
             try {
                 $order->load('items.productVariant.product');
                 if ($order->email) {
-                    Mail::to($order->email)->send(new \App\Mail\OrderSuccessMail($order));
+                    Mail::to($order->email)->queue(new \App\Mail\OrderSuccessMail($order));
                 }
             } catch (\Exception $e) {
                 Log::error('Lỗi gửi email xác nhận đơn hàng VNPAY: ' . $e->getMessage());

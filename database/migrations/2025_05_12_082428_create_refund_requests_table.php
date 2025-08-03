@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('bank_account_number', 50);
             $table->string('bank_name', 100);
             $table->enum('refund_status', ['pending', 'processing', 'refunded', 'rejected'])->default('pending');
+            $table->string('proof_image')->nullable();
             $table->text('reject_reason')->nullable();
             $table->timestamp('refunded_at')->nullable();
             $table->timestamps();

@@ -538,7 +538,7 @@ class CartController extends Controller
                 try {
                     $order->load('items.productVariant.product');
                     if ($order->email) {
-                        Mail::to($order->email)->send(new OrderSuccessMail($order));
+                        Mail::to($order->email)->queue(new OrderSuccessMail($order));
                     }
                 } catch (\Exception $e) {
                     Log::error('Lỗi gửi email xác nhận đơn hàng: ' . $e->getMessage());
@@ -707,7 +707,7 @@ class CartController extends Controller
                     try {
                         $order->load('items.productVariant.product');
                         if ($order->email) {
-                            Mail::to($order->email)->send(new OrderSuccessMail($order));
+                            Mail::to($order->email)->queue(new OrderSuccessMail($order));
                         }
                     } catch (\Exception $e) {
                         Log::error('Lỗi gửi email xác nhận đơn hàng VNPAY: ' . $e->getMessage());

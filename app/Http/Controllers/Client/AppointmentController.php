@@ -642,7 +642,7 @@ class AppointmentController extends Controller
                 : [];
 
             // Gửi email xác nhận với danh sách dịch vụ bổ sung
-            Mail::to($appointment->email)->send(new ConfirmBookingMail($appointment, $AdditionalServices));
+            Mail::to($appointment->email)->queue(new ConfirmBookingMail($appointment, $AdditionalServices));
 
             // Phản hồi thành công
             $message = $request->payment_method === 'vnpay'
