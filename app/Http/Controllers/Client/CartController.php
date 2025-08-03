@@ -189,10 +189,14 @@ class CartController extends Controller
 
         $cart = $this->getOrCreateCart($user);
 
-        // Lấy lại item từ DB mới nhất
-        $items = CartItem::with('productVariant.product')
-            ->where('cart_id', $cart->id)
-            ->get();
+        // Lấy lại item từ DB mới nhất (bao gồm cả sản phẩm đã soft delete)
+        $items = CartItem::with(['productVariant' => function($query) {
+            $query->withTrashed(); // Include cả sản phẩm đã soft delete
+        }, 'productVariant.product' => function($query) {
+            $query->withTrashed(); // Include cả sản phẩm đã soft delete
+        }])
+        ->where('cart_id', $cart->id)
+        ->get();
 
         // Gán lại items để view dùng
         $cart->setRelation('items', $items);

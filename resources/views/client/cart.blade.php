@@ -57,61 +57,80 @@
                                                                 <tr id="cart-item-{{ $item->id }}">
                                                                     <td>
                                                                         <input type="checkbox" class="cart-item-checkbox"
-                                                                            data-item-id="{{ $item->id }}" checked>
+                                                                            data-item-id="{{ $item->id }}" 
+                                                                            {{ $item->isProductAvailable() ? 'checked' : 'disabled' }}
+                                                                            {{ !$item->isProductAvailable() ? 'style=opacity:0.5' : '' }}>
                                                                     </td>
                                                                     <td>
-                                                                        <strong>{{ $item->productVariant->product->name }}</strong><br>
-                                                                        @php
-                                                                            $product = $item->productVariant->product;
-                                                                            $currentVariantId =
-                                                                                $item->product_variant_id;
-                                                                            $variants = $product->variants ?? collect();
-                                                                        @endphp
+                                                                        @if($item->isProductAvailable())
+                                                                            <strong>{{ $item->productVariant->product->name }}</strong><br>
+                                                                            @php
+                                                                                $product = $item->productVariant->product;
+                                                                                $currentVariantId =
+                                                                                    $item->product_variant_id;
+                                                                                $variants = $product->variants ?? collect();
+                                                                            @endphp
 
-                                                                        <form
-                                                                            action="{{ route('cart.update.variant', $item->id) }}"
-                                                                            method="POST">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            <label class="form-label text-muted small">Dung
-                                                                                tích:</label>
-                                                                            <select name="product_variant_id"
-                                                                                class="form-select form-select-sm mt-1"
-                                                                                onchange="this.form.submit()">
-                                                                                @foreach ($variants as $variant)
-                                                                                    <option value="{{ $variant->id }}"
-                                                                                        {{ $variant->id == $currentVariantId ? 'selected' : '' }}>
-                                                                                        {{ $variant->volume->name ?? ($variant->name ?? 'Không rõ') }}
-                                                                                    </option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </form>
+                                                                            <form
+                                                                                action="{{ route('cart.update.variant', $item->id) }}"
+                                                                                method="POST">
+                                                                                @csrf
+                                                                                @method('PUT')
+                                                                                <label class="form-label text-muted small">Dung
+                                                                                    tích:</label>
+                                                                                <select name="product_variant_id"
+                                                                                    class="form-select form-select-sm mt-1"
+                                                                                    onchange="this.form.submit()">
+                                                                                    @foreach ($variants as $variant)
+                                                                                        <option value="{{ $variant->id }}"
+                                                                                            {{ $variant->id == $currentVariantId ? 'selected' : '' }}>
+                                                                                            {{ $variant->volume->name ?? ($variant->name ?? 'Không rõ') }}
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </form>
+                                                                        @else
+                                                                            <div class="text-muted">
+                                                                                <strong>{{ $item->productVariant->product->name ?? 'Sản phẩm không xác định' }}</strong>
+                                                                                <br>
+                                                                                <small class="text-danger">
+                                                                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                                                                    {{ $item->getProductStatusMessage() }}
+                                                                                </small>
+                                                                            </div>
+                                                                        @endif
                                                                     </td>
                                                                     <td>
                                                                         <img src="{{ $item->productVariant->image ? Storage::url($item->productVariant->image) : asset('images/no-image.png') }}"
-                                                                            alt="{{ $item->productVariant->product->name }}"
-                                                                            class="img-fluid rounded-3"
+                                                                            alt="{{ $item->productVariant->product->name ?? 'Sản phẩm' }}"
+                                                                            class="img-fluid rounded-3 {{ !$item->isProductAvailable() ? 'opacity-50' : '' }}"
                                                                             style="width: 100px;">
                                                                     </td>
                                                                     <td>
-                                                                        <div class="quantity d-flex align-items-center">
-                                                                            <button type="button"
-                                                                                class="btn btn-outline-dark btn-sm quantity-minus"
-                                                                                data-item-id="{{ $item->id }}"
-                                                                                data-csrf="{{ csrf_token() }}">−</button>
-                                                                            <input type="number"
-                                                                                class="form-control form-control-sm mx-2 quantity-input"
-                                                                                value="{{ $item->quantity }}"
-                                                                                min="1"
-                                                                                max="{{ $item->productVariant->stock }}"
-                                                                                data-item-id="{{ $item->id }}"
-                                                                                data-price="{{ $item->price }}"
-                                                                                style="width: 60px; text-align: center;" />
-                                                                            <button type="button"
-                                                                                class="btn btn-outline-dark btn-sm quantity-plus"
-                                                                                data-item-id="{{ $item->id }}"
-                                                                                data-csrf="{{ csrf_token() }}">+</button>
-                                                                        </div>
+                                                                        @if($item->isProductAvailable())
+                                                                            <div class="quantity d-flex align-items-center">
+                                                                                <button type="button"
+                                                                                    class="btn btn-outline-dark btn-sm quantity-minus"
+                                                                                    data-item-id="{{ $item->id }}"
+                                                                                    data-csrf="{{ csrf_token() }}">−</button>
+                                                                                <input type="number"
+                                                                                    class="form-control form-control-sm mx-2 quantity-input"
+                                                                                    value="{{ $item->quantity }}"
+                                                                                    min="1"
+                                                                                    max="{{ $item->productVariant->stock }}"
+                                                                                    data-item-id="{{ $item->id }}"
+                                                                                    data-price="{{ $item->price }}"
+                                                                                    style="width: 60px; text-align: center;" />
+                                                                                <button type="button"
+                                                                                    class="btn btn-outline-dark btn-sm quantity-plus"
+                                                                                    data-item-id="{{ $item->id }}"
+                                                                                    data-csrf="{{ csrf_token() }}">+</button>
+                                                                            </div>
+                                                                        @else
+                                                                            <div class="text-muted">
+                                                                                <small>Số lượng: {{ $item->quantity }}</small>
+                                                                            </div>
+                                                                        @endif
                                                                     </td>
                                                                     <td class="unit-price">
                                                                         {{ number_format($item->price, 0, ',', '.') }} VNĐ
