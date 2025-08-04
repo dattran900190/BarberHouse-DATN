@@ -14,7 +14,6 @@
                         class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm">
                         <span>Gửi yêu cầu hoàn tiền</span>
                     </a>
-
                 </div>
                 <div class="card-body">
                     {{-- Bộ lọc tìm kiếm --}}
@@ -24,7 +23,6 @@
                             <input type="text" name="search"
                                 class="form-control rounded-pill pe-5 shadow-sm border-secondary"
                                 placeholder="Tìm kiếm theo mã đơn hàng hoặc mã đặt lịch" value="{{ request('search') }}">
-
                             <button type="submit"
                                 class="btn position-absolute top-50 end-0 translate-middle-y me-3 p-0 border-0 bg-transparent text-muted">
                                 <i class="fa fa-search"></i>
@@ -88,6 +86,10 @@
                                     @if ($refund->refund_status === 'rejected' && $refund->reject_reason)
                                         <br><span class="text-muted">Lý do từ chối: {{ $refund->reject_reason }}</span>
                                     @endif
+                                    @if ($refund->refund_status === 'refunded' && $refund->proof_image)
+                                        <br><span class="text-muted">Hình ảnh minh chứng:
+                                            <a href="{{ Storage::url($refund->proof_image) }}" target="_blank">Xem hình ảnh</a></span>
+                                    @endif
                                 </div>
                                 <div class="col-md-2 text-center">
                                     @php
@@ -125,6 +127,13 @@
                                     <p><strong>Lý do yêu cầu:</strong> {{ $refund->reason }}</p>
                                     @if ($refund->refund_status === 'rejected' && $refund->reject_reason)
                                         <p><strong>Lý do từ chối:</strong> {{ $refund->reject_reason }}</p>
+                                    @endif
+                                    @if ($refund->refund_status === 'refunded' && $refund->proof_image)
+                                        <p><strong>Hình ảnh minh chứng:</strong>
+                                            <a href="{{ Storage::url($refund->proof_image) }}" target="_blank">
+                                                <img src="{{ Storage::url($refund->proof_image) }}" alt="Proof Image" style="max-width: 200px; max-height: 200px;">
+                                            </a>
+                                        </p>
                                     @endif
                                     <p><strong>Số tiền hoàn:</strong>
                                         {{ number_format($refund->refund_amount, 0, ',', '.') }} VNĐ
