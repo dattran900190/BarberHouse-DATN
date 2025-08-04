@@ -338,9 +338,9 @@ class AppointmentController extends Controller
             $appointment->load(['barber', 'service']);
 
             // Chuyển hướng theo phương thức thanh toán
-            if ($appointment->payment_method === 'vnpay') {
-                return redirect()->route('client.payment.vnpay', ['appointment_id' => $appointment->id]);
-            }
+            // if ($appointment->payment_method === 'vnpay') {
+            //     return redirect()->route('client.payment.vnpay', ['appointment_id' => $appointment->id]);
+            // }
 
             // Gửi email thông báo pending (chỉ cho các phương thức thanh toán khác VNPay)
             Mail::to($appointment->email)->queue(new PendingBookingMail($appointment));
