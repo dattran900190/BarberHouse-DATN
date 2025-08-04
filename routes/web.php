@@ -21,6 +21,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\ChatController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
@@ -315,3 +316,7 @@ Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->
 
 // Form tạo nghỉ lễ
 Route::get('/barber-schedules/holiday/create', [BarberScheduleController::class, 'createHoliday'])->name('barber_schedules.createHoliday');
+
+// chatbox
+Route::post('/chat-ai', [ChatController::class, 'chatAI'])->name('chat.ai');
+
