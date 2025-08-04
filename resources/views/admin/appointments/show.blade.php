@@ -266,7 +266,8 @@
                 @if (!$isCancelled && $appointment->status == 'pending')
                     <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-outline-primary btn-sm"><i
                             class="fa fa-edit me-1"></i> Sửa</a>
-                    <button type="button" class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $appointment->id }}">
+                    <button type="button" class="btn btn-outline-danger btn-sm cancel-action"
+                        data-id="{{ $appointment->id }}">
                         <i class="fas fa-trash me-2"></i> Hủy lịch
                     </button>
                 @endif
@@ -333,17 +334,18 @@
 
 @endsection
 
-<script>
-     function handleSwalAction({
+@section('js')
+    <script>
+        function handleSwalAction({
             selector,
             title,
             text,
             route,
             method = 'POST',
-            withInput = false, // Thêm tùy chọn hiển thị input
+            withInput = false,
             inputPlaceholder = '',
             inputValidator = null,
-            onSuccess = () => location.reload() // Thay reload bằng callback linh hoạt
+            onSuccess = () => location.reload()
         }) {
             document.querySelectorAll(selector).forEach(button => {
                 button.addEventListener('click', function(event) {
@@ -378,7 +380,7 @@
                                 text: 'Vui lòng chờ trong giây lát.',
                                 allowOutsideClick: false,
                                 customClass: {
-                                    popup: 'custom-swal-popup' // CSS
+                                    popup: 'custom-swal-popup'
                                 },
                                 didOpen: () => {
                                     Swal.showLoading();
@@ -431,15 +433,15 @@
 
         handleSwalAction({
             selector: '.cancel-action',
-            title: 'Huỷ lịch hẹn',
+            title: 'Hủy lịch hẹn',
             text: 'Vui lòng nhập lý do (tùy chọn)',
             route: '{{ route('appointments.cancel', ':id') }}',
             withInput: true,
-            inputPlaceholder: 'Nhập lý do cancel (tối đa 255 ký tự)...',
+            inputPlaceholder: 'Nhập lý do hủy (tối đa 255 ký tự)...',
             inputValidator: (value) => {
                 if (value && value.length > 255) return 'Lý do không được vượt quá 255 ký tự!';
             },
-            onSuccess: () => window.location.href = '{{ route('appointments.index') }}'
+            onSuccess: () => window.location.href = '{{ route('appointments.index', ['status' => 'cancelled']) }}'
         });
-
-</script>
+    </script>
+@endsection

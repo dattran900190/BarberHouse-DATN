@@ -33,7 +33,6 @@
         $statusOptions = [
             'pending' => 'Chờ xác nhận',
             'confirmed' => 'Đã xác nhận',
-            'checked-in' => 'Đã check-in',
             'progress' => 'Đang làm tóc',
             'completed' => 'Hoàn thành',
             'cancelled' => 'Đã hủy',
@@ -50,8 +49,7 @@
         // Quy tắc chuyển đổi trạng thái lịch hẹn
         $allowedStatusTransitions = [
             'pending' => ['confirmed', 'cancelled'],
-            'confirmed' => ['checked-in', 'cancelled'],
-            'checked-in' => ['progress'],
+            'confirmed' => ['checked-in', 'cancelled', 'progress'],
             'progress' => ['completed'],
             'completed' => [],
             'cancelled' => [],

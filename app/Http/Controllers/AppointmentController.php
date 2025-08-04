@@ -419,7 +419,8 @@ class AppointmentController extends Controller
                 // Mail::to($appointment->email)->send(new CompleteBookingMail($appointment));
             }
 
-            return redirect()->route('appointments.index', ['page' => $currentPage])
+            // trả về trang đặt lịch tab nếu sửa sang trạng thái nào thì sẽ vào tab đó và có thông báo thành công
+            return redirect()->route('appointments.index', ['status' => $newStatus, 'page' => $currentPage])
                 ->with('success', 'Lịch hẹn ' . $appointment->appointment_code . ' đã được cập nhật.');
         } catch (\Exception $e) {
             return redirect()->back()
