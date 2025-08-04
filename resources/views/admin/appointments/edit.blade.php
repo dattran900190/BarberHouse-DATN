@@ -33,7 +33,6 @@
         $statusOptions = [
             'pending' => 'Chờ xác nhận',
             'confirmed' => 'Đã xác nhận',
-            'checked-in' => 'Đã check-in',
             'progress' => 'Đang làm tóc',
             'completed' => 'Hoàn thành',
             'cancelled' => 'Đã hủy',
@@ -50,8 +49,7 @@
         // Quy tắc chuyển đổi trạng thái lịch hẹn
         $allowedStatusTransitions = [
             'pending' => ['confirmed', 'cancelled'],
-            'confirmed' => ['checked-in', 'cancelled'],
-            'checked-in' => ['progress'],
+            'confirmed' => ['checked-in', 'cancelled', 'progress'],
             'progress' => ['completed'],
             'completed' => [],
             'cancelled' => [],
@@ -108,7 +106,7 @@
 
                     <div class="input-group mb-2">
                         <select class="form-control" id="additionalServiceDropdown" style="width: 70%;">
-                            <option value="">Chọn dịch vụ bổ sung</option>
+                            <option value="">Chọn dịch vụ thêm</option>
                             @foreach ($services as $service)
                                 <option value="{{ $service->id }}" data-price="{{ $service->price }}"
                                     data-duration="{{ $service->duration }}">
@@ -245,7 +243,7 @@
                 totalAmountInput.value = total;
             }
 
-            // Thêm dịch vụ bổ sung
+            // Thêm dịch vụ thêm
             addAdditionalServiceBtn.addEventListener('click', function() {
                 const selectedOption = additionalServiceDropdown.options[additionalServiceDropdown
                     .selectedIndex];
@@ -290,7 +288,7 @@
             });
 
 
-            // Xóa dịch vụ bổ sung
+            // Xóa dịch vụ thêm
             selectedAdditionalServices.addEventListener('click', function(e) {
                 if (e.target.classList.contains('remove-service')) {
                     const serviceDiv = e.target.closest('.selected-service');

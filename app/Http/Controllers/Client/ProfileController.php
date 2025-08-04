@@ -44,7 +44,7 @@ class ProfileController extends Controller
         $user->update($validated);
 
         return redirect()->route('client.profile', [
-            'tab' => $request->input('tab', 'account-info')
+            'tab' => $request->input('tab', 'account-general')
         ])->with('success-info', 'Cập nhật thông tin thành công.');
     }
 

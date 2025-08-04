@@ -102,7 +102,7 @@
                                             {{ $appointment->service->name ?? 'Không xác định' }}
                                         </span></p>
                                     @if ($additionalServices->isNotEmpty())
-                                        <p class="text-muted mb-1">Dịch vụ bổ xung: <span class="fw-medium">
+                                        <p class="text-muted mb-1">Dịch vụ thêm: <span class="fw-medium">
                                                 <ul class="m-2 mt-1 ps-3">
                                                     @foreach ($additionalServices as $service)
                                                         <li>
