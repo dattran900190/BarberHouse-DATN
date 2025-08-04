@@ -92,6 +92,7 @@
                                 </div>
                           
                             </form>
+                            <span id="stockDisplay">Tồn kho: {{ $product->variants->first()->stock }}</span>
 
                             {{-- Nút Mua ngay --}}
                             <form action="{{ route('cart.buyNow') }}" method="POST" class="mt-3" id="buyNowForm">
@@ -369,6 +370,55 @@ showConfirmButton: false,
     </script>
     <script>
         $(function() {
+            // Lấy dữ liệu tồn kho từ PHP
+            const variantStocks = @json($variantStocks);
+            
+            // Function cập nhật tồn kho
+            function updateStockDisplay() {
+                const variantSelect = document.getElementById('variant_id');
+                const stockDisplay = document.getElementById('stockDisplay');
+                
+                if (variantSelect && stockDisplay) {
+                    const selectedVariantId = variantSelect.value;
+                    const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[selectedVariantId]) : 0;
+                    
+                    // Cập nhật hiển thị tồn kho
+                    stockDisplay.textContent = `Tồn kho: ${stock}`;
+                    
+                    // Cập nhật max value cho input quantity
+                    const quantityInput = document.getElementById('quantity');
+                    if (quantityInput) {
+                        quantityInput.max = stock;
+                        if (parseInt(quantityInput.value) > stock) {
+                            quantityInput.value = stock;
+                        }
+                    }
+                    
+                    // Cập nhật buy now form
+                    const buyNowVariantId = document.getElementById('buy_now_variant_id');
+                    if (buyNowVariantId) {
+                        buyNowVariantId.value = selectedVariantId;
+                    }
+                }
+            }
+            
+            // Cập nhật tồn kho khi chọn variant
+            $('#variant_id').on('change', function() {
+                updateStockDisplay();
+            });
+            
+            // Cập nhật tồn kho khi thay đổi số lượng
+            $('#quantity').on('input', function() {
+                const variantSelect = document.getElementById('variant_id');
+                const selectedVariantId = variantSelect.value;
+                const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[selectedVariantId]) : 0;
+                const quantity = parseInt(this.value) || 0;
+                
+                if (quantity > stock) {
+                    this.value = stock;
+                }
+            });
+            
             // Validate tồn kho khi ấn nút Mua ngay
             const buyNowForm = document.getElementById('buyNowForm');
             if (buyNowForm) {
