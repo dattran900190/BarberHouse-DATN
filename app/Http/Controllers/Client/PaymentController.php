@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Appointment;
 use App\Models\Order;
+use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Events\OrderPaymentStatusUpdated;
+use App\Events\NewAppointment;
 use Illuminate\Support\Facades\Mail;
+use Pusher\Pusher;
 
 class PaymentController extends Controller
 {
@@ -140,10 +143,29 @@ class PaymentController extends Controller
 
         // Kiểm tra chữ ký và trạng thái giao dịch
         if ($appointment && $secureHash === $vnp_SecureHash && $inputData['vnp_ResponseCode'] == '00') {
+            // Cập nhật trạng thái thanh toán và lịch hẹn
             $appointment->payment_status = 'paid';
+            $appointment->status = 'pending'; // Chuyển từ unconfirmed sang pending
             $appointment->payment_method = 'vnpay';
             $appointment->save();
-            return redirect()->route('dat-lich')->with('success', 'Thanh toán thành công!');
+
+            // Load quan hệ trước khi gửi sự kiện
+            $appointment->load(['barber', 'service']);
+
+            // Gửi sự kiện NewAppointment khi thanh toán thành công
+            event(new \App\Events\NewAppointment($appointment));
+
+            // Kích hoạt Pusher để thông báo cho admin
+            $this->triggerPusher($appointment);
+
+            // Gửi email thông báo pending
+            try {
+                Mail::to($appointment->email)->queue(new \App\Mail\PendingBookingMail($appointment));
+            } catch (\Exception $e) {
+                Log::error('Lỗi gửi email pending booking VNPAY: ' . $e->getMessage());
+            }
+
+            return redirect()->route('dat-lich')->with('success', 'Thanh toán thành công! Lịch hẹn đã được xác nhận.');
         } else {
             if ($appointment) {
                 $appointment->payment_status = 'failed';
@@ -179,7 +201,7 @@ class PaymentController extends Controller
             try {
                 $order->load('items.productVariant.product');
                 if ($order->email) {
-                    Mail::to($order->email)->send(new \App\Mail\OrderSuccessMail($order));
+                    Mail::to($order->email)->queue(new \App\Mail\OrderSuccessMail($order));
                 }
             } catch (\Exception $e) {
                 Log::error('Lỗi gửi email xác nhận đơn hàng VNPAY: ' . $e->getMessage());
@@ -194,5 +216,35 @@ class PaymentController extends Controller
             }
             return redirect()->route('client.orderHistory')->with('error', 'Thanh toán thất bại!');
         }
+    }
+
+    protected function triggerPusher(Appointment $appointment)
+    {
+        $additionalServiceIds = json_decode($appointment->additional_services ?? '[]', true);
+        $additionalServicesNames = Service::whereIn('id', $additionalServiceIds)->pluck('name')->toArray();
+
+        $pusherData = [
+            'id' => $appointment->id,
+            'appointment_code' => $appointment->appointment_code,
+            'user_name' => $appointment->name ?? 'N/A',
+            'phone' => $appointment->phone ?? 'N/A',
+            'barber_name' => $appointment->barber->name ?? 'N/A',
+            'service_name' => $appointment->service->name ?? 'N/A',
+            'status' => $appointment->status,
+            'payment_status' => $appointment->payment_status,
+            'created_at' => $appointment->created_at->format('d/m/Y H:i'),
+            'additional_services' => $additionalServicesNames ?? [],
+            'payment_method' => $appointment->payment_method,
+            'appointment_time' => $appointment->appointment_time->format('d/m/Y H:i'),
+        ];
+
+        $pusher = new Pusher(
+            config('broadcasting.connections.pusher.key'),
+            config('broadcasting.connections.pusher.secret'),
+            config('broadcasting.connections.pusher.app_id'),
+            ['cluster' => config('broadcasting.connections.pusher.options.cluster'), 'useTLS' => true]
+        );
+
+        $pusher->trigger('appointments', 'App\\Events\\AppointmentCreated', $pusherData);
     }
 }

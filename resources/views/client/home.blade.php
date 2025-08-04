@@ -50,7 +50,9 @@
                             <h4>{{ $barber->name }}</h4>
                             <p><span class="label">Kỹ năng:</span> {{ ucfirst($barber->skill_level) }}</p>
                             <p><span class="label">Chi nhánh:</span> {{ $barber->branch->name ?? 'N/A' }}</p>
-                            <p><span class="label">Đánh giá:</span> {{ number_format($barber->rating_avg, 1) }}/5</p>
+                            <p><span class="label">Đánh giá:</span> {{ number_format($barber->rating_avg, 1) }}/5
+                                <i class="fa-solid fa-star" style="color: #ffd700;"></i>
+                            </p>
                             {{-- @if (!empty($barber->profile))
                                 <p class="barber-profile">{{ Str::limit(strip_tags($barber->profile), 60) }}</p>
                             @endif --}}
@@ -60,7 +62,7 @@
                 @endforeach
             </div>
             <div class="text-center mt-3">
-                <a href="{{ route('client.listBarber') }}" class="btn-xem-them">Xem thêm</a>
+                <a href="{{ route('client.listBarber') }}" class="btn-outline-cart">Xem thêm</a>
             </div>
         </section>
 
@@ -108,8 +110,9 @@
                 @endforeach
             </div>
 
-            <a href="{{ route('client.posts') }}" style="text-decoration: none"><button id="loadMore"
-                    class="btn-xem-them">Xem thêm</button></a>
+            <div class="text-center mt-3">
+                <a href="{{ route('client.posts') }}" class="btn-outline-cart">Xem thêm</a>
+            </div>
         </section>
 
         <section id="product">
@@ -162,9 +165,9 @@
                         </div>
                     @endforeach
                 </div>
-
-                <a href="{{ route('client.product') }}" style="text-decoration: none"><button id="loadMore"
-                        class="btn-xem-them">Xem thêm</button></a>
+                <div class="text-center mt-3">
+                    <a href="{{ route('client.product') }}" class="btn-outline-cart">Xem thêm</a>
+                </div>
             </div>
         </section>
 

@@ -114,7 +114,9 @@
                                         @if ($key === 'rejected')
                                             <th>Lý do từ chối</th>
                                         @endif
-
+                                        @if ($key === 'refunded')
+                                            <th>Hình ảnh minh chứng</th>
+                                        @endif
                                         <th>Ngày tạo</th>
                                         <th>Tình trạng</th>
                                         @if ($currentRole == 'admin')
@@ -148,6 +150,19 @@
                                             </td>
                                             @if ($key === 'rejected')
                                                 <td>{{ $refund->reject_reason ?? 'N/A' }}</td>
+                                            @endif
+                                            @if ($key === 'refunded')
+                                                <td class="text-center">
+                                                    @if ($refund->proof_image)
+                                                        <a href="{{ Storage::url($refund->proof_image) }}" target="_blank">
+                                                            <img src="{{ Storage::url($refund->proof_image) }}"
+                                                                alt="Proof Image"
+                                                                style="max-width: 100px; max-height: 100px;">
+                                                        </a>
+                                                    @else
+                                                        <span>Không có</span>
+                                                    @endif
+                                                </td>
                                             @endif
                                             <td>{{ $refund->created_at->format('d/m/Y H:i') }}</td>
                                             <td class="text-center">
@@ -187,7 +202,6 @@
                                                                     </button>
                                                                 </li>
                                                             @endif
-
                                                         </ul>
                                                     </div>
                                                 </td>
@@ -199,11 +213,13 @@
                                                 $colspan = $currentRole == 'admin' ? 8 : 7;
                                                 if ($key === 'rejected') {
                                                     $colspan += 1;
-                                                } // thêm cột lý do
+                                                }
+                                                if ($key === 'refunded') {
+                                                    $colspan += 1;
+                                                }
                                             @endphp
                                             <td colspan="{{ $colspan }}" class="text-center text-muted">Không có yêu
                                                 cầu nào.</td>
-
                                         </tr>
                                     @endforelse
                                 </tbody>

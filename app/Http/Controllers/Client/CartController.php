@@ -189,8 +189,12 @@ class CartController extends Controller
 
         $cart = $this->getOrCreateCart($user);
 
-        // Lấy lại item từ DB mới nhất
-        $items = CartItem::with('productVariant.product')
+        // Lấy lại item từ DB mới nhất (bao gồm cả sản phẩm đã soft delete)
+        $items = CartItem::with(['productVariant' => function ($query) {
+            $query->withTrashed(); // Include cả sản phẩm đã soft delete
+        }, 'productVariant.product' => function ($query) {
+            $query->withTrashed(); // Include cả sản phẩm đã soft delete
+        }])
             ->where('cart_id', $cart->id)
             ->get();
 
@@ -282,15 +286,56 @@ class CartController extends Controller
     {
         $request->validate([
             'product_variant_id' => 'required|exists:product_variants,id',
+        ], [
+            'product_variant_id.required' => 'Vui lòng chọn dung tích sản phẩm.',
+            'product_variant_id.exists' => 'Dung tích sản phẩm không tồn tại.',
         ]);
 
         $newVariant = ProductVariant::findOrFail($request->product_variant_id);
-        $cartItem->update([
-            'product_variant_id' => $newVariant->id,
-            'price' => $newVariant->price, // cập nhật lại giá
-        ]);
+        $cart = $this->getOrCreateCart(Auth::user() ?? null);
 
-        return redirect()->route('cart.show');
+        if ($cartItem->cart_id !== $cart->id) {
+            return redirect()->route('cart.show')->with('error', 'Bạn không có quyền cập nhật mục này.');
+        }
+
+        $existingItem = $cart->items()
+            ->where('product_variant_id', $newVariant->id)
+            ->where('id', '!=', $cartItem->id)
+            ->first();
+
+        if ($existingItem) {
+            $newQuantity = $existingItem->quantity + $cartItem->quantity;
+
+            if ($newQuantity > $newVariant->stock) {
+                return redirect()->route('cart.show')->with('error', "Lưu ý: Chỉ còn {$newVariant->stock} sản phẩm {$newVariant->product->name} dung tích {$newVariant->volume->name}.");
+            }
+
+            $existingItem->update([
+                'quantity' => $newQuantity,
+                'price' => round($newVariant->price),
+            ]);
+
+            $cartItem->delete();
+
+            $cart_count = $cart->items()->sum('quantity');
+            Session::put('cart_count', $cart_count);
+
+            return redirect()->route('cart.show');
+        } else {
+            if ($cartItem->quantity > $newVariant->stock) {
+                return redirect()->route('cart.show')->with('error', "Số lượng vượt quá tồn kho. Chỉ còn {$newVariant->stock} sản phẩm.");
+            }
+
+            $cartItem->update([
+                'product_variant_id' => $newVariant->id,
+                'price' => round($newVariant->price),
+            ]);
+
+            $cart_count = $cart->items()->sum('quantity');
+            Session::put('cart_count', $cart_count);
+
+            return redirect()->route('cart.show')->with('success', 'Cập nhật dung tích thành công.');
+        }
     }
     public function checkout(Request $request)
     {
@@ -305,7 +350,7 @@ class CartController extends Controller
         }
 
         if (empty($selectedIds)) {
-            return redirect()->route('cart.show')->with('error', 'Bạn chưa chọn sản phẩm để thanh toán!');
+            return redirect()->route('cart.show');
         }
 
         // Lấy các item được chọn
@@ -459,7 +504,7 @@ class CartController extends Controller
 
                 // Tạo URL thanh toán VNPAY
                 $vnpayUrl = $this->createVnpayPaymentUrl($expectedTotal, $request);
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Chuyển hướng đến trang thanh toán VNPAY',
@@ -502,11 +547,11 @@ class CartController extends Controller
 
                     // Trừ tồn kho
                     $variant->decrement('stock', $item['quantity']);
-                    
-                                            $product = $variant->product;
-                        if ($product && method_exists($product, 'updateStockFromVariants')) {
-                            $product->updateStockFromVariants();
-                        }
+
+                    $product = $variant->product;
+                    if ($product && method_exists($product, 'updateStockFromVariants')) {
+                        $product->updateStockFromVariants();
+                    }
 
                     $order->items()->create([
                         'product_variant_id' => $item['product_variant_id'],
@@ -521,7 +566,7 @@ class CartController extends Controller
                 $cartItemIds = collect($request->items)->pluck('cart_item_id')->toArray();
                 $cart = $this->getOrCreateCart($request->user());
                 $cart->items()->whereIn('id', $cartItemIds)->delete();
-                
+
                 // Cập nhật lại số lượng còn lại trong giỏ
                 $cart_count = $cart->items()->sum('quantity');
                 Session::put('cart_count', $cart_count);
@@ -533,12 +578,12 @@ class CartController extends Controller
             // Phát event realtime khi có đơn hàng mới
             if ($order) {
                 event(new NewOrderCreated($order));
-                
+
                 // Gửi email xác nhận cho đơn hàng COD
                 try {
                     $order->load('items.productVariant.product');
                     if ($order->email) {
-                        Mail::to($order->email)->send(new OrderSuccessMail($order));
+                        Mail::to($order->email)->queue(new OrderSuccessMail($order));
                     }
                 } catch (\Exception $e) {
                     Log::error('Lỗi gửi email xác nhận đơn hàng: ' . $e->getMessage());
@@ -553,7 +598,6 @@ class CartController extends Controller
                 'payment_method' => $paymentMethod,
                 'redirect_url' => route('home'),
             ], 200);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -575,7 +619,7 @@ class CartController extends Controller
 
         // Tạo mã giao dịch tạm thời
         $vnp_TxnRef = 'TEMP_' . now()->format('YmdHis') . '_' . strtoupper(Str::random(6));
-        
+
         // Lưu mã giao dịch vào session
         Session::put('vnpay_txn_ref', $vnp_TxnRef);
 
@@ -669,7 +713,7 @@ class CartController extends Controller
 
                         // Trừ tồn kho
                         $variant->decrement('stock', $item['quantity']);
-                        
+
                         $product = $variant->product;
                         if ($product) {
                             $product->updateStockFromVariants();
@@ -689,7 +733,7 @@ class CartController extends Controller
                         $cartItemIds = collect($orderData['items'])->pluck('cart_item_id')->toArray();
                         $cart = $this->getOrCreateCart(Auth::user());
                         $cart->items()->whereIn('id', $cartItemIds)->delete();
-                        
+
                         // Cập nhật lại số lượng còn lại trong giỏ
                         $cart_count = $cart->items()->sum('quantity');
                         Session::put('cart_count', $cart_count);
@@ -702,12 +746,12 @@ class CartController extends Controller
                 // Phát event realtime khi có đơn hàng mới
                 if ($order) {
                     event(new NewOrderCreated($order));
-                    
+
                     // Gửi email xác nhận
                     try {
                         $order->load('items.productVariant.product');
                         if ($order->email) {
-                            Mail::to($order->email)->send(new OrderSuccessMail($order));
+                            Mail::to($order->email)->queue(new OrderSuccessMail($order));
                         }
                     } catch (\Exception $e) {
                         Log::error('Lỗi gửi email xác nhận đơn hàng VNPAY: ' . $e->getMessage());

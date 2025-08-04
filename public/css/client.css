@@ -702,7 +702,7 @@ h2 {
   max-width: 500px;
   margin: 0 auto;
   padding: 20px;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   background-color: #fff;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
@@ -749,7 +749,7 @@ h2 {
 .booking-container .form-select {
   width: 100%;
   padding: 15px;
-  border: 1px solid #ccc;
+  border: 2px solid #e9ecef;
   border-radius: 5px;
   background-color: #fff;
   color: #333;
@@ -760,7 +760,13 @@ h2 {
 .booking-container .form-control:focus,
 .booking-container .form-select:focus {
   background-color: #fff;
-  box-shadow: 0 0 0 2px #000;
+  box-shadow: 0 0 0 1px #007bff;
+}
+
+.booking-container .form-control:hover,
+.booking-container .form-select:hover {
+  border-color: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
 }
 
 .booking-container .form-control::placeholder {
@@ -771,84 +777,6 @@ h2 {
   font-size: 18px;
   font-weight: bold;
   margin: 30px 0 15px 0;
-}
-
-.booking-container .branch-item {
-  /* background-color: #f5f5f5; */
-  border-radius: 5px;
-  padding: 15px 20px;
-  margin-bottom: 10px;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.booking-container .3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid #ccc;
-}
-
-.booking-container .branch-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-}
-
-.booking-container .branch-icon {
-  color: #666;
-  font-size: 16px;
-  width: 16px;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.booking-container .branch-icon:hover {
-   transform: translateY(-5px);
-  /* box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); */
-}
-
-.booking-container .branch-item.selected .branch-icon {
-  color: #444;
-}
-
-.booking-container .branch-item.selected .branch-icon {
-  color: #000;
-  /* box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); */
-}
-
-.booking-container .branch-item:hover {
-  background-color: #e0e0e0;
-}
-
-.booking-container .branch-item.selected {
-  color: #000;
-  background-color: #e0e0e0;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-}
-
-.booking-container .branch-radio {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid #444;
-  position: relative;
-}
-
-.booking-container .branch-item.selected .branch-radio {
-  background-color: #000;
-  color: #fff;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-}
-
-.booking-container .branch-item.selected .branch-radio::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #ffffff;
 }
 
 .booking-container .service-section {
@@ -864,7 +792,6 @@ h2 {
 }
 
 .booking-container .add-service-btn {
-  width: 100%;
   padding: 15px;
   background-color: #f5f5f5;
   border: 1px solid #ccc;
@@ -879,50 +806,6 @@ h2 {
 
 .booking-container .add-service-btn:hover {
   background-color: #ccc;
-}
-
-.booking-container .service-info {
-  margin: 15px 0;
-  font-style: italic;
-  color: #444;
-}
-
-.booking-container .checkbox-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.booking-container .time-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.booking-container .time-slot {
-  padding: 12px 8px;
-  /* background-color: #f5f5f5; */
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  color: #333;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-}
-
-.booking-container .time-slot:hover {
-  background-color: #dbdbdb;
-}
-
-.booking-container .time-slot.selected {
-  background-color: #000;
-  color: #fff;
-  border-color: #000;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
 .booking-container .date-input {
@@ -944,7 +827,6 @@ h2 {
   transform: translateY(-50%);
   color: #999;
   pointer-events: none;
-  background-color: #fff;
 }
 
 .booking-container .notes-textarea {
@@ -952,30 +834,6 @@ h2 {
   border-radius: 5px;
   resize: vertical;
 }
-
-/* .booking-container .booking-btn {
-  width: 100%;
-  padding: 18px;
-  background-color: #000000;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  color: #fff;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 30px;
-}
-
-.booking-container .booking-btn:hover {
-  background-color: #444;
-} */
-
-/* .booking-container .booking-btn:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-  transform: none;
-} */
 
 .booking-container .position-relative {
   position: relative;
@@ -1025,6 +883,161 @@ h2 {
   padding-top: 10px;
   margin-top: 10px;
   font-weight: bold;
+}
+
+/* Branch Cards Styles */
+.branch-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.branch-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 5px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.branch-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.branch-card.selected {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+}
+
+.branch-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #28a745;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.branch-icon-wrapper {
+    margin-right: 15px;
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.branch-icon {
+    color: white;
+    font-size: 20px;
+}
+
+.branch-info {
+    flex: 1;
+}
+
+.branch-name {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.branch-address, .branch-hours {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.branch-address i, .branch-hours i {
+    margin-right: 5px;
+    font-size: 10px;
+}
+
+/* Time Grid Styles */
+.time-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.time-slot {
+    padding: 12px 8px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    background: #fff;
+    position: relative;
+}
+
+.time-slot:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+}
+
+.time-slot.selected {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+    color: #155724;
+}
+
+.time-slot.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #28a745;
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Responsive cho time grid */
+@media (max-width: 768px) {
+    .time-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .time-slot {
+        padding: 10px 6px;
+        font-size: 13px;
+    }
 }
 
 /* -----------Chi nhánh-------- */
@@ -1704,7 +1717,7 @@ h2 {
 /* ----------detail-post----------- */
 
 .mainDetailPost {
-  margin: 3%;
+  margin: 3%;   
 }
 
 .path-post p a {
@@ -1722,6 +1735,7 @@ h2 {
 
 .detail-post img {
   width: 100%;
+  height: 100%;
 }
 
 .popular-articles {
@@ -1914,7 +1928,7 @@ h2 {
 }
 
 .barber-img {
-  height: 240px;
+  height: 380px;
   width: 100%;
   object-fit: cover;
   transition: transform 0.4s ease;

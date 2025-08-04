@@ -22,6 +22,10 @@ class ProcessRefundRequest extends FormRequest
             $rules['reject_reason'] = 'required|string|min:10|max:500';
         }
 
+        if ($this->input('refund_status') === 'refunded') {
+            $rules['proof_image'] = 'nullable|image|mimes:jpeg,png,jpg|max:2048'; // Giới hạn file ảnh
+        }
+
         return $rules;
     }
 
@@ -34,6 +38,9 @@ class ProcessRefundRequest extends FormRequest
             'reject_reason.string' => 'Lý do từ chối phải là chuỗi ký tự.',
             'reject_reason.min' => 'Lý do từ chối phải có ít nhất 10 ký tự.',
             'reject_reason.max' => 'Lý do từ chối không được vượt quá 500 ký tự.',
+            'proof_image.image' => 'Minh chứng phải là file ảnh.',
+            'proof_image.mimes' => 'Minh chứng phải có định dạng jpeg, png hoặc jpg.',
+            'proof_image.max' => 'Minh chứng không được vượt quá 2MB.',
         ];
     }
 }

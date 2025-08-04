@@ -22,6 +22,7 @@ class RefundRequest extends Model
         'refund_status',
         'reject_reason',
         'refunded_at',
+        'proof_image',
     ];
 
     protected $casts = [

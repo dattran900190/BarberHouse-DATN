@@ -444,7 +444,7 @@
                             });
 
                             const body = withInput ? JSON.stringify({
-                                no_show_reason: result.value || 'Không có lý do'
+                                cancellation_reason: result.value || 'Không có lý do'
                             }) : undefined;
 
                             fetch(route.replace(':id', appointmentId), {
