@@ -16,9 +16,9 @@ class CancelBookingMail extends Mailable
 
     public $appointment;
 
-    public function __construct(Appointment $appointment)
+    public function __construct($appointment)
     {
-        $this->appointment = $appointment;
+        $this->appointment = is_object($appointment) ? $appointment : (object) $appointment;
     }
 
     public function build()

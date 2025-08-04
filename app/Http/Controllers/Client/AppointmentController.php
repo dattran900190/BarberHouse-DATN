@@ -29,6 +29,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\BookingRequest;
+use App\Mail\CancelBookingMail;
 use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends Controller
@@ -66,7 +67,7 @@ class AppointmentController extends Controller
                 if (Auth::check() && $promotion->usage_limit !== null) {
                     $usage_count = Appointment::where('user_id', Auth::id())
                         ->where('promotion_id', $promotion->id)
-                        ->whereIn('status', ['pending','unconfirmed', 'confirmed', 'completed','checked-in','progress','completed'])
+                        ->whereIn('status', ['pending', 'unconfirmed', 'confirmed', 'completed', 'checked-in', 'progress', 'completed'])
                         ->count();
                     return $usage_count < $promotion->usage_limit;
                 }
@@ -236,7 +237,6 @@ class AppointmentController extends Controller
     public function cancel(Request $request, Appointment $appointment)
     {
         try {
-            // Kiểm tra quyền sở hữu
             if ($appointment->user_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
@@ -244,7 +244,6 @@ class AppointmentController extends Controller
                 ], 403);
             }
 
-            // Kiểm tra trạng thái hợp lệ
             if (!in_array($appointment->status, ['pending', 'confirmed'])) {
                 return response()->json([
                     'success' => false,
@@ -252,7 +251,6 @@ class AppointmentController extends Controller
                 ], 400);
             }
 
-            // Kiểm tra xem lịch hẹn đã được hủy trước đó chưa
             if (CancelledAppointment::where('appointment_code', $appointment->appointment_code)->exists()) {
                 return response()->json([
                     'success' => false,
@@ -260,7 +258,6 @@ class AppointmentController extends Controller
                 ], 400);
             }
 
-            // Validate lý do hủy
             $request->validate([
                 'cancellation_reason' => 'required|string|min:5|max:500',
             ], [
@@ -269,8 +266,13 @@ class AppointmentController extends Controller
                 'cancellation_reason.max' => 'Lý do hủy không được vượt quá 500 ký tự.',
             ]);
 
+            // Lưu dữ liệu cần thiết
+            $appointmentData = $appointment->toArray();
+            $appointmentEmail = $appointment->email;
+            $appointmentCode = $appointment->appointment_code;
+
             // Tạo bản ghi trong cancelled_appointments
-            $appointmentData = array_merge($appointment->toArray(), [
+            $appointmentData = array_merge($appointmentData, [
                 'status' => 'cancelled',
                 'payment_status' => $appointment->payment_status,
                 'cancellation_type' => 'canceled',
@@ -281,23 +283,21 @@ class AppointmentController extends Controller
                 'cancellation_reason' => $request->input('cancellation_reason'),
                 'appointment_time' => $appointment->appointment_time ? $appointment->appointment_time->format('Y-m-d H:i:s') : null,
             ]);
-
-
-            // Lưu bản ghi vào cancelled_appointments
             CancelledAppointment::create($appointmentData);
 
-            // Xóa bản ghi liên quan trong bảng checkins
-            $checkinsDeleted = DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
-
-            // Xóa các yêu cầu hoàn tiền liên quan (nếu có)
-            $refundRequestsDeleted = DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
+            // Xóa bản ghi liên quan
+            DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
+            DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
 
             // Xóa bản ghi khỏi bảng appointments
-            $appointmentDeleted = $appointment->delete();
+            $appointment->delete();
+
+            // Gửi email
+            Mail::to($appointmentEmail)->queue(new CancelBookingMail((object) $appointmentData));
 
             return response()->json([
                 'success' => true,
-                'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.'
+                'message' => 'Lịch hẹn ' . $appointmentCode . ' đã được hủy.'
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -343,7 +343,7 @@ class AppointmentController extends Controller
 
             return redirect()->route('dat-lich')->with('success', 'Lịch hẹn đã được xác nhận thành công!');
         } catch (\Exception $e) {
-             
+
             return redirect()->route('home')->with('error', 'Có lỗi xảy ra khi xác nhận lịch hẹn.');
         }
     }
@@ -420,7 +420,7 @@ class AppointmentController extends Controller
                     // Kiểm tra usage_limit
                     $usage_count = Appointment::where('user_id', $user_id)
                         ->where('promotion_id', $promotion->id)
-                        ->whereIn('status', ['pending','unconfirmed', 'confirmed', 'completed','checked-in','progress','completed'])
+                        ->whereIn('status', ['pending', 'unconfirmed', 'confirmed', 'completed', 'checked-in', 'progress', 'completed'])
                         ->count();
 
                     if ($promotion->usage_limit !== null && $usage_count >= $promotion->usage_limit) {
@@ -642,7 +642,7 @@ class AppointmentController extends Controller
                 : [];
 
             // Gửi email xác nhận với danh sách dịch vụ bổ sung
-            Mail::to($appointment->email)->queue(new ConfirmBookingMail($appointment, $AdditionalServices));
+            Mail::to($appointment->email)->send(new ConfirmBookingMail($appointment, $AdditionalServices));
 
             // Phản hồi thành công
             $message = $request->payment_method === 'vnpay'
@@ -666,7 +666,7 @@ class AppointmentController extends Controller
             }
             return redirect()->route('appointments.index')->with('success', 'Đặt lịch thành công!');
         } catch (\Exception $e) {
-               
+
             session()->flash('error', 'Lỗi khi đặt lịch: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
@@ -678,7 +678,7 @@ class AppointmentController extends Controller
     {
         try {
             // Log toàn bộ tham số để debug
-               
+
 
             // Kiểm tra chi nhánh
             if ($branch_id !== 'null' && (!is_numeric($branch_id) || !Branch::find($branch_id))) {
@@ -742,7 +742,7 @@ class AppointmentController extends Controller
             $totalDuration = $mainDuration + $additionalDuration;
 
             // Log thời lượng để debug
-               
+
 
             // Xây dựng query cơ bản
             $query = Barber::query()
@@ -770,7 +770,7 @@ class AppointmentController extends Controller
                                             if ($parsedTime && $totalDuration) {
                                                 $appointmentEnd = $datetime->copy()->addMinutes($totalDuration);
                                                 $appointmentEndTime = $appointmentEnd->format('H:i:s');
-                                                
+
                                                 // Kiểm tra xung đột thời gian - thợ không có lịch làm việc trong khoảng thời gian này
                                                 $timeQuery->where(function ($tq) use ($parsedTime, $appointmentEndTime) {
                                                     // Thợ bắt đầu làm việc sau khi lịch hẹn kết thúc
@@ -803,7 +803,7 @@ class AppointmentController extends Controller
             $barbers = $query->get();
             return response()->json($barbers);
         } catch (\Exception $e) {
-               
+
             return response()->json(['error' => 'Server error: Unable to fetch barbers'], 500);
         }
     }
