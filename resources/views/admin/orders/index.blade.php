@@ -754,7 +754,16 @@
                                     popup: 'custom-swal-popup'
                                 }
                             }).then(() => {
-                                if (data.success) location.reload();
+                                if (data.success) {
+                                    // Nếu có activeTab trong response, chuyển đến tab đó
+                                    if (data.activeTab) {
+                                        const url = new URL(window.location);
+                                        url.searchParams.set('tab', data.activeTab);
+                                        window.location.href = url.toString();
+                                    } else {
+                                        location.reload();
+                                    }
+                                }
                             });
                         })
                         .catch(error => {
@@ -820,7 +829,16 @@
                                     popup: 'custom-swal-popup'
                                 }
                             }).then(() => {
-                                if (data.success) location.reload();
+                                if (data.success) {
+                                    // Nếu có activeTab trong response, chuyển đến tab đó
+                                    if (data.activeTab) {
+                                        const url = new URL(window.location);
+                                        url.searchParams.set('tab', data.activeTab);
+                                        window.location.href = url.toString();
+                                    } else {
+                                        location.reload();
+                                    }
+                                }
                             });
                         })
                         .catch(error => {
@@ -912,7 +930,16 @@
                                             popup: 'custom-swal-popup'
                                         }
                                     }).then(() => {
-                                        if (data.success) onSuccess();
+                                        if (data.success) {
+                                            // Nếu có activeTab trong response, chuyển đến tab đó
+                                            if (data.activeTab) {
+                                                const url = new URL(window.location);
+                                                url.searchParams.set('tab', data.activeTab);
+                                                window.location.href = url.toString();
+                                            } else {
+                                                onSuccess();
+                                            }
+                                        }
                                     });
                                 })
                                 .catch(error => {
