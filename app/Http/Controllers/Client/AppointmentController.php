@@ -42,7 +42,7 @@ class AppointmentController extends Controller
 
     public function index(Request $request)
     {
-        $services = Service::select('id', 'name', 'price', 'duration')->get();
+        $services = Service::select('id', 'name', 'price', 'duration', 'is_combo')->get();
         $branches = Branch::all();
 
         // Lấy danh sách mã giảm giá khả dụng của người dùng
@@ -652,7 +652,7 @@ class AppointmentController extends Controller
                 : [];
 
             // Gửi email xác nhận với danh sách dịch vụ bổ sung
-            Mail::to($appointment->email)->queue(new ConfirmBookingMail($appointment, $AdditionalServices));
+            Mail::to($appointment->email)->send(new ConfirmBookingMail($appointment, $AdditionalServices));
 
             // Phản hồi thành công
             $message = $request->payment_method === 'vnpay'
