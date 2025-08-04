@@ -57,18 +57,20 @@
                                                                 <tr id="cart-item-{{ $item->id }}">
                                                                     <td>
                                                                         <input type="checkbox" class="cart-item-checkbox"
-                                                                            data-item-id="{{ $item->id }}" 
+                                                                            data-item-id="{{ $item->id }}"
                                                                             {{ $item->isProductAvailable() ? 'checked' : 'disabled' }}
                                                                             {{ !$item->isProductAvailable() ? 'style=opacity:0.5' : '' }}>
                                                                     </td>
                                                                     <td>
-                                                                        @if($item->isProductAvailable())
+                                                                        @if ($item->isProductAvailable())
                                                                             <strong>{{ $item->productVariant->product->name }}</strong><br>
                                                                             @php
-                                                                                $product = $item->productVariant->product;
+                                                                                $product =
+                                                                                    $item->productVariant->product;
                                                                                 $currentVariantId =
                                                                                     $item->product_variant_id;
-                                                                                $variants = $product->variants ?? collect();
+                                                                                $variants =
+                                                                                    $product->variants ?? collect();
                                                                             @endphp
 
                                                                             <form
@@ -76,7 +78,8 @@
                                                                                 method="POST">
                                                                                 @csrf
                                                                                 @method('PUT')
-                                                                                <label class="form-label text-muted small">Dung
+                                                                                <label
+                                                                                    class="form-label text-muted small">Dung
                                                                                     tích:</label>
                                                                                 <select name="product_variant_id"
                                                                                     class="form-select form-select-sm mt-1"
@@ -94,7 +97,8 @@
                                                                                 <strong>{{ $item->productVariant->product->name ?? 'Sản phẩm không xác định' }}</strong>
                                                                                 <br>
                                                                                 <small class="text-danger">
-                                                                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                                                                    <i
+                                                                                        class="fas fa-exclamation-triangle me-1"></i>
                                                                                     {{ $item->getProductStatusMessage() }}
                                                                                 </small>
                                                                             </div>
@@ -107,7 +111,7 @@
                                                                             style="width: 100px;">
                                                                     </td>
                                                                     <td>
-                                                                        @if($item->isProductAvailable())
+                                                                        @if ($item->isProductAvailable())
                                                                             <div class="quantity d-flex align-items-center">
                                                                                 <button type="button"
                                                                                     class="btn btn-outline-dark btn-sm quantity-minus"
@@ -128,7 +132,8 @@
                                                                             </div>
                                                                         @else
                                                                             <div class="text-muted">
-                                                                                <small>Số lượng: {{ $item->quantity }}</small>
+                                                                                <small>Số lượng:
+                                                                                    {{ $item->quantity }}</small>
                                                                             </div>
                                                                         @endif
                                                                     </td>
@@ -188,10 +193,9 @@
                                             <form id="checkout-form" action="{{ route('cart.checkout') }}" method="GET">
                                                 @guest
                                                     <button type="button" class="btn btn-dark btn-block btn-lg"
-                                                        id="btn-checkout-guest">Xác nhận</button>
+                                                        id="btn-checkout-guest">Mua hàng</button>
                                                 @else
-                                                    <button type="submit" class="btn-outline-buy">Xác
-                                                        nhận</button>
+                                                    <button type="submit" class="btn-outline-buy">Mua hàng</button>
                                                 @endguest
                                             </form>
 
@@ -226,7 +230,6 @@
                 }) + ' VNĐ';
             };
 
-
             const updateTotal = () => {
                 const checkedBoxes = [...document.querySelectorAll('.cart-item-checkbox:checked')];
                 let s = 0,
@@ -240,17 +243,10 @@
                     totalQuantity += parseInt(input.value) || 0;
                 });
 
-                const shippingEl = document.getElementById('shipping_fee_input');
-                const f = shippingEl ? parseInt(shippingEl.value) || 0 : 0;
-
                 document.getElementById('cart-subtotal').textContent = formatVND(s);
-                document.getElementById('cart-total').textContent = formatVND(s + f);
-
-                const itemCountEl = document.getElementById('item-count');
-                const itemCountSideEl = document.getElementById('item-count-side');
-
-                if (itemCountEl) itemCountEl.textContent = `${totalQuantity} sản phẩm`;
-                if (itemCountSideEl) itemCountSideEl.textContent = totalQuantity;
+                document.getElementById('cart-total').textContent = formatVND(s);
+                document.getElementById('item-count').textContent = `${totalQuantity} sản phẩm`;
+                document.getElementById('item-count-side').textContent = totalQuantity;
             };
 
             const showMsg = (m, t = 'danger') => {
@@ -284,11 +280,12 @@
                     })
                     .catch(e => {
                         console.error(e);
-                        showMsg(`Lỗi ${m === 'PUT' ? 'cập nhật số lượng' : 'xóa sản phẩm'}.`);
+                        showMsg(`Lỗi ${m === 'PUT' ? 'cập nhật' : 'xóa'}.`);
                         if (b) b.disabled = false;
                     });
             };
 
+            // Update quantity logic (unchanged)
             function updateQuantity(id, quantity, btn = null) {
                 const input = document.querySelector(`.quantity-input[data-item-id="${id}"]`);
                 const subtotalEl = document.querySelector(`#cart-item-${id} .subtotal`);
@@ -312,7 +309,6 @@
                         input.dataset.price = d.unit_price;
                         priceEl.textContent = formatVND(d.unit_price);
                         subtotalEl.textContent = formatVND(d.subtotal);
-
                         updateTotal();
                         if (typeof d.cart_count !== 'undefined') {
                             document.getElementById('cartCount').textContent = d.cart_count;
@@ -323,7 +319,6 @@
                             title: 'Cập nhật thất bại',
                             text: d.message || 'Có lỗi xảy ra.',
                         });
-
                         if (typeof d.available_stock !== 'undefined') {
                             input.value = d.available_stock;
                             updateQuantity(id, d.available_stock, btn);
@@ -335,6 +330,61 @@
                 });
             }
 
+            // Handle variant change
+            document.querySelectorAll('form[action*="/gio-hang/update-variant/"]').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const url = this.action;
+                    const formData = new FormData(this);
+                    const itemId = url.split('/').pop();
+                    const productVariantId = formData.get('product_variant_id');
+
+                    ajax(url, 'PUT', {
+                        product_variant_id: productVariantId
+                    }, null, data => {
+                        if (data.success) {
+                            if (data.merged) {
+                                // If merged, remove the old item and update the existing one
+                                document.getElementById(`cart-item-${itemId}`).remove();
+                                const existingItem = document.getElementById(
+                                    `cart-item-${data.existing_item_id}`);
+                                if (existingItem) {
+                                    const input = existingItem.querySelector('.quantity-input');
+                                    input.value = data.new_quantity;
+                                    const subtotalEl = existingItem.querySelector('.subtotal');
+                                    subtotalEl.textContent = formatVND(data.new_subtotal);
+                                }
+                            } else {
+                                // Update the current item
+                                const row = document.getElementById(`cart-item-${itemId}`);
+                                row.querySelector('.unit-price').textContent = formatVND(data
+                                    .unit_price);
+                                row.querySelector('.subtotal').textContent = formatVND(data
+                                    .subtotal);
+                                row.querySelector('.quantity-input').dataset.price = data
+                                    .unit_price;
+                                row.querySelector('img').src = data.image_url ||
+                                    '{{ asset('images/no-image.png') }}';
+                            }
+                            updateTotal();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: data.message || 'Cập nhật dung tích thành công.',
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: data.message || 'Không thể cập nhật dung tích.',
+                            });
+                        }
+                    });
+                });
+            });
+
+            // Quantity plus/minus and input logic (unchanged)
             document.querySelectorAll('.quantity-plus').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const id = btn.dataset.itemId;
@@ -422,9 +472,14 @@
                         };
                     });
 
-                    if (items.length === 0) {
-                        alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                   if (items.length === 0) {
                         e.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Chưa chọn sản phẩm',
+                            text: 'Vui lòng chọn ít nhất một sản phẩm để thanh toán!',
+                            confirmButtonText: 'OK'
+                        });
                         return false;
                     }
 
@@ -482,9 +537,6 @@
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        if (response.cart_count !== undefined) {
-                            $('#cartCount').text(response.cart_count);
-                        }
                     } else {
                         Swal.fire({
                             icon: 'warning',
