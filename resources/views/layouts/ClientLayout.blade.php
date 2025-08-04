@@ -223,7 +223,8 @@
         <!-- Hộp chat -->
         <div class="chat-wrapper">
             <div class="chat-header">
-                <i class="fa-solid fa-robot"></i> Barber House
+                <i><img src="{{ asset('storage/' . ($imageSettings['white_logo'] ?? 'default-images/white_logo.png')) }}"
+                    height="30" alt="Logo"></i> Barber House
                 <span id="chatClose">&times;</span>
             </div>
             <div class="chat-body" id="chatMessages">
