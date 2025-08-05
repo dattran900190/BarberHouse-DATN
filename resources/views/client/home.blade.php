@@ -192,13 +192,13 @@
         </section>
 
         <section id="price" style="padding-bottom: 0;">
-            <h2>Bảng giá</h2>
+            <h2 style="font-weight: 600; margin-bottom: 1.5rem;font-size: 2rem;">Bảng giá</h2>
             <img src="{{ asset('storage/' . ($imageSettings['bang_gia'] ?? 'default-images/no-banggia.png')) }}"
                 alt="Bảng giá" />
         </section>
 
         <section id="instagram">
-            <h2>Ảnh khách hàng</h2>
+            <h2 style="font-weight: 600; margin-bottom: 1.5rem;font-size: 2rem;">Ảnh khách hàng</h2>
             <div class="images">
                 @forelse ($customerImages as $image)
                     <div class="image-item">
