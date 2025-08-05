@@ -438,8 +438,11 @@
                             });
 
                             const body = withInput ? JSON.stringify({
-                                cancellation_reason: result.value || 'Không có lý do'
-                            }) : undefined;
+                                cancellation_reason: result.value || 'Không có lý do',
+                                current_tab: '{{ $activeTab }}'
+                            }) : JSON.stringify({
+                                current_tab: '{{ $activeTab }}'
+                            });
 
                             fetch(route.replace(':id', appointmentId), {
                                     method,
@@ -460,7 +463,13 @@
                                             popup: 'custom-swal-popup'
                                         }
                                     }).then(() => {
-                                        if (data.success) onSuccess();
+                                        if (data.success) {
+                                            if (data.redirect_url) {
+                                                window.location.href = data.redirect_url;
+                                            } else {
+                                                onSuccess();
+                                            }
+                                        }
                                     });
                                 })
                                 .catch(error => {
@@ -504,8 +513,7 @@
             inputPlaceholder: 'Nhập lý do no-show (tối đa 255 ký tự)...',
             inputValidator: (value) => {
                 if (value && value.length > 255) return 'Lý do không được vượt quá 255 ký tự!';
-            },
-            onSuccess: () => window.location.href = '{{ route('appointments.index') }}'
+            }
         });
 
         handleSwalAction({
@@ -517,8 +525,7 @@
             inputPlaceholder: 'Nhập lý do cancel (tối đa 255 ký tự)...',
             inputValidator: (value) => {
                 if (value && value.length > 255) return 'Lý do không được vượt quá 255 ký tự!';
-            },
-            onSuccess: () => window.location.href = '{{ route('appointments.index') }}'
+            }
         });
     </script>
 

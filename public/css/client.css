@@ -844,26 +844,6 @@ h2 {
   position: relative;
 }
 
-.booking-container .service-item .remove-service {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #ff4444;
-  color: #000;
-  border: none;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  font-size: 12px;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.booking-container .service-item:first-child .remove-service {
-  display: none;
-}
-
 .booking-container .service-summary {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 10px;

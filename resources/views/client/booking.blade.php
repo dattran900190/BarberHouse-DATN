@@ -1227,8 +1227,10 @@
 
                     const removeBtn = document.createElement('button');
                     removeBtn.type = 'button';
-                    removeBtn.className = 'btn btn-sm btn-danger remove-service ms-2';
-                    removeBtn.textContent = 'Xóa';
+                    removeBtn.className = 'btn-outline-buy btn-sm ms-2';
+                    removeBtn.style.padding = '0.25rem 0.5rem';
+                    removeBtn.style.border = '1px solid #ccc';
+                    removeBtn.innerHTML = '<i class="fa fa-times"></i>';
                     removeBtn.addEventListener('click', function() {
                         additionalServicesContainer.removeChild(serviceWrapper);
                         updateAdditionalServicesInput();
