@@ -91,7 +91,7 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                     <label for="image" class="form-label">Ảnh dịch vụ</label>
                     <input type="file" class="form-control" id="image" name="image">
                     @if ($service->image)
@@ -102,7 +102,7 @@
                     @error('image')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
-                </div>
+                </div> --}}
 
                 <div class="mb-3">
                     <label for="description" class="form-label">Mô tả</label>

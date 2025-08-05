@@ -91,7 +91,7 @@
                             <td>{{ $product->category->name ?? 'Không có' }}</td>
                             <td class="text-center">
                                 @if ($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" width="50" height="50"
+                                    <img src="{{ asset('storage/' . $product->image) }}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;"
                                         alt="Ảnh chính" />
                                 @else
                                     Không có
@@ -100,8 +100,7 @@
                             <td class="text-center">
                                 @if ($product->images->isNotEmpty())
                                     @foreach ($product->images as $image)
-                                        <img src="{{ asset('storage/' . $image->image_url) }}" width="50"
-                                            height="50" alt="Ảnh bổ sung" class="me-2" />
+                                        <img src="{{ asset('storage/' . $image->image_url) }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px;" alt="Ảnh bổ sung" class="me-2" />
                                     @endforeach
                                 @else
                                     Không có
@@ -113,8 +112,7 @@
                                         <div>
                                             {{ $variant->volume->name ?? 'N/A' }}:
                                             @if ($variant->image)
-                                                <img src="{{ asset('storage/' . $variant->image) }}" width="50"
-                                                    height="50" alt="Ảnh biến thể" />
+                                                <img src="{{ asset('storage/' . $variant->image) }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px;" alt="Ảnh biến thể" />
                                             @else
                                                 Không có
                                             @endif

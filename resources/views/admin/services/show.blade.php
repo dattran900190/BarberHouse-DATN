@@ -39,13 +39,13 @@
         </div>
         <div class="card-body">
             <div class="row gy-3">
-                @if ($service->image)
+                {{-- @if ($service->image)
                     <div class="col-md-4 text-center">
                         <img src="{{ asset('storage/' . $service->image) }}" alt="Ảnh dịch vụ"
                             class="img-fluid rounded mb-3"
                             style="max-height: 250px; object-fit: cover; border: 1px solid #dee2e6;">
                     </div>
-                @endif
+                @endif --}}
                 <div class="col-md-{{ $service->image ? '8' : '12' }}">
                     <h4 class="fw-bold mb-3">{{ $service->name }}
                         @if ($service->deleted_at)

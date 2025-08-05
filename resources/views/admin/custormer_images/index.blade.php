@@ -72,7 +72,7 @@
                                 <td>
                                     @if ($img->image)
                                         <img src="{{ asset('storage/' . $img->image) }}" alt="Ảnh khách" width="100"
-                                            class="img-thumbnail">
+                                        style="object-fit: cover; border-radius: 10px;">
                                     @else
                                         <span class="text-muted">Không có ảnh</span>
                                     @endif

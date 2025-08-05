@@ -94,10 +94,10 @@
                                 <td class="text-center">
                                     @if ($barber->avatar)
                                         <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar"
-                                            class="img-thumbnail" style="max-width: 100px; max-height: 70px;">
+                                             style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
                                     @else
                                         <img src="{{ asset('uploads/avatars/default-avatar.png') }}" alt="Avatar"
-                                            class="img-thumbnail" style="max-width: 100px; max-height: 70px;">
+                                             style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
                                     @endif
                                 </td>
                                 <td>{{ $barber->name }}</td>

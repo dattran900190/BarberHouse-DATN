@@ -101,7 +101,7 @@
                                 <td class="text-center">
                                     @if ($banner->image_url)
                                         <img src="{{ asset('storage/' . $banner->image_url) }}" alt="Banner"
-                                            width="80" class="img-thumbnail">
+                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
                                     @else
                                         <span class="text-muted">Không có ảnh</span>
                                     @endif

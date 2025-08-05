@@ -222,7 +222,7 @@
                                                     @if ($barber->avatar)
                                                         <img src="{{ asset('storage/' . $barber->avatar) }}"
                                                             alt="{{ $barber->name }}" class="rounded-circle mr-2"
-                                                            width="40" height="40">
+                                                            width="40" height="40" style="object-fit: cover;">
                                                     @else
                                                         <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mr-2"
                                                             style="width: 40px; height: 40px;">
