@@ -7,7 +7,7 @@
 @endphp
 @section('content')
     <div class="page-header">
-        <h3 class="fw-bold mb-3">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">{{ $role == 'user' ? 'Người dùng' : 'Quản trị viên' }}</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -113,6 +113,14 @@
                     <i class="fa fa-clock me-2 text-muted"></i>
                     <strong>Ngày cập nhật:</strong> {{ $user->updated_at->format('d/m/Y H:i') }}
                 </div>
+
+                @if ($user->avatar)
+                    
+                    <strong><i class="fa fa-image me-2 text-muted"></i> Ảnh đại diện:</strong>
+                    <div class="col-md-12">
+                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar" style="max-height: 200px; width: 200px; object-fit: cover; border-radius: 10px;">
+                    </div>
+                @endif
             </div>
         </div>
     </div>

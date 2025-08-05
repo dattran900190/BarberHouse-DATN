@@ -24,7 +24,7 @@
         $currentRole = Auth::user()->role;
     @endphp
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Bài viết</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Bài viết</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -99,8 +99,7 @@
                                 <td>{{ Str::limit($post->short_description, 100) }}</td>
                                 <td class="text-center">
                                     @if ($post->image)
-                                        <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh" width="80"
-                                            class="img-thumbnail">
+                                        <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
                                     @else
                                         <span class="text-muted">Không có ảnh</span>
                                     @endif

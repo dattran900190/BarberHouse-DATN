@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Đơn hàng</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Đơn hàng</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -56,7 +56,7 @@
             'paid' => 'success',
             'failed' => 'danger',
             'refunded' => 'info',
-        ]
+        ];
     @endphp
 
     @if (session('success'))
@@ -76,39 +76,66 @@
     <!-- Card 1: Thông tin đơn hàng -->
     <div class="card shadow-sm mb-4">
         <div class="card-header text-white d-flex align-items-center">
-            <h4 class="card-title">Chi tiết đơn hàng: {{ $order->order_code }}</h4>
+            <h4 class="card-title mb-0">Chi tiết đơn hàng: {{ $order->order_code }}</h4>
         </div>
         <div class="card-body">
             <div class="row gy-3">
                 <div class="col-md-6">
-                    <p><strong>Khách hàng:</strong> {{ $order->user->name ?? 'Khách vãng lai' }}</p>
-                    <p><strong>Tên người nhận:</strong> {{ $order->name }}</p>
-                    <p><strong>Số điện thoại:</strong> {{ $order->phone }}</p>
-                    <p><strong>Địa chỉ:</strong> {{ $order->address }}</p>
-                    <p><strong>Phương thức thanh toán:</strong>
-                        {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}</p>
-                    <p><strong>Ngày đặt hàng:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
+                    <i class="fa fa-user me-2 text-muted"></i>
+                    <strong>Khách hàng:</strong> {{ $order->user->name ?? 'Khách vãng lai' }}
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Phương thức giao hàng:</strong>
-                        {{ $shippingMap[$order->shipping_method] ?? ucfirst($order->shipping_method) }}</p>
-                    <p><strong>Trạng thái thanh toán:</strong>
-                        <span class="badge bg-{{ $paymentColorMap[$order->payment_status] ?? 'secondary' }}">
-                            {{ $paymentMap[$order->payment_status] ?? ucfirst($order->payment_status) }}
-                        </span>
-                        </p>
-                    <p><strong>Ghi chú:</strong> {{ $order->note ?: '-' }}</p>
-                    <p><strong>Tổng tiền:</strong> {{ number_format($order->total_money, 0, ',', '.') }} VNĐ</p>
-                    <p><strong>Trạng thái:</strong>
-                        <span id="order-status"
-                            class="badge bg-{{ $statusColorMap[$order->status] ?? 'secondary' }}">
-                            {{ $statusMap[$order->status] ?? ucfirst($order->status) }}
-                        </span>
-                    </p>
+                    <i class="fa fa-user-tag me-2 text-primary"></i>
+                    <strong>Tên người nhận:</strong> {{ $order->name }}
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-phone me-2 text-success"></i>
+                    <strong>Số điện thoại:</strong> {{ $order->phone }}
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-map-marker-alt me-2 text-info"></i>
+                    <strong>Địa chỉ:</strong> {{ $order->address }}
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-credit-card me-2 text-warning"></i>
+                    <strong>Phương thức thanh toán:</strong>
+                    {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-calendar-plus me-2 text-muted"></i>
+                    <strong>Ngày đặt hàng:</strong> {{ $order->created_at->format('d/m/Y H:i') }}
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-shipping-fast me-2 text-primary"></i>
+                    <strong>Phương thức giao hàng:</strong>
+                    {{ $shippingMap[$order->shipping_method] ?? ucfirst($order->shipping_method) }}
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-wallet me-2 text-success"></i>
+                    <strong>Trạng thái thanh toán:</strong>
+                    <span class="badge bg-{{ $paymentColorMap[$order->payment_status] ?? 'secondary' }}">
+                        {{ $paymentMap[$order->payment_status] ?? ucfirst($order->payment_status) }}
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-sticky-note me-2 text-info"></i>
+                    <strong>Ghi chú:</strong> {{ $order->note ?: '-' }}
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-coins me-2 text-warning"></i>
+                    <strong>Tổng tiền:</strong> {{ number_format($order->total_money, 0, ',', '.') }} VNĐ
+                </div>
+                <div class="col-md-6">
+                    <i class="fa fa-info-circle me-2 text-muted"></i>
+                    <strong>Trạng thái đơn hàng:</strong>
+                    <span class="badge bg-{{ $statusColorMap[$order->status] ?? 'secondary' }}">
+                        {{ $statusMap[$order->status] ?? ucfirst($order->status) }}
+                    </span>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Card 2: Sản phẩm -->
     <div class="card shadow-sm mb-4">
@@ -159,7 +186,8 @@
             <h4 class="card-title">Cập nhật trạng thái</h4>
         </div>
         <div class="card-body">
-            <form id="update-order-status-form" action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="w-100">
+            <form id="update-order-status-form" action="{{ route('admin.orders.update', $order->id) }}" method="POST"
+                class="w-100">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="page" value="{{ request('page', 1) }}">

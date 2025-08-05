@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Dịch vụ</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Dịch vụ</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -39,13 +39,13 @@
         </div>
         <div class="card-body">
             <div class="row gy-3">
-                @if ($service->image)
+                {{-- @if ($service->image)
                     <div class="col-md-4 text-center">
                         <img src="{{ asset('storage/' . $service->image) }}" alt="Ảnh dịch vụ"
                             class="img-fluid rounded mb-3"
                             style="max-height: 250px; object-fit: cover; border: 1px solid #dee2e6;">
                     </div>
-                @endif
+                @endif --}}
                 <div class="col-md-{{ $service->image ? '8' : '12' }}">
                     <h4 class="fw-bold mb-3">{{ $service->name }}
                         @if ($service->deleted_at)

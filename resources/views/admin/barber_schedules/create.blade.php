@@ -13,7 +13,7 @@
         </div>
     @endif
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Tạo Lịch Nghỉ </h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Tạo Lịch Nghỉ </h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home"><a href="{{ url('admin/dashboard') }}"><i class="icon-home"></i></a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>

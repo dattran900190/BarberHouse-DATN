@@ -136,9 +136,13 @@ class AppointmentController extends Controller
 
             Mail::to($appointment->email)->queue(new CustomerNoShow($appointment));
 
+            // Lấy tab hiện tại từ request
+            $currentTab = $request->input('current_tab', 'pending');
+            
             return response()->json([
                 'success' => true,
-                'message' => 'Đã đánh dấu lịch hẹn ' . $appointment->appointment_code . ' là no-show.'
+                'message' => 'Đã đánh dấu lịch hẹn ' . $appointment->appointment_code . ' là no-show.',
+                'redirect_url' => route('appointments.index', ['status' => $currentTab])
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -182,9 +186,13 @@ class AppointmentController extends Controller
 
             event(new AppointmentStatusUpdated($appointment));
 
+            // Lấy tab hiện tại từ request
+            $currentTab = $request->input('current_tab', 'pending');
+            
             return response()->json([
                 'success' => true,
-                'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được xác nhận.'
+                'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được xác nhận.',
+                'redirect_url' => route('appointments.index', ['status' => $currentTab])
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -203,9 +211,13 @@ class AppointmentController extends Controller
 
             event(new AppointmentStatusUpdated($appointment));
 
+            // Lấy tab hiện tại từ request
+            $currentTab = $request->input('current_tab', 'pending');
+            
             return response()->json([
-                'success' => true,
-                'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hoàn thành.'
+                'success' => true, 
+                'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hoàn thành.',
+                'redirect_url' => route('appointments.index', ['status' => $currentTab])
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -259,9 +271,13 @@ class AppointmentController extends Controller
 
             $appointment->delete();
 
+            // Lấy tab hiện tại từ request
+            $currentTab = $request->input('current_tab', 'pending');
+            
             return response()->json([
-                'success' => true,
-                'message' => 'Đã hủy lịch ' . $cancelledAppointment->appointment_code . '.'
+                'success' => true, 
+                'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được hủy.',
+                'redirect_url' => route('appointments.index', ['status' => $currentTab])
             ]);
         } catch (\Exception $e) {
             Log::error('Error cancelling appointment: ' . $e->getMessage());
@@ -467,7 +483,14 @@ class AppointmentController extends Controller
 
             $appointment->delete();
 
-            return redirect()->route('appointments.index')->with('success', 'Lịch hẹn ' . $cancelledAppointment->appointment_code . ' đã được hủy.');
+            // Lấy tab hiện tại từ request
+            $currentTab = $request->input('current_tab', 'pending');
+            
+            return response()->json([
+                'success' => true, 
+                'message' => 'Lịch hẹn ' . $appointment->appointment_code . ' đã được huỷ.',
+                'redirect_url' => route('appointments.index', ['status' => $currentTab])
+            ]);
         } catch (\Exception $e) {
             Log::error('Error cancelling appointment: ' . $e->getMessage());
             return redirect()->route('appointments.index')

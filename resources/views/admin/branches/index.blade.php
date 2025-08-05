@@ -21,7 +21,7 @@
     @endphp
 
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Danh sách Chi nhánh</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Chi nhánh</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -32,7 +32,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/branches') }}">Quản lý Chi nhánh</a>
+                <a href="{{ url('admin/branches') }}">Quản lý chi nhánh</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>

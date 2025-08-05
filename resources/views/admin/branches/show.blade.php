@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Chi nhánh</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Chi nhánh</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -110,11 +110,11 @@
                                     <td>{{ $index + 1 }}</td>
                                     <td class="text-center">
                                         @if ($barber->avatar)
-                                            <img src="{{ asset('storage/' . $barber->avatar) }}" class="img-thumbnail"
-                                                style="max-width: 80px; max-height: 60px;" alt="Avatar">
+                                            <img src="{{ asset('storage/' . $barber->avatar) }}"
+                                                style="max-height: 100px; width: 100px; object-fit: cover; border-radius: 10px;" alt="Avatar">
                                         @else
                                             <img src="{{ asset('uploads/avatars/default-avatar.png') }}"
-                                                class="img-thumbnail" style="max-width: 80px; max-height: 60px;"
+                                                style="max-height: 100px; width: 100px; object-fit: cover; border-radius: 10px;"
                                                 alt="Avatar">
                                         @endif
                                     </td>

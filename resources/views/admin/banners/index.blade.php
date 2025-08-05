@@ -24,7 +24,7 @@
         $currentRole = Auth::user()->role;
     @endphp
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Banner</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Banner</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -101,7 +101,7 @@
                                 <td class="text-center">
                                     @if ($banner->image_url)
                                         <img src="{{ asset('storage/' . $banner->image_url) }}" alt="Banner"
-                                            width="80" class="img-thumbnail">
+                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
                                     @else
                                         <span class="text-muted">Không có ảnh</span>
                                     @endif

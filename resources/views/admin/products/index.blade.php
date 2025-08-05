@@ -21,7 +21,7 @@
         </div>
     @endif
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Sản phẩm</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Sản phẩm</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
@@ -38,7 +38,7 @@
     </div>
     <div class="card">
         <div class="card-header text-white d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0 flex-grow-1">Danh sách Sản phẩm</h3>
+            <h3 class="card-title mb-0 flex-grow-1">Danh sách sản phẩm</h3>
             <a href="{{ route('admin.products.create') }}"
                 class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
                 <i class="fas fa-plus"></i>
@@ -91,7 +91,7 @@
                             <td>{{ $product->category->name ?? 'Không có' }}</td>
                             <td class="text-center">
                                 @if ($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" width="50" height="50"
+                                    <img src="{{ asset('storage/' . $product->image) }}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;"
                                         alt="Ảnh chính" />
                                 @else
                                     Không có
@@ -100,8 +100,7 @@
                             <td class="text-center">
                                 @if ($product->images->isNotEmpty())
                                     @foreach ($product->images as $image)
-                                        <img src="{{ asset('storage/' . $image->image_url) }}" width="50"
-                                            height="50" alt="Ảnh bổ sung" class="me-2" />
+                                        <img src="{{ asset('storage/' . $image->image_url) }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px;" alt="Ảnh bổ sung" class="me-2" />
                                     @endforeach
                                 @else
                                     Không có
@@ -113,8 +112,7 @@
                                         <div>
                                             {{ $variant->volume->name ?? 'N/A' }}:
                                             @if ($variant->image)
-                                                <img src="{{ asset('storage/' . $variant->image) }}" width="50"
-                                                    height="50" alt="Ảnh biến thể" />
+                                                <img src="{{ asset('storage/' . $variant->image) }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px;" alt="Ảnh biến thể" />
                                             @else
                                                 Không có
                                             @endif
