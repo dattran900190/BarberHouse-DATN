@@ -198,39 +198,64 @@
         <!-- Cột trái -->
         <div class="col-lg-6">
             <div class="row g-3">
-                <!-- Hiệu suất nhân viên -->
+                <!-- Dịch vụ phổ biến & ít dùng -->
                 <div class="col-12">
                     <div class="card card-round h-100">
-                        <div class="card-header d-flex flex-column">
-                            <h5 class="card-title mb-1 fw-bold">Hiệu suất nhân viên (tuần này)</h5>
-                            <span class="text-muted small">{{ $weekRange ?? 'Tuần hiện tại' }}</span>
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0 fw-bold">Dịch vụ phổ biến & ít dùng</h5>
+                            <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-top-service-tab" data-bs-toggle="pill"
+                                        href="#pills-top-service" role="tab">Phổ biến</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-low-service-tab" data-bs-toggle="pill"
+                                        href="#pills-low-service" role="tab">Ít dùng</a>
+                                </li>
+                            </ul>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover table-sm align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Nhân viên</th>
-                                            <th class="text-center">Lượt cắt</th>
-                                            <th class="text-center">Đánh giá</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($barberStats as $barber)
-                                            <tr>
-                                                <td>{{ $barber->name }}</td>
-                                                <td class="text-center">{{ $barber->cut_count }}</td>
-                                                <td class="text-center">
-                                                    {{ number_format($barber->avg_rating, 1) }} ⭐
-                                                </td>
-                                            </tr>
+                            <div class="tab-content">
+                                <!-- Phổ biến -->
+                                <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
+                                    <ul class="list-group list-group-flush">
+                                        @forelse ($topServices as $item)
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>{{ $item->service->name ?? 'Không xác định' }}</strong><br>
+                                                    <small
+                                                        class="text-muted">{{ number_format($item->service->price ?? 0) }}
+                                                        VNĐ</small>
+                                                </div>
+                                                <span class="badge bg-primary rounded-pill">
+                                                    {{ $item->usage_count }} lượt
+                                                </span>
+                                            </li>
                                         @empty
-                                            <tr>
-                                                <td colspan="3" class="text-center text-muted">Không có dữ liệu</td>
-                                            </tr>
+                                            <li class="list-group-item text-center text-muted">Không có dịch vụ nào</li>
                                         @endforelse
-                                    </tbody>
-                                </table>
+                                    </ul>
+                                </div>
+
+                                <!-- Ít dùng -->
+                                <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
+                                    <ul class="list-group list-group-flush">
+                                        @forelse ($lowUsageServices as $item)
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>{{ $item->name ?? 'Không xác định' }}</strong><br>
+                                                    <small class="text-muted">{{ number_format($item->price ?? 0) }}
+                                                        VNĐ</small>
+                                                </div>
+                                                <span class="badge bg-secondary rounded-pill">
+                                                    {{ $item->usage_count }} lượt
+                                                </span>
+                                            </li>
+                                        @empty
+                                            <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
+                                        @endforelse
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -301,32 +326,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Lịch hẹn sắp tới -->
-                {{-- <div class="col-12">
-                    <div class="card card-round h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0 fw-bold">Lịch hẹn sắp tới</h5>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                @forelse ($upcomingAppointments as $appointment)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <span class="fw-semibold">{{ $appointment->name ?? '-' }}</span> -
-                                            {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i') }}
-                                        </div>
-                                        <span class="badge bg-success">
-                                            {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m') }}
-                                        </span>
-                                    </li>
-                                @empty
-                                    <li class="list-group-item text-center text-muted">Không có lịch hẹn sắp tới</li>
-                                @endforelse
-                            </ul>
-                        </div>
-                    </div>
-                </div> --}}
             </div>
         </div>
 
@@ -357,7 +356,10 @@
                                         @forelse ($topProducts as $item)
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <strong>{{ $item->productVariant->product->name ?? 'Không xác định' }}</strong>
+                                                    <strong>{{ $item->productVariant->product->name ?? 'Không xác định' }}</strong><br>
+                                                    <small
+                                                        class="text-muted">{{ number_format($item->productVariant->price ?? 0) }}
+                                                        VNĐ</small>
                                                 </div>
                                                 <span class="badge bg-success rounded-pill">
                                                     {{ $item->total_sold }} sp
@@ -376,7 +378,9 @@
                                         @forelse ($lowSellingProducts as $item)
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <strong>{{ $item->product->name ?? 'Không xác định' }}</strong>
+                                                    <strong>{{ $item->product->name ?? 'Không xác định' }}</strong><br>
+                                                    <small class="text-muted">{{ number_format($item->price) }}
+                                                        VNĐ</small>
                                                 </div>
                                                 <span class="badge bg-warning rounded-pill">
                                                     {{ $item->total_sold }} sp
@@ -392,64 +396,73 @@
                     </div>
                 </div>
 
-                <!-- Dịch vụ phổ biến & ít dùng -->
+
+                <!-- Hiệu suất nhân viên -->
                 <div class="col-12">
                     <div class="card card-round h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0 fw-bold">Dịch vụ phổ biến & ít dùng</h5>
-                            <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="pills-top-service-tab" data-bs-toggle="pill"
-                                        href="#pills-top-service" role="tab">Phổ biến</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="pills-low-service-tab" data-bs-toggle="pill"
-                                        href="#pills-low-service" role="tab">Ít dùng</a>
-                                </li>
-                            </ul>
+                        <div class="card-header d-flex flex-column">
+                            <h5 class="card-title mb-1 fw-bold">Hiệu suất nhân viên (Top 5)</h5>
+                            <div class="d-flex align-items-end gap-2 flex-wrap mt-2">
+                                <div>
+                                    <label for="performance_month" class="form-label small mb-1 text-muted">Chọn tháng:</label>
+                                    <select id="performance_month" class="form-select form-select-sm">
+                                        <option value="">Tháng hiện tại</option>
+                                        @foreach ($availableMonths as $monthNum)
+                                            <option value="{{ $monthNum }}"
+                                                {{ isset($selectedPerformanceMonth) && $selectedPerformanceMonth == $monthNum ? 'selected' : '' }}>
+                                                Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="performance_branch" class="form-label small mb-1 text-muted">Chi nhánh:</label>
+                                    <select id="performance_branch" class="form-select form-select-sm">
+                                        <option value="">Tất cả chi nhánh</option>
+                                        @foreach ($branches as $branch)
+                                            <option value="{{ $branch->id }}"
+                                                {{ isset($selectedPerformanceBranch) && $selectedPerformanceBranch == $branch->id ? 'selected' : '' }}>
+                                                {{ $branch->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <button type="button" id="resetPerformanceFilter"
+                                        class="btn btn-sm btn-outline-secondary">
+                                        <i class="fa fa-refresh me-1"></i>Reset
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="tab-content">
-                                <!-- Phổ biến -->
-                                <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
-                                    <ul class="list-group list-group-flush">
-                                        @forelse ($topServices as $item)
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <strong>{{ $item->service->name ?? 'Không xác định' }}</strong><br>
-                                                    <small
-                                                        class="text-muted">{{ number_format($item->service->price ?? 0) }}
-                                                        VNĐ</small>
-                                                </div>
-                                                <span class="badge bg-primary rounded-pill">
-                                                    {{ $item->usage_count }} lượt
-                                                </span>
-                                            </li>
-                                        @empty
-                                            <li class="list-group-item text-center text-muted">Không có dịch vụ nào</li>
-                                        @endforelse
-                                    </ul>
-                                </div>
 
-                                <!-- Ít dùng -->
-                                <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
-                                    <ul class="list-group list-group-flush">
-                                        @forelse ($lowUsageServices as $item)
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <strong>{{ $item->name ?? 'Không xác định' }}</strong><br>
-                                                    <small class="text-muted">{{ number_format($item->price ?? 0) }}
-                                                        VNĐ</small>
-                                                </div>
-                                                <span class="badge bg-secondary rounded-pill">
-                                                    {{ $item->usage_count }} lượt
-                                                </span>
-                                            </li>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="barberPerformanceTable" class="table table-hover table-sm align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Nhân viên</th>
+                                            <th class="text-center">Lượt cắt</th>
+                                            <th class="text-center">Đánh giá</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($barberStats as $barber)
+                                            <tr>
+                                                <td>{{ $barber->name }}</td>
+                                                <td class="text-center">{{ $barber->cut_count }}</td>
+                                                <td class="text-center">
+                                                    {{ number_format($barber->avg_rating, 1) }} ⭐
+                                                </td>
+                                            </tr>
                                         @empty
-                                            <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted">Không có dữ liệu
+                                                </td>
+                                            </tr>
                                         @endforelse
-                                    </ul>
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -698,7 +711,7 @@
             }
 
             // Gửi AJAX request để lấy dữ liệu mới
-            fetch('{{ route('dashboard') }}?' + new URLSearchParams({
+            fetch('{{ route('admin.dashboard') }}?' + new URLSearchParams({
                     week_start: startDate,
                     week_end: endDate,
                     ajax: '1'
@@ -725,7 +738,7 @@
             }
 
             // Gửi AJAX request để lấy dữ liệu mới
-            fetch('{{ route('dashboard') }}?' + new URLSearchParams({
+            fetch('{{ route('admin.dashboard') }}?' + new URLSearchParams({
                     selected_month: selectedMonth,
                     ajax: '1'
                 }))
@@ -746,7 +759,7 @@
             const branch = document.getElementById('leave_branch').value;
 
             // Gửi AJAX request để lấy dữ liệu ngày nghỉ mới
-            fetch('{{ route('dashboard') }}?' + new URLSearchParams({
+            fetch('{{ route('admin.dashboard') }}?' + new URLSearchParams({
                     leave_month: month,
                     leave_branch: branch,
                     ajax: '1'
@@ -808,5 +821,57 @@
         // Event listeners cho bộ lọc ngày nghỉ
         document.getElementById('leave_month').addEventListener('change', handleLeaveFilter);
         document.getElementById('leave_branch').addEventListener('change', handleLeaveFilter);
+
+        // Xử lý lọc hiệu suất nhân viên
+        function handlePerformanceFilter() {
+            const month = document.getElementById('performance_month').value;
+            const branch = document.getElementById('performance_branch').value;
+
+            // Gửi AJAX request để lấy dữ liệu hiệu suất nhân viên mới
+            fetch('{{ route('admin.dashboard') }}?' + new URLSearchParams({
+                    performance_month: month,
+                    performance_branch: branch,
+                    ajax: '1'
+                }))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Cập nhật bảng hiệu suất nhân viên
+                        const tbody = document.querySelector('#barberPerformanceTable tbody');
+                        tbody.innerHTML = '';
+
+                        if (data.barberStats.length > 0) {
+                            data.barberStats.forEach(barber => {
+                                const row = `
+                                    <tr>
+                                        <td>${barber.name}</td>
+                                        <td class="text-center">${barber.cut_count}</td>
+                                        <td class="text-center">${barber.avg_rating} ⭐</td>
+                                    </tr>
+                                `;
+                                tbody.innerHTML += row;
+                            });
+                        } else {
+                            tbody.innerHTML =
+                                '<tr><td colspan="3" class="text-center text-muted">Không có dữ liệu</td></tr>';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // Reset bộ lọc hiệu suất nhân viên
+        document.getElementById('resetPerformanceFilter').addEventListener('click', function() {
+            document.getElementById('performance_month').value = '';
+            document.getElementById('performance_branch').value = '';
+            handlePerformanceFilter();
+        });
+
+        // Event listeners cho bộ lọc hiệu suất nhân viên
+        document.getElementById('performance_month').addEventListener('change', handlePerformanceFilter);
+        document.getElementById('performance_branch').addEventListener('change', handlePerformanceFilter);
+        
     </script>
 @endsection

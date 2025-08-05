@@ -53,16 +53,38 @@ class DashboardController extends Controller
         // Format ngày hiển thị
         $weekRange = $startOfWeek->format('d/m') . ' đến ' . $endOfWeek->format('d/m');
 
-        // Thống kê hiệu suất nhân viên theo tuần hiện tại
-        $barberStats = Barber::withCount([
-            'appointments as cut_count' => function ($q) use ($startOfWeek, $endOfWeek) {
-                $q->whereBetween('appointment_time', [$startOfWeek, $endOfWeek])
-                    ->where('status', 'completed');
+        // Xử lý filter cho hiệu suất nhân viên
+        $user = Auth::user();
+        $selectedPerformanceMonth = $request->input('performance_month', date('n'));
+        $selectedPerformanceBranch = $request->input('performance_branch');
+
+        // Thống kê hiệu suất nhân viên
+        $barberStatsQuery = Barber::withCount([
+            'appointments as cut_count' => function ($q) use ($selectedPerformanceMonth) {
+                if ($selectedPerformanceMonth) {
+                    $q->whereMonth('appointment_time', $selectedPerformanceMonth)
+                        ->whereYear('appointment_time', date('Y'))
+                        ->where('status', 'completed');
+                } else {
+                    // Mặc định lấy tuần hiện tại
+                    $startOfWeek = Carbon::now()->startOfWeek();
+                    $endOfWeek = Carbon::now()->endOfWeek();
+                    $q->whereBetween('appointment_time', [$startOfWeek, $endOfWeek])
+                        ->where('status', 'completed');
+                }
             }
         ])
-            ->withAvg('reviews as avg_rating', 'rating')
-            ->orderByDesc('cut_count')
-            ->take(6)
+            ->withAvg('reviews as avg_rating', 'rating');
+
+        // Lọc theo chi nhánh cho hiệu suất nhân viên
+        if ($selectedPerformanceBranch) {
+            $barberStatsQuery->where('branch_id', $selectedPerformanceBranch);
+        } elseif ($user->role === 'admin_branch') {
+            $barberStatsQuery->where('branch_id', $user->branch_id);
+        }
+
+        $barberStats = $barberStatsQuery->orderByDesc('cut_count')
+            ->take(5)
             ->get()
             ->map(function ($barber) {
                 $barber->avg_rating = $barber->avg_rating ? number_format($barber->avg_rating, 1) : '0.0';
@@ -70,7 +92,6 @@ class DashboardController extends Controller
             });
 
         // Thống kê ngày nghỉ của thợ (Top 5)
-        $user = Auth::user();
         $selectedLeaveMonth = $request->input('leave_month', date('n'));
         $selectedBranch = $request->input('leave_branch');
 
@@ -229,6 +250,13 @@ class DashboardController extends Controller
                         'total_off' => $barber->total_off,
                     ];
                 })->values()->toArray(),
+                'barberStats' => $barberStats->map(function ($barber) {
+                    return [
+                        'name' => $barber->name,
+                        'cut_count' => $barber->cut_count,
+                        'avg_rating' => $barber->avg_rating,
+                    ];
+                })->values()->toArray(),
             ]);
         }
 
@@ -266,6 +294,8 @@ class DashboardController extends Controller
             'availableMonths',
             'selectedLeaveMonth',
             'selectedBranch',
+            'selectedPerformanceMonth',
+            'selectedPerformanceBranch',
             'branches'
         ));
     }

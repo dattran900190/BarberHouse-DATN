@@ -20,8 +20,8 @@
         </div>
     @endif
 
-    <div class="page-header mb-4">
-        <h3 class="fw-bold mb-0">Lịch làm việc theo chi nhánh</h3>
+    <div class="page-header">
+        <h3 class="fw-bold mb-3 text-uppercase">Lịch trình thợ</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -32,13 +32,13 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/dashboard') }}">Quản lý Chi nhánh</a>
+                <a href="{{ url('admin/barber_schedules') }}">Quản lý chi nhánh</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/volumes') }}">Chi nhánh</a>
+                <a href="{{ url('admin/barber_schedules') }}">Lịch trình thợ</a>
             </li>
         </ul>
     </div>
@@ -46,7 +46,7 @@
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-white d-flex justify-content-between align-items-center rounded-top border-bottom-0"
             style="border-radius: 16px 16px 0 0;">
-            <h4 class="mb-0 fw-bold">Danh sách chi nhánh</h4>
+            <h4 class="mb-0 fw-bold">Danh sách lịch trình thợ theo chi nhánh</h4>
             @if ($currentRole == 'admin')
                 <a href="{{ route('barber_schedules.createHoliday') }}"
                     class="btn btn-outline-success btn-sm d-flex align-items-center">
