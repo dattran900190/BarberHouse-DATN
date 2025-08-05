@@ -27,11 +27,7 @@
                                                     {{ session('success') }}
                                                 </div>
                                             @endif
-                                            @if (session('error'))
-                                                <div class="alert alert-danger" id="error-message">
-                                                    {{ session('error') }}
-                                                </div>
-                                            @endif
+                                            {{-- Thông báo error sẽ được hiển thị qua SweetAlert2 modal popup --}}
 
                                             @if ($cart->items->isEmpty())
                                                 <p id="empty-cart-message">Giỏ hàng trống.</p>
@@ -280,7 +276,11 @@
                     })
                     .catch(e => {
                         console.error(e);
-                        showMsg(`Lỗi ${m === 'PUT' ? 'cập nhật' : 'xóa'}.`);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: `Không thể ${m === 'PUT' ? 'cập nhật' : 'xóa'} sản phẩm. Vui lòng thử lại!`,
+                        });
                         if (b) b.disabled = false;
                     });
             };
@@ -559,4 +559,22 @@
             });
         });
     </script>
+    
+    <script>
+        // Hiển thị modal popup cho thông báo thanh toán thất bại
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: '{{ session('error') }}',
+                confirmButtonText: 'Thử lại',
+                width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+            });
+        @endif
+    </script>
+    
+   
 @endsection

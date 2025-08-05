@@ -19,7 +19,7 @@
 @endsection
 
 @section('content')
-    <main class="container-fluid px-5">
+    <main class="container">
         <section id="product">
             <div class="product-wrapper w-100">
                 <h2 class="mb-4">Sản phẩm</h2>

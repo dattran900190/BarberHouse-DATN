@@ -145,7 +145,7 @@
                                                 </button>
                                             </li>
                                             <li>
-                                                <a href="{{route('admin.products.showTrashed', $product->id)}}"    class="dropdown-item">
+                                                <a href="{{route('admin.products.show', $product->id)}}"    class="dropdown-item">
                                                     <i class="fas fa-eye me-2"></i>Xem
                                                 </a>
                                             </li>
