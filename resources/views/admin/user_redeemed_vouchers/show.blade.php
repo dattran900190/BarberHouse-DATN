@@ -4,11 +4,11 @@
 @section('title', 'Chi tiết voucher đã đổi')
 @section('content')
 <div class="page-header">
-    <h3 class="fw-bold mb-3">Chi tiết voucher đã đổi</h3>
+    <h3 class="fw-bold mb-3 text-uppercase">Quản lý Voucher đã đổi</h3>
     <ul class="breadcrumbs mb-3">
         <li class="nav-home"><a href="{{ url('admin/dashboard') }}"><i class="icon-home"></i></a></li>
         <li class="separator"><i class="icon-arrow-right"></i></li>
-        <li class="nav-item"><a href="{{ url('admin/user_redeemed_vouchers') }}">Danh sách người dùng đã đổi voucher</a></li>
+        <li class="nav-item"><a href="{{ url('admin/user_redeemed_vouchers') }}">Quản lý đặt lịch</a></li>
         <li class="separator"><i class="icon-arrow-right"></i></li>
         <li class="nav-item"><a href="{{ url('admin/user_redeemed_vouchers/'.$user->id) }}">Chi tiết voucher của {{ $user->name }}</a></li>
     </ul>

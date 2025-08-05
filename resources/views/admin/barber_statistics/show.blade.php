@@ -5,7 +5,7 @@
 @section('content')
     <div class="page-inner">
         <div class="page-header">
-            <h4 class="page-title">Chi tiết thống kê lịch thợ: {{ $barber->name }}</h4>
+            <h4 class="page-title text-uppercase">Chi tiết thống kê lịch thợ</h4>
             <ul class="breadcrumbs">
                 <li class="nav-home">
                     <a href="{{ url('admin/dashboard') }}">
@@ -42,35 +42,60 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-2">
+                            <div class="col-md-4 text-center">
                                 @if ($barber->avatar)
-                                    <img src="{{ asset('storage/' . $barber->avatar) }}" alt="{{ $barber->name }}"
-                                        class="img-fluid rounded">
+                                    <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" style="max-height: 200px; width: 200px; object-fit: cover; border-radius: 10px;">
                                 @else
-                                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded"
-                                        style="width: 150px; height: 150px; font-size: 48px;">
-                                        {{ substr($barber->name, 0, 1) }}
-                                    </div>
+                                    <i class="fa fa-user-circle fa-5x text-muted"></i>
+                                    <p class="mt-2">Không có ảnh</p>
                                 @endif
                             </div>
-                            <div class="col-md-10">
-                                <div class="row">
+                            <div class="col-md-8">
+                                <div class="row gy-3">
                                     <div class="col-md-6">
-                                        <p><strong>Tên:</strong> {{ $barber->name }}</p>
-                                        <p><strong>Chi nhánh:</strong> {{ $barber->branch->name ?? 'Không xác định' }}</p>
-                                        <p><strong>Trạng thái:</strong>
-                                            <span class="badge badge-{{ $barber->status == 'idle' ? 'success' : 'warning' }}">
-                                                {{ $barber->status == 'idle' ? 'Đang làm việc' : 'Nghỉ việc' }}
-                                            </span>
-                                        </p>
+                                        <i class="fa fa-id-card me-2 text-muted"></i>
+                                        <strong>Họ tên:</strong> {{ $barber->name }}
                                     </div>
                                     <div class="col-md-6">
-                                        <p><strong>Tháng/Năm:</strong> {{ $selectedMonth == 'all' ? 'Tất cả tháng' : 'Tháng ' . $selectedMonth }}/{{ $selectedYear }}</p>
-                                        <p><strong>Tổng ngày nghỉ:</strong> {{ $stats['off_days_count'] + $stats['holiday_days_count'] }}</p>
-                                        <p><strong>Ngày làm việc:</strong> {{ $stats['working_days'] }}</p>
+                                        <i class="fa fa-tools me-2 text-primary"></i>
+                                        <strong>Trình độ:</strong>
+                                        <span class="badge bg-{{ $skillLevelColors[$barber->skill_level] ?? 'secondary' }}">
+                                            {{ $skillLevels[$barber->skill_level] ?? 'Không xác định' }}
+                                        </span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <i class="fa fa-star me-2 text-success"></i>
+                                        <strong>Đánh giá trung bình:</strong> {{ $barber->rating_avg }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <i class="fa fa-file-alt me-2 text-info"></i>
+                                        <strong>Hồ sơ:</strong> {{ $barber->profile }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <i class="fa fa-store me-2 text-warning"></i>
+                                        <strong>Chi nhánh:</strong>
+                                        @if ($barber->branch)
+                                            <a href="{{ route('branches.show', $barber->branch->id) }}" class="text-decoration-underline">
+                                                {{ $barber->branch->name }}
+                                            </a>
+                                        @else
+                                            <span class="text-muted">Chưa có chi nhánh</span>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6">
+                                        <i class="fa fa-info-circle me-2 text-muted"></i>
+                                        <strong>Trạng thái:</strong>
+                                        @if ($barber->status === 'idle')
+                                            <span class="badge bg-success">Đang hoạt động</span>
+                                        @elseif ($barber->status === 'busy')
+                                            <span class="badge bg-warning text-dark">Không nhận lịch</span>
+                                        @elseif ($barber->status === 'retired')
+                                            <span class="badge bg-secondary">Đã nghỉ việc</span>
+                                        @else
+                                            <span class="badge bg-light text-dark">Không rõ trạng thái</span>
+                                        @endif
                                     </div>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>

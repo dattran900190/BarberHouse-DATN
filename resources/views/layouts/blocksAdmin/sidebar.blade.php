@@ -31,14 +31,14 @@
                 <li class="nav-item active">
                     <a href="{{ url('admin/dashboard') }}">
                         <i class="fas fa-home"></i>
-                        <p>Dashboard</p>
+                        <p>Tổng quan</p>
                     </a>
                 </li>
                 <li class="nav-section">
                     <span class="sidebar-mini-icon">
                         <i class="fa fa-ellipsis-h"></i>
                     </span>
-                    <h4 class="text-section">Components</h4>
+                    <h4 class="text-section">Các chức năng</h4>
                 </li>
 
                 <li class="nav-item">
@@ -97,7 +97,7 @@
                             </li>
                             <li>
                                 <a href="{{ asset('admin/point_histories') }}">
-                                    <span class="sub-item">Quản lý lịch sử điểm</span>
+                                    <span class="sub-item">Lịch sử điểm người dùng</span>
                                 </a>
                             </li>
                             <li>

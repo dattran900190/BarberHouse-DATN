@@ -17,7 +17,7 @@
         $currentRole = Auth::user()->role;
     @endphp
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Mã giảm giá</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Mã giảm giá</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home"><a href="{{ route('dashboard') }}"><i class="icon-home"></i></a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>

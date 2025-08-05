@@ -22,7 +22,7 @@
     @endphp
     {{-- Breadcrumb --}}
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Ảnh Khách Hàng</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Ảnh Khách Hàng</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">

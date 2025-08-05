@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Ảnh khách hàng</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Ảnh khách hàng</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">

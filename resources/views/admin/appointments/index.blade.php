@@ -52,7 +52,7 @@
     @endphp
 
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Đặt lịch cắt tóc</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Đặt lịch cắt tóc</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -63,13 +63,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/appointments') }}">Quản lý đặt lịch</a>
-            </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url('admin/appointments') }}">Đặt lịch</a>
+                <a href="{{ url('admin/appointments') }}">Danh sách đặt lịch</a>
             </li>
         </ul>
     </div>
