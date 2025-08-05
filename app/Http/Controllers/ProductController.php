@@ -352,7 +352,7 @@ class ProductController extends Controller
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Xóa mềm biến thể thành công!'
+                    'message' => 'Ẩn biến thể thành công!'
                 ]);
             }
             return redirect()->route('admin.products.edit', $variant->product_id)->with('success', 'Xóa mềm biến thể thành công!');

@@ -79,7 +79,6 @@ class PaymentController extends Controller
         // Lấy thông tin đơn hàng
         $orderId = $request->input('order_id');
         $order = Order::findOrFail($orderId);
-
         // Kiểm tra người dùng có quyền thanh toán đơn hàng này
         if ($order->user_id !== Auth::id()) {
             return redirect()->back()->with('error', 'Bạn không có quyền thanh toán đơn hàng này.');
@@ -148,7 +147,6 @@ class PaymentController extends Controller
             $appointment->status = 'pending'; // Chuyển từ unconfirmed sang pending
             $appointment->payment_method = 'vnpay';
             $appointment->save();
-
             // Load quan hệ trước khi gửi sự kiện
             $appointment->load(['barber', 'service']);
 
@@ -167,10 +165,10 @@ class PaymentController extends Controller
 
             return redirect()->route('dat-lich')->with('success', 'Thanh toán thành công! Lịch hẹn đã được xác nhận.');
         } else {
-            if ($appointment) {
-                $appointment->payment_status = 'failed';
-                $appointment->save();
-            }
+            // if ($appointment) {
+            //     $appointment->payment_status = 'failed';
+            //     $appointment->save();
+            // }
             return redirect()->route('dat-lich')->with('error', 'Thanh toán thất bại!');
         }
     }
@@ -196,7 +194,7 @@ class PaymentController extends Controller
             $order->payment_status = 'paid';
             $order->payment_method = 'vnpay';
             $order->save();
-            
+
             // Gửi email xác nhận khi thanh toán thành công
             try {
                 $order->load('items.productVariant.product');
@@ -206,7 +204,7 @@ class PaymentController extends Controller
             } catch (\Exception $e) {
                 Log::error('Lỗi gửi email xác nhận đơn hàng VNPAY: ' . $e->getMessage());
             }
-            
+
             event(new OrderPaymentStatusUpdated($order));
             return redirect()->route('client.orderHistory')->with('success', 'Thanh toán thành công!');
         } else {
@@ -214,7 +212,7 @@ class PaymentController extends Controller
                 $order->payment_status = 'failed';
                 $order->save();
             }
-            return redirect()->route('client.orderHistory')->with('error', 'Thanh toán thất bại!');
+            return redirect()->route('client.gio-hang')->with('error', 'Thanh toán thất bại!');
         }
     }
 

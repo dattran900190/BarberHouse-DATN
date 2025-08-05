@@ -308,7 +308,15 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    Swal.fire('Thành công', data.message, 'success');
+                                    Swal.fire({
+                                        title: 'Thành công',
+                                        text: data.message,
+                                        icon: 'success',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        },
+                                        width: '400px'
+                                    });
                                     // Lấy giá trị hiển thị
                                     let volumeText = row.querySelector(
                                         'td:nth-child(1) select') ?
@@ -381,7 +389,15 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    Swal.fire('Thành công', data.message, 'success');
+                                    Swal.fire({
+                                        title: 'Thành công',
+                                        text: data.message,
+                                        icon: 'success',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        },
+                                        width: '400px'
+                                    });
                                     // Cập nhật trạng thái dòng
                                     row.querySelector('td:nth-child(5)').innerHTML =
                                         '<span class="badge bg-success">Đang hoạt động</span>';
