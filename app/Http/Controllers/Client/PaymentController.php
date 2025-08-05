@@ -153,7 +153,7 @@ class PaymentController extends Controller
             $appointment->load(['barber', 'service']);
 
             // Gửi sự kiện NewAppointment khi thanh toán thành công
-            event(new \App\Events\NewAppointment($appointment));
+            event(new NewAppointment($appointment));
 
             // Kích hoạt Pusher để thông báo cho admin
             $this->triggerPusher($appointment);

@@ -17,7 +17,7 @@
         </div>
     @endif
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Quản lý Voucher đã đổi</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Lịch sử đổi Voucher</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -28,13 +28,13 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/user_redeemed_vouchers') }}">Quản lý Voucher đã đổi</a>
+                <a href="{{ url('admin/user_redeemed_vouchers') }}">Quản lý đặt lịch</a>
             </li>
             <li class="separator">
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/user_redeemed_vouchers') }}">Danh sách người dùng đã đổi Voucher</a>
+                <a href="{{ url('admin/user_redeemed_vouchers') }}">Lịch sử đổi Voucher</a>
             </li>
         </ul>
         
@@ -101,7 +101,7 @@
                                                 <li> 
                                                     <a href="{{ route('admin.user_redeemed_vouchers.show', $user->id) }}"
                                                         class="dropdown-item">
-                                                        <i class="fas fa-eye me-2"></i> Xem chi tiết voucher
+                                                        <i class="fas fa-eye me-2"></i> Xem
                                                     </a>
                                                 </li>
                                             </ul>

@@ -32,6 +32,11 @@
                     <i class="fas fa-check me-2"></i> Xác nhận
                 </button>
             </li>
+            <li>
+                <button type="button" class="dropdown-item text-danger cancel-btn" data-id="{{ $appointment->id }}">
+                    <i class="fas fa-times-circle me-2"></i> Hủy
+                </button>
+            </li>
         @elseif($type == 'confirmed')
             <li>
                 <button type="button" class="dropdown-item text-primary no-show-btn" data-id="{{ $appointment->id }}">

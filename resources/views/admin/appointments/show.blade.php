@@ -32,7 +32,7 @@
     @endphp
 
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Đặt lịch cắt tóc</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Đặt lịch cắt tóc</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">

@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Lịch sử điểm</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Lịch sử điểm</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -20,114 +20,105 @@
         </ul>
     </div>
 
-    <div class="card">
-        <div class="card-header text-white align-items-center">
-            <div class="card-title">Chi tiết người dùng - {{ $user->name }}</div>
+    <!-- Card: Chi tiết người dùng -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white d-flex align-items-center">
+            <h4 class="card-title mb-0">Chi tiết người dùng - {{ $user->name }}</h4>
         </div>
-
         <div class="card-body">
-            <div class="row mb-4">
-                <!-- Cột ảnh -->
-                <div class="col-md-4 text-center mb-3">
+            <div class="row gy-3">
+                <div class="col-md-4 text-center">
                     @if ($user->avatar)
-                        <img src="{{ $user->avatar }}" alt="Avatar" class="img-fluid rounded" style="max-height: 300px;">
+                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar" style="max-height: 200px; width: 200px; object-fit: cover; border-radius: 10px;">
                     @else
-                        <p>Không có ảnh</p>
+                        <i class="fa fa-user-circle fa-5x text-muted"></i>
+                        <p class="mt-2">Không có ảnh</p>
                     @endif
                 </div>
-
-                <!-- Cột thông tin -->
                 <div class="col-md-8">
-                    <div class="mb-3">
-                        <label class="form-label">Họ tên: <span class="text-black">{{ $user->name }}</span></label>
-                        <div class="form-control-plaintext"></div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Email: <span class="text-black">{{ $user->email }}</span></label>
-                        <div class="form-control-plaintext"></div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Số điện thoại: <span
-                                class="text-black">{{ $user->phone ?? '-' }}</span></label>
-                        <div class="form-control-plaintext"></div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Giới tính: <span class="text-black">
-                                @if ($user->gender === 'male')
-                                    Nam
-                                @elseif ($user->gender === 'female')
-                                    Nữ
-                                @else
-                                    Không xác định
-                                @endif
-                            </span>
-                        </label>
-                        <div class="form-control-plaintext">
-
+                    <div class="row gy-3">
+                        <div class="col-md-6">
+                            <i class="fa fa-user me-2 text-muted"></i>
+                            <strong>Họ tên:</strong> {{ $user->name }}
+                        </div>
+                        <div class="col-md-6">
+                            <i class="fa fa-envelope me-2 text-primary"></i>
+                            <strong>Email:</strong> {{ $user->email }}
+                        </div>
+                        <div class="col-md-6">
+                            <i class="fa fa-phone me-2 text-success"></i>
+                            <strong>Số điện thoại:</strong> {{ $user->phone ?? '-' }}
+                        </div>
+                        <div class="col-md-6">
+                            <i class="fa fa-venus-mars me-2 text-info"></i>
+                            <strong>Giới tính:</strong>
+                            @if ($user->gender === 'male')
+                                Nam
+                            @elseif ($user->gender === 'female')
+                                Nữ
+                            @else
+                                Không xác định
+                            @endif
+                        </div>
+                        <div class="col-md-6">
+                            <i class="fa fa-map-marker-alt me-2 text-warning"></i>
+                            <strong>Địa chỉ:</strong> {{ $user->address ?? 'Không rõ' }}
+                        </div>
+                        <div class="col-md-6">
+                            <i class="fa fa-coins me-2 text-info"></i>
+                            <strong>Điểm hiện tại:</strong>
+                            <span class="badge bg-info">{{ $user->points_balance }} điểm</span>
                         </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Địa chỉ: <span
-                                class="text-black">{{ $user->address ?? 'không rõ' }}</span></label>
-                        <div class="form-control-plaintext"></div>
+                    <div class="mt-4">
+                        <a href="{{ route('point_histories.index', ['page' => request('page', 1)]) }}"
+                            class="btn btn-sm btn-outline-secondary">
+                            <i class="fa fa-arrow-left me-1"></i> Quay lại
+                        </a>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Điểm hiện tại: <span class="badge bg-info">{{ $user->points_balance }}
-                                điểm</span></label>
-                        <div class="form-control-plaintext">
-
-                        </div>
-                    </div>
-
-                    <a href="{{ route('point_histories.index', ['page' => request('page', 1)]) }}"
-                        class="btn btn-sm btn-outline-secondary">
-                        <i class="fa fa-arrow-left me-1"></i> Quay lại
-                    </a>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <hr>
-
-            <h4 class="text-primary">Lịch sử điểm</h4>
-
+    <!-- Card: Lịch sử điểm -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white d-flex align-items-center">
+            <h4 class="card-title mb-0">Lịch sử điểm</h4>
+        </div>
+        <div class="card-body">
             @if ($pointHistories->isEmpty())
                 <p>Không có lịch sử điểm nào.</p>
             @else
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead class="thead-light text-center">
-                            <tr>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="text-center">
                                 <th>Điểm</th>
                                 <th>Loại</th>
-                                <th>Mã đặt lịch / Khuyến mãi</th>
+                                <th>Mã liên quan</th>
                                 <th>Ngày tạo</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($pointHistories as $history)
                                 <tr class="text-center">
-                                    <td class="{{ $history->type === 'earned' ? 'text-success' : 'text-danger' }}">
-                                        {{ $history->type === 'earned' ? '+' : '-' }}{{ abs($history->points) }}
+                                    <td>
+                                        <span class="{{ $history->type === 'earned' ? 'text-success' : 'text-danger' }}">
+                                            {{ $history->type === 'earned' ? '+' : '-' }}{{ abs($history->points) }}
+                                        </span>
                                     </td>
                                     <td>
-                                        @if ($history->type === 'earned')
-                                            <span class="badge bg-success">Tích điểm</span>
-                                        @elseif ($history->type === 'redeemed')
-                                            <span class="badge bg-danger">Đổi điểm</span>
-                                        @else
-                                            <span class="badge bg-secondary">Không xác định</span>
-                                        @endif
+                                        <span
+                                            class="badge bg-{{ $history->type === 'earned' ? 'success' : ($history->type === 'redeemed' ? 'danger' : 'secondary') }}">
+                                            {{ $history->type === 'earned' ? 'Tích điểm' : ($history->type === 'redeemed' ? 'Đổi điểm' : 'Không xác định') }}
+                                        </span>
                                     </td>
                                     <td>
                                         @if ($history->type === 'earned' && $history->appointment)
-                                            {{ $history->appointment->appointment_code ?? 'Không rõ' }}
+                                            {{ $history->appointment->appointment_code }}
                                         @elseif ($history->type === 'redeemed' && $history->promotion)
-                                            {{ $history->promotion->code ?? 'Không rõ' }}
+                                            {{ $history->promotion->code }}
                                         @else
                                             -
                                         @endif

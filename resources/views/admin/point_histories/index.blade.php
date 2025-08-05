@@ -22,7 +22,7 @@
     @endif
 
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Lịch sử điểm người dùng</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Lịch sử điểm người dùng</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -46,7 +46,7 @@
 
     <div class="card">
         <div class="card-header text-white d-flex justify-content-between align-items-center">
-            <div class="card-title">Danh sách người dùng</div>
+            <div class="card-title">Danh sách lịch sử điểm người dùng</div>
         </div>
 
         <div class="card-body">

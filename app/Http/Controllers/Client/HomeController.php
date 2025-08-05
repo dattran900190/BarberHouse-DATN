@@ -26,7 +26,7 @@ class HomeController extends Controller
         $featuredPosts = Post::where('status', 'published')
             ->where('is_featured', true)
             ->latest('published_at')
-            ->take(5)
+            ->take(6)
             ->get();
 
         $normalPosts = Post::where('status', 'published')
@@ -36,7 +36,7 @@ class HomeController extends Controller
             ->get();
 
         // Sản phẩm
-        $products = Product::with('variants')->latest()->take(8)->get();
+        $products = Product::with('variants')->latest()->take(9)->get();
 
         // ảnh khách hàng
         $customerImages = CustomerImage::where('status', true)

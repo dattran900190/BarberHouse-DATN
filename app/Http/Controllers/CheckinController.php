@@ -48,9 +48,12 @@ class CheckinController extends Controller
             ]);
         }
 
+        // Lấy tab hiện tại từ request
+        $currentTab = $request->input('current_tab', 'progress');
+
          // thông báo chuyển trạng thái đặt lịch
          event(new AppointmentStatusUpdated($appointment));
 
-        return redirect()->route('appointments.index')->with('success', 'Check-in thành công!');
+        return redirect()->route('appointments.index', ['status' => $currentTab])->with('success', 'Check-in thành công!');
     }
 }

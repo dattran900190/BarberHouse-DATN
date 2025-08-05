@@ -22,7 +22,7 @@
     @endphp
     {{-- Breadcrumb --}}
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Ảnh Khách Hàng</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Ảnh Khách Hàng</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -72,7 +72,7 @@
                                 <td>
                                     @if ($img->image)
                                         <img src="{{ asset('storage/' . $img->image) }}" alt="Ảnh khách" width="100"
-                                            class="img-thumbnail">
+                                        style="object-fit: cover; border-radius: 10px;">
                                     @else
                                         <span class="text-muted">Không có ảnh</span>
                                     @endif

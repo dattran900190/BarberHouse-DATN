@@ -5,7 +5,7 @@
 @section('content')
     <div class="page-inner">
         <div class="page-header">
-            <h3 class="fw-bold mb-3">Thống kê lịch thợ theo chi nhánh</h3>
+            <h3 class="fw-bold mb-3 text-uppercase">Thống kê lịch thợ theo chi nhánh</h3>
             <ul class="breadcrumbs mb-3">
                 <li class="nav-home">
                     <a href="{{ url('admin/dashboard') }}">
@@ -221,8 +221,7 @@
                                                 <div class="d-flex align-items-center">
                                                     @if ($barber->avatar)
                                                         <img src="{{ asset('storage/' . $barber->avatar) }}"
-                                                            alt="{{ $barber->name }}" class="rounded-circle mr-2"
-                                                            width="40" height="40">
+                                                            alt="{{ $barber->name }}" style="max-height: 40px; width: 40px; object-fit: cover; border-radius: 10px;">
                                                     @else
                                                         <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mr-2"
                                                             style="width: 40px; height: 40px;">

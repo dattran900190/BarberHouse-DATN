@@ -38,7 +38,23 @@
                 });
             </script>
         @endif
-        <section id="barbers">
+        @php
+            $skillLevels = [
+                'assistant' => 'Thử việc',
+                'junior' => 'Sơ cấp',
+                'senior' => 'Chuyên nghiệp',
+                'master' => 'Bậc thầy',
+                'expert' => 'Chuyên gia',
+            ];
+            // $skillLevelColors = [
+            //     'assistant' => 'secondary',
+            //     'junior' => 'info',
+            //     'senior' => 'primary',
+            //     'master' => 'success',
+            //     'expert' => 'warning',
+            // ];
+        @endphp
+        <section id="barbers" class="mt-4" style="padding-bottom: 0 ;">
             <h2>Đội ngũ thợ cắt tóc</h2>
             <div class="barbers">
                 @foreach ($barbers->take(6) as $barber)
@@ -48,7 +64,11 @@
                         </div>
                         <div class="barber-info">
                             <h4>{{ $barber->name }}</h4>
-                            <p><span class="label">Kỹ năng:</span> {{ ucfirst($barber->skill_level) }}</p>
+                            <p><span class="label">Kỹ năng:</span>
+                                <span class="" me-2 mb-2">
+                                    <b>{{ $skillLevels[$barber->skill_level] ?? 'Không xác định' }}</b>
+                                </span>
+                            </p>
                             <p><span class="label">Chi nhánh:</span> {{ $barber->branch->name ?? 'N/A' }}</p>
                             <p><span class="label">Đánh giá:</span> {{ number_format($barber->rating_avg, 1) }}/5
                                 <i class="fa-solid fa-star" style="color: #ffd700;"></i>
@@ -171,14 +191,14 @@
             </div>
         </section>
 
-        <section id="price">
+        <section id="price" style="padding-bottom: 0;">
             <h2>Bảng giá</h2>
             <img src="{{ asset('storage/' . ($imageSettings['bang_gia'] ?? 'default-images/no-banggia.png')) }}"
                 alt="Bảng giá" />
         </section>
 
         <section id="instagram">
-            <h2>Instagram</h2>
+            <h2>Ảnh khách hàng</h2>
             <div class="images">
                 @forelse ($customerImages as $image)
                     <div class="image-item">
@@ -226,6 +246,7 @@
         .posts {
             display: flex;
             transition: transform 0.5s ease;
+            width: 100%;
         }
 
         .posts .post {
@@ -281,13 +302,13 @@
 
         .image-barber {
             width: 100%;
-            height: 220px;
+            height: 380px;
             overflow: hidden;
         }
 
         .image-barber img {
             width: 100%;
-            height: 100%;
+            height: 500px;
             object-fit: cover;
             transition: transform 0.4s ease;
         }

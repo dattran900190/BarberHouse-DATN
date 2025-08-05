@@ -22,7 +22,7 @@
     @endif
 
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Danh sách Thợ cắt tóc</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Thợ cắt</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -39,14 +39,14 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/barbers') }}">Quản lý thợ</a>
+                <a href="{{ url('admin/barbers') }}">Thợ cắt</a>
             </li>
         </ul>
     </div>
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <div class="card-title">Danh sách thợ</div>
+            <div class="card-title">Danh sách thợ cắt</div>
             <a href="{{ route('barbers.create') }}"
                 class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
                 <i class="fas fa-plus"></i>
@@ -94,10 +94,10 @@
                                 <td class="text-center">
                                     @if ($barber->avatar)
                                         <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar"
-                                            class="img-thumbnail" style="max-width: 100px; max-height: 70px;">
+                                             style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
                                     @else
                                         <img src="{{ asset('uploads/avatars/default-avatar.png') }}" alt="Avatar"
-                                            class="img-thumbnail" style="max-width: 100px; max-height: 70px;">
+                                             style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
                                     @endif
                                 </td>
                                 <td>{{ $barber->name }}</td>

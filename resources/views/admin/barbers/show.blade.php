@@ -6,10 +6,10 @@
     @php
         $skillLevels = [
             'assistant' => 'Thử việc',
-            'junior'    => 'Sơ cấp',
-            'senior'    => 'Chuyên ghiệp',
-            'master'    => 'Bậc thầy',
-            'expert'    => 'Chuyên gia',
+            'junior' => 'Sơ cấp',
+            'senior' => 'Chuyên ghiệp',
+            'master' => 'Bậc thầy',
+            'expert' => 'Chuyên gia',
         ];
         $skillLevelColors = [
             'assistant' => 'secondary',
@@ -22,7 +22,7 @@
     @endphp
 
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Thợ Cắt Tóc</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Thợ Cắt Tóc</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -38,121 +38,97 @@
         </ul>
     </div>
 
-    <div class="card">
-        <div class="card-header text-white align-items-center">
-            <div class="card-title">Chi tiết Thợ Cắt Tóc</div>
+    <!-- Card: Chi tiết Thợ Cắt Tóc -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white d-flex align-items-center">
+            <h4 class="card-title mb-0">Chi tiết Thợ Cắt Tóc</h4>
         </div>
-
         <div class="card-body">
-            <div class="row g-3 d-flex align-items-stretch">
-                <!-- Avatar -->
-                <div class="col-md-4 d-flex">
-                    <div class="border rounded shadow-sm bg-white p-3 w-100 d-flex flex-column justify-content-between">
-                        @if ($barber->avatar)
-                            <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar"
-                                class="img-fluid border shadow" style="width: 100%; object-fit: cover;">
-                            <div class="mt-2 text-muted small text-center">Ảnh đại diện</div>
-                        @else
-                            <p class="text-muted">Không có ảnh</p>
-                        @endif
-                    </div>
+            <div class="row gy-3">
+                <div class="col-md-4 text-center">
+                    @if ($barber->avatar)
+                        <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar" style="max-height: 200px; width: 200px; object-fit: cover; border-radius: 10px;">
+                    @else
+                        <i class="fa fa-user-circle fa-5x text-muted"></i>
+                        <p class="mt-2">Không có ảnh</p>
+                    @endif
                 </div>
-
-                <!-- Thông tin -->
-                <div class="col-md-8 d-flex">
-                    <div class="bg-white rounded shadow-sm p-3 w-100 d-flex flex-column justify-content-between">
-                        <div>
-                            <h5 class="mb-3 text-primary"><i class="fa fa-id-card me-2"></i>Thông tin Thợ Cắt Tóc</h5>
-
-                            <div class="mb-3">
-                                <label class="fw-semibold">Họ tên:</label>
-                                <div class="text-muted">{{ $barber->name }}</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="fw-semibold">Trình độ:</label>
-                                <div>
-                                    <span class="badge bg-{{ $skillLevelColors[$barber->skill_level] ?? 'secondary' }}">
-                                        {{ $skillLevels[$barber->skill_level] ?? 'Không xác định' }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="fw-semibold">Đánh giá trung bình:</label>
-                                <div class="text-muted">{{ $barber->rating_avg }}</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="fw-semibold">Hồ sơ:</label>
-                                <div class="text-muted">{{ $barber->profile }}</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="fw-semibold">Chi nhánh:</label>
-                                <div>
-                                    @if ($barber->branch)
-                                        <a href="{{ route('branches.show', $barber->branch->id) }}"
-                                            class="text-decoration-underline">
-                                            {{ $barber->branch->name }}
-                                        </a>
-                                    @else
-                                        <span class="text-muted">Chưa có chi nhánh</span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="fw-semibold">Trạng thái:</label>
-                                <div>
-                                    @if ($barber->status === 'idle')
-                                        <span class="badge bg-success">Đang hoạt động</span>
-                                    @elseif ($barber->status === 'busy')
-                                        <span class="badge bg-warning text-dark">Không nhận lịch</span>
-                                    @elseif ($barber->status === 'retired')
-                                        <span class="badge bg-secondary">Đã nghỉ việc</span>
-                                    @else
-                                        <span class="badge bg-light text-dark">Không rõ trạng thái</span>
-                                    @endif
-                                    
-                                    @if ($isSoftDeleted)
-                                        <span class="badge bg-danger ms-2">Đã xóa mềm</span>
-                                    @endif
-                                </div>
-                            </div>
+                <div class="col-md-8">
+                    <div class="row gy-3">
+                        <div class="col-md-6">
+                            <i class="fa fa-id-card me-2 text-muted"></i>
+                            <strong>Họ tên:</strong> {{ $barber->name }}
                         </div>
-
-                        <!-- Nút -->
-                        <div class="mt-3 d-flex gap-2">
-                            @if (!$isSoftDeleted && $barber->status !== 'retired')
-                                <a href="{{ route('barbers.edit', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
-                                    class="btn btn-sm btn-outline-primary">
-                                    <i class="fa fa-edit me-1"></i> Sửa
+                        <div class="col-md-6">
+                            <i class="fa fa-tools me-2 text-primary"></i>
+                            <strong>Trình độ:</strong>
+                            <span class="badge bg-{{ $skillLevelColors[$barber->skill_level] ?? 'secondary' }}">
+                                {{ $skillLevels[$barber->skill_level] ?? 'Không xác định' }}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <i class="fa fa-star me-2 text-success"></i>
+                            <strong>Đánh giá trung bình:</strong> {{ $barber->rating_avg }}
+                        </div>
+                        <div class="col-md-6">
+                            <i class="fa fa-file-alt me-2 text-info"></i>
+                            <strong>Hồ sơ:</strong> {{ $barber->profile }}
+                        </div>
+                        <div class="col-md-6">
+                            <i class="fa fa-store me-2 text-warning"></i>
+                            <strong>Chi nhánh:</strong>
+                            @if ($barber->branch)
+                                <a href="{{ route('branches.show', $barber->branch->id) }}"
+                                    class="text-decoration-underline">
+                                    {{ $barber->branch->name }}
                                 </a>
-                                <button class="btn btn-sm btn-outline-warning retire-btn"
-                                    data-id="{{ $barber->id }}"
-                                    data-page="{{ request('page', 1) }}">
-                                    <i class="fas fa-user-slash me-1"></i> Nghỉ việc
-                                </button>
+                            @else
+                                <span class="text-muted">Chưa có chi nhánh</span>
                             @endif
-                            @if (!$isSoftDeleted && $barber->status === 'retired')
-                                <button class="btn btn-sm btn-outline-danger soft-delete-btn"
-                                    data-id="{{ $barber->id }}"
-                                    data-page="{{ request('page', 1) }}">
-                                    <i class="fa fa-trash me-1"></i> Xóa mềm
-                                </button>
-                            @elseif ($isSoftDeleted)
-                                <button class="btn btn-sm btn-outline-success restore-btn"
-                                    data-id="{{ $barber->id }}"
-                                    data-page="{{ request('page', 1) }}">
-                                    <i class="fa fa-undo me-1"></i> Khôi phục
-                                </button>
-                            @endif
-                            <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}"
-                                class="btn btn-sm btn-outline-secondary">
-                                <i class="fa fa-arrow-left me-1"></i> Quay lại
-                            </a>
                         </div>
+                        <div class="col-md-6">
+                            <i class="fa fa-info-circle me-2 text-muted"></i>
+                            <strong>Trạng thái:</strong>
+                            @if ($barber->status === 'idle')
+                                <span class="badge bg-success">Đang hoạt động</span>
+                            @elseif ($barber->status === 'busy')
+                                <span class="badge bg-warning text-dark">Không nhận lịch</span>
+                            @elseif ($barber->status === 'retired')
+                                <span class="badge bg-secondary">Đã nghỉ việc</span>
+                            @else
+                                <span class="badge bg-light text-dark">Không rõ trạng thái</span>
+                            @endif
+                            @if ($isSoftDeleted)
+                                <span class="badge bg-danger ms-2">Đã xóa mềm</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2">
+                        @if (!$isSoftDeleted && $barber->status !== 'retired')
+                            <a href="{{ route('barbers.edit', ['barber' => $barber->id, 'page' => request('page', 1)]) }}"
+                                class="btn btn-outline-primary btn-sm">
+                                <i class="fa fa-edit me-1"></i> Sửa
+                            </a>
+                            <button class="btn btn-outline-warning btn-sm retire-btn" data-id="{{ $barber->id }}"
+                                data-page="{{ request('page', 1) }}">
+                                <i class="fas fa-user-slash me-1"></i> Nghỉ việc
+                            </button>
+                        @endif
+                        @if (!$isSoftDeleted && $barber->status === 'retired')
+                            <button class="btn btn-outline-danger btn-sm soft-delete-btn" data-id="{{ $barber->id }}"
+                                data-page="{{ request('page', 1) }}">
+                                <i class="fa fa-trash me-1"></i> Xóa mềm
+                            </button>
+                        @elseif ($isSoftDeleted)
+                            <button class="btn btn-outline-success btn-sm restore-btn" data-id="{{ $barber->id }}"
+                                data-page="{{ request('page', 1) }}">
+                                <i class="fa fa-undo me-1"></i> Khôi phục
+                            </button>
+                        @endif
+                        <a href="{{ route('barbers.index', ['page' => request('page', 1)]) }}"
+                            class="btn btn-outline-secondary btn-sm">
+                            <i class="fa fa-arrow-left me-1"></i> Quay lại
+                        </a>
                     </div>
                 </div>
             </div>

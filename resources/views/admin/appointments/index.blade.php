@@ -52,7 +52,7 @@
     @endphp
 
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Đặt lịch cắt tóc</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Đặt lịch cắt tóc</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
@@ -63,13 +63,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="{{ url('admin/appointments') }}">Quản lý đặt lịch</a>
-            </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url('admin/appointments') }}">Đặt lịch</a>
+                <a href="{{ url('admin/appointments') }}">Danh sách đặt lịch</a>
             </li>
         </ul>
     </div>
@@ -444,8 +438,11 @@
                             });
 
                             const body = withInput ? JSON.stringify({
-                                cancellation_reason: result.value || 'Không có lý do'
-                            }) : undefined;
+                                cancellation_reason: result.value || 'Không có lý do',
+                                current_tab: '{{ $activeTab }}'
+                            }) : JSON.stringify({
+                                current_tab: '{{ $activeTab }}'
+                            });
 
                             fetch(route.replace(':id', appointmentId), {
                                     method,
@@ -466,7 +463,13 @@
                                             popup: 'custom-swal-popup'
                                         }
                                     }).then(() => {
-                                        if (data.success) onSuccess();
+                                        if (data.success) {
+                                            if (data.redirect_url) {
+                                                window.location.href = data.redirect_url;
+                                            } else {
+                                                onSuccess();
+                                            }
+                                        }
                                     });
                                 })
                                 .catch(error => {
@@ -510,8 +513,7 @@
             inputPlaceholder: 'Nhập lý do no-show (tối đa 255 ký tự)...',
             inputValidator: (value) => {
                 if (value && value.length > 255) return 'Lý do không được vượt quá 255 ký tự!';
-            },
-            onSuccess: () => window.location.href = '{{ route('appointments.index') }}'
+            }
         });
 
         handleSwalAction({
@@ -523,8 +525,7 @@
             inputPlaceholder: 'Nhập lý do cancel (tối đa 255 ký tự)...',
             inputValidator: (value) => {
                 if (value && value.length > 255) return 'Lý do không được vượt quá 255 ký tự!';
-            },
-            onSuccess: () => window.location.href = '{{ route('appointments.index') }}'
+            }
         });
     </script>
 
