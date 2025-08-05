@@ -91,7 +91,7 @@ class OrderController extends Controller
             // Dispatch event để gửi thông báo realtime
             event(new OrderStatusUpdated($order));
             
-            return response()->json(['success' => true, 'message' => 'Đã xác nhận đơn hàng.']);
+            return response()->json(['success' => true, 'message' => 'Đã xác nhận đơn hàng.', 'activeTab' => 'processing']);
         }
         return response()->json(['success' => false, 'message' => 'Đơn hàng không thể xác nhận.']);
     }
@@ -121,7 +121,7 @@ class OrderController extends Controller
         // Dispatch event để gửi thông báo realtime
         event(new OrderStatusUpdated($order));
 
-        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Đang giao hàng.']);
+        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Đang giao hàng.', 'activeTab' => 'shipping']);
     }
 
     /**
@@ -150,7 +150,7 @@ class OrderController extends Controller
         // Dispatch event để gửi thông báo realtime
         event(new OrderStatusUpdated($order));
 
-        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Hoàn thành.']);
+        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Hoàn thành.', 'activeTab' => 'completed']);
     }
 
     /**
@@ -247,7 +247,7 @@ class OrderController extends Controller
         // Dispatch event để gửi thông báo realtime
         event(new OrderStatusUpdated($order));
 
-        return redirect()->route('admin.orders.index', ['page' => $page])
+        return redirect()->route('admin.orders.index', ['page' => $page, 'tab' => $newStatus])
             ->with('success', 'Cập nhật trạng thái đơn hàng thành công.');
     }
 
@@ -295,6 +295,6 @@ class OrderController extends Controller
         // Dispatch event để gửi thông báo realtime
         event(new OrderStatusUpdated($order));
 
-        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được hủy.']);
+        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được hủy.', 'activeTab' => 'cancelled']);
     }
 }

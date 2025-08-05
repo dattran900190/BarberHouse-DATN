@@ -111,9 +111,14 @@ class ProductController extends Controller
         return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được thêm thành công!');
     }
 
-    public function show(Product $product)
+    public function show($id)
     {
-        $product->load('category', 'variants.volume', 'images');
+        $product = Product::withTrashed()
+            ->with(['category', 'images', 'variants' => function ($query) {
+                $query->withTrashed()->with('volume');
+            }])
+            ->findOrFail($id);
+    
         return view('admin.products.show', compact('product'));
     }
 
@@ -347,7 +352,7 @@ class ProductController extends Controller
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Xóa mềm biến thể thành công!'
+                    'message' => 'Ẩn biến thể thành công!'
                 ]);
             }
             return redirect()->route('admin.products.edit', $variant->product_id)->with('success', 'Xóa mềm biến thể thành công!');
@@ -437,17 +442,6 @@ class ProductController extends Controller
         }
         return redirect()->route('admin.products.index')->with('error', 'Sản phẩm cần được xóa mềm trước.');
     }
-    public function showTrashed($id)
-    {
-        $product = Product::withTrashed()
-            ->where('id', $id)
-            ->whereNotNull('deleted_at')
-            ->with(['category', 'images', 'variants' => function ($query) {
-                $query->withTrashed()->with('volume');
-            }])
-            ->firstOrFail();
-    
-        return view('admin.products.show-trashed', compact('product'));
-    }
+   
     
 }
