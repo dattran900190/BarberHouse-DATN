@@ -30,20 +30,6 @@
         </ul>
     </div>
 
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-        </div>
-    @endif
-
     <div class="card">
         <div class="card-header text-white align-items-center">
             <div class="card-title">Chi tiết Yêu cầu hoàn tiền</div>
@@ -158,10 +144,10 @@
                     @endphp
 
                     @if (!$isSoftDeleted && !in_array($currentStatus, ['refunded', 'rejected']))
-                        <form action="{{ route('refunds.update', $refund->id) }}" method="POST" enctype="multipart/form-data"
-                            onsubmit="return confirm('Bạn chắc chắn muốn cập nhật trạng thái?');">
+                        <form action="{{ route('refunds.update', $refund->id) }}" method="POST" enctype="multipart/form-data" id="update-refund-form">
                             @csrf
                             @method('PUT')
+                            <input type="hidden" name="page" value="{{ request('page', 1) }}">
 
                             <div class="form-group mt-3">
                                 <label for="refund_status" class="form-label">Cập nhật trạng thái hoàn tiền</label>
@@ -223,7 +209,6 @@
                             Yêu cầu đã {{ $currentStatus === 'refunded' ? 'hoàn tiền' : 'bị từ chối' }}.
                         </div>
                         
-                        <!-- Nút hành động cho trạng thái đã hoàn thành -->
                         <div class="mt-3 d-flex gap-2">
                             @if ($currentStatus === 'rejected' || $currentStatus === 'refunded')
                                 <button class="btn btn-sm btn-outline-danger soft-delete-btn"
@@ -241,7 +226,6 @@
                             Yêu cầu này đã bị xóa mềm. Không thể cập nhật trạng thái.
                         </div>
                         
-                        <!-- Nút khôi phục -->
                         <div class="mt-3 d-flex gap-2">
                             <button class="btn btn-sm btn-outline-success restore-btn"
                                 data-id="{{ $refund->id }}"
@@ -261,6 +245,52 @@
 
 @section('js')
     <script>
+        // Hiển thị thông báo SweetAlert2 dựa trên session flash message
+        @if (session('success'))
+            Swal.fire({
+                title: 'Thành công!',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            });
+        @endif
+
+        @if (session('error'))
+            Swal.fire({
+                title: 'Lỗi!',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            });
+        @endif
+
+        // Xử lý xác nhận trước khi submit form cập nhật
+        document.getElementById('update-refund-form')?.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: 'Cập nhật trạng thái hoàn tiền',
+                text: 'Bạn có chắc muốn cập nhật trạng thái này?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Xác nhận',
+                cancelButtonText: 'Hủy',
+                width: '400px',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        });
+
+        // Xử lý nút Xóa mềm
         function handleSwalAction({
             selector,
             title,
@@ -362,7 +392,6 @@
             });
         }
 
-        // Xử lý nút Xóa mềm
         handleSwalAction({
             selector: '.soft-delete-btn',
             title: 'Xóa mềm yêu cầu hoàn tiền',
@@ -371,7 +400,6 @@
             method: 'PATCH'
         });
 
-        // Xử lý nút Khôi phục
         handleSwalAction({
             selector: '.restore-btn',
             title: 'Khôi phục yêu cầu hoàn tiền',
