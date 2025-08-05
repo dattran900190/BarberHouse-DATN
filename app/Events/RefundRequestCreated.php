@@ -31,9 +31,9 @@ class RefundRequestCreated implements ShouldBroadcast
     {
         return [
             'id' => $this->refundRequest->id,
-            'user_name' => $this->refundRequest->user->name,
-            'order_code' => $this->refundRequest->order->order_code ?? null,
-            'appointment_code' => $this->refundRequest->appointment->appointment_code ?? null,
+            'user_name' => optional($this->refundRequest->user)->name ?? 'N/A',
+            'order_code' => optional($this->refundRequest->order)->order_code ?? null,
+            'appointment_code' => optional($this->refundRequest->appointment)->appointment_code ?? null,
             'refund_amount' => number_format($this->refundRequest->refund_amount, 0, ',', '.'),
             'refund_status' => $this->refundRequest->refund_status,
             'created_at' => $this->refundRequest->created_at->format('d/m/Y H:i'),
