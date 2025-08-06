@@ -249,6 +249,58 @@
                 font-size: 0.9rem;
                 margin-bottom: 5px;
             }
+
+            /* Responsive cho bài viết nổi bật */
+            .posts .post {
+                flex: 0 0 100%;
+                padding: 8px;
+            }
+
+            .posts-wrapper {
+                max-width: 100%;
+                margin: 0;
+            }
+
+            .posts-track {
+                margin: 0 10px;
+            }
+
+            #mainPost h2 {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            /* Responsive cho bài viết thường */
+            .posts-nomal {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .post-nomal {
+                margin-bottom: 15px;
+            }
+
+            .post-nomal h4 {
+                font-size: 1.1rem;
+                margin: 8px 0;
+            }
+
+            .post-nomal p {
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+
+            .image-nomal {
+                height: 200px;
+                overflow: hidden;
+            }
+
+            .image-nomal img {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+            }
         }
 
         .barber {
@@ -424,14 +476,24 @@
         $(function() {
             const $posts = $('.posts .post');
             const $track = $('.posts');
-            const postsPerSlide = 3;
-            const totalSlides = Math.ceil($posts.length / postsPerSlide);
+            let postsPerSlide = 3;
+            let totalSlides = Math.ceil($posts.length / postsPerSlide);
             let currentSlide = 0;
 
             function updateSlide() {
-                const postWidth = $posts.outerWidth(true); // tính luôn cả margin
-                const distance = postWidth * postsPerSlide * currentSlide;
-                $track.css('transform', `translateX(-${distance}px)`);
+                if (window.innerWidth <= 768) {
+                    postsPerSlide = 1;
+                    totalSlides = $posts.length;
+                    const postWidth = $posts.outerWidth(true);
+                    const distance = postWidth * currentSlide;
+                    $track.css('transform', `translateX(-${distance}px)`);
+                } else {
+                    postsPerSlide = 3;
+                    totalSlides = Math.ceil($posts.length / postsPerSlide);
+                    const postWidth = $posts.outerWidth(true);
+                    const distance = postWidth * postsPerSlide * currentSlide;
+                    $track.css('transform', `translateX(-${distance}px)`);
+                }
             }
 
             $('.next-posts').on('click', function() {
@@ -440,13 +502,47 @@
                     updateSlide();
                 }
             });
-
             $('.prev-posts').on('click', function() {
                 if (currentSlide > 0) {
                     currentSlide--;
                     updateSlide();
                 }
             });
+
+            // Swipe for mobile
+            let startX = 0;
+            let endX = 0;
+            let isMobile = window.innerWidth <= 768;
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = startX - endX;
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0 && currentSlide < totalSlides - 1) {
+                        currentSlide++;
+                        updateSlide();
+                    } else if (diff < 0 && currentSlide > 0) {
+                        currentSlide--;
+                        updateSlide();
+                    }
+                }
+            }
+            $('.posts-wrapper').on('touchstart', function(e) {
+                if (isMobile) {
+                    startX = e.originalEvent.touches[0].clientX;
+                }
+            });
+            $('.posts-wrapper').on('touchend', function(e) {
+                if (isMobile) {
+                    endX = e.originalEvent.changedTouches[0].clientX;
+                    handleSwipe();
+                }
+            });
+            $(window).on('resize', function() {
+                isMobile = window.innerWidth <= 768;
+                updateSlide();
+            });
+            // Khởi tạo đúng slide khi load
+            updateSlide();
         });
     </script>
     <script>
