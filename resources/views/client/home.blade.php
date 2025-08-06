@@ -301,6 +301,31 @@
                 height: 200px;
                 object-fit: cover;
             }
+            .images {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .image-item {
+                width: 100%;
+            }
+            .image-item img {
+                width: 100%;
+                height: 220px;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+            /* Bảng giá: ảnh to, không khung, không bo góc, không max-width */
+            #price img {
+                width: 100%;
+                height: 220px;
+                object-fit: cover;
+                border-radius: 0;
+                max-width: none;
+                margin: 0;
+                box-shadow: none;
+                display: block;
+            }
         }
 
         .barber {
@@ -612,5 +637,57 @@
                     fetchProducts();
                 });
         }
+    </script>
+    <script>
+        $(function() {
+            // Slide 1 ảnh khách hàng trên mobile
+            const $customerImages = $('.images .image-item');
+            const $imagesTrack = $('.images');
+            let currentImage = 0;
+            let totalImages = $customerImages.length;
+            function updateImageSlide() {
+                if (window.innerWidth <= 768) {
+                    const imgWidth = $customerImages.outerWidth(true);
+                    const distance = imgWidth * currentImage;
+                    $imagesTrack.css('transform', `translateX(-${distance}px)`);
+                } else {
+                    $imagesTrack.css('transform', 'none');
+                }
+            }
+            // Swipe cho ảnh khách hàng
+            let startXImg = 0;
+            let endXImg = 0;
+            let isMobileImg = window.innerWidth <= 768;
+            function handleImageSwipe() {
+                const swipeThreshold = 50;
+                const diff = startXImg - endXImg;
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0 && currentImage < totalImages - 1) {
+                        currentImage++;
+                        updateImageSlide();
+                    } else if (diff < 0 && currentImage > 0) {
+                        currentImage--;
+                        updateImageSlide();
+                    }
+                }
+            }
+            $('.images').on('touchstart', function(e) {
+                if (isMobileImg) {
+                    startXImg = e.originalEvent.touches[0].clientX;
+                }
+            });
+            $('.images').on('touchend', function(e) {
+                if (isMobileImg) {
+                    endXImg = e.originalEvent.changedTouches[0].clientX;
+                    handleImageSwipe();
+                }
+            });
+            $(window).on('resize', function() {
+                isMobileImg = window.innerWidth <= 768;
+                updateImageSlide();
+            });
+            // Khởi tạo đúng slide khi load
+            updateImageSlide();
+        });
     </script>
 @endsection
