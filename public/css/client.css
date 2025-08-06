@@ -197,6 +197,40 @@ body a:hover {
   }
 }
 
+/* Mobile Banner Bé Lại */
+@media (max-width: 991.98px) {
+  /* Banner bé lại */
+  #mainNav {
+    padding: 8px 12px;
+  }
+
+  #mainNav .navbar-brand img {
+    height: 40px !important;
+  }
+
+  /* Menu text nhỏ hơn */
+  #mainNav .nav-link {
+    font-size: 0.8rem !important;
+    padding: 0.3rem 0.5rem !important;
+  }
+
+  /* Spacing nhỏ hơn */
+  #mainNav .nav-item {
+    margin: 0 0.2rem !important;
+  }
+
+  /* Badge nhỏ */
+  #mainNav .badge {
+    font-size: 0.6rem !important;
+    padding: 0.1rem 0.3rem !important;
+  }
+
+  /* Icon nhỏ hơn */
+  #mainNav .nav-link i {
+    font-size: 0.9rem !important;
+  }
+}
+
 /* Đảm bảo dropdown menu trắng, text tối */
 #mainNav .dropdown-menu {
   background: #fff;
@@ -504,7 +538,7 @@ section {
 .product p {
   margin: 0 12px;
   text-align: center;
-  
+
 }
 
 .product h4 {
@@ -1013,7 +1047,7 @@ h2 {
     .time-grid {
         grid-template-columns: repeat(3, 1fr);
     }
-    
+
     .time-slot {
         padding: 10px 6px;
         font-size: 13px;
@@ -1697,7 +1731,7 @@ h2 {
 /* ----------detail-post----------- */
 
 .mainDetailPost {
-  margin: 3%;   
+  margin: 3%;
 }
 
 .path-post p a {
@@ -2379,11 +2413,11 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
   .product-filters {
     padding: 1rem;
   }
-  
+
   .product-filters .row {
     margin: 0;
   }
-  
+
   .product-filters .col-md-6 {
     margin-bottom: 1rem;
   }
@@ -2399,27 +2433,27 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
     box-shadow: none;
     margin-top: 5px;
   }
-  
+
   .nav-item.dropdown-product .dropdown-menu.show {
     display: block;
   }
-  
+
   /* Disable hover on mobile */
   .nav-item.dropdown-product:hover .dropdown-menu {
     display: none;
   }
-  
+
   /* Style dropdown items on mobile */
   .nav-i.dropdown-product .dropdown-item {
     color: #333;
     padding: 0.75rem 1rem;
     border-bottom: 1px solid #eee;
   }
-  
+
   .nav-item.dropdown-product .dropdown-item:last-child {
     border-bottom: none;
   }
-  
+
   .nav-item.dropdown-product .dropdown-item:hover {
     background-color: #f8f9fa;
   }

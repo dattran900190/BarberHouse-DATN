@@ -199,6 +199,664 @@
             background-color: #000 !important;
             color: #fff !important;
         }
+
+        /* Desktop Menu Styles */
+        @media (min-width: 992px) {
+            .mobile-menu-buttons {
+                display: none !important;
+            }
+            
+            .mobile-menu-overlay {
+                display: none !important;
+            }
+        }
+        
+        /* Mobile Menu Styles */
+        @media (max-width: 991.98px) {
+            .desktop-menu {
+                display: none !important;
+            }
+            
+            .navbar-brand {
+                margin: 0 !important;
+            }
+            
+            .mobile-menu-buttons {
+                display: flex !important;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .mobile-nav-btn {
+                background: none;
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                color: #fff;
+                font-size: 18px;
+                cursor: pointer;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+            
+            .mobile-nav-btn:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+            }
+            
+            /* Mobile User Dropdown */
+            .mobile-user-dropdown {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                width: 280px;
+                background: #fff;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                display: none;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: all 0.3s ease;
+                margin-top: 10px;
+            }
+            
+            .mobile-user-dropdown.show {
+                display: block;
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            .mobile-user-dropdown::before {
+                content: '';
+                position: absolute;
+                top: -8px;
+                right: 20px;
+                width: 0;
+                height: 0;
+                border-left: 8px solid transparent;
+                border-right: 8px solid transparent;
+                border-bottom: 8px solid #fff;
+            }
+            
+            .mobile-user-header {
+                display: flex;
+                align-items: center;
+                padding: 20px;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .mobile-user-avatar {
+                width: 50px;
+                height: 50px;
+                background: #f8f9fa;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 15px;
+                font-size: 20px;
+                color: #6c757d;
+            }
+            
+            .mobile-user-info h6 {
+                margin: 0;
+                color: #333;
+                font-weight: 600;
+                font-size: 16px;
+            }
+            
+            .mobile-user-info small {
+                color: #6c757d;
+                font-size: 12px;
+            }
+            
+            .mobile-user-menu {
+                padding: 10px 0;
+            }
+            
+            .mobile-menu-item {
+                display: flex;
+                align-items: center;
+                padding: 12px 20px;
+                color: #333;
+                text-decoration: none;
+                transition: background 0.3s ease;
+                font-size: 14px;
+                border: none;
+                background: none;
+                width: 100%;
+                text-align: left;
+                cursor: pointer;
+            }
+            
+            .mobile-menu-item:hover {
+                background: #f8f9fa;
+                color: #333;
+            }
+            
+            .mobile-menu-item i {
+                margin-right: 12px;
+                width: 16px;
+                text-align: center;
+                color: #007bff;
+                font-size: 14px;
+            }
+            
+            .mobile-logout-btn {
+                color: #dc3545 !important;
+            }
+            
+            .mobile-logout-btn i {
+                color: #dc3545 !important;
+            }
+            
+                    .mobile-menu-divider {
+            height: 1px;
+            background: #eee;
+            margin: 10px 0;
+        }
+        
+        /* Desktop User Dropdown */
+        .desktop-user-dropdown {
+            min-width: 280px;
+            padding: 0;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            margin-top: 10px;
+        }
+        
+        .desktop-user-dropdown .dropdown-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .desktop-user-dropdown .user-info {
+            display: flex;
+            align-items: center;
+            padding: 0;
+            border: none;
+            background: none;
+        }
+        
+        .desktop-user-dropdown .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            color: #6c757d;
+        }
+        
+        .desktop-user-dropdown .user-details h6 {
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .desktop-user-dropdown .user-details small {
+            color: #6c757d;
+            font-size: 12px;
+        }
+        
+        .desktop-user-dropdown .dropdown-item {
+            padding: 12px 20px;
+            color: #333;
+            font-size: 14px;
+            transition: background 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+        
+        .desktop-user-dropdown .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .desktop-user-dropdown .dropdown-item i {
+            color: #007bff;
+            font-size: 14px;
+        }
+        
+        .desktop-user-dropdown .logout-btn {
+            color: #dc3545 !important;
+        }
+        
+        .desktop-user-dropdown .logout-btn i {
+            color: #dc3545 !important;
+        }
+        
+        .desktop-user-dropdown .dropdown-divider {
+            margin: 0;
+            border-color: #eee;
+        }
+        
+        /* Mobile Menu Overlay */
+            .mobile-menu-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 9999;
+                display: none;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .mobile-menu-overlay.show {
+                display: flex;
+                opacity: 1;
+            }
+            
+            .mobile-menu-sidebar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 280px;
+                height: 100%;
+                background: #fff;
+                color: #333;
+                overflow-y: auto;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            .mobile-menu-overlay.show .mobile-menu-sidebar {
+                transform: translateX(0);
+            }
+            
+            .mobile-menu-header {
+                display: flex;
+                justify-content: flex-end;
+                padding: 20px;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .mobile-menu-close {
+                background: none;
+                border: none;
+                color: #333;
+                font-size: 24px;
+                cursor: pointer;
+                padding: 5px;
+                border-radius: 50%;
+                transition: background 0.3s ease;
+            }
+            
+            .mobile-menu-close:hover {
+                background: #f5f5f5;
+            }
+            
+            .mobile-search-section {
+                padding: 20px;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .search-container {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+            
+            .mobile-search-input {
+                width: 100%;
+                padding: 12px 45px 12px 15px;
+                border: 1px solid #ddd;
+                border-radius: 25px;
+                font-size: 14px;
+                outline: none;
+                transition: border-color 0.3s ease;
+            }
+            
+            .mobile-search-input:focus {
+                border-color: #000;
+            }
+            
+            .mobile-search-btn {
+                position: absolute;
+                right: 5px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: #000;
+                color: #fff;
+                border: none;
+                border-radius: 50%;
+                width: 35px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: background 0.3s ease;
+            }
+            
+            .mobile-search-btn:hover {
+                background: #333;
+            }
+            
+            .mobile-menu-body {
+                padding: 20px;
+            }
+            
+            .mobile-nav-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .mobile-nav-item {
+                margin-bottom: 5px;
+            }
+            
+            .mobile-nav-link {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 15px 0;
+                color: #333;
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 16px;
+                border-bottom: 1px solid #f5f5f5;
+                transition: color 0.3s ease;
+            }
+            
+            .mobile-nav-link:hover {
+                color: #000;
+            }
+            
+            .mobile-nav-link.active {
+                color: #000;
+                font-weight: 600;
+            }
+            
+            .new-badge {
+                background: #dc3545;
+                color: #fff;
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 10px;
+                font-weight: bold;
+                margin-right: 10px;
+            }
+            
+            .mobile-nav-link i {
+                color: #999;
+                font-size: 14px;
+            }
+            
+            .mobile-cart-badge {
+                background: #dc3545;
+                color: #fff;
+                padding: 2px 6px;
+                border-radius: 10px;
+                font-size: 10px;
+                font-weight: bold;
+                margin-left: 5px;
+            }
+            
+            .mobile-user-section {
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #eee;
+            }
+            
+            .mobile-auth-buttons {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            
+            .mobile-user-info {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+                padding: 15px;
+                background: #f8f9fa;
+                border-radius: 10px;
+            }
+            
+            .user-avatar {
+                width: 50px;
+                height: 50px;
+                background: #e9ecef;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 15px;
+                font-size: 20px;
+                color: #6c757d;
+            }
+            
+            .user-details h6 {
+                margin: 0;
+                color: #333;
+                font-weight: 600;
+            }
+            
+            .user-details small {
+                color: #6c757d;
+            }
+            
+            .mobile-user-menu {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .mobile-user-menu li {
+                margin-bottom: 5px;
+            }
+            
+            .mobile-user-menu a {
+                display: flex;
+                align-items: center;
+                padding: 12px 15px;
+                color: #333;
+                text-decoration: none;
+                border-radius: 8px;
+                transition: background 0.3s ease;
+                font-size: 14px;
+            }
+            
+            .mobile-user-menu a:hover {
+                background: #f8f9fa;
+                color: #333;
+            }
+            
+            .mobile-user-menu i {
+                margin-right: 10px;
+                width: 16px;
+                text-align: center;
+                color: #6c757d;
+            }
+            
+            .mobile-logout-btn {
+                background: none;
+                border: none;
+                color: #dc3545;
+                display: flex;
+                align-items: center;
+                padding: 12px 15px;
+                width: 100%;
+                text-align: left;
+                border-radius: 8px;
+                transition: background 0.3s ease;
+                font-size: 14px;
+            }
+            
+            .mobile-logout-btn:hover {
+                background: #f8f9fa;
+                color: #dc3545;
+            }
+            
+            .mobile-social-section {
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #eee;
+            }
+            
+            .mobile-section-title {
+                color: #333;
+                margin-bottom: 15px;
+                font-size: 14px;
+                text-align: center;
+                font-weight: 600;
+                padding: 10px 0;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .mobile-notifications-section {
+                margin: 20px 0;
+                padding: 15px 0;
+                border-top: 1px solid #eee;
+            }
+            
+            .mobile-notifications-list {
+                padding: 10px 0;
+            }
+            
+            .mobile-notification-item {
+                display: flex;
+                align-items: flex-start;
+                padding: 12px 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .mobile-notification-item:last-child {
+                border-bottom: none;
+            }
+            
+            .mobile-notification-item .notification-icon {
+                margin-right: 12px;
+                color: #007bff;
+                font-size: 14px;
+                margin-top: 2px;
+                flex-shrink: 0;
+            }
+            
+            .mobile-notification-item .notification-text {
+                flex: 1;
+            }
+            
+            .mobile-notification-item .notification-text p {
+                margin: 0;
+                font-size: 13px;
+                color: #333;
+                line-height: 1.4;
+            }
+            
+            .mobile-notification-item .notification-time {
+                font-size: 11px;
+                color: #6c757d;
+                margin-top: 4px;
+                display: block;
+            }
+            
+            .mobile-notifications-list p {
+                font-size: 12px;
+                color: #6c757d;
+                margin: 0;
+            }
+            
+            .mobile-notification-dropdown {
+                width: 280px;
+                max-height: 300px;
+                overflow-y: auto;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                background-color: #fff;
+                z-index: 9999 !important;
+                padding: 0;
+            }
+
+            .mobile-notification-dropdown .notification-item {
+                display: flex;
+                align-items: flex-start;
+                padding: 12px 15px;
+                border-bottom: 1px solid #eee;
+                transition: background-color 0.2s;
+            }
+
+            .mobile-notification-dropdown .notification-item:hover {
+                background-color: #f8f9fa;
+            }
+
+            .mobile-notification-dropdown .notification-item i {
+                margin-right: 12px;
+                color: #007bff;
+                font-size: 14px;
+                margin-top: 2px;
+                flex-shrink: 0;
+            }
+
+            .mobile-notification-dropdown .notification-item p {
+                margin: 0;
+                font-size: 13px;
+                color: #333;
+                line-height: 1.4;
+            }
+
+            .mobile-notification-dropdown .notification-item .time {
+                font-size: 11px;
+                color: #6c757d;
+                margin-top: 4px;
+                display: block;
+            }
+            
+            .mobile-social-section h6 {
+                color: #333;
+                margin-bottom: 15px;
+                font-size: 14px;
+                text-align: center;
+                font-weight: 600;
+            }
+            
+            .social-icons {
+                display: flex;
+                gap: 15px;
+                justify-content: center;
+            }
+            
+            .social-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                background: #f5f5f5;
+                border-radius: 50%;
+                color: #333;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                font-size: 16px;
+            }
+            
+            .social-icon:hover {
+                background: #000;
+                color: #fff;
+                transform: translateY(-2px);
+            }
+        }
     </style>
 </head>
 
@@ -214,29 +872,35 @@
 
         @include('layouts.blocks.footer')
 
-        <!-- Chat Button -->
-        <!-- Nút mở chat -->
-        <button id="chatToggle" class="chat-button">
-            <i class="fa-solid fa-message"></i>
+
+        <!-- Nút mở chat mới -->
+        <button id="newChatToggle" class="new-chat-button" style="display: none;">
+            <i class="fa-solid fa-headset"></i>
         </button>
 
-        <!-- Hộp chat -->
-        <div class="chat-wrapper">
-            <div class="chat-header">
-                <i><img src="{{ asset('storage/' . ($imageSettings['white_logo'] ?? 'default-images/white_logo.png')) }}"
-                    height="30" alt="Logo"></i> Barber House
-                <span id="chatClose">&times;</span>
+        <!-- Hộp chat mới -->
+        <div class="new-chat-container" id="newChatContainer">
+            <div class="new-chat-header">
+                <div class="new-chat-title">
+                    <i class="fa-solid fa-headset"></i>
+                    <span>Hỗ trợ khách hàng</span>
+                </div>
+                <button id="newChatClose" class="new-chat-close">
+                    <i class="fa-solid fa-times"></i>
+                </button>
             </div>
-            <div class="chat-body" id="chatMessages">
-                <div class="message-ai">
-                    <div class="bubble">
-                        <b>BarberHouse:</b> Xin chào! Tôi có thể giúp gì cho bạn?
+            <div class="new-chat-messages" id="newChatMessages">
+                <div class="new-message new-message-ai">
+                    <div class="new-bubble">
+                        <strong>BarberHouse:</strong> Xin chào! Tôi có thể giúp gì cho bạn?
                     </div>
                 </div>
             </div>
-            <div class="chat-footer">
-                <input id="chatInput" type="text" placeholder="Nhập tin nhắn..." />
-                <button id="sendMessage"><i class="fa-solid fa-paper-plane"></i></button>
+            <div class="new-chat-input-area">
+                <input id="newChatInput" type="text" placeholder="Nhập tin nhắn..." />
+                <button id="newSendMessage" class="new-send-btn">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
             </div>
         </div>
 
@@ -260,145 +924,243 @@
         @include('layouts.blocks.includes.link-foot')
 
         <style>
-            .chat-button {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: #000;
+            /* Chat button mới */
+            .new-chat-button {
+                position: fixed !important;
+                bottom: 20px !important;
+                right: 20px !important;
+                background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+                color: #fff !important;
+                border-radius: 50% !important;
+                width: 65px !important;
+                height: 65px !important;
+                border: none !important;
+                font-size: 24px !important;
+                cursor: pointer !important;
+                z-index: 9999 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                transition: all 0.3s ease !important;
+                box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4) !important;
+            }
+
+            .new-chat-button:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+            }
+
+            /* Chat container mới */
+            .new-chat-container {
+                position: fixed !important;
+                bottom: 100px !important;
+                right: 20px !important;
+                width: 380px !important;
+                height: 500px !important;
+                display: none !important;
+                flex-direction: column !important;
+                border-radius: 15px !important;
+                background: #fff !important;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+                z-index: 9998 !important;
+                overflow: hidden !important;
+                font-family: 'Roboto', sans-serif !important;
+                opacity: 0 !important;
+                transform: translateY(30px) scale(0.9) !important;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            }
+
+            .new-chat-container.open {
+                display: flex !important;
+                opacity: 1 !important;
+                transform: translateY(0) scale(1) !important;
+            }
+
+            /* Header mới */
+            .new-chat-header {
+                background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
                 color: #fff;
-                border-radius: 50%;
-                width: 60px;
-                height: 60px;
+                padding: 15px 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-radius: 15px 15px 0 0;
+            }
+
+            .new-chat-title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 600;
+                font-size: 16px;
+            }
+
+            .new-chat-close {
+                background: rgba(255, 255, 255, 0.2);
+                color: #fff;
                 border: none;
-                font-size: 24px;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
                 cursor: pointer;
-                z-index: 9999;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 transition: background 0.3s;
             }
 
-            .chat-button:hover {
-                background: #444;
+            .new-chat-close:hover {
+                background: rgba(255, 255, 255, 0.3);
             }
 
-            .chat-wrapper {
-                position: fixed;
-                bottom: 100px;
-                right: 20px;
-                width: 350px;
-                display: none;
-                flex-direction: column;
-                border-radius: 10px;
-                background: #fff;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-                z-index: 9998;
-                overflow: hidden;
-                font-family: 'Roboto', sans-serif;
-            }
-
-            .chat-wrapper.open {
-                display: flex;
-            }
-
-            .chat-header {
-                background: #000;
-                color: #fff;
-                padding: 12px;
-                font-size: 16px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            #chatClose {
-                cursor: pointer;
-                font-size: 20px;
-            }
-
-            .chat-body {
-                height: 300px;
+            /* Messages area mới */
+            .new-chat-messages {
+                height: 350px;
                 overflow-y: auto;
-                padding: 10px;
-                background: #f5f5f5;
-            }
-
-            .message-user,
-            .message-ai {
-                display: flex;
-                margin-bottom: 10px;
-            }
-
-            .message-user {
-                justify-content: flex-end;
-            }
-
-            .message-ai {
-                justify-content: flex-start;
-            }
-
-            .bubble {
-                padding: 10px 14px;
-                border-radius: 20px;
-                max-width: 75%;
-                word-wrap: break-word;
-            }
-
-            .message-user .bubble {
-                background: #000;
-                color: #fff;
-                border-bottom-right-radius: 0;
-            }
-
-            .message-ai .bubble {
-                background: #e0e0e0;
-                color: #000;
-                border-bottom-left-radius: 0;
-            }
-
-            .chat-footer {
-                display: flex;
-                padding: 10px;
-                background: #fff;
-                border-top: 1px solid #ddd;
-            }
-
-            .chat-footer input {
+                padding: 20px 15px;
+                background: #f8f9fa;
                 flex: 1;
-                border-radius: 20px;
-                border: 1px solid #ccc;
-                padding: 10px 14px;
-                outline: none;
             }
 
-            .chat-footer button {
-                background: #000;
+            .new-message {
+                display: flex;
+                margin-bottom: 20px;
+                align-items: flex-end;
+            }
+
+            .new-message-user {
+                justify-content: flex-end;
+                margin-left: 60px;
+            }
+
+            .new-message-ai {
+                justify-content: flex-start;
+                margin-right: 60px;
+            }
+
+            .new-bubble {
+                padding: 12px 16px;
+                border-radius: 18px;
+                max-width: 70%;
+                word-wrap: break-word;
+                font-size: 14px;
+                line-height: 1.5;
+                position: relative;
+            }
+
+            .new-message-user .new-bubble {
+                background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+                color: #fff;
+                border-bottom-right-radius: 5px;
+                margin-left: auto;
+            }
+
+            .new-message-ai .new-bubble {
+                background: #fff;
+                color: #333;
+                border: 1px solid #e0e0e0;
+                border-bottom-left-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                margin-right: auto;
+            }
+
+            /* Input area mới */
+            .new-chat-input-area {
+                display: flex;
+                padding: 15px 20px;
+                background: #fff;
+                border-top: 1px solid #e0e0e0;
+                gap: 10px;
+            }
+
+            .new-chat-input-area input {
+                flex: 1;
+                border-radius: 25px;
+                border: 2px solid #e0e0e0;
+                padding: 12px 18px;
+                outline: none;
+                font-size: 14px;
+                transition: border-color 0.3s;
+            }
+
+            .new-chat-input-area input:focus {
+                border-color: #007bff;
+            }
+
+            .new-send-btn {
+                background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
                 color: #fff;
                 border: none;
                 border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                margin-left: 8px;
+                width: 45px;
+                height: 45px;
                 cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s;
             }
 
-            .chat-footer button:hover {
-                background: #444;
+            .new-send-btn:hover {
+                transform: scale(1.1);
             }
 
-            /* Hiệu ứng gõ chữ */
-            .typing {
-                border-right: .1em solid #000;
-                animation: blink-caret .75s step-end infinite;
+            /* Typing indicator mới */
+            .new-typing-indicator {
+                display: inline-block;
+                width: 40px;
+                text-align: left;
             }
 
-            @keyframes blink-caret {
-                50% {
-                    border-color: transparent;
+            .new-typing-indicator span {
+                display: inline-block;
+                width: 6px;
+                height: 6px;
+                margin-right: 3px;
+                background: #007bff;
+                border-radius: 50%;
+                opacity: 0.6;
+                animation: new-blink 1.4s infinite ease-in-out;
+            }
+
+            .new-typing-indicator span:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            .new-typing-indicator span:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+
+            @keyframes new-blink {
+                0%, 80%, 100% {
+                    opacity: 0.6;
+                    transform: scale(1);
+                }
+                40% {
+                    opacity: 1;
+                    transform: scale(1.2);
                 }
             }
+
+            /* Scrollbar cho messages */
+            .new-chat-messages::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .new-chat-messages::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 3px;
+            }
+
+            .new-chat-messages::-webkit-scrollbar-thumb {
+                background: #c1c1c1;
+                border-radius: 3px;
+            }
+
         </style>
+            .new-chat-messages::-webkit-scrollbar-thumb:hover {
+                background: #a8a8a8;
+            }
         <script>
             let pusherInstance = null;
 
@@ -568,25 +1330,54 @@
             });
 
             document.addEventListener('DOMContentLoaded', function() {
-                const chatWrapper = document.querySelector('.chat-wrapper');
-                const chatToggle = document.querySelector('#chatToggle');
-                const chatClose = document.querySelector('#chatClose');
-                const input = document.querySelector('#chatInput');
-                const sendButton = document.querySelector('#sendMessage');
-                const chatMessages = document.querySelector('#chatMessages');
+                const newChatContainer = document.querySelector('#newChatContainer');
+                const newChatToggle = document.querySelector('#newChatToggle');
+                const newChatClose = document.querySelector('#newChatClose');
+                const newChatInput = document.querySelector('#newChatInput');
+                const newSendMessage = document.querySelector('#newSendMessage');
+                const newChatMessages = document.querySelector('#newChatMessages');
 
-                function toggleChat(open = null) {
-                    if (open === true) chatWrapper.classList.add('open');
-                    else if (open === false) chatWrapper.classList.remove('open');
-                    else chatWrapper.classList.toggle('open');
+                // Đảm bảo chat không hiện khi load trang và CSS đã load
+                newChatContainer.classList.remove('open');
+                newChatContainer.style.display = 'none';
+
+                // Đảm bảo button có style đúng và hiển thị sau khi CSS load
+                if (newChatToggle) {
+                    setTimeout(() => {
+                        newChatToggle.style.display = 'flex';
+                        newChatToggle.style.alignItems = 'center';
+                        newChatToggle.style.justifyContent = 'center';
+                    }, 100);
                 }
 
-                chatToggle.addEventListener('click', () => toggleChat(true));
-                chatClose.addEventListener('click', () => toggleChat(false));
+                function toggleNewChat(open = null) {
+                    if (open === true) {
+                        newChatContainer.style.display = 'flex';
+                        // Delay để animation hoạt động
+                        setTimeout(() => {
+                            newChatContainer.classList.add('open');
+                        }, 10);
+                    } else if (open === false) {
+                        newChatContainer.classList.remove('open');
+                        // Delay để animation hoàn thành trước khi ẩn
+                        setTimeout(() => {
+                            newChatContainer.style.display = 'none';
+                        }, 400);
+                    } else {
+                        if (newChatContainer.classList.contains('open')) {
+                            toggleNewChat(false);
+                        } else {
+                            toggleNewChat(true);
+                        }
+                    }
+                }
 
-                sendButton.addEventListener('click', sendMessage);
-                input.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') sendMessage();
+                newChatToggle.addEventListener('click', () => toggleNewChat(true));
+                newChatClose.addEventListener('click', () => toggleNewChat(false));
+
+                newSendMessage.addEventListener('click', sendNewMessage);
+                newChatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') sendNewMessage();
                 });
 
                 // Hàm loại bỏ markdown như #, *, dấu thừa
@@ -597,24 +1388,37 @@
                         .trim();
                 }
 
-
-                function appendMessage(content, type) {
+                function appendNewMessage(content, type) {
                     const div = document.createElement('div');
-                    div.className = type === 'user' ? 'message-user' : 'message-ai';
-                    div.innerHTML = `<div class="bubble">${content}</div>`;
-                    chatMessages.appendChild(div);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                    return div.querySelector('.bubble');
+                    div.className = type === 'user' ? 'new-message new-message-user' : 'new-message new-message-ai';
+
+                    // Thêm avatar cho AI message
+                    if (type === 'ai') {
+                        div.innerHTML = `
+                            <div class="new-bubble">${content}</div>
+                        `;
+                    } else {
+                        div.innerHTML = `<div class="new-bubble">${content}</div>`;
+                    }
+
+                    newChatMessages.appendChild(div);
+                    newChatMessages.scrollTop = newChatMessages.scrollHeight;
+                    return div.querySelector('.new-bubble');
                 }
 
-                async function sendMessage() {
-                    const msg = input.value.trim();
+                async function sendNewMessage() {
+                    const msg = newChatInput.value.trim();
                     if (!msg) return;
-                    input.value = '';
+                    newChatInput.value = '';
 
-                    appendMessage(`<b>Bạn:</b> ${msg}`, 'user');
+                    appendNewMessage(`<strong>Bạn:</strong> ${msg}`, 'user');
 
-                    const bubble = appendMessage(`<b>BarberHouse:</b> ...`, 'BarberHouse');
+                    const bubble = appendNewMessage(
+                        `<strong>BarberHouse:</strong> <span class="new-typing-indicator">
+                            <span></span><span></span><span></span>
+                        </span>`,
+                        'ai'
+                    );
 
                     try {
                         const response = await fetch('/chat-ai', {
@@ -630,18 +1434,17 @@
 
                         const data = await response.json();
 
-                        // **Làm sạch markdown (#, *, ...)**
+                        // Làm sạch markdown (#, *, ...)
                         const cleanReply = cleanAIResponse(data.reply);
 
-                        // **Đưa text đã sạch vào hiển thị**
-                        typeText(bubble, `<b>BarberHouse:</b> ${cleanReply}`);
+                        // Đưa text đã sạch vào hiển thị
+                        typeNewText(bubble, `<strong>BarberHouse:</strong> ${cleanReply}`);
                     } catch (err) {
-                        bubble.innerHTML = `<b>BarberHouse:</b> <span style="color:red">Không thể kết nối</span>`;
+                        bubble.innerHTML = `<strong>BarberHouse:</strong> <span style="color:red">Không thể kết nối</span>`;
                     }
                 }
 
-
-                function typeText(element, text, speed = 30) {
+                function typeNewText(element, text, speed = 30) {
                     element.innerHTML = '';
                     let index = 0;
                     const interval = setInterval(() => {
@@ -654,6 +1457,178 @@
                     }, speed);
                 }
             });
+
+            // Mobile Menu JavaScript
+            document.addEventListener('DOMContentLoaded', function() {
+                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                const mobileUserToggle = document.getElementById('mobileUserToggle');
+                const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+                const mobileMenuClose = document.getElementById('mobileMenuClose');
+                const mobileSearchBtn = document.querySelector('.mobile-search-btn');
+                const mobileSearchInput = document.querySelector('.mobile-search-input');
+                const mobileUserDropdown = document.getElementById('mobileUserDropdown');
+
+                // Toggle mobile user dropdown
+                if (mobileUserToggle) {
+                    mobileUserToggle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Toggle dropdown
+                        if (mobileUserDropdown) {
+                            mobileUserDropdown.classList.toggle('show');
+                        }
+                    });
+                }
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (mobileUserDropdown && !mobileUserToggle.contains(e.target) && !mobileUserDropdown.contains(e.target)) {
+                        mobileUserDropdown.classList.remove('show');
+                    }
+                });
+
+                // Toggle mobile menu overlay (for navigation menu)
+                if (mobileMenuBtn) {
+                    mobileMenuBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        mobileMenuOverlay.classList.add('show');
+                        document.body.style.overflow = 'hidden';
+                    });
+                }
+
+                // Close mobile menu
+                if (mobileMenuClose) {
+                    mobileMenuClose.addEventListener('click', function() {
+                        mobileMenuOverlay.classList.remove('show');
+                        document.body.style.overflow = '';
+                    });
+                }
+
+                // Close mobile menu when clicking outside
+                if (mobileMenuOverlay) {
+                    mobileMenuOverlay.addEventListener('click', function(e) {
+                        if (e.target === mobileMenuOverlay) {
+                            mobileMenuOverlay.classList.remove('show');
+                            document.body.style.overflow = '';
+                        }
+                    });
+                }
+
+                // Mobile search functionality
+                if (mobileSearchBtn && mobileSearchInput) {
+                    mobileSearchBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const searchTerm = mobileSearchInput.value.trim();
+                        if (searchTerm) {
+                            window.location.href = `{{ route('client.product') }}?search=${encodeURIComponent(searchTerm)}`;
+                        }
+                    });
+
+                    // Search on Enter key
+                    mobileSearchInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const searchTerm = this.value.trim();
+                            if (searchTerm) {
+                                window.location.href = `{{ route('client.product') }}?search=${encodeURIComponent(searchTerm)}`;
+                            }
+                        }
+                    });
+                }
+
+                // Close menu on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        mobileMenuOverlay.classList.remove('show');
+                        document.body.style.overflow = '';
+                    }
+                });
+                
+                // Initialize mobile notifications
+                loadMobileNotifications();
+            });
+            
+            // Function to load mobile notifications
+            function loadMobileNotifications() {
+                const mobileNotificationList = document.getElementById('mobile-notification-list');
+                const mobileNotificationCount = document.getElementById('mobile-notification-count');
+                if (!mobileNotificationList) return;
+                
+                // Get notifications from localStorage (same as desktop)
+                const userId = '{{ auth()->id() }}';
+                const notifications = JSON.parse(localStorage.getItem('notifications_' + userId)) || [];
+                
+                // Update notification count
+                if (mobileNotificationCount) {
+                    mobileNotificationCount.textContent = notifications.length;
+                }
+                
+                if (notifications.length === 0) {
+                    mobileNotificationList.innerHTML = '<p class="text-center text-muted">Chưa có thông báo</p>';
+                } else {
+                    mobileNotificationList.innerHTML = '';
+                    notifications.slice(0, 5).forEach((notification, index) => {
+                        const notificationItem = document.createElement('div');
+                        notificationItem.className = 'notification-item';
+                        
+                        // Tạo link phù hợp dựa trên loại thông báo
+                        let link = '#';
+                        if (notification.appointment_id) {
+                            link = `/lich-su-dat-lich/${notification.appointment_id}`;
+                        } else if (notification.order_id) {
+                            link = `/chi-tiet-don-hang/${notification.order_id}`;
+                        }
+                        
+                        notificationItem.innerHTML = `
+                            <i class="fas fa-bell"></i>
+                            <div>
+                                <a href="${link}" style="color: #333; text-decoration: none;">
+                                    <p>${notification.message}</p>
+                                </a>
+                                <span class="time">${notification.time}</span>
+                            </div>
+                        `;
+                        mobileNotificationList.appendChild(notificationItem);
+                        
+                        // Thêm sự kiện click để xóa thông báo
+                        const notificationLink = notificationItem.querySelector('a');
+                        notificationLink.addEventListener('click', function() {
+                            removeMobileNotification(index);
+                        });
+                    });
+                }
+            }
+            
+            // Function to remove mobile notification
+            function removeMobileNotification(index) {
+                const userId = '{{ auth()->id() }}';
+                let notifications = JSON.parse(localStorage.getItem('notifications_' + userId)) || [];
+                notifications.splice(index, 1);
+                localStorage.setItem('notifications_' + userId, JSON.stringify(notifications));
+                
+                // Reload mobile notifications
+                loadMobileNotifications();
+                
+                // Update desktop notification count too
+                const desktopBadge = document.querySelector('#notification-count');
+                if (desktopBadge) {
+                    desktopBadge.textContent = notifications.length;
+                }
+            }
+            
+            // Function to reset mobile notification count
+            function resetMobileNotificationCount() {
+                const userId = '{{ auth()->id() }}';
+                localStorage.removeItem('notifications_' + userId);
+                loadMobileNotifications();
+                
+                // Update desktop notification count too
+                const desktopBadge = document.querySelector('#notification-count');
+                if (desktopBadge) {
+                    desktopBadge.textContent = '0';
+                }
+            }
         </script>
 </body>
 

@@ -19,8 +19,8 @@
 @endsection
 
 @section('content')
-    <main class="container-fluid px-5">
-        <section id="product">
+    <main class="container">
+        <section style="margin-top: 5%;" id="product">
             <div class="product-wrapper w-100">
                 <h2 class="mb-4">Sản phẩm</h2>
 

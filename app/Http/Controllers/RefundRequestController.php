@@ -143,14 +143,18 @@ class RefundRequestController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('refunds.index')->with('success', 'Cập nhật trạng thái hoàn tiền thành công.');
+            // Redirect về trang index với trạng thái mới và trang hiện tại
+            return redirect()->route('refunds.index', [
+                'status' => $newStatus,
+                'page' => $request->input('page', 1)
+            ])->with('success', 'Yêu cầu hoàn tiền ' . ($refund->order->order_code ?? $refund->appointment->appointment_code ?? 'N/A') . ' đã được cập nhật.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Lỗi khi cập nhật trạng thái hoàn tiền', [
                 'refund_id' => $refund->id,
                 'error' => $e->getMessage(),
             ]);
-            return back()->withErrors(['error' => 'Lỗi xảy ra: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Lỗi xảy ra: ' . $e->getMessage()])->withInput();
         }
     }
 

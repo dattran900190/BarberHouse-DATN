@@ -59,6 +59,9 @@
                     <span class="badge bg-{{ $product->deleted_at ? 'danger' : 'success' }}">
                         {{ $product->deleted_at ? 'Đã xóa' : 'Hoạt động' }}
                     </span>
+                    @if($product->deleted_at)
+                        <br><small class="text-muted">Xóa lúc: {{ $product->deleted_at->format('d/m/Y H:i:s') }}</small>
+                    @endif
                 </div>
                 <div class="col-md-12">
                     <i class="fa fa-image me-2 text-primary"></i>
@@ -132,9 +135,34 @@
         </div>
         <div class="card-body">
             <div class="d-flex gap-2">
-                <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-outline-primary btn-sm">
-                    <i class="fa fa-edit me-1"></i> Chỉnh sửa
-                </a>
+                @if($product->deleted_at)
+                    <!-- Nếu sản phẩm đã xóa mềm -->
+                    <form action="{{ route('admin.products.restore', $product->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Bạn có chắc muốn khôi phục sản phẩm này?')">
+                            <i class="fa fa-undo me-1"></i> Khôi phục
+                        </button>
+                    </form>
+                    <form action="{{ route('admin.products.forceDelete', $product->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa vĩnh viễn sản phẩm này? Hành động này không thể hoàn tác!')">
+                            <i class="fa fa-trash me-1"></i> Xóa vĩnh viễn
+                        </button>
+                    </form>
+                @else
+                    <!-- Nếu sản phẩm đang hoạt động -->
+                    <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fa fa-edit me-1"></i> Chỉnh sửa
+                    </a>
+                    <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
+                            <i class="fa fa-trash me-1"></i> Xóa
+                        </button>
+                    </form>
+                @endif
                 <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-sm">
                     <i class="fa fa-arrow-left me-1"></i> Quay lại
                 </a>

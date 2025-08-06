@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\BarberRequest;
+use App\Events\BarberUpdated;
 
 class BarberController extends Controller
 {
@@ -56,6 +57,7 @@ class BarberController extends Controller
 
         $data['status'] = 'idle';
         Barber::create($data);
+        event(new BarberUpdated());
 
         return redirect()->route('barbers.index')->with('success', 'Thêm thợ thành công');
     }
@@ -96,6 +98,7 @@ class BarberController extends Controller
         }
 
         $barber->update($data);
+        event(new BarberUpdated());
 
         return redirect()->route('barbers.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Cập nhật thành công');
@@ -116,6 +119,7 @@ class BarberController extends Controller
 
         $barber->status = 'retired';
         $barber->save();
+        event(new BarberUpdated());
 
         return response()->json([
             'success' => true,
@@ -143,6 +147,7 @@ class BarberController extends Controller
         }
 
         $barber->delete();
+        event(new BarberUpdated());
 
         return response()->json([
             'success' => true,
@@ -162,6 +167,7 @@ class BarberController extends Controller
 
         $barber = Barber::withTrashed()->findOrFail($id);
         $barber->restore();
+        event(new BarberUpdated());
 
         return response()->json([
             'success' => true,
