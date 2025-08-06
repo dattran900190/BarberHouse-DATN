@@ -34,10 +34,18 @@ class CartItem extends Model
      */
     public function isProductAvailable()
     {
-        return $this->productVariant && 
-               !$this->productVariant->trashed() && 
-               $this->productVariant->product && 
-               !$this->productVariant->product->trashed();
+        return $this->productVariant &&
+            !$this->productVariant->trashed() &&
+            $this->productVariant->product &&
+            !$this->productVariant->product->trashed();
+    }
+
+    /**
+     * Kiểm tra có thể checkout không (bao gồm kiểm tra stock)
+     */
+    public function canCheckout()
+    {
+        return $this->isProductAvailable() && $this->productVariant->stock > 0;
     }
 
     /**
@@ -48,19 +56,21 @@ class CartItem extends Model
         if (!$this->productVariant) {
             return 'Sản phẩm không tồn tại';
         }
-        
+
         if ($this->productVariant->trashed()) {
             return 'Sản phẩm không còn bán';
         }
-        
+
         if (!$this->productVariant->product) {
             return 'Sản phẩm không tồn tại';
         }
-        
+
         if ($this->productVariant->product->trashed()) {
             return 'Sản phẩm không còn bán';
         }
-        
+        if ($this->productVariant->stock <= 0) {
+            return 'Sản phẩm đã hết hàng';
+        }
         return null; // Sản phẩm bình thường
     }
 }
