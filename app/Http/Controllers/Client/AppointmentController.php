@@ -653,7 +653,7 @@ class AppointmentController extends Controller
 
             // Gửi email xác nhận chỉ cho các phương thức thanh toán khác VNPay
             if ($request->payment_method !== 'vnpay') {
-                Mail::to($appointment->email)->send(new ConfirmBookingMail($appointment, $AdditionalServices));
+                Mail::to($appointment->email)->queue(new ConfirmBookingMail($appointment, $AdditionalServices));
             }
 
             // Xử lý voucher

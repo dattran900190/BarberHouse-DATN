@@ -167,10 +167,10 @@ class PaymentController extends Controller
 
             return redirect()->route('dat-lich')->with('success', 'Thanh toán thành công! Lịch hẹn đã được xác nhận.');
         } else {
-            if ($appointment) {
-                $appointment->payment_status = 'failed';
-                $appointment->save();
-            }
+            // if ($appointment) {
+            //     $appointment->payment_status = 'failed';
+            //     $appointment->save();
+            // }
             return redirect()->route('dat-lich')->with('error', 'Thanh toán thất bại!');
         }
     }
