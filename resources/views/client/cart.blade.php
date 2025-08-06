@@ -5,12 +5,12 @@
 @endsection
 
 @section('content')
-    <main class="container">
+    <main class="container-fluid">
         <section class="h-custom">
             <div class="padding-5vh">
                 <div class="flex-center">
                     <div class="col-12">
-                        <div class="card-registration">
+                        <div class="card-registration w-100" style="max-width: 100%;">
                             <div class="card-body no-padding">
                                 <div class="flex-row no-gap">
                                     <div class="col-left-66">
@@ -23,10 +23,16 @@
                                             <hr class="my-4">
 
                                             @if (session('success'))
-                                                <div class="alert alert-success" id="success-message">
-                                                    {{ session('success') }}
+                                                <div class="alert-box" id="customAlert">
+                                                    <div class="alert-message">
+                                                        <span>{{ session('success') }}</span>
+                                                    </div>
+                                                    <span class="alert-close"
+                                                        onclick="document.getElementById('customAlert').remove()">×</span>
                                                 </div>
                                             @endif
+
+
                                             {{-- Thông báo error sẽ được hiển thị qua SweetAlert2 modal popup --}}
 
                                             @if ($cart->items->isEmpty())
@@ -54,8 +60,8 @@
                                                                     <td>
                                                                         <input type="checkbox" class="cart-item-checkbox"
                                                                             data-item-id="{{ $item->id }}"
-                                                                            {{ $item->isProductAvailable() ? 'checked' : 'disabled' }}
-                                                                            {{ !$item->isProductAvailable() ? 'style=opacity:0.5' : '' }}>
+                                                                            {{ $item->canCheckout() ? 'checked' : 'disabled' }}
+                                                                            {{ !$item->canCheckout() ? 'style=opacity:0.5' : '' }}>
                                                                     </td>
                                                                     <td>
                                                                         @if ($item->isProductAvailable())
@@ -103,11 +109,11 @@
                                                                     <td>
                                                                         <img src="{{ $item->productVariant->image ? Storage::url($item->productVariant->image) : asset('images/no-image.png') }}"
                                                                             alt="{{ $item->productVariant->product->name ?? 'Sản phẩm' }}"
-                                                                            class="img-fluid rounded-3 {{ !$item->isProductAvailable() ? 'opacity-50' : '' }}"
+                                                                            class="img-fluid rounded-3 {{ !$item->canCheckout() ? 'opacity-50' : '' }}"
                                                                             style="width: 100px;">
                                                                     </td>
                                                                     <td>
-                                                                        @if ($item->isProductAvailable())
+                                                                        @if ($item->canCheckout())
                                                                             <div class="quantity d-flex align-items-center">
                                                                                 <button type="button"
                                                                                     class="btn btn-outline-dark btn-sm quantity-minus"
@@ -130,6 +136,13 @@
                                                                             <div class="text-muted">
                                                                                 <small>Số lượng:
                                                                                     {{ $item->quantity }}</small>
+                                                                                @if ($item->productVariant->stock <= 0)
+                                                                                    <br><small class="text-danger">
+                                                                                        <i
+                                                                                            class="fas fa-exclamation-triangle me-1"></i>
+                                                                                        Hết hàng
+                                                                                    </small>
+                                                                                @endif
                                                                             </div>
                                                                         @endif
                                                                     </td>
@@ -186,7 +199,8 @@
                                                     {{ number_format($cart->items->sum(fn($item) => $item->price * $item->quantity), 0, ',', '.') }}
                                                     VNĐ</h5>
                                             </div>
-                                            <form id="checkout-form" action="{{ route('cart.checkout') }}" method="GET">
+                                            <form id="checkout-form" action="{{ route('cart.checkout') }}"
+                                                method="GET">
                                                 @guest
                                                     <button type="button" class="btn btn-dark btn-block btn-lg"
                                                         id="btn-checkout-guest">Mua hàng</button>
@@ -206,8 +220,41 @@
         </section>
     </main>
     <style>
-        #mainNav {
-            background-color: #000;
+        .alert-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            border-left: 4px solid #16a34a;
+            /* xanh lá */
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: #1f2937;
+            position: relative;
+        }
+
+        .alert-message {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-icon {
+            color: #16a34a;
+            font-size: 20px;
+        }
+
+        .alert-close {
+            cursor: pointer;
+            font-size: 20px;
+            color: #6b7280;
+            transition: color 0.2s ease;
+        }
+
+        .alert-close:hover {
+            color: #111827;
         }
     </style>
 @endsection
@@ -216,8 +263,13 @@
 @endsection
 
 @section('scripts')
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+         setTimeout(() => {
+        const alertBox = document.getElementById('customAlert');
+        if (alertBox) alertBox.remove();
+    }, 3000);
         window.onload = function() {
             const formatVND = n => {
                 return Number(n).toLocaleString('vi-VN', {
@@ -299,6 +351,9 @@
                         icon: 'warning',
                         title: 'Vượt quá tồn kho',
                         text: `Chỉ còn ${maxStock} sản phẩm trong kho.`,
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                     });
                 }
 
@@ -397,9 +452,10 @@
                         updateQuantity(id, value, btn);
                     } else {
                         Swal.fire({
-                            icon: 'info',
-                            title: 'Tối đa trong kho',
-                            text: `Chỉ còn ${max} sản phẩm trong kho.`,
+                            icon: 'warning',
+                            title: 'Vượt quá tồn kho',
+                            text: `Chỉ còn lại ${max} sản phẩm.`,
+
                         });
                     }
                 });
@@ -472,12 +528,15 @@
                         };
                     });
 
-                   if (items.length === 0) {
+                    if (items.length === 0) {
                         e.preventDefault();
                         Swal.fire({
                             icon: 'warning',
                             title: 'Chưa chọn sản phẩm',
                             text: 'Vui lòng chọn ít nhất một sản phẩm để thanh toán!',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
                             confirmButtonText: 'OK'
                         });
                         return false;
@@ -505,6 +564,9 @@
                         title: 'Bạn chưa đăng nhập!',
                         text: 'Vui lòng đăng nhập để thanh toán.',
                         showConfirmButton: true,
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
                         confirmButtonText: 'Đăng nhập'
                     }).then((result) => {
                         if (result.isConfirmed) {
@@ -559,7 +621,7 @@
             });
         });
     </script>
-    
+
     <script>
         // Hiển thị modal popup cho thông báo thanh toán thất bại
         @if (session('error'))
@@ -569,12 +631,10 @@
                 text: '{{ session('error') }}',
                 confirmButtonText: 'Thử lại',
                 width: '400px',
-                        customClass: {
-                            popup: 'custom-swal-popup'
-                        },
+                customClass: {
+                    popup: 'custom-swal-popup'
+                },
             });
         @endif
     </script>
-    
-   
 @endsection
