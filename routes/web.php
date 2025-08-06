@@ -61,6 +61,8 @@ Route::post('verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name(
 
 // ==== Trang chủ ====
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/api/barbers', [\App\Http\Controllers\Client\HomeController::class, 'getBarbers']);
+Route::get('/api/products', [\App\Http\Controllers\Client\HomeController::class, 'getProducts']);
 
 // ==== Chính sách bảo mật ====
 Route::get('/chinh-sach-bao-mat', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');
@@ -304,7 +306,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/products/search', [ProductController::class, 'search'])->name('admin.products.search');
     Route::post('admin/product-variants/{id}/restore', [ProductController::class, 'restoreVariant'])->name('admin.product-variants.restore');
     Route::post('admin/product-variants/{id}/soft-delete', [ProductController::class, 'softDeleteVariant'])->name('admin.product-variants.softDelete');
-  
+
 
 });
 
