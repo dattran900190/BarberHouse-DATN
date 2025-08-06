@@ -318,7 +318,7 @@
             /* Bảng giá: ảnh to, không khung, không bo góc, không max-width */
             #price img {
                 width: 100%;
-                height: 220px;
+                height: 500px;
                 object-fit: cover;
                 border-radius: 0;
                 max-width: none;
