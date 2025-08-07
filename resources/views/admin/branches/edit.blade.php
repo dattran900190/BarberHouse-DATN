@@ -44,7 +44,9 @@
                     <div class="col-md-6 mb-3">
                         <label for="phone" class="form-label">Số điện thoại</label>
                         <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone"
-                            name="phone" value="{{ old('phone', $branch->phone) }}">
+                            name="phone" value="{{ old('phone', $branch->phone) }}"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            placeholder="Chỉ nhập chữ số, ví dụ: 0912345678">
                         @error('phone')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
