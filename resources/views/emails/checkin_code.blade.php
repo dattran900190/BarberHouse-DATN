@@ -15,15 +15,16 @@
         </p>
 
         <ul style="list-style: none; padding: 0;">
-            <li><strong>🗓 Ngày hẹn:</strong>
+            <li><strong>Mã lịch hẹn:</strong> {{ $appointment->appointment_code }}</li>
+            <li><strong>Ngày hẹn:</strong>
                 {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y') }}</li>
-            <li><strong>⏰ Giờ hẹn:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i') }}
+            <li><strong>Giờ hẹn:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i') }}
             </li>
-            <li><strong>🏠 Chi nhánh:</strong> {{ $appointment->branch->name ?? 'Không xác định' }}</li>
-            <li><strong>💇‍♂️ Thợ cắt:</strong> {{ $appointment->barber->name ?? 'Không xác định' }}</li>
-            <li><strong>🛠 Dịch vụ:</strong> {{ $appointment->service->name ?? 'Không xác định' }}</li>
+            <li><strong>Chi nhánh:</strong> {{ $appointment->branch->name ?? 'Không xác định' }}</li>
+            <li><strong>Thợ cắt:</strong> {{ $appointment->barber->name ?? 'Không xác định' }}</li>
+            <li><strong>Dịch vụ:</strong> {{ $appointment->service->name ?? 'Không xác định' }}</li>
              @if (!empty($additionalServices))
-                    <li><strong>➕ Dịch vụ bổ sung:</strong>
+                    <li><strong>Dịch vụ bổ sung:</strong>
                         <ul>
                             @foreach ($additionalServices as $serviceName)
                                 <li>{{ $serviceName }}</li>
@@ -32,7 +33,7 @@
                     </li>
                 @endif
             @if (!empty($appointment->name))
-                <li><strong>🙍‍♀️ Người được phục vụ:</strong> {{ $appointment->name }}</li>
+                <li><strong>Người được phục vụ:</strong> {{ $appointment->name }}</li>
             @endif
 
         </ul>
