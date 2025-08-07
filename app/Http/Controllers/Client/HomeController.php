@@ -53,6 +53,22 @@ class HomeController extends Controller
         ));
     }
 
+    public function getBarbers()
+    {
+        $barbers = \App\Models\Barber::with('branch')
+            ->whereIn('status', [1, 2])
+            ->latest()
+            ->take(6)
+            ->get();
+        return response()->json($barbers);
+    }
+
+    public function getProducts()
+    {
+        $products = \App\Models\Product::with('variants')->latest()->take(9)->get();
+        return response()->json($products);
+    }
+
     public function privacyPolicy()
     {
         return view('client.privacyPolicy');

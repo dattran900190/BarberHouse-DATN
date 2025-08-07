@@ -184,17 +184,39 @@ class BarberScheduleController extends Controller
 
         $schedule = BarberSchedule::findOrFail($id);
 
+        // Lấy danh sách barber_id bị ảnh hưởng
+        $affectedBarbers = BarberSchedule::where('status', 'holiday')
+            ->where('holiday_start_date', $schedule->holiday_start_date)
+            ->where('holiday_end_date', $schedule->holiday_end_date)
+            ->where('note', $schedule->note)
+            ->pluck('barber_id')
+            ->unique()
+            ->toArray();
+
+        // Xoá toàn bộ lịch nghỉ lễ giống nhau
         BarberSchedule::where('status', 'holiday')
             ->where('holiday_start_date', $schedule->holiday_start_date)
             ->where('holiday_end_date', $schedule->holiday_end_date)
             ->where('note', $schedule->note)
             ->delete();
 
+        // Kiểm tra từng thợ xem còn lịch nghỉ nào không → nếu không còn thì cập nhật status về idle
+        foreach ($affectedBarbers as $barberId) {
+            $stillHasHoliday = BarberSchedule::where('barber_id', $barberId)
+                ->where('status', 'holiday')
+                ->exists();
+
+            if (!$stillHasHoliday) {
+                Barber::where('id', $barberId)->update(['status' => 'idle']);
+            }
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Đã xoá lịch nghỉ lễ thành công!'
         ]);
     }
+
 
     /**
      * Kiểm tra trùng lịch cho thợ trong ngày cụ thể
@@ -260,6 +282,9 @@ class BarberScheduleController extends Controller
         if ($data['status'] === 'off') {
             $data['start_time'] = null;
             $data['end_time'] = null;
+
+            // 👉 Cập nhật trạng thái thợ là 'on_leave'
+            Barber::where('id', $data['barber_id'])->update(['status' => 'on_leave']);
         }
 
         // ❗ Kiểm tra trùng lịch trong cùng ngày (với bất kỳ status nào)

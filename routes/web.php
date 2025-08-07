@@ -61,6 +61,8 @@ Route::post('verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name(
 
 // ==== Trang chủ ====
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/api/barbers', [\App\Http\Controllers\Client\HomeController::class, 'getBarbers']);
+Route::get('/api/products', [\App\Http\Controllers\Client\HomeController::class, 'getProducts']);
 
 // ==== Chính sách bảo mật ====
 Route::get('/chinh-sach-bao-mat', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');

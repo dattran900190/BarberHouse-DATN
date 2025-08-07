@@ -45,9 +45,9 @@
                 <div class="col-md-6">
                     <i class="fa fa-id-badge me-2 text-muted"></i>
                     <strong>ID:</strong> {{ $user->id }}
-                     @if ($user->trashed())
-                        <span class="badge bg-danger">Đã xoá mềm</span>
-                    @endif
+                        {{-- @if ($user->trashed())
+                            <span class="badge bg-danger">Đã chặn</span>
+                        @endif --}}
                 </div>
                 <div class="col-md-6">
                     <i class="fa fa-user me-2 text-primary"></i>
@@ -87,7 +87,7 @@
                     <span
                         class="badge 
                     {{ $user->status == 'active' ? 'bg-success' : ($user->status == 'inactive' ? 'bg-warning' : 'bg-danger') }}">
-                        {{ $user->status == 'active' ? 'Đang hoạt động' : ($user->status == 'inactive' ? 'Không hoạt động' : 'Đã xóa') }}
+                        {{ $user->status == 'active' ? 'Đang hoạt động' : ($user->status == 'inactive' ? 'Không hoạt động' : 'Đã chặn') }}
                     </span>
                 </div>
 
@@ -134,11 +134,11 @@
                 {{-- nếu dịch vụ xoá mềm thì không hiện sửa xoá chỉ hiện quay lại --}}
                 @if ($user->deleted_at)
                     <button class="btn btn-outline-success btn-sm restore-btn" data-id="{{ $user->id }}">
-                        <i class="fa fa-undo me-1"></i> Khôi phục
+                        <i class="fa fa-undo me-1"></i> Bỏ chặn
                     </button>
-                    <button class="btn btn-outline-danger btn-sm force-delete-btn" data-id="{{ $user->id }}">
+                    {{-- <button class="btn btn-outline-danger btn-sm force-delete-btn" data-id="{{ $user->id }}">
                         <i class="fa fa-times-circle me-1"></i> Xoá vĩnh viễn
-                    </button>
+                    </button> --}}
                     <a href="{{ route('users.index', ['page' => request('page', 1)]) }}"
                          class="btn btn-outline-secondary btn-sm">
                         <i class="fa fa-arrow-left me-1"></i> Quay lại
@@ -149,7 +149,7 @@
                     </a>
                     <button type="button" class="btn btn-outline-danger btn-sm soft-delete-btn"
                         data-id="{{ $user->id }}">
-                         <i class="fas fa-trash me-2"></i> Xoá
+                         <i class="fas fa-trash me-2"></i> Chặn
                     </button>
                     <a href="{{ route('users.index', ['page' => request('page', 1)]) }}"
                         class="btn btn-outline-secondary btn-sm">
@@ -330,16 +330,16 @@
 
         handleSwalAction({
             selector: '.soft-delete-btn',
-            title: 'Xóa mềm người dùng',
-            text: 'Bạn có chắc chắn muốn xóa người dùng này?',
+            title: 'Chặn người dùng',
+            text: 'Bạn có chắc chắn muốn chặn người dùng này?',
             route: '{{ route('users.softDelete', ':id') }}',
             method: 'DELETE'
         });
 
         handleSwalAction({
             selector: '.restore-btn',
-            title: 'Khôi phục người dùng',
-            text: 'Khôi phục người dùng này?',
+            title: 'Bỏ chặn người dùng',
+            text: 'Bạn có chắc chắn muốn bỏ chặn người dùng này?',
             route: '{{ route('users.restore', ':id') }}',
             method: 'POST'
         });

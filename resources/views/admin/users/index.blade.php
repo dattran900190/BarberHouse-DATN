@@ -90,7 +90,7 @@
                     style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
                     <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả người dùng</option>
                     <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Hoạt động</option>
-                    <option value="banned" {{ request('filter') == 'banned' ? 'selected' : '' }}>Đã xóa</option>
+                    <option value="banned" {{ request('filter') == 'banned' ? 'selected' : '' }}>Đã chặn</option>
                 </select>
             </form>
 
@@ -140,11 +140,11 @@
                                             <td>{{ $user->address ?? 'Không có' }}</td>
                                             <td>
                                                 @if ($user->trashed())
-                                                    <span class="badge bg-danger">Đã xóa</span>
+                                                    <span class="badge bg-danger">Đã chặn</span>
                                                 @else
                                                     <span
                                                         class="badge {{ $user->status === 'active' ? 'bg-success' : ($user->status === 'inactive' ? 'bg-warning' : 'bg-danger') }}">
-                                                        {{ $user->status === 'active' ? 'Hoạt động' : ($user->status === 'inactive' ? 'Không hoạt động' : 'Đã xóa') }}
+                                                        {{ $user->status === 'active' ? 'Hoạt động' : ($user->status === 'inactive' ? 'Không hoạt động' : 'Đã chặn') }}
                                                     </span>
                                                 @endif
                                             </td>
@@ -172,15 +172,15 @@
                                                                         <button type="button"
                                                                             class="dropdown-item text-success restore-btn"
                                                                             data-id="{{ $user->id }}">
-                                                                            <i class="fas fa-undo me-2"></i> Khôi phục
+                                                                            <i class="fas fa-undo me-2"></i> Bỏ chặn
                                                                         </button>
-                                                                        <button type="button"
+                                                                        {{-- <button type="button"
                                                                             class="dropdown-item text-danger force-delete-btn"
                                                                             data-id="{{ $user->id }}"
                                                                             data-role="{{ $currentRole }}">
                                                                             <i class="fas fa-trash-alt me-2"></i> Xóa vĩnh
                                                                             viễn
-                                                                        </button>
+                                                                        </button> --}}
                                                                     </li>
                                                                 @else
                                                                     <li>
@@ -202,7 +202,7 @@
                                                                         <button type="button"
                                                                             class="dropdown-item text-danger soft-delete-btn"
                                                                             data-id="{{ $user->id }}">
-                                                                            <i class="fas fa-times me-2"></i> Xóa mềm
+                                                                            <i class="fas fa-times me-2"></i> Chặn
                                                                         </button>
                                                                     </li>
                                                                 @endif
@@ -272,11 +272,11 @@
                                             <td>{{ $admin->address ?? 'Không có' }}</td>
                                             <td>
                                                 @if ($admin->trashed())
-                                                    <span class="badge bg-danger">Đã xóa</span>
+                                                    <span class="badge bg-danger">Đã chặn</span>
                                                 @else
                                                     <span
                                                         class="badge {{ $admin->status === 'active' ? 'bg-success' : ($admin->status === 'inactive' ? 'bg-warning' : 'bg-danger') }}">
-                                                        {{ $admin->status === 'active' ? 'Hoạt động' : ($admin->status === 'inactive' ? 'Không hoạt động' : 'Đã xóa') }}
+                                                        {{ $admin->status === 'active' ? 'Hoạt động' : ($admin->status === 'inactive' ? 'Không hoạt động' : 'Đã chặn') }}
                                                     </span>
                                                 @endif
                                             </td>
@@ -304,16 +304,16 @@
                                                                         <button type="button"
                                                                             class="dropdown-item text-success restore-btn"
                                                                             data-id="{{ $admin->id }}">
-                                                                            <i class="fas fa-undo me-2"></i> Khôi phục
+                                                                            <i class="fas fa-undo me-2"></i> Bỏ chặn
                                                                         </button>
                                                                     </li>
-                                                                    <button type="button"
+                                                                    {{-- <button type="button"
                                                                         class="dropdown-item text-danger force-delete-btn"
                                                                         data-id="{{ $admin->id }}"
                                                                         data-role="{{ $currentRole }}">
                                                                         <i class="fas fa-trash-alt me-2"></i> Xóa vĩnh
                                                                         viễn
-                                                                    </button>
+                                                                    </button> --}}
                                                                 @else
                                                                     <li>
                                                                         <a class="dropdown-item"
@@ -334,7 +334,7 @@
                                                                         <button type="button"
                                                                             class="dropdown-item text-danger soft-delete-btn"
                                                                             data-id="{{ $admin->id }}">
-                                                                            <i class="fas fa-times me-2"></i>Xóa mềm
+                                                                            <i class="fas fa-times me-2"></i> Chặn
                                                                         </button>
                                                                     </li>
                                                                 @endif
@@ -503,16 +503,16 @@
 
         handleSwalAction({
             selector: '.soft-delete-btn',
-            title: 'Xóa mềm người dùng',
-            text: 'Bạn có chắc chắn muốn xóa người dùng này?',
+            title: 'Chặn người dùng',
+            text: 'Bạn có chắc chắn muốn chặn người dùng này?',
             route: '{{ route('users.softDelete', ':id') }}',
             method: 'DELETE'
         });
 
         handleSwalAction({
             selector: '.restore-btn',
-            title: 'Khôi phục người dùng',
-            text: 'Khôi phục người dùng này?',
+            title: 'Bỏ chặn người dùng',
+            text: 'Bỏ chặn người dùng này?',
             route: '{{ route('users.restore', ':id') }}',
             method: 'POST'
         });

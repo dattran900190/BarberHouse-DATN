@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\BarberRequest;
+use App\Events\BarberUpdated;
 
 class BarberController extends Controller
 {
@@ -16,6 +17,7 @@ class BarberController extends Controller
         $user = Auth::user();
         $search = $request->input('search');
         $filter = $request->input('filter', 'all');
+        $today = now()->toDateString();
 
         $query = match ($filter) {
             'deleted' => Barber::onlyTrashed(),
@@ -23,7 +25,13 @@ class BarberController extends Controller
             default => Barber::withTrashed(),
         };
 
-        $barbers = $query->with('branch')
+        $barbers = $query
+            ->with([
+                'branch',
+                'schedules' => function ($query) use ($today) {
+                    $query->whereDate('schedule_date', $today);
+                }
+            ])
             ->when($user->role === 'admin_branch', fn($q) => $q->where('branch_id', $user->branch_id))
             ->when($search, fn($q) => $q->where('name', 'like', "%$search%"))
             ->orderByDesc('id')
@@ -56,12 +64,14 @@ class BarberController extends Controller
 
         $data['status'] = 'idle';
         Barber::create($data);
+        event(new BarberUpdated());
 
         return redirect()->route('barbers.index')->with('success', 'Thêm thợ thành công');
     }
 
     public function show($id)
     {
+
         $barber = Barber::withTrashed()->findOrFail($id);
         $barber->load('branch');
         return view('admin.barbers.show', compact('barber'));
@@ -96,6 +106,7 @@ class BarberController extends Controller
         }
 
         $barber->update($data);
+        event(new BarberUpdated());
 
         return redirect()->route('barbers.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Cập nhật thành công');
@@ -116,6 +127,7 @@ class BarberController extends Controller
 
         $barber->status = 'retired';
         $barber->save();
+        event(new BarberUpdated());
 
         return response()->json([
             'success' => true,
@@ -143,6 +155,7 @@ class BarberController extends Controller
         }
 
         $barber->delete();
+        event(new BarberUpdated());
 
         return response()->json([
             'success' => true,
@@ -162,6 +175,7 @@ class BarberController extends Controller
 
         $barber = Barber::withTrashed()->findOrFail($id);
         $barber->restore();
+        event(new BarberUpdated());
 
         return response()->json([
             'success' => true,

@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use App\Events\ProductUpdated;
 
 class ProductController extends Controller
 {
@@ -41,7 +42,7 @@ class ProductController extends Controller
             })
             ->orderBy('created_at', 'DESC')
             ->paginate(perPage: 10);
-            
+
         return view('admin.products.index', compact('products'));
     }
 
@@ -108,6 +109,7 @@ class ProductController extends Controller
         }
         $totalStock = ProductVariant::where('product_id', $product->id)->sum('stock');
         $product->update(['stock' => $totalStock]);
+        event(new ProductUpdated());
         return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được thêm thành công!');
     }
 
@@ -118,7 +120,7 @@ class ProductController extends Controller
                 $query->withTrashed()->with('volume');
             }])
             ->findOrFail($id);
-    
+
         return view('admin.products.show', compact('product'));
     }
 
@@ -135,7 +137,7 @@ class ProductController extends Controller
     }
 
     public function update(ProductRequest $request, Product $product)
-    { 
+    {
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền sửa sản phẩm.');
         }
@@ -235,7 +237,7 @@ class ProductController extends Controller
             $totalStock = ProductVariant::where('product_id', $product->id)->sum('stock');
             $product->update(['stock' => $totalStock]);
         });
-
+        event(new ProductUpdated());
         return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được cập nhật thành công!');
     }
 
@@ -258,6 +260,7 @@ class ProductController extends Controller
 
         // Xóa mềm sản phẩm
         $product->delete();
+        event(new ProductUpdated());
 
         if (request()->expectsJson()) {
             return response()->json([
@@ -289,7 +292,8 @@ class ProductController extends Controller
             $product->variants()->onlyTrashed()->get()->each(function ($variant) {
                 $variant->restore();
             });
-            
+            event(new ProductUpdated());
+
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => true,
@@ -298,7 +302,7 @@ class ProductController extends Controller
             }
             return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được khôi phục thành công!');
         }
-        
+
         if (request()->expectsJson()) {
             return response()->json([
                 'success' => false,
@@ -414,7 +418,7 @@ class ProductController extends Controller
 
                 // Xóa vĩnh viễn
                 $product->forceDelete();
-                
+
                 if (request()->expectsJson()) {
                     return response()->json([
                         'success' => true,
