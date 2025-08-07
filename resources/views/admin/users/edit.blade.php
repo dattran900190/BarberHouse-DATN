@@ -140,7 +140,7 @@
                         <select class="form-control" name="status" {{ $canEditStatus  ? '' : 'disabled' }}>
                             <option value="active" {{ old('status', $user->status) == 'active' ? 'selected' : '' }}>Đang
                                 hoạt động</option>
-                            <option value="banned" {{ old('status', $user->status) == 'banned' ? 'selected' : '' }}>Không hoạt động
+                            <option value="banned" {{ old('status', $user->status) == 'banned' ? 'selected' : '' }}>Đã chặn
                             </option>
                         </select>
 
