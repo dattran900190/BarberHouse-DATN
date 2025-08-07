@@ -1325,12 +1325,9 @@
                         noticeNoSelectMainService.className = 'service-notice notice-warning';
                         noticeNoSelectMainService.innerHTML = `
                             <div class="notice-content">
-                                <div class="notice-icon">
                                     <i class="fas fa-exclamation-triangle"></i>
-                                </div>
                                 <div class="notice-text">
-                                    <h6>Vui lòng chọn dịch vụ</h6>
-                                    <p>Bạn cần chọn dịch vụ trước khi thêm dịch vụ bổ sung.</p>
+                                    <p>Vui lòng chọn dịch vụ trước khi thêm dịch vụ bổ sung.</p>
                                 </div>
                             </div>
                         `;
@@ -1359,12 +1356,9 @@
                         noticeNoAddAdditionalService.className = 'service-notice notice-info';
                         noticeNoAddAdditionalService.innerHTML = `
                             <div class="notice-content">
-                                <div class="notice-icon">
                                     <i class="fas fa-info-circle"></i>
-                                </div>
                                 <div class="notice-text">
-                                    <h6>Combo đã bao gồm đầy đủ dịch vụ</h6>
-                                    <p>Dịch vụ combo đã bao gồm tất cả dịch vụ cần thiết. Không cần thêm dịch vụ bổ sung.</p>
+                                    <p>Combo đã bao gồm đầy đủ dịch vụ cần thiết. Không thể thêm dịch vụ bổ sung.</p>
                                 </div>
                             </div>
                         `;
