@@ -141,8 +141,11 @@
                             <tbody>
                                 @php
                                     $allVariants = $product->variants()->withTrashed()->get();
+                                    $trashedCount = $allVariants->where('deleted_at', '!=', null)->count();
                                 @endphp
+                                <!-- Debug: Có {{ $trashedCount }} biến thể bị xóa mềm -->
                                 @foreach ($allVariants as $variant)
+                                    <!-- Debug: Variant {{ $variant->id }} - Trashed: {{ $variant->trashed() ? 'Yes' : 'No' }} -->
                                     <tr class="variant-row" data-variant-id="{{ $variant->id }}">
                                         <td>
                                             @if (isset($variant->id) && !$variant->trashed())
@@ -198,11 +201,13 @@
                                         </td>
                                         <td>
                                             @if ($variant->trashed())
-                                                <button type="button" class="btn btn-success btn-sm btn-restore-variant"
+                                                <button type="button" class="btn btn-sm btn-outline-success btn-restore-variant"
                                                     data-variant-id="{{ $variant->id }}">Khôi phục</button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger btn-hard-delete-variant"
+                                                    data-variant-id="{{ $variant->id }}">Xóa cứng</button>
                                             @else
                                                 <button type="button"
-                                                    class="btn btn-danger btn-sm btn-soft-delete-variant"
+                                                    class="btn btn-sm btn-outline-danger btn-soft-delete-variant"
                                                     data-variant-id="{{ $variant->id }}">Ẩn</button>
                                             @endif
                                         </td>
@@ -212,6 +217,7 @@
                         </table>
                         <button type="button" class="btn btn-sm btn-outline-success" id="add-variant">Thêm biến
                             thể</button>
+                      
                     </div>
                 </div>
 
@@ -270,6 +276,7 @@
             document.querySelectorAll('input[type=checkbox][name^="delete_variants"]').forEach(cb => cb.checked =
                 true);
         });
+
     </script>
 @endsection
 
@@ -277,7 +284,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Xóa mềm biến thể
-        document.querySelectorAll('.btn-soft-delete-variant').forEach(function(btn) {
+        function addSoftDeleteListener(btn) {
             btn.addEventListener('click', function() {
                 var variantId = this.getAttribute('data-variant-id');
                 var row = this.closest('tr');
@@ -343,8 +350,14 @@
                                     row.querySelector('td:nth-child(5)').innerHTML =
                                         '<span class="badge bg-secondary">Đã ẩn</span>';
                                     row.querySelector('td:nth-child(6)').innerHTML =
-                                        '<button type="button" class="btn btn-success btn-sm btn-restore-variant" data-variant-id="' +
-                                        variantId + '">Khôi phục</button>';
+                                        '<button type="button" class="btn btn-sm btn-outline-success btn-restore-variant" data-variant-id="' +
+                                        variantId + '">Khôi phục</button>' +
+                                        '<button type="button" class="btn btn-sm btn-outline-danger btn-hard-delete-variant" data-variant-id="' +
+                                        variantId + '">Xóa cứng</button>';
+                                    
+                                    // Thêm lại listener cho nút khôi phục và xóa cứng mới
+                                    addRestoreListener(row.querySelector('.btn-restore-variant'));
+                                    addHardDeleteListener(row.querySelector('.btn-hard-delete-variant'));
                                 } else {
                                     Swal.fire('Lỗi', data.message ||
                                         'Không thể ẩn biến thể cuối cùng!', 'error');
@@ -356,9 +369,12 @@
                     }
                 });
             });
-        });
+        }
+
+        // Thêm listener cho các nút xóa mềm hiện có
+        document.querySelectorAll('.btn-soft-delete-variant').forEach(addSoftDeleteListener);
         // Khôi phục biến thể
-        document.querySelectorAll('.btn-restore-variant').forEach(function(btn) {
+        function addRestoreListener(btn) {
             btn.addEventListener('click', function() {
                 var variantId = this.getAttribute('data-variant-id');
                 var row = this.closest('tr');
@@ -402,7 +418,7 @@
                                     row.querySelector('td:nth-child(5)').innerHTML =
                                         '<span class="badge bg-success">Đang hoạt động</span>';
                                     row.querySelector('td:nth-child(6)').innerHTML =
-                                        '<button type="button" class="btn btn-danger btn-sm btn-soft-delete-variant" data-variant-id="' +
+                                        '<button type="button" class="btn btn-sm btn-outline-danger btn-soft-delete-variant" data-variant-id="' +
                                         variantId + '">Ẩn</button>';
 
                                     // Chuyển các trường về dạng input (cho phép sửa)
@@ -440,6 +456,9 @@
                                     imgHtml +=
                                         `<input type=\"file\" name=\"variants[${variantId}][image]\" class=\"form-control\" accept=\"image/*\">`;
                                     row.querySelector('td:nth-child(4)').innerHTML = imgHtml;
+                                    
+                                    // Thêm lại listener cho nút ẩn mới
+                                    addSoftDeleteListener(row.querySelector('.btn-soft-delete-variant'));
                                 } else {
                                     Swal.fire('Lỗi', data.message ||
                                         'Không thể kích hoạt lại biến thể!', 'error');
@@ -452,6 +471,68 @@
                     }
                 });
             });
-        });
+        }
+
+        // Thêm listener cho các nút khôi phục hiện có
+        document.querySelectorAll('.btn-restore-variant').forEach(addRestoreListener);
+
+        // Xóa cứng biến thể
+        function addHardDeleteListener(btn) {
+            btn.addEventListener('click', function() {
+                var variantId = this.getAttribute('data-variant-id');
+                var row = this.closest('tr');
+                Swal.fire({
+                    title: 'Xóa cứng biến thể',
+                    text: 'Bạn có chắc muốn xóa cứng biến thể này? Hành động này không thể hoàn tác!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xóa cứng',
+                    cancelButtonText: 'Hủy',
+                    confirmButtonColor: '#d33',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    },
+                    width: '400px'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch("{{ route('admin.product-variants.hardDelete', ['id' => 'VARIANT_ID']) }}"
+                                .replace('VARIANT_ID', variantId), {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json',
+                                    },
+                                })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Thành công',
+                                        text: data.message,
+                                        icon: 'success',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        },
+                                        width: '400px'
+                                    });
+                                    // Xóa dòng khỏi bảng
+                                    row.remove();
+                                } else {
+                                    Swal.fire('Lỗi', data.message || 'Không thể xóa cứng biến thể!', 'error');
+                                }
+                            })
+                            .catch(() => {
+                                Swal.fire('Lỗi', 'Đã xảy ra lỗi khi xóa cứng biến thể.', 'error');
+                            });
+                    }
+                });
+            });
+        }
+
+        // Thêm listener cho các nút xóa cứng hiện có
+        const hardDeleteButtons = document.querySelectorAll('.btn-hard-delete-variant');
+        console.log('Found hard delete buttons:', hardDeleteButtons.length);
+        console.log('SweetAlert2 available:', typeof Swal !== 'undefined');
+        hardDeleteButtons.forEach(addHardDeleteListener);
     </script>
 @endsection
