@@ -41,12 +41,13 @@
 
                     <div class="col-md-6 mb-3">
                         <label for="phone" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone"
-                            name="phone" value="{{ old('phone') }}">
+                        <input type="tel" class="form-control @error('phone') is-invalid @enderror" id="phone"
+                            name="phone" value="{{ old('phone') }}" maxlength="12" placeholder="Ví dụ: 0912345678">
                         @error('phone')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
+
                 </div>
 
                 <div class="row">
