@@ -143,9 +143,9 @@
                                     $allVariants = $product->variants()->withTrashed()->get();
                                     $trashedCount = $allVariants->where('deleted_at', '!=', null)->count();
                                 @endphp
-                                <!-- Debug: Có {{ $trashedCount }} biến thể bị xóa mềm -->
+                            
                                 @foreach ($allVariants as $variant)
-                                    <!-- Debug: Variant {{ $variant->id }} - Trashed: {{ $variant->trashed() ? 'Yes' : 'No' }} -->
+                                
                                     <tr class="variant-row" data-variant-id="{{ $variant->id }}">
                                         <td>
                                             @if (isset($variant->id) && !$variant->trashed())
@@ -165,6 +165,9 @@
                                                     @endforeach
                                                 </select>
                                             @endif
+                                            @error("variants.{$variant->id}.volume_id")
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </td>
                                         <td>
                                             @if ($variant->trashed())
@@ -173,6 +176,9 @@
                                                 <input type="number" name="variants[{{ $variant->id }}][price]"
                                                     class="form-control" step="0.01" value="{{ $variant->price }}">
                                             @endif
+                                            @error("variants.{$variant->id}.price")
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </td>
                                         <td>
                                             @if ($variant->trashed())
@@ -181,6 +187,9 @@
                                                 <input type="number" name="variants[{{ $variant->id }}][stock]"
                                                     class="form-control" value="{{ $variant->stock }}">
                                             @endif
+                                            @error("variants.{$variant->id}.stock")
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </td>
                                         <td>
                                             @if ($variant->image)
@@ -191,6 +200,9 @@
                                                 <input type="file" name="variants[{{ $variant->id }}][image]"
                                                     class="form-control" accept="image/*">
                                             @endif
+                                            @error("variants.{$variant->id}.image")
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </td>
                                         <td>
                                             @if ($variant->trashed())
@@ -534,5 +546,6 @@
         console.log('Found hard delete buttons:', hardDeleteButtons.length);
         console.log('SweetAlert2 available:', typeof Swal !== 'undefined');
         hardDeleteButtons.forEach(addHardDeleteListener);
+        
     </script>
 @endsection
