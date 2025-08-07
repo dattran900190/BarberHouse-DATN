@@ -268,14 +268,14 @@ class UserController extends Controller
         if (Auth::user()->role === 'admin_branch') {
             return response()->json([
                 'success' => false,
-                'message' => 'Bạn không có quyền xóa người dùng.'
+                'message' => 'Bạn không có quyền chặn người dùng.'
             ]);
         }
         // Ngăn không cho tự xóa chính mình
         if (Auth::id() === $user->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Bạn không thể tự xóa chính mình.'
+                'message' => 'Bạn không thể tự chặn chính mình.'
             ]);
         }
 
@@ -300,15 +300,15 @@ class UserController extends Controller
             if ($user->trashed()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Xóa ' . ($role === 'user' ? 'người dùng' : 'quản trị viên') . ' thành công'
+                    'message' => 'Chặn ' . ($role === 'user' ? 'người dùng' : 'quản trị viên') . ' thành công'
                 ], 200);
             } else {
-                throw new \Exception('Xóa mềm không thành công');
+                throw new \Exception('Chặn không thành công');
             }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Lỗi khi xóa người dùng: ' . $e->getMessage()
+                'message' => 'Lỗi khi chặn người dùng: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -333,13 +333,13 @@ class UserController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Khôi phục tài khoản thành công.'
+                'message' => 'Bỏ chặn thành công.'
             ], 200);
         } catch (\Exception $e) {
-            Log::error('Lỗi khi khôi phục', ['user_id' => $id, 'error' => $e->getMessage()]);
+            Log::error('Lỗi khi bỏ chặn', ['user_id' => $id, 'error' => $e->getMessage()]);
             return response()->json([
                 'success' => false,
-                'message' => 'Lỗi khi khôi phục: ' . $e->getMessage()
+                'message' => 'Lỗi khi bỏ chặn: ' . $e->getMessage()
             ], 500);
         }
     }

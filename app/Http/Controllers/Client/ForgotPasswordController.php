@@ -48,7 +48,7 @@ class ForgotPasswordController extends Controller
         ]);
 
         // Gửi mail
-        Mail:send(:'emails.forgotPassword', [
+        Mail::send('emails.forgotPassword', [
             'otp' => $otp,
             'name' => $user->name // ✅ đúng
         ], function ($message) use ($request) {
