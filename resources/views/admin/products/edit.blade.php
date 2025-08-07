@@ -25,6 +25,14 @@
             </li>
         </ul>
     </div>
+    @if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+@endif
     <div class="card">
         <div class="card-header text-white align-items-center">
             <div class="card-title">Chỉnh sửa sản phẩm</div>
