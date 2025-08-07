@@ -94,10 +94,10 @@
                                 <td class="text-center">
                                     @if ($barber->avatar)
                                         <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar"
-                                             style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
+                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
                                     @else
                                         <img src="{{ asset('uploads/avatars/default-avatar.png') }}" alt="Avatar"
-                                             style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
+                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
                                     @endif
                                 </td>
                                 <td>{{ $barber->name }}</td>
@@ -116,17 +116,40 @@
                                 <td>{{ $barber->rating_avg }}</td>
                                 <td>{{ $barber->profile }}</td>
                                 <td>{{ $barber->branch?->name ?? 'Chưa có chi nhánh' }}</td>
+                                @php
+                                    $today = \Carbon\Carbon::today()->toDateString();
+
+                                    if ($barber->trashed()) {
+                                        $status = 'deleted';
+                                    } elseif (!$barber->status) {
+                                        $hasTodayOff = \App\Models\BarberSchedule::where('barber_id', $barber->id)
+                                            ->where('schedule_date', $today)
+                                            ->where('status', 'holiday')
+                                            ->exists();
+
+                                        $status = $hasTodayOff ? 'holiday' : 'default';
+                                    } else {
+                                        $status = $barber->status;
+                                    }
+
+                                    $statusLabels = [
+                                        'idle' => ['label' => 'Đang hoạt động', 'class' => 'bg-success'],
+                                        'busy' => ['label' => 'Không nhận lịch', 'class' => 'bg-warning'],
+                                        'holiday' => ['label' => 'Đang nghỉ', 'class' => 'bg-info'],
+                                        'retired' => ['label' => 'Đã nghỉ việc', 'class' => 'bg-secondary'],
+                                        'deleted' => ['label' => 'Đã xoá', 'class' => 'bg-danger'],
+                                        'default' => ['label' => 'Không xác định', 'class' => 'bg-light text-dark'],
+                                    ];
+
+                                    $label = $statusLabels[$status] ?? $statusLabels['default'];
+                                @endphp
+
                                 <td>
-                                    @if ($barber->trashed())
-                                        <span class="badge bg-danger">Đã xoá</span>
-                                    @elseif ($barber->status === 'idle')
-                                        <span class="badge bg-success">Đang hoạt động</span>
-                                    @elseif ($barber->status === 'busy')
-                                        <span class="badge bg-warning">Không nhận lịch</span>
-                                    @else
-                                        <span class="badge bg-secondary">Đã Nghỉ việc</span>
-                                    @endif
+                                    <span class="badge {{ $label['class'] }}">{{ $label['label'] }}</span>
                                 </td>
+
+
+
                                 <td class="text-center">
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-outline-secondary" type="button"

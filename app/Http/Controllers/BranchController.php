@@ -6,6 +6,7 @@ use App\Http\Requests\BranchRequest;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 use function Pest\Laravel\json;
 
@@ -72,19 +73,26 @@ class BranchController extends Controller
     public function show(Request $request, $id)
     {
         $search = $request->input('search');
-
-        // Lấy chi nhánh đã xoá mềm nếu có
         $branch = Branch::withTrashed()->findOrFail($id);
 
-        // Lấy danh sách thợ của chi nhánh (nếu cần)
         $barbers = $branch->barbers()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
             })
-            ->paginate(10);
+            ->get(); // đổi từ paginate() sang get() để xử lý
+
+        $today = \Carbon\Carbon::today()->toDateString();
+
+        foreach ($barbers as $barber) {
+            $barber->is_on_leave_today = $barber->schedules()
+                ->where('schedule_date', $today)
+                ->where('status', 'holiday')
+                ->exists();
+        }
 
         return view('admin.branches.show', compact('branch', 'barbers', 'search'));
     }
+
 
 
 
