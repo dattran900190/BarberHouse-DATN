@@ -337,11 +337,6 @@ class AppointmentController extends Controller
             // Load quan hệ trước khi gửi email và Pusher
             $appointment->load(['barber', 'service']);
 
-            // Chuyển hướng theo phương thức thanh toán
-            // if ($appointment->payment_method === 'vnpay') {
-            //     return redirect()->route('client.payment.vnpay', ['appointment_id' => $appointment->id]);
-            // }
-
             // Gửi email thông báo pending (chỉ cho các phương thức thanh toán khác VNPay)
             Mail::to($appointment->email)->queue(new PendingBookingMail($appointment));
 
@@ -653,7 +648,7 @@ class AppointmentController extends Controller
 
             // Gửi email xác nhận chỉ cho các phương thức thanh toán khác VNPay
             if ($request->payment_method !== 'vnpay') {
-                Mail::to($appointment->email)->send(new ConfirmBookingMail($appointment, $AdditionalServices));
+                Mail::to($appointment->email)->queue(new ConfirmBookingMail($appointment, $AdditionalServices));
             }
 
             // Xử lý voucher

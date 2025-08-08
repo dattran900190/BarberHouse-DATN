@@ -271,6 +271,8 @@ class AppointmentController extends Controller
 
             $appointment->delete();
 
+            event(new AppointmentStatusUpdated($appointment));
+
             // Lấy tab hiện tại từ request
             $currentTab = $request->input('current_tab', 'pending');
             
@@ -482,6 +484,8 @@ class AppointmentController extends Controller
             Mail::to($cancelledAppointment->email)->queue(new AdminCancelBookingMail($cancelledAppointment));
 
             $appointment->delete();
+
+            event(new AppointmentStatusUpdated($appointment));
 
             // Lấy tab hiện tại từ request
             $currentTab = $request->input('current_tab', 'pending');

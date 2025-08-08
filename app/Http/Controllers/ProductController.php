@@ -447,5 +447,71 @@ class ProductController extends Controller
         return redirect()->route('admin.products.index')->with('error', 'Sản phẩm cần được xóa mềm trước.');
     }
 
+    public function hardDeleteVariant($id)
+    {
+        $variant = ProductVariant::withTrashed()->findOrFail($id);
+        
+        // Kiểm tra quyền
+        if (Auth::user()->role === 'admin_branch') {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn không có quyền xóa biến thể.'
+                ]);
+            }
+            return redirect()->back()->with('error', 'Bạn không có quyền xóa biến thể.');
+        }
 
+        // Kiểm tra xem biến thể có trong bất kỳ đơn hàng nào không
+        $isInOrder = DB::table('order_items')
+            ->where('product_variant_id', $variant->id)
+            ->exists();
+
+        if ($isInOrder) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể xóa cứng biến thể vì đã tồn tại trong đơn hàng.'
+                ]);
+            }
+            return redirect()->back()->with('error', 'Không thể xóa cứng biến thể vì đã tồn tại trong đơn hàng.');
+        }
+
+        // Kiểm tra xem biến thể đã bị xóa mềm chưa
+        if (!$variant->trashed()) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Biến thể cần được xóa mềm trước khi xóa cứng.'
+                ]);
+            }
+            return redirect()->back()->with('error', 'Biến thể cần được xóa mềm trước khi xóa cứng.');
+        }
+
+        try {
+            // Xóa ảnh vật lý của biến thể
+            if ($variant->image) {
+                Storage::disk('public')->delete($variant->image);
+            }
+
+            // Xóa vĩnh viễn biến thể
+            $variant->forceDelete();
+            
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Biến thể đã được xóa cứng thành công!'
+                ]);
+            }
+            return redirect()->back()->with('success', 'Biến thể đã được xóa cứng thành công!');
+        } catch (\Exception $e) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Đã xảy ra lỗi khi xóa cứng biến thể.'
+                ]);
+            }
+            return redirect()->back()->with('error', 'Đã xảy ra lỗi khi xóa cứng biến thể.');
+        }
+    }
 }

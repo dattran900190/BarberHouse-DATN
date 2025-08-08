@@ -48,6 +48,8 @@ class CheckinController extends Controller
             ]);
         }
 
+        event(new AppointmentStatusUpdated($appointment));
+        
         // Lấy tab hiện tại từ request
         $currentTab = $request->input('current_tab', 'progress');
 
