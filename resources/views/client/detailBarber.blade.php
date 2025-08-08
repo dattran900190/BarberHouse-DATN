@@ -223,7 +223,6 @@
             font-size: 1.1rem;
         }
 
-
         /* Review Section */
         .review-avatar {
             width: 50px;
@@ -261,28 +260,6 @@
             margin-bottom: 1rem;
         }
 
-        /* Pagination */
-        /* .pagination .page-item.active .page-link {
-                                background-color: #000;
-                                border-color: #000;
-                            }
-
-                            .pagination .page-link {
-                                color: #000;
-                                border-radius: 50% !important;
-                                width: 40px;
-                                height: 40px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                margin: 0 3px;
-                                border: 1px solid #dee2e6;
-                            }
-
-                            .pagination .page-link:hover {
-                                background-color: #f8f9fa;
-                            } */
-
         /* Card Styles */
         .card {
             border: none;
@@ -315,6 +292,234 @@
             padding: 15px;
             border-radius: 8px;
             border: 1px solid #eee;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 100%;
+                padding: 0;
+            }
+
+            .main-detail-barber {
+                padding: 0;
+            }
+
+            .barber-card {
+                border-radius: 0;
+                margin: 0;
+            }
+
+            .barber-card .row {
+                flex-direction: column;
+            }
+
+            .barber-card .col-md-4 {
+                padding: 2rem 1rem !important;
+            }
+
+            .barber-card .col-md-8 {
+                padding: 1rem !important;
+            }
+
+            .barber-card img {
+                width: 250px !important;
+                height: 250px !important;
+            }
+
+            .barber-card h1 {
+                font-size: 2.5rem !important;
+            }
+
+            .barber-card .text-muted {
+                font-size: 1.1rem !important;
+            }
+
+            .rating-badge {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .contact-info {
+                padding: 15px;
+                border-radius: 0;
+            }
+
+            .contact-info h5 {
+                font-size: 1.3rem;
+            }
+
+            .contact-info ul li {
+                font-size: 1.1rem;
+            }
+
+            .btn-outline-buy {
+                width: 100%;
+                text-align: center;
+                padding: 15px;
+                font-size: 1.2rem;
+            }
+
+            .card {
+                border-radius: 0;
+                margin: 0;
+            }
+
+            .card-body {
+                padding: 1.5rem !important;
+            }
+
+            .card h4 {
+                font-size: 1.8rem !important;
+            }
+
+            .profile-content {
+                font-size: 1.1rem;
+                line-height: 1.8;
+            }
+
+            .review-item {
+                padding: 1.5rem !important;
+                border-radius: 0;
+            }
+
+            .review-avatar {
+                width: 50px;
+                height: 50px;
+            }
+
+            .review-item h6 {
+                font-size: 1.2rem !important;
+            }
+
+            .review-item small {
+                font-size: 1rem !important;
+            }
+
+            .review-item p {
+                font-size: 1.1rem !important;
+            }
+
+            .d-flex.justify-content-between {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .d-flex.justify-content-between h4 {
+                font-size: 1.8rem !important;
+            }
+
+            .d-flex.justify-content-between .form-select {
+                width: 100% !important;
+                font-size: 1.1rem;
+                padding: 12px;
+            }
+
+            .badge {
+                font-size: 1rem !important;
+                padding: 8px 12px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-detail-barber {
+                padding: 0;
+            }
+
+            .barber-card .col-md-4 {
+                padding: 2rem 1rem !important;
+            }
+
+            .barber-card .col-md-8 {
+                padding: 1rem !important;
+            }
+
+            .barber-card img {
+                width: 200px !important;
+                height: 200px !important;
+            }
+
+            .barber-card h1 {
+                font-size: 2.2rem !important;
+            }
+
+            .barber-card .text-muted {
+                font-size: 1rem !important;
+            }
+
+            .rating-badge {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+
+            .contact-info {
+                padding: 12px;
+                border-radius: 0;
+            }
+
+            .contact-info h5 {
+                font-size: 1.2rem;
+            }
+
+            .contact-info ul li {
+                font-size: 1rem;
+            }
+
+            .btn-outline-buy {
+                padding: 12px;
+                font-size: 1.1rem;
+            }
+
+            .card-body {
+                padding: 1.2rem !important;
+            }
+
+            .card h4 {
+                font-size: 1.6rem !important;
+            }
+
+            .profile-content {
+                font-size: 1rem;
+                line-height: 1.7;
+            }
+
+            .review-item {
+                padding: 1.2rem !important;
+                border-radius: 0;
+            }
+
+            .review-avatar {
+                width: 45px;
+                height: 45px;
+            }
+
+            .review-item h6 {
+                font-size: 1.1rem !important;
+            }
+
+            .review-item small {
+                font-size: 0.95rem !important;
+            }
+
+            .review-item p {
+                font-size: 1rem !important;
+            }
+
+            .d-flex.justify-content-between h4 {
+                font-size: 1.6rem !important;
+            }
+
+            .d-flex.justify-content-between .form-select {
+                font-size: 1rem;
+                padding: 10px;
+            }
+
+            .badge {
+                font-size: 0.9rem !important;
+                padding: 6px 10px !important;
+            }
         }
     </style>
 @endsection
