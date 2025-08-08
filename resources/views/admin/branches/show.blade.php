@@ -124,18 +124,14 @@
                                     <td>{{ $barber->rating_avg }}</td>
                                     <td>{{ Str::limit($barber->profile, 50) }}</td>
                                     <td>
-                                        @if ($barber->is_on_leave_today)
-                                            <span class="badge bg-info">Đang nghỉ phép</span>
-                                        @elseif ($barber->status === 'idle')
+                                        @if ($barber->status === 'idle')
                                             <span class="badge bg-success">Đang hoạt động</span>
                                         @elseif ($barber->status === 'busy')
                                             <span class="badge bg-warning">Không nhận lịch</span>
                                         @else
                                             <span class="badge bg-secondary">Đã nghỉ việc</span>
                                         @endif
-
                                     </td>
-
                                     <td class="text-center align-middle" style="width: 70px;">
                                         <div class="dropdown d-inline-block">
                                             <button

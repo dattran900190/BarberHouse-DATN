@@ -81,15 +81,6 @@ class BranchController extends Controller
             })
             ->get(); // đổi từ paginate() sang get() để xử lý
 
-        $today = \Carbon\Carbon::today()->toDateString();
-
-        foreach ($barbers as $barber) {
-            $barber->is_on_leave_today = $barber->schedules()
-                ->where('schedule_date', $today)
-                ->where('status', 'holiday')
-                ->exists();
-        }
-
         return view('admin.branches.show', compact('branch', 'barbers', 'search'));
     }
 
