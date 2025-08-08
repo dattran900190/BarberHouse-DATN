@@ -19,8 +19,8 @@
         $currentStatus = request('status', '');
         $currentStatusLabel = $statusLabels[$currentStatus] ?? $currentStatus;
     @endphp
-    <main style="padding: 10%">
-        <div class="container">
+    <main>
+        <div class="container-fluid">
             <div class="card order-history mt-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center border-0 m-3">
                     <h3 class="mb-0 fw-bold">Lịch sử đặt hàng của tôi</h3>
@@ -124,6 +124,40 @@
     <style>
         #mainNav {
             background-color: #000;
+        }
+
+        main {
+            padding: 120px 60px 60px 60px;
+            /* Desktop mặc định */
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 80px 10px 10px 10px;
+            }
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 768px) {
+            .custom-swal-popup {
+                width: 95vw !important;
+                /* Gần full chiều ngang mobile */
+                max-width: 95vw !important;
+                padding: 15px;
+            }
+
+            .custom-swal-popup textarea {
+                font-size: 14px;
+                min-height: 100px;
+            }
+
+            .swal2-title {
+                font-size: 18px !important;
+            }
+
+            .swal2-html-container {
+                font-size: 14px !important;
+            }
         }
     </style>
 @endsection
