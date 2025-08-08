@@ -121,8 +121,6 @@
                                         <span class="badge bg-danger">Đã xoá</span>
                                     @elseif ($barber->status === 'idle')
                                         <span class="badge bg-success">Đang hoạt động</span>
-                                    @elseif ($barber->status === 'busy')
-                                        <span class="badge bg-warning">Không nhận lịch</span>
                                     @else
                                         <span class="badge bg-secondary">Đã Nghỉ việc</span>
                                     @endif

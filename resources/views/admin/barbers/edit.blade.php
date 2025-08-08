@@ -127,9 +127,7 @@
                         <option value="idle" {{ old('status', $barber->status) == 'idle' ? 'selected' : '' }}>
                             Đang hoạt động
                         </option>
-                        <option value="busy" {{ old('status', $barber->status) == 'busy' ? 'selected' : '' }}>
-                            Không nhận lịch
-                        </option>
+                        
                         <option value="retired" {{ old('status', $barber->status) == 'retired' ? 'selected' : '' }}>
                             Đã nghỉ việc
                         </option>
