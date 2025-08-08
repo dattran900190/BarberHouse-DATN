@@ -128,8 +128,7 @@
                                             <span class="badge bg-info">Đang nghỉ phép</span>
                                         @elseif ($barber->status === 'idle')
                                             <span class="badge bg-success">Đang hoạt động</span>
-                                        @elseif ($barber->status === 'busy')
-                                            <span class="badge bg-warning">Không nhận lịch</span>
+                                        
                                         @else
                                             <span class="badge bg-secondary">Đã nghỉ việc</span>
                                         @endif

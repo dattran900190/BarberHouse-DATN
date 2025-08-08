@@ -134,7 +134,7 @@
 
                                     $statusLabels = [
                                         'idle' => ['label' => 'Đang hoạt động', 'class' => 'bg-success'],
-                                        'busy' => ['label' => 'Không nhận lịch', 'class' => 'bg-warning'],
+                            
                                         'holiday' => ['label' => 'Đang nghỉ', 'class' => 'bg-info'],
                                         'retired' => ['label' => 'Đã nghỉ việc', 'class' => 'bg-secondary'],
                                         'deleted' => ['label' => 'Đã xoá', 'class' => 'bg-danger'],

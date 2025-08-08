@@ -19,7 +19,7 @@ return new class extends Migration
              $table->enum('skill_level', ['assistant', 'junior', 'senior', 'master', 'expert'])->nullable();
             $table->string('avatar')->nullable();
             $table->float('rating_avg')->nullable();
-            $table->enum('status', ['idle', 'busy', 'retired'])->default('idle');
+            $table->enum('status', ['idle', 'retired'])->default('idle');
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
         });
