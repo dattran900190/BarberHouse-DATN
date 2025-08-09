@@ -449,10 +449,10 @@ class ProductController extends Controller
                 if (request()->expectsJson()) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Đã xảy ra lỗi khi xóa sản phẩm vì sản phẩm còn liên quan tới các sản phẩm khác: '
+                        'message' => 'Đã xảy ra lỗi khi xóa sản phẩm vì sản phẩm còn liên quan tới biến thể của sản phẩm này: '
                     ]);
                 }
-                return redirect()->route('admin.products.index')->with('error', 'Đã xảy ra lỗi khi xóa sản phẩm vì sản phẩm còn liên quan tới các sản phẩm khác: ');
+                return redirect()->route('admin.products.index')->with('error', 'Đã xảy ra lỗi khi xóa sản phẩm vì sản phẩm còn liên quan tới biến thể của sản phẩm này:');
             }
         }
 
@@ -462,7 +462,7 @@ class ProductController extends Controller
                 'message' => 'Sản phẩm cần được xóa mềm trước.'
             ]);
         }
-        return redirect()->route('admin.products.index')->with('error', 'Sản phẩm cần được xóa mềm trước.');
+        return redirect()->route('admin.products.index')->with('error', 'Sản phẩm cần được xóa mềm trước.'); 
     }
 
     public function hardDeleteVariant($id)
@@ -526,7 +526,7 @@ class ProductController extends Controller
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Đã xảy ra lỗi khi xóa cứng biến thể.'
+                    'message' => 'Tạm thời bạn chưa thể xóa vĩnh viễn biến thể này.'
                 ]);
             }
             return redirect()->back()->with('error', 'Đã xảy ra lỗi khi xóa cứng biến thể.');
