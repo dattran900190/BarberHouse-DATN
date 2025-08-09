@@ -64,6 +64,15 @@ class ProductController extends Controller
         if (!$request->has('variants') || count($request->variants) < 1) {
             return back()->with('error', 'Phải có ít nhất 1 biến thể')->withInput();
         }
+        // Validate không trùng dung tích
+        if ($request->has('variants')) {
+            $volumes = array_column($request->variants, 'volume_id');
+            if (count($volumes) !== count(array_unique($volumes))) {
+                return back()
+                    ->with('error', 'Không được chọn trùng dung tích cho các biến thể!')
+                    ->withInput();
+            }
+        }
         $imagePath = null;
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $imagePath = $request->file('image')->store('products', 'public');
@@ -140,6 +149,15 @@ class ProductController extends Controller
     {
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền sửa sản phẩm.');
+        }
+        // Validate không trùng dung tích
+        if ($request->has('variants')) {
+            $volumes = array_column($request->variants, 'volume_id');
+            if (count($volumes) !== count(array_unique($volumes))) {
+                return back()
+                    ->with('error', 'Không được chọn trùng dung tích cho các biến thể!')
+                    ->withInput();
+            }
         }
         DB::transaction(function () use ($request, $product) {
             // 1. Xử lý ảnh chính sản phẩm
@@ -431,10 +449,10 @@ class ProductController extends Controller
                 if (request()->expectsJson()) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Đã xảy ra lỗi khi xóa sản phẩm vì sản phẩm còn liên quan tới các sản phẩm khác: '
+                        'message' => 'Đã xảy ra lỗi khi xóa sản phẩm vì sản phẩm còn liên quan tới biến thể của sản phẩm này: '
                     ]);
                 }
-                return redirect()->route('admin.products.index')->with('error', 'Đã xảy ra lỗi khi xóa sản phẩm vì sản phẩm còn liên quan tới các sản phẩm khác: ');
+                return redirect()->route('admin.products.index')->with('error', 'Đã xảy ra lỗi khi xóa sản phẩm vì sản phẩm còn liên quan tới biến thể của sản phẩm này:');
             }
         }
 
@@ -444,7 +462,7 @@ class ProductController extends Controller
                 'message' => 'Sản phẩm cần được xóa mềm trước.'
             ]);
         }
-        return redirect()->route('admin.products.index')->with('error', 'Sản phẩm cần được xóa mềm trước.');
+        return redirect()->route('admin.products.index')->with('error', 'Sản phẩm cần được xóa mềm trước.'); 
     }
 
     public function hardDeleteVariant($id)
@@ -508,10 +526,10 @@ class ProductController extends Controller
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Đã xảy ra lỗi khi xóa cứng biến thể.'
+                    'message' => 'Tạm thời bạn chưa thể xóa vĩnh viễn biến thể này vì sản phẩm đã tồn tại trong giỏ hàng khách hàng.'
                 ]);
             }
-            return redirect()->back()->with('error', 'Đã xảy ra lỗi khi xóa cứng biến thể.');
+            return redirect()->back()->with('error', 'Tạm thời bạn chưa thể xóa vĩnh viễn biến thể này vì sản phẩm đã tồn tại trong giỏ hàng khách hàng.');
         }
     }
 }

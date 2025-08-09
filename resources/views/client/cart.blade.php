@@ -196,6 +196,8 @@
         .alert-close:hover {
             color: #111827;
         }
+        #mainNav {
+            background-color: #000;
 
         @media (min-width: 992px) {
             .cart-section table {
