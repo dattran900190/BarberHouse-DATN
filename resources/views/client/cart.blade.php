@@ -256,6 +256,9 @@
         .alert-close:hover {
             color: #111827;
         }
+        #mainNav {
+            background-color: #000;
+        }
     </style>
 @endsection
 

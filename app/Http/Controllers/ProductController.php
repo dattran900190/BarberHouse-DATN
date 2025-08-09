@@ -526,10 +526,10 @@ class ProductController extends Controller
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Tạm thời bạn chưa thể xóa vĩnh viễn biến thể này.'
+                    'message' => 'Tạm thời bạn chưa thể xóa vĩnh viễn biến thể này vì sản phẩm đã tồn tại trong giỏ hàng khách hàng.'
                 ]);
             }
-            return redirect()->back()->with('error', 'Đã xảy ra lỗi khi xóa cứng biến thể.');
+            return redirect()->back()->with('error', 'Tạm thời bạn chưa thể xóa vĩnh viễn biến thể này vì sản phẩm đã tồn tại trong giỏ hàng khách hàng.');
         }
     }
 }
