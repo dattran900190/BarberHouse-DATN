@@ -12,7 +12,7 @@ class BarberController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Barber::with('branch')->whereIn('status', [1, 2]);;
+        $query = Barber::with('branch')->whereIn('status', [1]);;
 
         if ($request->filled('branch_id')) {
             $query->where('branch_id', $request->branch_id);

@@ -87,8 +87,7 @@
                                         <strong>Trạng thái:</strong>
                                         @if ($barber->status === 'idle')
                                             <span class="badge bg-success">Đang hoạt động</span>
-                                        @elseif ($barber->status === 'busy')
-                                            <span class="badge bg-warning text-dark">Không nhận lịch</span>
+
                                         @elseif ($barber->status === 'retired')
                                             <span class="badge bg-secondary">Đã nghỉ việc</span>
                                         @else

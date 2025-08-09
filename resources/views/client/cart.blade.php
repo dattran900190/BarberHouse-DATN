@@ -12,8 +12,8 @@
                     <div class="col-12">
                         <div class="card-registration w-100" style="max-width: 100%;">
                             <div class="card-body no-padding">
-                                <div class="flex-row no-gap">
-                                    <div class="col-left-66">
+                                <div class="row g-0">
+                                    <div class="col-12 col-lg-8">
                                         <div class="p-5vh">
                                             <div class="d-flex justify-content-between align-items-center mb-5">
                                                 <h1 class="fw-bold mb-0">Giỏ hàng</h1>
@@ -38,131 +38,71 @@
                                             @if ($cart->items->isEmpty())
                                                 <p id="empty-cart-message">Giỏ hàng trống.</p>
                                             @else
-                                                <div class="table-responsive">
+                                                <div class="table-responsive cart-section">
                                                     <table class="table">
                                                         <thead>
-                                                            <!-- Thêm vào <thead> -->
                                                             <tr>
-                                                                <th scope="col">
-                                                                    <input type="checkbox" id="check-all-cart">
-                                                                </th>
-                                                                <th scope="col">Tên sản phẩm</th>
-                                                                <th scope="col">Hình ảnh</th>
-                                                                <th scope="col">Số lượng</th>
-                                                                <th scope="col">Đơn giá</th>
-                                                                <th scope="col">Thành tiền</th>
-                                                                <th scope="col"></th>
+                                                                <th><input type="checkbox" id="check-all-cart"></th>
+                                                                <th>Tên sản phẩm</th>
+                                                                <th>Hình ảnh</th>
+                                                                <th>Số lượng</th>
+                                                                <th>Đơn giá</th>
+                                                                <th>Thành tiền</th>
+                                                                <th></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody id="cart-items">
                                                             @foreach ($cart->items as $item)
                                                                 <tr id="cart-item-{{ $item->id }}">
-                                                                    <td>
+                                                                    <td data-label="Chọn">
                                                                         <input type="checkbox" class="cart-item-checkbox"
                                                                             data-item-id="{{ $item->id }}"
-                                                                            {{ $item->canCheckout() ? 'checked' : 'disabled' }}
-                                                                            {{ !$item->canCheckout() ? 'style=opacity:0.5' : '' }}>
+                                                                            {{ $item->canCheckout() ? 'checked' : 'disabled' }}>
                                                                     </td>
-                                                                    <td>
-                                                                        @if ($item->isProductAvailable())
-                                                                            <strong>{{ $item->productVariant->product->name }}</strong><br>
-                                                                            @php
-                                                                                $product =
-                                                                                    $item->productVariant->product;
-                                                                                $currentVariantId =
-                                                                                    $item->product_variant_id;
-                                                                                $variants =
-                                                                                    $product->variants ?? collect();
-                                                                            @endphp
-
-                                                                            <form
-                                                                                action="{{ route('cart.update.variant', $item->id) }}"
-                                                                                method="POST">
-                                                                                @csrf
-                                                                                @method('PUT')
-                                                                                <label
-                                                                                    class="form-label text-muted small">Dung
-                                                                                    tích:</label>
-                                                                                <select name="product_variant_id"
-                                                                                    class="form-select form-select-sm mt-1"
-                                                                                    onchange="this.form.submit()">
-                                                                                    @foreach ($variants as $variant)
-                                                                                        <option value="{{ $variant->id }}"
-                                                                                            {{ $variant->id == $currentVariantId ? 'selected' : '' }}>
-                                                                                            {{ $variant->volume->name ?? ($variant->name ?? 'Không rõ') }}
-                                                                                        </option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </form>
-                                                                        @else
-                                                                            <div class="text-muted">
-                                                                                <strong>{{ $item->productVariant->product->name ?? 'Sản phẩm không xác định' }}</strong>
-                                                                                <br>
-                                                                                <small class="text-danger">
-                                                                                    <i
-                                                                                        class="fas fa-exclamation-triangle me-1"></i>
-                                                                                    {{ $item->getProductStatusMessage() }}
-                                                                                </small>
-                                                                            </div>
-                                                                        @endif
+                                                                    <td data-label="Sản phẩm">
+                                                                        <strong>{{ $item->productVariant->product->name }}</strong>
+                                                                        <br>
+                                                                        <small class="text-muted">
+                                                                            {{ $item->productVariant->volume->name ?? '' }}
+                                                                        </small>
                                                                     </td>
-                                                                    <td>
+                                                                    <td data-label="Hình ảnh">
                                                                         <img src="{{ $item->productVariant->image ? Storage::url($item->productVariant->image) : asset('images/no-image.png') }}"
-                                                                            alt="{{ $item->productVariant->product->name ?? 'Sản phẩm' }}"
-                                                                            class="img-fluid rounded-3 {{ !$item->canCheckout() ? 'opacity-50' : '' }}"
-                                                                            style="width: 100px;">
+                                                                            alt="{{ $item->productVariant->product->name }}"
+                                                                            class="img-fluid rounded-3"
+                                                                            style="width: 80px;">
                                                                     </td>
-                                                                    <td>
-                                                                        @if ($item->canCheckout())
-                                                                            <div class="quantity d-flex align-items-center">
-                                                                                <button type="button"
-                                                                                    class="btn btn-outline-dark btn-sm quantity-minus"
-                                                                                    data-item-id="{{ $item->id }}"
-                                                                                    data-csrf="{{ csrf_token() }}">−</button>
-                                                                                <input type="number"
-                                                                                    class="form-control form-control-sm mx-2 quantity-input"
-                                                                                    value="{{ $item->quantity }}"
-                                                                                    min="1"
-                                                                                    max="{{ $item->productVariant->stock }}"
-                                                                                    data-item-id="{{ $item->id }}"
-                                                                                    data-price="{{ $item->price }}"
-                                                                                    style="width: 60px; text-align: center;" />
-                                                                                <button type="button"
-                                                                                    class="btn btn-outline-dark btn-sm quantity-plus"
-                                                                                    data-item-id="{{ $item->id }}"
-                                                                                    data-csrf="{{ csrf_token() }}">+</button>
-                                                                            </div>
-                                                                        @else
-                                                                            <div class="text-muted">
-                                                                                <small>Số lượng:
-                                                                                    {{ $item->quantity }}</small>
-                                                                                @if ($item->productVariant->stock <= 0)
-                                                                                    <br><small class="text-danger">
-                                                                                        <i
-                                                                                            class="fas fa-exclamation-triangle me-1"></i>
-                                                                                        Hết hàng
-                                                                                    </small>
-                                                                                @endif
-                                                                            </div>
-                                                                        @endif
+                                                                    <td data-label="Số lượng">
+                                                                        <div class="quantity d-flex align-items-center">
+                                                                            <button type="button"
+                                                                                class="btn btn-outline-dark btn-sm quantity-minus"
+                                                                                data-item-id="{{ $item->id }}">−</button>
+                                                                            <input type="number"
+                                                                                class="form-control form-control-sm mx-2 quantity-input"
+                                                                                value="{{ $item->quantity }}"
+                                                                                data-item-id="{{ $item->id }}"
+                                                                                min="1"
+                                                                                max="{{ $item->productVariant->stock }}"
+                                                                                style="width: 60px; text-align: center;" />
+                                                                            <button type="button"
+                                                                                class="btn btn-outline-dark btn-sm quantity-plus"
+                                                                                data-item-id="{{ $item->id }}">+</button>
+                                                                        </div>
                                                                     </td>
-                                                                    <td class="unit-price">
+                                                                    <td data-label="Đơn giá" class="unit-price">
                                                                         {{ number_format($item->price, 0, ',', '.') }} VNĐ
                                                                     </td>
-                                                                    <td class="subtotal">
+                                                                    <td data-label="Thành tiền" class="subtotal">
                                                                         {{ number_format($item->price * $item->quantity, 0, ',', '.') }}
-                                                                        VNĐ
-                                                                    </td>
-
-                                                                    <td class="text-end">
+                                                                        VNĐ</td>
+                                                                    <td data-label="Xóa" class="text-end">
                                                                         <form
                                                                             action="{{ route('cart.remove', $item->id) }}"
-                                                                            method="POST" class="remove-form">
+                                                                            method="POST">
                                                                             @csrf
                                                                             @method('DELETE')
                                                                             <button type="submit"
-                                                                                class="text-muted btn btn-link"
-                                                                                data-csrf="{{ csrf_token() }}">
+                                                                                class="text-muted btn btn-link">
                                                                                 <i class="fas fa-times"></i>
                                                                             </button>
                                                                         </form>
@@ -175,7 +115,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="col-lg-4 bg-body-tertiary">
+                                    <div class="col-12 col-lg-4 bg-body-tertiary">
                                         <div class="p-5">
                                             <h3 class="fw-bold mb-5 mt-2 pt-1">Tổng</h3>
                                             <hr class="my-4">
@@ -198,17 +138,17 @@
                                                 <h6 class="mb-0"><a href="/" class="text-body"><i
                                                             class="fas fa-long-arrow-alt-left me-2"></i>Quay lại cửa
                                                         hàng</a></h6>
-                                                        
-                                            <form id="checkout-form" action="{{ route('cart.checkout') }}"
-                                                method="GET" class="text-end" style="margin-top: -5px;">
-                                                @guest
-                                                    <button type="button" class="btn btn-dark btn-block btn-lg"
-                                                        id="btn-checkout-guest">Mua hàng</button>
-                                                @else
-                                                    <button type="submit" class="btn-outline-buy">Mua hàng</button>
-                                                @endguest
-                                            </form>
-                                        </div>
+
+                                                <form id="checkout-form" action="{{ route('cart.checkout') }}"
+                                                    method="GET" class="text-end" style="margin-top: -5px;">
+                                                    @guest
+                                                        <button type="button" class="btn btn-dark btn-block btn-lg"
+                                                            id="btn-checkout-guest">Mua hàng</button>
+                                                    @else
+                                                        <button type="submit" class="btn-outline-buy">Mua hàng</button>
+                                                    @endguest
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -258,6 +198,91 @@
         }
         #mainNav {
             background-color: #000;
+
+        @media (min-width: 992px) {
+            .cart-section table {
+                width: 100%;
+            }
+        }
+
+        /* Tablet & Mobile */
+        @media (max-width: 991px) {
+            /* Full-width on mobile: remove outer paddings/margins */
+            main.container-fluid,
+            .container-fluid {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            section.h-custom {
+                padding: 0 !important;
+            }
+
+            .cart-section table {
+                border: 0;
+            }
+
+            .cart-section thead {
+                display: none;
+            }
+
+            .cart-section tbody tr {
+                display: block;
+                margin-bottom: 1rem;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 10px;
+                background: #fff;
+            }
+
+            .cart-section tbody tr td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 6px 10px;
+                border: none;
+            }
+
+            .cart-section tbody tr td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                flex-basis: 40%;
+                text-align: left;
+            }
+
+            .cart-section img {
+                max-width: 70px;
+                height: auto;
+                border-radius: 5px;
+            }
+
+            .quantity {
+                flex-wrap: wrap;
+            }
+
+            /* Reduce paddings on small screens */
+            .p-5vh {
+                padding: 12px !important;
+            }
+            .padding-5vh {
+                padding: 0 !important;
+            }
+            .bg-body-tertiary .p-5 {
+                padding: 12px !important;
+            }
+
+            /* Edge-to-edge card on mobile */
+            .card-registration {
+                border-radius: 0 !important;
+            }
+        }
+
+        /* Improve table spacing on desktop */
+        @media (min-width: 992px) {
+            .cart-section .table td,
+            .cart-section .table th {
+                vertical-align: middle;
+            }
         }
     </style>
 @endsection

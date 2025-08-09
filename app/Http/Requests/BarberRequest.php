@@ -33,7 +33,7 @@ class BarberRequest extends FormRequest
                 'integer',
                 'exists:branches,id',
             ],
-            'status' => 'required|in:idle,busy,retired',
+            'status' => 'required|in:idle,retired',
         ];
     }
 

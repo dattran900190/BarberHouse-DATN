@@ -17,7 +17,6 @@ class BarberController extends Controller
         $user = Auth::user();
         $search = $request->input('search');
         $filter = $request->input('filter', 'all');
-        $today = now()->toDateString();
 
         $query = match ($filter) {
             'deleted' => Barber::onlyTrashed(),
@@ -25,13 +24,7 @@ class BarberController extends Controller
             default => Barber::withTrashed(),
         };
 
-        $barbers = $query
-            ->with([
-                'branch',
-                'schedules' => function ($query) use ($today) {
-                    $query->whereDate('schedule_date', $today);
-                }
-            ])
+        $barbers = $query->with('branch')
             ->when($user->role === 'admin_branch', fn($q) => $q->where('branch_id', $user->branch_id))
             ->when($search, fn($q) => $q->where('name', 'like', "%$search%"))
             ->orderByDesc('id')
@@ -71,7 +64,6 @@ class BarberController extends Controller
 
     public function show($id)
     {
-
         $barber = Barber::withTrashed()->findOrFail($id);
         $barber->load('branch');
         return view('admin.barbers.show', compact('barber'));
