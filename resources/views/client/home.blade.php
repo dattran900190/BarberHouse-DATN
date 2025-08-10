@@ -114,7 +114,53 @@
         <section id="product">
             <div class="product-wrapper">
                 <h2>Sản phẩm Baber House</h2>
-                <div id="products-list"></div>
+                <div class="products">
+                    @foreach ($products as $product)
+                        <div class="product">
+                            <div class="image-product">
+                                <a href="{{ route('client.product.detail', $product->id) }}">
+                                    <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" />
+                                </a>
+                            </div>
+                            <h4>
+                                <a href="{{ route('client.product.detail', $product->id) }}" class="product-link">
+                                    {{ $product->name }}
+                                </a>
+                            </h4>
+                            <p>{{ number_format($product->price) }} VNĐ</p>
+
+                            @php
+                                $variant = $product->variants->where('stock', '>', 0)->first();
+                            @endphp
+                            @if ($variant)
+                                <div class="button-group">
+                                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        @guest
+                                            <button type="submit" class="btn-outline-buy">Mua ngay</button>
+                                        @else
+                                            <button type="submit" class="btn-outline-buy">Mua ngay</button>
+                                        @endguest
+                                    </form>
+                                </div>
+                            @else
+                                <span style="color: rgb(232, 184, 12); font-weight: bold; text-align: center;">Hết
+                                    hàng</span>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
                 <div class="text-center mt-3">
                     <a href="{{ route('client.product') }}" class="btn-outline-cart">Xem thêm</a>
                 </div>
@@ -578,66 +624,9 @@
                 });
         }
     </script>
-    <script>
-        function renderProducts(products) {
-            let html = '<div class="products">';
-            products.forEach(product => {
-                const variant = product.variants.find(v => v.stock > 0);
-                html += `<div class="product">
-                    <div class="image-product">
-                        <a href="/san-pham/${product.id}">
-                            <img src="/storage/${product.image}" alt="${product.name}" />
-                        </a>
-                    </div>
-                    <h4>
-                        <a href="/san-pham/${product.id}" class="product-link">
-                            ${product.name}
-                        </a>
-                    </h4>
-                    <p>${Number(product.price).toLocaleString()} VNĐ</p>`;
-
-                if (variant) {
-                    html += `<div class="button-group">
-                        <form action="/gio-hang/add" method="POST" class="add-to-cart-form">
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="product_variant_id" value="${variant.id}">
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
-                                <i class="fas fa-cart-plus"></i>
-                            </button>
-                        </form>
-                        <form action="/mua-ngay" method="POST" class="buy-now-form">
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="product_variant_id" value="${variant.id}">
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="btn-outline-buy">Mua ngay</button>
-                        </form>
-                    </div>`;
-                } else {
-                    html += `<span style="color: rgb(232, 184, 12); font-weight: bold; text-align: center;">Hết hàng</span>`;
-                }
-                html += '</div>';
-            });
-            html += '</div>';
-            $('#products-list').html(html);
-        }
-        function fetchProducts() {
-            $.get('/api/products', function(data) {
-                renderProducts(data);
-            });
-        }
-        $(document).ready(function() {
-            fetchProducts();
-        });
-    </script>
-    <script>
-        if (window.Echo) {
-            window.Echo.channel('products')
-                .listen('.ProductUpdated', (e) => {
-                    fetchProducts();
-                });
-        }
-    </script>
+  
+     
+   
     <script>
         $(function() {
             // Slide 1 ảnh khách hàng trên mobile
