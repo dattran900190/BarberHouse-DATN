@@ -259,18 +259,23 @@
             newRow.classList.add('variant');
             newRow.innerHTML = `
             <td>
-                <select name="variants[${variantIndex}][volume_id]" class="form-control">
-                    <option value="">Chọn dung tích</option>
-                    @foreach ($volumes as $volume)
-                        <option value="{{ $volume->id }}">{{ $volume->name }}</option>
-                    @endforeach
-                </select>
+       <select name="variants[${variantIndex}][volume_id]" 
+        class="form-control" 
+        required
+        oninvalid="this.setCustomValidity('Vui lòng chọn dung tích')" 
+        oninput="this.setCustomValidity('')">
+    <option value="">Chọn dung tích</option>
+    @foreach ($volumes as $volume)
+        <option value="{{ $volume->id }}">{{ $volume->name }}</option>
+    @endforeach
+</select>
+
             </td>
             <td>
-                <input type="number" name="variants[${variantIndex}][price]" class="form-control" step="0.01">
+                <input type="number" name="variants[${variantIndex}][price]" class="form-control" required step="0.01"     oninvalid="this.setCustomValidity('Vui lòng nhập giá')" oninput="this.setCustomValidity('')">
             </td>
             <td>
-                <input type="number" name="variants[${variantIndex}][stock]" class="form-control">
+                <input type="number" name="variants[${variantIndex}][stock]" class="form-control" required  oninvalid="this.setCustomValidity('Vui lòng nhập số lượng')" oninput="this.setCustomValidity('')">
             </td>
             <td>
                 <input type="file" name="variants[${variantIndex}][image]" class="form-control" accept="image/*">
@@ -378,7 +383,7 @@
                                     // Thêm lại listener cho nút khôi phục và xóa cứng mới
                                     addRestoreListener(row.querySelector('.btn-restore-variant'));
                                     addHardDeleteListener(row.querySelector(
-                                    '.btn-hard-delete-variant'));
+                                        '.btn-hard-delete-variant'));
                                 } else {
                                     Swal.fire('Lỗi', data.message ||
                                         'Không thể ẩn biến thể cuối cùng!', 'error');
@@ -480,11 +485,12 @@
 
                                     // Thêm lại listener cho nút ẩn mới
                                     addSoftDeleteListener(row.querySelector(
-                                    '.btn-soft-delete-variant'));
+                                        '.btn-soft-delete-variant'));
                                 } else {
                                     Swal.fire({
                                         title: 'Lỗi',
-                                        text: data.message || 'Đã xảy ra lỗi khi kích hoạt lại biến thể.',
+                                        text: data.message ||
+                                            'Đã xảy ra lỗi khi kích hoạt lại biến thể.',
                                         icon: 'error',
                                         customClass: {
                                             popup: 'custom-swal-popup'
@@ -495,14 +501,15 @@
                             })
                             .catch(() => {
                                 Swal.fire({
-                                        title: 'Lỗi',
-                                        text: data.message || 'Đã xảy ra lỗi khi kích hoạt lại biến thể.',
-                                        icon: 'error',
-                                        customClass: {
-                                            popup: 'custom-swal-popup'
-                                        },
-                                        width: '400px'
-                                    });
+                                    title: 'Lỗi',
+                                    text: data.message ||
+                                        'Đã xảy ra lỗi khi kích hoạt lại biến thể.',
+                                    icon: 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    },
+                                    width: '400px'
+                                });
                             });
                     }
                 });
@@ -567,15 +574,16 @@
                             })
                             .catch(() => {
                                 Swal.fire({
-                                        title: 'Lỗi',
-                                        text: data.message || 'Đã xảy ra lỗi khi xóa cứng biến thể.',
-                                        icon: 'error',
-                                        customClass: {
-                                            popup: 'custom-swal-popup'
-                                        },
-                                        width: '400px'
-                                    });
-                            
+                                    title: 'Lỗi',
+                                    text: data.message ||
+                                        'Đã xảy ra lỗi khi xóa cứng biến thể.',
+                                    icon: 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    },
+                                    width: '400px'
+                                });
+
                             });
                     }
                 });
