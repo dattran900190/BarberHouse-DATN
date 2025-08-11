@@ -25,6 +25,14 @@
             </li>
         </ul>
     </div>
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    @endif
     <div class="card">
         <div class="card-header text-white align-items-center">
             <div class="card-title">Chỉnh sửa sản phẩm</div>
@@ -143,9 +151,8 @@
                                     $allVariants = $product->variants()->withTrashed()->get();
                                     $trashedCount = $allVariants->where('deleted_at', '!=', null)->count();
                                 @endphp
-                            
+
                                 @foreach ($allVariants as $variant)
-                                
                                     <tr class="variant-row" data-variant-id="{{ $variant->id }}">
                                         <td>
                                             @if (isset($variant->id) && !$variant->trashed())
@@ -213,9 +220,11 @@
                                         </td>
                                         <td>
                                             @if ($variant->trashed())
-                                                <button type="button" class="btn btn-sm btn-outline-success btn-restore-variant"
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline-success btn-restore-variant"
                                                     data-variant-id="{{ $variant->id }}">Khôi phục</button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger btn-hard-delete-variant"
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline-danger btn-hard-delete-variant"
                                                     data-variant-id="{{ $variant->id }}">Xóa cứng</button>
                                             @else
                                                 <button type="button"
@@ -229,7 +238,7 @@
                         </table>
                         <button type="button" class="btn btn-sm btn-outline-success" id="add-variant">Thêm biến
                             thể</button>
-                      
+
                     </div>
                 </div>
 
@@ -250,18 +259,23 @@
             newRow.classList.add('variant');
             newRow.innerHTML = `
             <td>
-                <select name="variants[${variantIndex}][volume_id]" class="form-control">
-                    <option value="">Chọn dung tích</option>
-                    @foreach ($volumes as $volume)
-                        <option value="{{ $volume->id }}">{{ $volume->name }}</option>
-                    @endforeach
-                </select>
+       <select name="variants[${variantIndex}][volume_id]" 
+        class="form-control" 
+        required
+        oninvalid="this.setCustomValidity('Vui lòng chọn dung tích')" 
+        oninput="this.setCustomValidity('')">
+    <option value="">Chọn dung tích</option>
+    @foreach ($volumes as $volume)
+        <option value="{{ $volume->id }}">{{ $volume->name }}</option>
+    @endforeach
+</select>
+
             </td>
             <td>
-                <input type="number" name="variants[${variantIndex}][price]" class="form-control" step="0.01">
+                <input type="number" name="variants[${variantIndex}][price]" class="form-control" required step="0.01"     oninvalid="this.setCustomValidity('Vui lòng nhập giá')" oninput="this.setCustomValidity('')">
             </td>
             <td>
-                <input type="number" name="variants[${variantIndex}][stock]" class="form-control">
+                <input type="number" name="variants[${variantIndex}][stock]" class="form-control" required  oninvalid="this.setCustomValidity('Vui lòng nhập số lượng')" oninput="this.setCustomValidity('')">
             </td>
             <td>
                 <input type="file" name="variants[${variantIndex}][image]" class="form-control" accept="image/*">
@@ -288,7 +302,6 @@
             document.querySelectorAll('input[type=checkbox][name^="delete_variants"]').forEach(cb => cb.checked =
                 true);
         });
-
     </script>
 @endsection
 
@@ -308,12 +321,12 @@
                     confirmButtonText: 'Ẩn',
                     cancelButtonText: 'Hủy',
                     customClass: {
-                            popup: 'custom-swal-popup'
-                        },
-                        width: '400px',
-                        customClass: {
-                            popup: 'custom-swal-popup'
-                        }
+                        popup: 'custom-swal-popup'
+                    },
+                    width: '400px',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
                         fetch("{{ route('admin.product-variants.softDelete', ['id' => 'VARIANT_ID']) }}"
@@ -338,16 +351,16 @@
                                     });
                                     // Lấy giá trị hiển thị
                                     let volumeText = row.querySelector(
-                                        'td:nth-child(1) select') ?
+                                            'td:nth-child(1) select') ?
                                         row.querySelector('td:nth-child(1) select')
                                         .selectedOptions[0].textContent :
                                         row.querySelector('td:nth-child(1)').textContent;
                                     let priceValue = row.querySelector(
-                                        'td:nth-child(2) input') ?
+                                            'td:nth-child(2) input') ?
                                         row.querySelector('td:nth-child(2) input').value :
                                         row.querySelector('td:nth-child(2)').textContent;
                                     let stockValue = row.querySelector(
-                                        'td:nth-child(3) input') ?
+                                            'td:nth-child(3) input') ?
                                         row.querySelector('td:nth-child(3) input').value :
                                         row.querySelector('td:nth-child(3)').textContent;
                                     let imgHtml = row.querySelector('td:nth-child(4) img') ?
@@ -366,10 +379,11 @@
                                         variantId + '">Khôi phục</button>' +
                                         '<button type="button" class="btn btn-sm btn-outline-danger btn-hard-delete-variant" data-variant-id="' +
                                         variantId + '">Xóa cứng</button>';
-                                    
+
                                     // Thêm lại listener cho nút khôi phục và xóa cứng mới
                                     addRestoreListener(row.querySelector('.btn-restore-variant'));
-                                    addHardDeleteListener(row.querySelector('.btn-hard-delete-variant'));
+                                    addHardDeleteListener(row.querySelector(
+                                        '.btn-hard-delete-variant'));
                                 } else {
                                     Swal.fire('Lỗi', data.message ||
                                         'Không thể ẩn biến thể cuối cùng!', 'error');
@@ -398,12 +412,12 @@
                     confirmButtonText: 'Kích hoạt',
                     cancelButtonText: 'Hủy',
                     customClass: {
-                            popup: 'custom-swal-popup'
-                        },
-                        width: '400px',
-                        customClass: {
-                            popup: 'custom-swal-popup'
-                        }
+                        popup: 'custom-swal-popup'
+                    },
+                    width: '400px',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
                         fetch("{{ route('admin.product-variants.restore', ['id' => 'VARIANT_ID']) }}"
@@ -468,17 +482,34 @@
                                     imgHtml +=
                                         `<input type=\"file\" name=\"variants[${variantId}][image]\" class=\"form-control\" accept=\"image/*\">`;
                                     row.querySelector('td:nth-child(4)').innerHTML = imgHtml;
-                                    
+
                                     // Thêm lại listener cho nút ẩn mới
-                                    addSoftDeleteListener(row.querySelector('.btn-soft-delete-variant'));
+                                    addSoftDeleteListener(row.querySelector(
+                                        '.btn-soft-delete-variant'));
                                 } else {
-                                    Swal.fire('Lỗi', data.message ||
-                                        'Không thể kích hoạt lại biến thể!', 'error');
+                                    Swal.fire({
+                                        title: 'Lỗi',
+                                        text: data.message ||
+                                            'Đã xảy ra lỗi khi kích hoạt lại biến thể.',
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        },
+                                        width: '400px'
+                                    });
                                 }
                             })
                             .catch(() => {
-                                Swal.fire('Lỗi', 'Đã xảy ra lỗi khi kích hoạt lại biến thể.',
-                                    'error');
+                                Swal.fire({
+                                    title: 'Lỗi',
+                                    text: data.message ||
+                                        'Đã xảy ra lỗi khi kích hoạt lại biến thể.',
+                                    icon: 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    },
+                                    width: '400px'
+                                });
                             });
                     }
                 });
@@ -530,11 +561,29 @@
                                     // Xóa dòng khỏi bảng
                                     row.remove();
                                 } else {
-                                    Swal.fire('Lỗi', data.message || 'Không thể xóa cứng biến thể!', 'error');
+                                    Swal.fire({
+                                        title: 'Lỗi',
+                                        text: data.message || 'Không thể xóa cứng biến thể!',
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        },
+                                        width: '400px'
+                                    });
                                 }
                             })
                             .catch(() => {
-                                Swal.fire('Lỗi', 'Đã xảy ra lỗi khi xóa cứng biến thể.', 'error');
+                                Swal.fire({
+                                    title: 'Lỗi',
+                                    text: data.message ||
+                                        'Đã xảy ra lỗi khi xóa cứng biến thể.',
+                                    icon: 'error',
+                                    customClass: {
+                                        popup: 'custom-swal-popup'
+                                    },
+                                    width: '400px'
+                                });
+
                             });
                     }
                 });
@@ -546,6 +595,5 @@
         console.log('Found hard delete buttons:', hardDeleteButtons.length);
         console.log('SweetAlert2 available:', typeof Swal !== 'undefined');
         hardDeleteButtons.forEach(addHardDeleteListener);
-        
     </script>
 @endsection

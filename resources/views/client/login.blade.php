@@ -28,9 +28,11 @@
                         alt="">
                 </div>
                 @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div class="alert-box" id="customAlert">
+                        <div class="alert-message">
+                            <span>{{ session('success') }}</span>
+                        </div>
+                        <span class="alert-close" onclick="document.getElementById('customAlert').remove()">×</span>
                     </div>
                 @endif
                 <div class="form">
@@ -93,6 +95,44 @@
         </div>
     </main>
 
+    <style>
+        .alert-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            border-left: 4px solid #16a34a;
+            /* xanh lá */
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: #1f2937;
+            position: relative;
+        }
+
+        .alert-message {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-icon {
+            color: #16a34a;
+            font-size: 20px;
+        }
+
+        .alert-close {
+            cursor: pointer;
+            font-size: 20px;
+            color: #6b7280;
+            transition: color 0.2s ease;
+        }
+
+        .alert-close:hover {
+            color: #111827;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>

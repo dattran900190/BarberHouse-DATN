@@ -354,7 +354,7 @@ class CartController extends Controller
         }
 
         // Lấy các item được chọn
-        $items = $cart->items()->with('productVariant.product')
+        $items = $cart->items()->with('productVariant.product', 'productVariant.volume')
             ->whereIn('id', $selectedIds)
             ->get();
 
@@ -388,6 +388,7 @@ class CartController extends Controller
                 'image' => $item->productVariant->image ? Storage::url($item->productVariant->image) : asset('images/no-image.png'),
                 'cart_item_id' => $item->id,
                 'subtotal' => $subtotal,
+                'volume_name' => $item->productVariant->volume->name ?? '',
             ];
         })->toArray();
 
@@ -809,7 +810,7 @@ class CartController extends Controller
         }
 
         // Lấy thông tin variant
-        $variant = ProductVariant::with('product')->find($buyNow['product_variant_id']);
+        $variant = ProductVariant::with('product', 'volume')->find($buyNow['product_variant_id']);
         if (!$variant) {
             return redirect('/')->with('error', 'Sản phẩm không tồn tại.');
         }
@@ -823,6 +824,7 @@ class CartController extends Controller
             'image' => $variant->image ? Storage::url($variant->image) : asset('images/no-image.png'),
             'cart_item_id' => null,
             'subtotal' => $variant->price * $buyNow['quantity'],
+            'volume_name' => $variant->volume->name ?? '',
         ];
 
         $userInfo = [

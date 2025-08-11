@@ -221,7 +221,6 @@
             font-size: 1.1rem;
         }
 
-
         /* Review Section */
         .review-avatar {
             width: 50px;
@@ -258,28 +257,6 @@
         .profile-content p {
             margin-bottom: 1rem;
         }
-
-        /* Pagination */
-        /* .pagination .page-item.active .page-link {
-                                background-color: #000;
-                                border-color: #000;
-                            }
-
-                            .pagination .page-link {
-                                color: #000;
-                                border-radius: 50% !important;
-                                width: 40px;
-                                height: 40px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                margin: 0 3px;
-                                border: 1px solid #dee2e6;
-                            }
-
-                            .pagination .page-link:hover {
-                                background-color: #f8f9fa;
-                            } */
 
         /* Card Styles */
         .card {
