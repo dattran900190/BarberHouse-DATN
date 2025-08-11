@@ -626,7 +626,7 @@
             }
 
             .mobile-user-info {
-                display: flex;
+                /* display: flex; */
                 align-items: center;
                 margin-bottom: 20px;
                 padding: 15px;

@@ -230,6 +230,7 @@
                 @media (max-width: 480px) {
                     .mainDetailPost {
                         padding: 0.5rem;
+                        margin-top: 100px;
                     }
 
                     .mainDetailPost h2 {

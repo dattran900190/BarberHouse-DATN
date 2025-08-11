@@ -354,6 +354,9 @@
             }
             .image-item {
                 width: 100%;
+                height: 220px;
+                overflow: hidden;
+                position: relative;
             }
             .image-item img {
                 width: 100%;
