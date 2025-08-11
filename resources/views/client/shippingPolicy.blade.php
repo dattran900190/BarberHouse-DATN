@@ -85,8 +85,8 @@
             <h2>9. Liên hệ hỗ trợ vận chuyển</h2>
             <p>Mọi vấn đề phát sinh trong quá trình giao hàng, xin vui lòng liên hệ:</p>
             <ul>
-                <li><strong>Email:</strong> trandiep490@gmail.com</li>
-                <li><strong>Hotline:</strong> 0123 456 789</li>
+                <li><strong>Email:</strong> <a href="mailto:trandiep490@gmail.com">trandiep490@gmail.com</a></li>
+                <li><strong>Hotline:</strong> <a href="tel:0123456789">0123 456 789</a></li>
             </ul>
         </div>
     </section>

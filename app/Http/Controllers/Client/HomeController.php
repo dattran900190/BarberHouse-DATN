@@ -88,4 +88,9 @@ class HomeController extends Controller
     {
         return view('client.warrantyReturnPolicy');
     }
+
+    public function contact()
+    {
+        return view('client.contact');
+    }
 }

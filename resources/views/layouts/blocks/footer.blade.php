@@ -31,9 +31,10 @@
           <div class="footer-column">
               <h5 class="text-uppercase">Về chúng tôi</h5>
               <ul>
-                  <li><a href="{{ asset('/') }}">Home</a></li>
+                  <li><a href="{{ asset('/') }}">Trang chủ</a></li>
                   <li><a href="{{ asset('bai-viet') }}">Bài viết</a></li>
                   <li><a href="{{ asset('chi-nhanh') }}">Chi nhánh</a></li>
+                  <li><a href="{{ asset('lien-he') }}">Liên hệ</a></li>
               </ul>
           </div>
           <div class="footer-column">
