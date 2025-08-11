@@ -204,7 +204,7 @@
                             </a>
                             <a href="{{ route('client.detailWallet') }}" class="mobile-menu-item">
                                 <i class="fa-solid fa-wallet"></i>
-                                Hoàn tiền
+                                Yêu cầu hoàn tiền
                             </a>
                             <a href="{{ route('client.redeem') }}" class="mobile-menu-item">
                                 <i class="fa-solid fa-gift"></i>
