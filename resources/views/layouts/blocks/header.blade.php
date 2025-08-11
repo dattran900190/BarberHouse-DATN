@@ -119,7 +119,7 @@
                                 <i class="fa-solid fa-user-cog me-2"></i>Quản lý tài khoản</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.detailWallet') }}">
-                                <i class="fa-solid fa-wallet me-2"></i>Hoàn tiền</a>
+                                <i class="fa-solid fa-wallet me-2"></i>Yêu cầu hoàn tiền</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.redeem') }}">
                                 <i class="fa-solid fa-gift me-2"></i>Đổi mã giảm giá</a>

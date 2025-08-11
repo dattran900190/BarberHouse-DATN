@@ -18,8 +18,7 @@
                                     <div class="col-md-4 p-4 d-flex align-items-center justify-content-center bg-light">
                                         <div class="position-relative">
                                             <img src="{{ $barber->avatar ? asset('storage/' . $barber->avatar) : 'https://bootdey.com/img/Content/avatar/avatar7.png' }}"
-                                                alt="{{ $barber->name }}" class="img-fluid rounded-circle shadow"
-                                                style="width: 250px; height: 250px; object-fit: cover; border: 5px solid white;">
+                                                alt="{{ $barber->name }}" class="img-fluid rounded-circle shadow barber-avatar">
                                             <div
                                                 class="rating-badge position-absolute top-0 end-0 bg-warning text-white rounded-circle p-2 shadow">
                                                 {{ number_format($barber->rating_avg ?? 0, 1) }} <i
@@ -113,17 +112,16 @@
                         <div class="col-12">
                             <div class="card shadow-sm border-0 rounded-4">
                                 <div class="card-body p-4">
-                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-4 reviews-header">
                                         <h4 class="mb-0 text-dark fw-bold">Đánh giá</h4>
-                                        <div class="d-flex align-items-center">
+                                        <div class="d-flex align-items-center reviews-toolbar">
                                             <span class="badge bg-warning text-dark me-3">
                                                 {{ $reviews->total() }} đánh giá
                                             </span>
                                             <!-- Bộ lọc số sao -->
-                                            <form action="{{ route('client.detailBarber', $barber->id) }}" method="GET"
-                                                class="d-flex">
-                                                <select name="star" onchange="this.form.submit()" class="form-select"
-                                                    style="width: 150px;">
+                                             <form action="{{ route('client.detailBarber', $barber->id) }}" method="GET"
+                                                class="d-flex reviews-filter">
+                                                 <select name="star" onchange="this.form.submit()" class="form-select">
                                                     <option value="">Tất cả sao</option>
                                                     <option value="5" {{ request('star') == '5' ? 'selected' : '' }}>5
                                                         sao</option>
@@ -154,8 +152,8 @@
                                                             style="background-image: url('{{ $review->user && $review->user->avatar ? asset('storage/' . $review->user->avatar) : 'https://bootdey.com/img/Content/avatar/avatar2.png' }}')">
                                                         </div>
                                                         <div class="flex-grow-1">
-                                                            <div
-                                                                class="d-flex justify-content-between align-items-start mb-2">
+                                                             <div
+                                                                class="d-flex justify-content-between align-items-start mb-2 review-top">
                                                                 <div>
                                                                     <h6 class="mb-0 fw-bold">
                                                                         {{ $review->user->name ?? 'Khách hàng ẩn danh' }}
@@ -163,7 +161,7 @@
                                                                     <small
                                                                         class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
                                                                 </div>
-                                                                <div class="text-warning">
+                                                                 <div class="text-warning review-stars">
                                                                     @for ($i = 1; $i <= 5; $i++)
                                                                         <i
                                                                             class="fa{{ $i <= $review->rating ? 's' : 'r' }} fa-star"></i>
@@ -315,6 +313,121 @@
             padding: 15px;
             border-radius: 8px;
             border: 1px solid #eee;
+        }
+
+        /* Responsive Tweaks */
+        .barber-avatar {
+            width: 250px;
+            height: 250px;
+            object-fit: cover;
+            border: 5px solid #fff;
+        }
+
+        @media (max-width: 991.98px) {
+            .barber-avatar {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .barber-avatar {
+                width: 140px;
+                height: 140px;
+            }
+
+            .rating-badge {
+                width: 40px;
+                height: 40px;
+                font-size: 0.95rem;
+            }
+
+            .barber-card .p-4 {
+                padding: 1rem !important;
+            }
+
+            .reviews-header {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 0.75rem;
+            }
+
+            .reviews-filter {
+                width: 100%;
+            }
+
+            .reviews-filter .form-select {
+                width: 100% !important;
+            }
+
+            .reviews-toolbar {
+                flex-wrap: wrap;
+            }
+
+            .reviews-toolbar .badge {
+                margin-bottom: 8px;
+            }
+
+            .review-top {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .review-stars {
+                align-self: flex-start;
+            }
+
+            /* Contact info wrap and align */
+            .contact-info ul li {
+                align-items: flex-start !important;
+            }
+
+            .contact-info ul li i {
+                flex: 0 0 auto;
+                margin-top: 2px;
+            }
+
+            .contact-info ul li span {
+                flex: 1 1 auto;
+                min-width: 0;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+                white-space: normal;
+                display: block;
+            }
+
+            /* Booking button fits small widths */
+            .main-detail-barber .btn-outline-buy {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+                flex-wrap: wrap;
+                white-space: normal;
+                line-height: 1.3;
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .barber-avatar {
+                width: 120px;
+                height: 120px;
+            }
+
+            h1.text-dark.fw-bold {
+                font-size: 1.25rem;
+            }
+
+            .rating-badge {
+                width: 36px;
+                height: 36px;
+                font-size: 0.85rem;
+            }
+
+            .barber-card .p-4 {
+                padding: 0.75rem !important;
+            }
         }
     </style>
 @endsection
