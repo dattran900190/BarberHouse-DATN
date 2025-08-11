@@ -34,7 +34,7 @@
                     <a class="nav-link {{ request()->is('chi-nhanh*') ? 'active' : '' }}" href="{{ url('chi-nhanh') }}">CHI NHÁNH</a>
                 </li>
                 <li class="nav-item mx-2 position-relative">
-                    <a class="nav-link {{ request()->is('gio-hang*') ? 'active' : '' }}" href="{{ url('gio-hang') }}">
+                    <a class="nav-link-right {{ request()->is('gio-hang*') ? 'active' : '' }}" href="{{ url('gio-hang') }}">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span id="cartCount"
                             class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger"
@@ -44,7 +44,7 @@
                     </a>
                 </li>
                 <li class="nav-item mx-2 position-relative">
-                    <a class="nav-link" href="#" id="notification-bell" data-bs-toggle="dropdown"
+                    <a class="nav-link-right" href="#" id="notification-bell" data-bs-toggle="dropdown"
                         aria-expanded="false">
                         <i class="fas fa-bell"></i>
                         <span id="notification-count"
@@ -75,7 +75,7 @@
                         @continue
                     @endif
                     <li class="nav-item mx-2">
-                        <a class="nav-link" href="{{ $url }}" target="_blank">
+                        <a class="nav-link-right" href="{{ $url }}" target="_blank">
                             @if (str_contains($key, 'facebook'))
                                 <i class="fa-brands fa-facebook"></i>
                             @elseif (str_contains($key, 'instagram'))
@@ -91,7 +91,7 @@
 
                 {{-- USER ACCOUNT DROPDOWN --}}
                 <li class="nav-item dropdown mx-2">
-                    <a class="nav-link" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown"
+                    <a class="nav-link-right" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
                         <i class="fa-solid fa-user"></i>
                     </a>
@@ -119,7 +119,7 @@
                                 <i class="fa-solid fa-user-cog me-2"></i>Quản lý tài khoản</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.detailWallet') }}">
-                                <i class="fa-solid fa-wallet me-2"></i>Yêu cầu hoàn tiền</a>
+                                <i class="fa-solid fa-wallet me-2"></i>Hoàn tiền</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.redeem') }}">
                                 <i class="fa-solid fa-gift me-2"></i>Đổi mã giảm giá</a>
@@ -160,7 +160,7 @@
                 </li>
 
                 <li class="nav-item mx-2">
-                    <a class="nav-link" id="search-icon" href="#">
+                    <a class="nav-link-right" id="search-icon" href="#">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </a>
                 </li>
@@ -182,8 +182,8 @@
                             <i class="fa-solid fa-user"></i>
                         </div>
                         <div class="mobile-user-info">
-                            <h6>{{ Auth::user()->name ?? ''}}</h6> 
-                            <small>{{ Auth::user()->email ?? ''}}</small>
+                            <h6>{{ Auth::user()->name ?? ''}}</h6> <br>
+                            <small>{{ Auth::user()->email }}</small>
                         </div>
                     </div>
                     
@@ -204,7 +204,7 @@
                             </a>
                             <a href="{{ route('client.detailWallet') }}" class="mobile-menu-item">
                                 <i class="fa-solid fa-wallet"></i>
-                                Yêu cầu hoàn tiền
+                                Hoàn tiền
                             </a>
                             <a href="{{ route('client.redeem') }}" class="mobile-menu-item">
                                 <i class="fa-solid fa-gift"></i>
