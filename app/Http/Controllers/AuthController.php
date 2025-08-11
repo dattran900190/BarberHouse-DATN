@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use App\Http\Requests\AuthRequest;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -20,8 +22,12 @@ class AuthController extends Controller
     public function postLogin(AuthRequest $req)
     {
         if (Auth::attempt(['email' => $req->email, 'password' => $req->password], $req->filled('remember'))) {
-            $req->session()->regenerate();
             $user = Auth::user();
+
+            if ($user->status !== 'active') {
+                Auth::logout();
+                return redirect()->back()->with('messageError', 'Tài khoản chưa được xác thực. Vui lòng kiểm tra email.');
+            }
 
             // Chuyển giỏ hàng từ guest sang user
             $this->mergeGuestCartToUser($user);
@@ -54,15 +60,15 @@ class AuthController extends Controller
     private function mergeGuestCartToUser($user)
     {
         $guestCartId = Session::get('cart_id');
-        
+
         if (!$guestCartId) {
             return; // Không có giỏ hàng guest
         }
 
         $guestCart = Cart::where('id', $guestCartId)
-                        ->whereNull('user_id')
-                        ->with('items.productVariant')
-                        ->first();
+            ->whereNull('user_id')
+            ->with('items.productVariant')
+            ->first();
 
         if (!$guestCart) {
             Session::forget('cart_id');
@@ -79,8 +85,8 @@ class AuthController extends Controller
         foreach ($guestCart->items as $guestItem) {
             // Kiểm tra xem item này đã có trong user cart chưa
             $existingItem = $userCart->items()
-                                   ->where('product_variant_id', $guestItem->product_variant_id)
-                                   ->first();
+                ->where('product_variant_id', $guestItem->product_variant_id)
+                ->first();
 
             if ($existingItem) {
                 // Nếu đã có, cộng thêm số lượng
@@ -102,7 +108,7 @@ class AuthController extends Controller
         $guestCart->items()->delete();
         $guestCart->delete();
         Session::forget('cart_id');
-        
+
         // Cập nhật số lượng trong session
         $cartCount = $userCart->items()->sum('quantity');
         Session::put('cart_count', $cartCount);
@@ -122,19 +128,20 @@ class AuthController extends Controller
         $user->gender = $req->gender;
         $user->address = $req->address;
         $user->role = 'user';
-        $user->status = 'active';
+        $user->status = 'inactive';
+
+        $user->verify_token = Str::random(64); // Thêm dòng này để tạo token xác thực
+
         $user->password = Hash::make($req->password);
         $user->save();
 
-        Auth::login($user);
 
-        // Chuyển giỏ hàng từ guest sang user (tương tự như login)
-        $this->mergeGuestCartToUser($user);
+        Mail::send('emails.verify', ['token' => $user->verify_token], function ($message) use ($user) {
+            $message->to($user->email);
+            $message->subject('Xác thực tài khoản của bạn');
+        });
 
-        if (session()->has('buy_now_product')) {
-            return redirect()->route('cart.buyNow.checkout');
-        }
-        return redirect()->route('home')->with('success', 'Đăng ký thành công!');
+        return redirect()->route('login')->with('success', 'Vui lòng kiểm tra email để xác thực tài khoản.');
     }
 
     public function logout(Request $request)
@@ -143,5 +150,19 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('home')->with('messageError', 'Đăng xuất thành công');
+    }
+    public function verifyEmail($token)
+    {
+        $user = User::where('verify_token', $token)->first();
+
+        if (!$user) {
+            return redirect()->route('login')->with('messageError', 'Liên kết xác thực không hợp lệ hoặc đã hết hạn.');
+        }
+
+        $user->status = 'active';
+        $user->verify_token = null;
+        $user->save();
+
+        return redirect()->route('login')->with('success', 'Xác thực thành công! Bạn có thể đăng nhập.');
     }
 }

@@ -42,6 +42,13 @@ class UserController extends Controller
         } elseif ($filter === 'banned') {
             $usersQuery->where('status', 'banned');
             $adminsQuery->where('status', 'banned');
+        } elseif ($filter === 'inactive') {
+            $usersQuery->where('status', 'inactive')->whereNull('deleted_at');
+            $adminsQuery->where('status', 'inactive')->whereNull('deleted_at');
+        } else {
+            // Tất cả người dùng
+            $usersQuery->whereNull('deleted_at');
+            $adminsQuery->whereNull('deleted_at');
         }
 
         $users = $usersQuery->orderBy('created_at', 'DESC')->paginate(10);
