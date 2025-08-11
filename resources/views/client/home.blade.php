@@ -114,7 +114,53 @@
         <section id="product">
             <div class="product-wrapper">
                 <h2>Sản phẩm Baber House</h2>
-                <div id="products-list"></div>
+                <div class="products">
+                    @foreach ($products as $product)
+                        <div class="product">
+                            <div class="image-product">
+                                <a href="{{ route('client.product.detail', $product->id) }}">
+                                    <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" />
+                                </a>
+                            </div>
+                            <h4>
+                                <a href="{{ route('client.product.detail', $product->id) }}" class="product-link">
+                                    {{ $product->name }}
+                                </a>
+                            </h4>
+                            <p>{{ number_format($product->price) }} VNĐ</p>
+
+                            @php
+                                $variant = $product->variants->where('stock', '>', 0)->first();
+                            @endphp
+                            @if ($variant)
+                                <div class="button-group">
+                                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        @guest
+                                            <button type="submit" class="btn-outline-buy">Mua ngay</button>
+                                        @else
+                                            <button type="submit" class="btn-outline-buy">Mua ngay</button>
+                                        @endguest
+                                    </form>
+                                </div>
+                            @else
+                                <span style="color: rgb(232, 184, 12); font-weight: bold; text-align: center;">Hết
+                                    hàng</span>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
                 <div class="text-center mt-3">
                     <a href="{{ route('client.product') }}" class="btn-outline-cart">Xem thêm</a>
                 </div>
@@ -245,6 +291,14 @@
                 font-size: 1.1rem;
             }
 
+            .barber-name-link {
+                font-size: 1.1rem;
+            }
+
+            .branch-link {
+                font-size: 0.9rem;
+            }
+
             .barber-info p {
                 font-size: 0.9rem;
                 margin-bottom: 5px;
@@ -308,6 +362,9 @@
             }
             .image-item {
                 width: 100%;
+                height: 220px;
+                overflow: hidden;
+                position: relative;
             }
             .image-item img {
                 width: 100%;
@@ -387,6 +444,37 @@
         .btn-xem-them:hover {
             background: #444;
         }
+
+        /* Styling cho link tên thợ cắt */
+        .barber-name-link {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 600;
+        }
+
+        .barber-name-link:hover {
+            color: #28a745;
+
+            transform: scale(1.02);
+        }
+
+        /* Styling cho link chi nhánh */
+        .branch-link {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+
+        .branch-link:hover {
+            color: #28a745;
+
+            background-color: #e9ecef;
+        }
     </style>
 @endsection
 
@@ -408,11 +496,13 @@
                         <img src="/storage/${barber.avatar}" alt="${barber.name}">
                     </div>
                     <div class="barber-info">
-                        <h4>${barber.name}</h4>
+                        <h4><a href="/tho-cat/${barber.id}" class="barber-name-link">${barber.name}</a></h4>
                         <p><span class="label">Kỹ năng:</span>
                             <span class="me-2 mb-2"><b>${skillLevels[barber.skill_level] ?? 'Không xác định'}</b></span>
                         </p>
-                        <p><span class="label">Chi nhánh:</span> ${barber.branch?.name ?? 'N/A'}</p>
+                        <p><span class="label">Chi nhánh:</span>
+                            ${barber.branch ? `<a href="/chi-nhanh/${barber.branch.id}" class="branch-link">${barber.branch.name}</a>` : 'N/A'}
+                        </p>
                         <p><span class="label">Đánh giá:</span> ${Number(barber.rating_avg).toFixed(1)}/5
                             <i class="fa-solid fa-star" style="color: #ffd700;"></i>
                         </p>
@@ -578,66 +668,9 @@
                 });
         }
     </script>
-    <script>
-        function renderProducts(products) {
-            let html = '<div class="products">';
-            products.forEach(product => {
-                const variant = product.variants.find(v => v.stock > 0);
-                html += `<div class="product">
-                    <div class="image-product">
-                        <a href="/san-pham/${product.id}">
-                            <img src="/storage/${product.image}" alt="${product.name}" />
-                        </a>
-                    </div>
-                    <h4>
-                        <a href="/san-pham/${product.id}" class="product-link">
-                            ${product.name}
-                        </a>
-                    </h4>
-                    <p>${Number(product.price).toLocaleString()} VNĐ</p>`;
 
-                if (variant) {
-                    html += `<div class="button-group">
-                        <form action="/gio-hang/add" method="POST" class="add-to-cart-form">
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="product_variant_id" value="${variant.id}">
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
-                                <i class="fas fa-cart-plus"></i>
-                            </button>
-                        </form>
-                        <form action="/mua-ngay" method="POST" class="buy-now-form">
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="product_variant_id" value="${variant.id}">
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="btn-outline-buy">Mua ngay</button>
-                        </form>
-                    </div>`;
-                } else {
-                    html += `<span style="color: rgb(232, 184, 12); font-weight: bold; text-align: center;">Hết hàng</span>`;
-                }
-                html += '</div>';
-            });
-            html += '</div>';
-            $('#products-list').html(html);
-        }
-        function fetchProducts() {
-            $.get('/api/products', function(data) {
-                renderProducts(data);
-            });
-        }
-        $(document).ready(function() {
-            fetchProducts();
-        });
-    </script>
-    <script>
-        if (window.Echo) {
-            window.Echo.channel('products')
-                .listen('.ProductUpdated', (e) => {
-                    fetchProducts();
-                });
-        }
-    </script>
+
+
     <script>
         $(function() {
             // Slide 1 ảnh khách hàng trên mobile

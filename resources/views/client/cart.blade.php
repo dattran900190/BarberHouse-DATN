@@ -5,8 +5,9 @@
 @endsection
 
 @section('content')
-    <main class="container-fluid">
-        <section class="h-custom">
+<br>
+    <main class="container-fluid mt-5">
+        <section class="h-custom mt-3">
             <div class="padding-5vh">
                 <div class="flex-center">
                     <div class="col-12">
@@ -196,7 +197,9 @@
         .alert-close:hover {
             color: #111827;
         }
-
+        #mainNav {
+            background-color: #000;
+        }
         @media (min-width: 992px) {
             .cart-section table {
                 width: 100%;

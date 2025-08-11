@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Mail\AppointmentOtpMail;
 use Pusher\Pusher;
 use App\Models\Barber;
 use App\Models\Branch;
@@ -30,6 +31,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\BookingRequest;
 use App\Mail\CancelBookingMail;
+use App\Models\Otp;
 use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends Controller
@@ -39,6 +41,16 @@ class AppointmentController extends Controller
     public function __construct(AppointmentService $appointmentService)
     {
         $this->appointmentService = $appointmentService;
+    }
+
+    /**
+     * Đếm số lịch hẹn đang mở (chưa hoàn thành/chưa hủy) của người dùng
+     */
+    protected function countOpenAppointmentsForUser(int $userId): int
+    {
+        return Appointment::where('user_id', $userId)
+            ->whereIn('status', ['pending', 'unconfirmed', 'confirmed', 'checked-in', 'progress'])
+            ->count();
     }
 
     public function index(Request $request)
@@ -526,169 +538,174 @@ class AppointmentController extends Controller
     public function store(BookingRequest $request)
     {
         try {
-            // Kiểm tra đăng nhập
+            // 1. Kiểm tra đăng nhập
             if (!Auth::check()) {
-                if ($request->ajax() || $request->wantsJson()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Bạn cần đăng nhập để đặt lịch.'
-                    ], 401);
-                }
-                return redirect()->route('dat-lich')->with('mustLogin', true);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn cần đăng nhập để đặt lịch.'
+                ], 401);
             }
 
-            // Phân tích ngày giờ cuộc hẹn
-            $datetime = Carbon::parse($request->appointment_date . ' ' . $request->appointment_time . ':00');
+            // 1.1. Giới hạn số lịch chưa hoàn thành
+            $openAppointments = $this->countOpenAppointmentsForUser(Auth::id());
+            if ($openAppointments >= 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn đang có 3 lịch hẹn chưa hoàn thành. Vui lòng hoàn thành trước khi đặt thêm.'
+                ], 422);
+            }
 
-            // Tính thời lượng và kiểm tra dịch vụ
+            // 2. Xử lý thời gian & dịch vụ
+            $datetime = Carbon::parse($request->appointment_date . ' ' . $request->appointment_time . ':00');
             $durationData = $this->calculateAppointmentDuration($request, $request->service_id);
             $service = $durationData['service'];
             $totalDuration = $durationData['total_duration'];
-            $additionalServicesInput = $durationData['additional_services'];
 
-            // Kiểm tra trùng lặp lịch hẹn
-            $appointments = Appointment::with('service')
-                ->where('barber_id', $request->barber_id)
-                ->where('branch_id', $request->branch_id)
-                ->whereIn('status', ['pending', 'confirmed', 'pending_cancellation'])
-                ->whereDate('appointment_time', $datetime->format('Y-m-d'))
-                ->get();
-
-
-            $start = $datetime;
-            $end = $datetime->copy()->addMinutes($totalDuration);
-
-            $conflict = $appointments->first(function ($appointment) use ($start, $end) {
-                $appointmentStart = Carbon::parse($appointment->appointment_time);
-                $appointmentEnd = $appointmentStart->copy()->addMinutes($appointment->duration ?? 0);
-
-                return $start->lt($appointmentEnd) && $end->gt($appointmentStart);
-            });
-
-            if ($conflict) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Thợ này đã có lịch hẹn trong khoảng thời gian này.'
-                ], 422);
-            }
-
-            // Kiểm tra trùng lặp lịch hẹn
-            $existingAppointment = Appointment::where('branch_id', $request->branch_id)
-                ->where('barber_id', $request->barber_id)
-                ->where('appointment_time', $datetime)
-                ->whereIn('status', ['unconfirmed', 'pending'])
-                ->first();
-
-            if ($existingAppointment) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Khung giờ này đã có lịch hẹn đang chờ xác nhận hoặc đã được đặt. Vui lòng chọn khung giờ khác.',
-                ], 422);
-            }
-
-            // Lấy thông tin người đặt
-            $name = $request->other_person ? $request->name : Auth::user()->name;
-            $phone = $request->other_person ? $request->phone : Auth::user()->phone;
-            $email = $request->other_person ? $request->email : Auth::user()->email;
-
-            // Tính tổng giá trị lịch hẹn và xử lý voucher
-            $voucherResult = $this->handleVoucher($request, $service);
-            if ($voucherResult['error']) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $voucherResult['message']
-                ], 422);
-            }
-            [$totalAmount, $discountAmount, $promotion, $redeemedVoucher, $additionalServices] = $voucherResult['data'];
-
-            // Tạo lịch hẹn
-            $appointment = Appointment::create([
-                'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
-                'user_id' => Auth::id(),
-                'barber_id' => $request->barber_id,
-                'branch_id' => $request->branch_id,
-                'service_id' => $request->service_id,
-                'appointment_time' => $datetime,
-                'duration' => $totalDuration,
-                'status' => 'unconfirmed', // Tất cả đều bắt đầu với unconfirmed
-                'payment_method' => $request->payment_method,
-                'payment_status' => 'unpaid',
-                'note' => $request->note,
-                'name' => $name,
-                'phone' => $phone,
-                'email' => $email,
-                'cancellation_reason' => null,
-                'rejection_reason' => null,
-                'status_before_cancellation' => null,
-                'promotion_id' => $promotion ? $promotion->id : null,
-                'discount_amount' => $discountAmount,
-                'total_amount' => $totalAmount,
-                'additional_services' => json_encode($additionalServices),
-                'confirmation_token' => $request->payment_method === 'vnpay' ? null : Str::random(60),
-                'confirmation_token_expires_at' => $request->payment_method === 'vnpay' ? null : now()->addMinutes(10),
-            ]);
-
-            // Giới hạn số lượng lịch hẹn chưa xác nhận
-            $unconfirmedCount = Appointment::where('user_id', Auth::id())
-                ->where('status', 'unconfirmed')
-                ->count();
-            if ($unconfirmedCount >= 3) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Bạn có quá nhiều lịch hẹn chưa xác nhận. Vui lòng xác nhận hoặc hủy trước khi đặt thêm.'
-                ], 422);
-            }
-
-            // Load quan hệ và xử lý dịch vụ bổ sung
-            $appointment->load(['barber', 'service']);
-            $AdditionalServiceIds = json_decode($appointment->additional_services, true) ?? [];
-            $AdditionalServices = !empty($AdditionalServiceIds)
-                ? Service::whereIn('id', $AdditionalServiceIds)->pluck('name')->toArray()
-                : [];
-
-            // Gửi email xác nhận chỉ cho các phương thức thanh toán khác VNPay
-            if ($request->payment_method !== 'vnpay') {
-                Mail::to($appointment->email)->queue(new ConfirmBookingMail($appointment, $AdditionalServices));
-            }
-
-            // Xử lý voucher
-            if ($promotion && $redeemedVoucher) {
-                $this->appointmentService->applyPromotion($appointment, $redeemedVoucher);
-            } elseif ($promotion) {
-                $this->appointmentService->applyPromotion($appointment, null, $promotion);
-            }
-
-            // Nếu chọn VNPay, chuyển thẳng đến thanh toán
+            // 3. Nếu thanh toán VNPay → lưu ngay vào DB
             if ($request->payment_method === 'vnpay') {
-                if ($request->ajax() || $request->wantsJson()) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Lịch hẹn đã được tạo, đang chuyển hướng đến thanh toán VNPay.',
-                        'appointment_id' => $appointment->id,
-                    ]);
-                }
-                // Nếu không phải AJAX, chuyển hướng trực tiếp
-                return redirect()->route('client.payment.vnpay', ['appointment_id' => $appointment->id]);
-            }
+                $appointment = Appointment::create([
+                    'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
+                    'user_id' => Auth::id(),
+                    'barber_id' => $request->barber_id,
+                    'branch_id' => $request->branch_id,
+                    'service_id' => $request->service_id,
+                    'appointment_time' => $datetime,
+                    'duration' => $totalDuration,
+                    'status' => 'unconfirmed',
+                    'payment_method' => $request->payment_method,
+                    'payment_status' => 'unpaid',
+                    'name' => Auth::user()->name,
+                    'phone' => Auth::user()->phone,
+                    'email' => Auth::user()->email,
+                    'total_amount' => $service->price,
+                ]);
 
-            // Nếu không phải VNPay, trả về thông báo thành công
-            if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Đặt lịch thành công! Vui lòng kiểm tra email để xác nhận.'
+                    'message' => 'Lịch hẹn đã được tạo. Đang chuyển đến VNPay.',
+                    'appointment_id' => $appointment->id,
                 ]);
             }
-            return redirect()->route('dat-lich')->with('success', 'Đặt lịch thành công! Vui lòng kiểm tra email để xác nhận.');
 
+            // 4. Nếu thanh toán tiền mặt → Gửi OTP trước khi lưu DB
+            $email = $request->other_person ? $request->email : Auth::user()->email;
+            $otpCode = rand(100000, 999999);
+
+            // Lưu OTP vào bảng otps
+            Otp::create([
+                'email' => $email,
+                'otp' => $otpCode,
+                'expires_at' => now()->addMinutes(2),
+            ]);
+
+            // Chuẩn bị dữ liệu đặt lịch để gửi trong email OTP
+            $bookingData = [
+                'barber_id'        => $request->barber_id,
+                'branch_id'        => $request->branch_id,
+                'service_id'       => $request->service_id,
+                'service_name'     => $service->name ?? '',
+                'appointment_date' => $request->appointment_date,
+                'appointment_time' => $request->appointment_time,
+                'duration'         => $totalDuration,
+                'name'             => $request->other_person ? $request->name : Auth::user()->name,
+                'phone'            => $request->other_person ? $request->phone : Auth::user()->phone,
+                'email'            => $email,
+                'payment_method'   => $request->payment_method,
+                'note'             => $request->note ?? null,
+                'total_amount'     => $service->price ?? 0,
+                'additional_services' => $request->input('additional_services') ?? '[]',
+            ];
+
+            // Gửi email OTP (truyền cả OTP + dữ liệu lịch)
+            Mail::to($email)->send(new AppointmentOtpMail($otpCode, $bookingData));
+
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Mã OTP đã được gửi tới email. Vui lòng nhập OTP để hoàn tất.',
+                'otp_email'    => $email,
+                'booking_data' => $bookingData, // Gửi lại dữ liệu cho FE lưu
+            ]);
         } catch (\Exception $e) {
-
-            session()->flash('error', 'Lỗi khi đặt lịch: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi đặt lịch: ' . $e->getMessage()
             ], 500);
         }
     }
+
+
+    public function verifyOtp(Request $request)
+    {
+        // Lấy dữ liệu từ JSON body
+        $otp = $request->input('otp');
+        $bookingData = $request->input('booking_data', []);
+
+        if (!$otp || empty($bookingData) || empty($bookingData['email'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiếu dữ liệu xác thực OTP.'
+            ], 422);
+        }
+
+        $otpRecord = Otp::where('email', $bookingData['email'])
+            ->where('otp', $otp)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$otpRecord) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mã OTP không hợp lệ hoặc đã hết hạn.'
+            ], 400);
+        }
+
+        // Kiểm tra giới hạn lịch mở trước khi tạo lịch (tránh race condition)
+        $openAppointments = $this->countOpenAppointmentsForUser(Auth::id());
+        if ($openAppointments >= 3) {
+            // Xóa OTP để tránh lưu lại mã đã dùng
+            $otpRecord->delete();
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn đang có 3 lịch hẹn chưa hoàn thành. Vui lòng hoàn thành trước khi đặt thêm.'
+            ], 422);
+        }
+
+        // Lưu lịch hẹn (xem như đã xác thực, chuyển thẳng pending)
+        $appointment = Appointment::create([
+            'appointment_code' => 'APP' . date('YmdHis') . strtoupper(Str::random(3)),
+            'user_id' => Auth::id(),
+            'barber_id' => $bookingData['barber_id'] ?? null,
+            'branch_id' => $bookingData['branch_id'] ?? null,
+            'service_id' => $bookingData['service_id'] ?? null,
+            'appointment_time' => Carbon::parse(($bookingData['appointment_date'] ?? '') . ' ' . ($bookingData['appointment_time'] ?? '') . ':00'),
+            'duration' => $bookingData['duration'] ?? 0,
+            'status' => 'pending',
+            'payment_method' => 'cash',
+            'payment_status' => 'unpaid',
+            'name' => $bookingData['name'] ?? null,
+            'phone' => $bookingData['phone'] ?? null,
+            'email' => $bookingData['email'] ?? null,
+            'total_amount' => $bookingData['total_amount'] ?? 0,
+            'additional_services' => $bookingData['additional_services'] ?? '[]',
+        ]);
+
+        // Xóa OTP sau khi dùng
+        $otpRecord->delete();
+
+        // Gửi mail pending + broadcast
+        $appointment->load(['barber', 'service']);
+        Mail::to($appointment->email)->queue(new PendingBookingMail($appointment));
+        event(new NewAppointment($appointment));
+        $this->triggerPusher($appointment);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Xác nhận OTP thành công!',
+            'appointment_id' => $appointment->id
+        ]);
+    }
+
+
     public function getAvailableBarbersByDate(Request $request, $branch_id = 'null', $date = 'null', $time = 'null', $service_id = 'null')
     {
         try {

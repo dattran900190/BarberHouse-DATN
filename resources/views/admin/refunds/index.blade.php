@@ -1,6 +1,6 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Danh sách Yêu cầu hoàn tiền')
+@section('title', 'Danh sách hoàn tiền')
 
 @section('content')
     @if (session('success'))
@@ -25,7 +25,7 @@
     @endphp
 
     <div class="page-header">
-        <h3 class="fw-bold mb-3">Danh sách Yêu cầu hoàn tiền</h3>
+        <h3 class="fw-bold mb-3 text-uppercase">Danh sách hoàn tiền</h3>
         <ul class="breadcrumbs mb-3">
             <li class="nav-home">
                 <a href="{{ url('admin/dashboard') }}">
