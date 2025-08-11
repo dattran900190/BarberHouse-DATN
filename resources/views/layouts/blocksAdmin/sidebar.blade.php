@@ -55,7 +55,7 @@
                 <li class="nav-item">
                     <a href="{{ asset('admin/orders') }}">
                         <i class="fas fa-shopping-cart"></i>
-                        <p>Danh sách Đơn hàng</p>
+                        <p>Danh sách đơn hàng</p>
 
                         <span id="pending-order-count" class="badge badge-danger"
                               style="{{ $pendingOrderCount > 0 ? '' : 'display: none;' }}">
@@ -68,7 +68,7 @@
                 <li class="nav-item">
                     <a href="{{ route('refunds.index') }}">
                         <i class="icon-docs"></i> {{-- Biểu tượng phù hợp với hoàn tiền --}}
-                        <p>Danh sách Hoàn tiền</p>
+                        <p>Danh sách hoàn tiền</p>
                         
                         <span class="badge badge-count-refunds bg-danger" id="sidebar-pending-refund-count"
                             style="{{ $pendingRefundCount > 0 ? '' : 'display: none;' }}">
@@ -92,7 +92,7 @@
                             </li>
                             <li>
                                 <a href="{{ asset('admin/checkins') }}">
-                                    <span class="sub-item">Checkin</span>
+                                    <span class="sub-item">Lịch sử check-in</span>
                                 </a>
                             </li>
                             <li>

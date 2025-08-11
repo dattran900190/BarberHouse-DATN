@@ -23,7 +23,7 @@ class AuthController extends Controller
             $req->session()->regenerate();
             $user = Auth::user();
 
-            // Chuyển giỏ hàng từ guest sang user
+            // Chuyển giỏ hàng từ guest sang user và cập nhật cart_count
             $this->mergeGuestCartToUser($user);
 
             // Nếu có mua ngay, redirect checkout mua ngay
@@ -49,61 +49,57 @@ class AuthController extends Controller
     }
 
     /**
-     * Chuyển giỏ hàng từ guest sang user
+     * Chuyển giỏ hàng từ guest sang user và cập nhật cart_count
      */
     private function mergeGuestCartToUser($user)
     {
         $guestCartId = Session::get('cart_id');
         
-        if (!$guestCartId) {
-            return; // Không có giỏ hàng guest
-        }
-
-        $guestCart = Cart::where('id', $guestCartId)
-                        ->whereNull('user_id')
-                        ->with('items.productVariant')
-                        ->first();
-
-        if (!$guestCart) {
-            Session::forget('cart_id');
-            return;
-        }
-
         // Tìm hoặc tạo giỏ hàng của user
         $userCart = Cart::where('user_id', $user->id)->first();
         if (!$userCart) {
             $userCart = Cart::create(['user_id' => $user->id]);
         }
 
-        // Chuyển các item từ guest cart sang user cart
-        foreach ($guestCart->items as $guestItem) {
-            // Kiểm tra xem item này đã có trong user cart chưa
-            $existingItem = $userCart->items()
-                                   ->where('product_variant_id', $guestItem->product_variant_id)
-                                   ->first();
+        // Nếu có guest cart, merge vào user cart
+        if ($guestCartId) {
+            $guestCart = Cart::where('id', $guestCartId)
+                            ->whereNull('user_id')
+                            ->with('items.productVariant')
+                            ->first();
 
-            if ($existingItem) {
-                // Nếu đã có, cộng thêm số lượng
-                $existingItem->update([
-                    'quantity' => $existingItem->quantity + $guestItem->quantity,
-                    'price' => $guestItem->price // Cập nhật giá mới nhất
-                ]);
-            } else {
-                // Nếu chưa có, tạo mới
-                $userCart->items()->create([
-                    'product_variant_id' => $guestItem->product_variant_id,
-                    'quantity' => $guestItem->quantity,
-                    'price' => $guestItem->price
-                ]);
+            if ($guestCart) {
+                // Chuyển các item từ guest cart sang user cart
+                foreach ($guestCart->items as $guestItem) {
+                    // Kiểm tra xem item này đã có trong user cart chưa
+                    $existingItem = $userCart->items()
+                                           ->where('product_variant_id', $guestItem->product_variant_id)
+                                           ->first();
+
+                    if ($existingItem) {
+                        // Nếu đã có, cộng thêm số lượng
+                        $existingItem->update([
+                            'quantity' => $existingItem->quantity + $guestItem->quantity,
+                            'price' => $guestItem->price // Cập nhật giá mới nhất
+                        ]);
+                    } else {
+                        // Nếu chưa có, tạo mới
+                        $userCart->items()->create([
+                            'product_variant_id' => $guestItem->product_variant_id,
+                            'quantity' => $guestItem->quantity,
+                            'price' => $guestItem->price
+                        ]);
+                    }
+                }
+
+                // Xóa cart_items trước, sau đó xóa cart để tránh lỗi foreign key
+                $guestCart->items()->delete();
+                $guestCart->delete();
+                Session::forget('cart_id');
             }
         }
-
-        // Xóa cart_items trước, sau đó xóa cart để tránh lỗi foreign key
-        $guestCart->items()->delete();
-        $guestCart->delete();
-        Session::forget('cart_id');
         
-        // Cập nhật số lượng trong session
+        // Luôn cập nhật số lượng trong session (dù có guest cart hay không)
         $cartCount = $userCart->items()->sum('quantity');
         Session::put('cart_count', $cartCount);
     }

@@ -107,10 +107,10 @@
                             <li>
                                 <div class="dropdown-header user-info">
                                     <div class="user-avatar">
-                                        <i class="fa-solid fa-user"></i>
+                                        <h6><i class="fa-solid fa-user"></i>  {{ Auth::user()->name }}</h6>
                                     </div>
                                     <div class="user-details">
-                                        <h6>{{ Auth::user()->name }}</h6>
+                                       
                                         <small>{{ Auth::user()->email }}</small>
                                     </div>
                                 </div>
@@ -182,8 +182,8 @@
                             <i class="fa-solid fa-user"></i>
                         </div>
                         <div class="mobile-user-info">
-                            <h6>{{ Auth::user()->name ?? '' }}</h6> <br>
-                           
+                            <h6>{{ Auth::user()->name ?? ''}}</h6> 
+                            <small>{{ Auth::user()->email ?? ''}}</small>
                         </div>
                     </div>
                     
