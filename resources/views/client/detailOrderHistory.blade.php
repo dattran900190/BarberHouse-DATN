@@ -20,7 +20,8 @@
                                 </div>
                                 <div class="flex-shrink-0 mt-sm-0 mt-3">
 
-                                    <h6><span class="text-muted fw-normal">Email:</span> {{ $order->email ?? 'Không xác định' }}
+                                    <h6><span class="text-muted fw-normal">Email:</span>
+                                        {{ $order->email ?? 'Không xác định' }}
                                     </h6>
 
                                     <h6 class="mb-0"><span class="text-muted fw-normal">Điện thoại:</span>
@@ -69,9 +70,12 @@
                             {{-- Cột trái: Địa chỉ nhận hàng --}}
                             <div class="w-50 pe-4">
                                 <h6 class="text-muted text-uppercase fw-semibold fs-15">Địa chỉ nhận hàng</h6>
-                                <p class="text-muted mb-1">Họ tên: <span class="fw-medium">{{ $order->name ?? 'Không xác định' }}</span></p>
-                                <p class="text-muted mb-1">Địa chỉ: <span class="fw-medium">{{ $order->address ?? 'Không xác định' }}</span></p>
-                                <p class="text-muted mb-1">Điện thoại: <span class="fw-medium">{{ $order->phone ?? 'Không xác định' }}</span>
+                                <p class="text-muted mb-1">Họ tên: <span
+                                        class="fw-medium">{{ $order->name ?? 'Không xác định' }}</span></p>
+                                <p class="text-muted mb-1">Địa chỉ: <span
+                                        class="fw-medium">{{ $order->address ?? 'Không xác định' }}</span></p>
+                                <p class="text-muted mb-1">Điện thoại: <span
+                                        class="fw-medium">{{ $order->phone ?? 'Không xác định' }}</span>
                                 </p>
                             </div>
 
@@ -116,7 +120,7 @@
                     <div class="col-lg-12">
                         <div class="card-body p-4">
                             <div class="table-responsive">
-                                <table class="table table-borderless text-center table-nowrap align-middle mb-0">
+                                <table class="table table-borderless text-center table-nowrap align-middle mb-0 order-detail-table">
                                     <thead>
                                         <tr class="table-light">
                                             <th scope="col" style="width: 50px;">#</th>
@@ -140,27 +144,27 @@
                                             @endphp
                                             <tr>
                                                 {{-- Số thứ tự --}}
-                                                <th scope="row">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
+                                                <th scope="row" data-label="#">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
                                                 </th>
                                                 {{-- Hình ảnh --}}
-                                                <td>
+                                                <td data-label="Hình ảnh">
                                                     <img src="{{ $product?->image ? asset('storage/' . $product->image) : asset('images/no-image.png') ?? 'Không xác định' }}"
                                                         alt="Hình ảnh" width="80">
                                                 </td>
                                                 {{-- Tên sản phẩm và mô tả --}}
-                                                <td class="text-start">
-                                                    <span class="fw-medium">{{ $product?->name ?? 'Không xác định' }}</span>
-                                                    <p class="text-muted mb-0">{{ $variant?->description ?? 'Không xác định' }}</p>
+                                                <td class="text-start" data-label="Sản phẩm">
+                                                    <span
+                                                        class="fw-medium">{{ $product?->name ?? 'Không xác định' }}</span>
                                                 </td>
                                                 {{-- Dung tích --}}
-                                                <td>
+                                                <td data-label="Dung tích">
                                                     {{ $item->volume_name ?? 'Không xác định' }}
                                                 </td>
                                                 {{-- Giá và số lượng --}}
-                                                <td>{{ number_format($item->price_at_time, 0, ',', '.') }} VNĐ</td>
-                                                <td>{{ $item->quantity }}</td>
+                                                <td data-label="Đơn giá">{{ number_format($item->price_at_time, 0, ',', '.') }} VNĐ</td>
+                                                <td data-label="Số lượng">{{ $item->quantity }}</td>
                                                 {{-- Thành tiền --}}
-                                                <td class="text-end">{{ number_format($item->total_price, 0, ',', '.') }}
+                                                <td class="text-end" data-label="Thành tiền">{{ number_format($item->total_price, 0, ',', '.') }}
                                                     VNĐ</td>
                                             </tr>
                                         @endforeach
@@ -214,7 +218,6 @@
                                         data-cancel-url="{{ route('client.orders.cancel', $order->id) }}">
                                         Hủy đơn hàng
                                     </button>
-
                                 @endif
                                 <a href="{{ route('client.orderHistory') }}" class="btn-outline-show">Quay lại</a>
                             </div>
@@ -227,6 +230,71 @@
     <style>
         #mainNav {
             background-color: #000;
+        }
+
+             @media (max-width: 768px) {
+            .custom-swal-popup {
+                width: 95vw !important;
+                /* Gần full chiều ngang mobile */
+                max-width: 95vw !important;
+                padding: 15px;
+            }
+
+            .custom-swal-popup textarea {
+                font-size: 14px;
+                min-height: 100px;
+            }
+
+            .swal2-title {
+                font-size: 18px !important;
+            }
+
+            .swal2-html-container {
+                font-size: 14px !important;
+            }
+        }
+        @media (max-width: 991px) {
+            .order-detail-table {
+                border: 0;
+            }
+
+            .order-detail-table thead {
+                display: none;
+            }
+
+            .order-detail-table tr {
+                display: block;
+                margin-bottom: 1rem;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 10px;
+                background: #fff;
+            }
+
+            .order-detail-table td,
+            .order-detail-table th {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 6px 10px;
+                border: none;
+                width: 100%;
+            }
+
+            .order-detail-table td::before,
+            .order-detail-table th::before {
+                content: attr(data-label);
+                font-weight: 600;
+                flex-basis: 40%;
+                text-align: left;
+                color: #888;
+            }
+
+            .order-detail-table img {
+                max-width: 60px;
+                height: auto;
+                border-radius: 5px;
+            }
         }
     </style>
 @endsection

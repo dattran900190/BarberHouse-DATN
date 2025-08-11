@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('price', 10)->nullable();
             $table->integer('duration')->nullable();
             $table->boolean('is_combo')->nullable();
-            $table->string('image')->nullable();
+
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
         });

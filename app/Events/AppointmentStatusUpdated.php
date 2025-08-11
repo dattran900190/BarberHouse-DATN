@@ -44,7 +44,7 @@ class AppointmentStatusUpdated implements ShouldBroadcast
         $translatedStatus = $statusTranslations[$this->appointment->status] ?? $this->appointment->status;
 
         return [
-            'message' => 'Lịch hẹn của bạn đã được cập nhật trạng thái thành ' . $translatedStatus,
+            'message' => 'Lịch hẹn ' . $this->appointment->appointment_code . ' của bạn đã được cập nhật trạng thái thành ' . $translatedStatus,
             'appointment_id' => $this->appointment->id,
             'status' => $translatedStatus, // Trả về trạng thái đã dịch
         ];

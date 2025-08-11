@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <main style="padding: 10%">
+    <main class="profile-main">
         <div class="container light-style flex-grow-1 container-p-y">
             <div class="card overflow-hidden">
                 <h4 class="font-weight-bold text-center py-3 mb-4">
@@ -48,7 +48,7 @@
                                         enctype="multipart/form-data">
                                         @csrf
                                         <input type="hidden" name="tab" value="account-general">
-                                        <div class="card-body d-flex align-items-center">
+                                        <div class="card-body d-flex align-items-center profile-avatar-row gap-3">
                                             <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : '/default-avatar.png' }}"
                                                 alt="Avatar" class="rounded  avatar-preview"
                                                 style="width:120px; height:120px; object-fit:cover;">
@@ -228,8 +228,84 @@
         </div>
     </main>
     <style>
+          .alert-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            border-left: 4px solid #16a34a;
+            /* xanh lá */
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: #1f2937;
+            position: relative;
+        }
+
+        .alert-message {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-icon {
+            color: #16a34a;
+            font-size: 20px;
+        }
+
+        .alert-close {
+            cursor: pointer;
+            font-size: 20px;
+            color: #6b7280;
+            transition: color 0.2s ease;
+        }
+
+        .alert-close:hover {
+            color: #111827;
+        }
+        /* Fixed navbar */
         #mainNav {
             background-color: #000;
+        }
+
+        /* Page spacing below fixed navbar */
+        .profile-main {
+            padding: 100px 10% 40px;
+        }
+
+        @media (max-width: 991.98px) {
+            .profile-main {
+                padding: 84px 16px 24px;
+            }
+        }
+
+        /* Sidebar spacing on mobile */
+        @media (max-width: 767.98px) {
+            .account-settings-links {
+                margin-bottom: 16px;
+            }
+        }
+
+        /* Avatar row responsive */
+        @media (max-width: 575.98px) {
+            .profile-avatar-row {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+            .profile-avatar-row .avatar-preview {
+                width: 100px !important;
+                height: 100px !important;
+            }
+            .profile-avatar-row .ms-4 {
+                margin-left: 0 !important;
+            }
+        }
+
+        /* Improve table readability */
+        .table-responsive .table th,
+        .table-responsive .table td {
+            vertical-align: middle;
         }
     </style>
 @endsection

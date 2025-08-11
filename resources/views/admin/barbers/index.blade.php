@@ -94,10 +94,10 @@
                                 <td class="text-center">
                                     @if ($barber->avatar)
                                         <img src="{{ asset('storage/' . $barber->avatar) }}" alt="Avatar"
-                                             style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
+                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
                                     @else
                                         <img src="{{ asset('uploads/avatars/default-avatar.png') }}" alt="Avatar"
-                                             style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
+                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
                                     @endif
                                 </td>
                                 <td>{{ $barber->name }}</td>
@@ -121,8 +121,6 @@
                                         <span class="badge bg-danger">Đã xoá</span>
                                     @elseif ($barber->status === 'idle')
                                         <span class="badge bg-success">Đang hoạt động</span>
-                                    @elseif ($barber->status === 'busy')
-                                        <span class="badge bg-warning">Không nhận lịch</span>
                                     @else
                                         <span class="badge bg-secondary">Đã Nghỉ việc</span>
                                     @endif
