@@ -56,7 +56,7 @@
                                         <span style="color: #888;">Không rõ</span>
                                     @endif
                                 </p>
-                                
+
                                 <div class="rating mb-3">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($i <= round($barber->rating_avg))
@@ -93,7 +93,7 @@
             background-color: #000;
         }
 
-        
+
     </style>
 
     <!-- Font Awesome -->

@@ -472,8 +472,18 @@
 
         .branch-link:hover {
             color: #28a745;
-
             background-color: #e9ecef;
+        }
+
+        /* Styling cho thông báo không có thợ cắt */
+        #barbers-list .text-center p {
+            color: #666;
+            font-size: 1.1rem;
+            font-style: italic;
+            padding: 2rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px dashed #dee2e6;
         }
     </style>
 @endsection
@@ -489,6 +499,11 @@
             'expert': 'Chuyên gia'
         };
         function renderBarbers(barbers) {
+            if (barbers.length === 0) {
+                $('#barbers-list').html('<div class="text-center"><p>Hiện tại không có thợ cắt tóc nào đang làm việc.</p></div>');
+                return;
+            }
+
             let html = '<div class="barbers">';
             barbers.forEach(barber => {
                 html += `<div class="barber">
