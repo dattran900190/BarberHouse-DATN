@@ -16,7 +16,6 @@ class Service extends Model
         'price',
         'duration',
         'is_combo',
-        'image',
     ];
 
 }

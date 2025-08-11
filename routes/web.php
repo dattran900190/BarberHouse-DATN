@@ -51,6 +51,9 @@ Route::post('login', [AuthController::class, 'postLogin'])->name('postLogin');
 Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('register', [AuthController::class, 'postRegister'])->name('postRegister');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('verify.email');
+
+
 
 Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
 Route::post('forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('password.sendOtp');
@@ -98,6 +101,7 @@ Route::patch('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])
 // ==== Đặt lịch ====
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
 Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('dat-lich.store');
+Route::post('/dat-lich/verify-otp', [ClientAppointmentController::class, 'verifyOtp'])->name('dat-lich.verifyOtp');
 Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::class, 'getBarbersByBranch'])->name('getBarbersByBranch');
 Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time}/{service_id}', [ClientAppointmentController::class, 'getAvailableBarbersByDate'])->name('getAvailableBarbersByDate');
 Route::get('/confirm-booking/{token}', [ClientAppointmentController::class, 'confirmBooking'])->name('confirm.booking');

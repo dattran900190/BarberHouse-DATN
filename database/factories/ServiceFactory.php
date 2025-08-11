@@ -22,7 +22,7 @@ class ServiceFactory extends Factory
             'price' => $this->faker->numberBetween(50000, 500000),
             'duration' => $this->faker->numberBetween(15, 120),
             'is_combo' => $this->faker->boolean,
-            'image' => null, // Không có ảnh
+            // 'image' => null, // Không có ảnh
             'created_at' => now(),
             'updated_at' => now(),
         ];
