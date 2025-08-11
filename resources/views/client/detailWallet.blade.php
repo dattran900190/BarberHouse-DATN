@@ -11,7 +11,7 @@
                 <div class="card-header border-0 d-flex justify-content-between align-items-center">
                     <h3 class="mb-0 fw-bold">Lịch sử yêu cầu hoàn tiền</h3>
                     <a href="{{ route('client.wallet') }}"
-                        class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm">
+                        class="btn btn-outline-primary btn-sm ">
                         <span>Gửi yêu cầu hoàn tiền</span>
                     </a>
                 </div>
@@ -21,7 +21,7 @@
                         <form action="{{ route('client.detailWallet') }}" method="GET" class="position-relative"
                             style="width: 400px;">
                             <input type="text" name="search"
-                                class="form-control rounded-pill pe-5 shadow-sm border-secondary"
+                                class="form-control me-2"
                                 placeholder="Tìm kiếm theo mã đơn hàng hoặc mã đặt lịch" value="{{ request('search') }}">
                             <button type="submit"
                                 class="btn position-absolute top-50 end-0 translate-middle-y me-3 p-0 border-0 bg-transparent text-muted">
