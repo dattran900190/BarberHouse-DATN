@@ -51,8 +51,8 @@
 
         {{-- Hiển thị lỗi nếu có --}}
         @if ($errors->any())
-            <div style="color: red;">
-                <ul>
+            <div class="alert alert-danger">
+                <ul class="mb-0">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -68,7 +68,7 @@
                     <div class="input-group">
                         <input type="number" name="name" id="name" class="form-control"
                             value="{{ old('name') ? preg_replace('/[^0-9]/', '', old('name')) : '' }}" placeholder="Nhập số"
-                            required>
+                            >
                         <span class="input-group-text">ml</span>
                     </div>
                 </div>
