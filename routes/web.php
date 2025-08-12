@@ -139,7 +139,7 @@ Route::get('/chi-tiet-san-pham/{id}', [ClientProductController::class, 'show'])-
 
 // == Thợ cắt tóc ==
 Route::get('/tho-cat', [ClientBarberController::class, 'index'])->name('client.listBarber');
-Route::get('/tho-cat/{slug}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
+Route::get('/tho-cat/{id}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
 
 // == Đổi điểm ==
 Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem');
@@ -314,8 +314,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('admin/product-variants/{id}/restore', [ProductController::class, 'restoreVariant'])->name('admin.product-variants.restore');
     Route::post('admin/product-variants/{id}/soft-delete', [ProductController::class, 'softDeleteVariant'])->name('admin.product-variants.softDelete');
     Route::delete('admin/product-variants/{id}/hard-delete', [ProductController::class, 'hardDeleteVariant'])->name('admin.product-variants.hardDelete');
-  
-
 });
 
 // ==== profile ====

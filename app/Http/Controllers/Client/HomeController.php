@@ -16,9 +16,9 @@ class HomeController extends Controller
 
     public function index()
     {
-        // Lấy danh sách thợ cắt (chỉ trạng thái 1,2)
+        // Lấy danh sách thợ cắt (chỉ trạng thái idle - đang làm việc)
         $barbers = Barber::with('branch')
-            ->whereIn('status', [1, 2])
+            ->where('status', 'idle')
             ->latest()
             ->take(6) // giới hạn số lượng hiển thị
             ->get();
@@ -56,7 +56,7 @@ class HomeController extends Controller
     public function getBarbers()
     {
         $barbers = \App\Models\Barber::with('branch')
-            ->whereIn('status', [1, 2])
+            ->where('status', 'idle')
             ->latest()
             ->take(6)
             ->get();
