@@ -136,7 +136,7 @@ Route::get('/chi-tiet-san-pham/{id}', [ClientProductController::class, 'show'])-
 
 // == Thợ cắt tóc ==
 Route::get('/tho-cat', [ClientBarberController::class, 'index'])->name('client.listBarber');
-Route::get('/tho-cat/{slug}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
+Route::get('/tho-cat/{id}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
 
 // == Đổi điểm ==
 Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem');
