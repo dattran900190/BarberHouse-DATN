@@ -311,8 +311,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('admin/product-variants/{id}/restore', [ProductController::class, 'restoreVariant'])->name('admin.product-variants.restore');
     Route::post('admin/product-variants/{id}/soft-delete', [ProductController::class, 'softDeleteVariant'])->name('admin.product-variants.softDelete');
     Route::delete('admin/product-variants/{id}/hard-delete', [ProductController::class, 'hardDeleteVariant'])->name('admin.product-variants.hardDelete');
-  
-
 });
 
 // ==== profile ====
