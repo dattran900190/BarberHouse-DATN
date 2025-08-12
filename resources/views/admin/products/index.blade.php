@@ -138,16 +138,20 @@
                                     <ul class="dropdown-menu dropdown-menu-end"
                                         aria-labelledby="actionMenu{{ $product->id }}">
                                         @if ($product->trashed())
+                                        <li>
+                                            <a href="{{route('admin.products.show', $product->id)}}"    class="dropdown-item">
+                                                <i class="fas fa-eye me-2"></i>Xem
+                                            </a>
+                                        </li>
                                             <li>
                                                 <button type="button" class="dropdown-item text-success restore-btn"
                                                     data-id="{{ $product->id }}">
                                                     <i class="fas fa-undo me-2"></i> Khôi phục
                                                 </button>
                                             </li>
+                                        
                                             <li>
-                                                <a href="{{route('admin.products.show', $product->id)}}"    class="dropdown-item">
-                                                    <i class="fas fa-eye me-2"></i>Xem
-                                                </a>
+                                                <hr class="dropdown-divider">
                                             </li>
                                             <li>
                                                 <button type="button" class="dropdown-item text-danger force-delete-btn"
