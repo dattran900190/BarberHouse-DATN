@@ -20,7 +20,7 @@ class ChatController extends Controller
             'X-Title'       => env('APP_NAME'),
             'Content-Type'  => 'application/json',
         ])->post('https://openrouter.ai/api/v1/chat/completions', [
-            'model' => 'deepseek/deepseek-chat',  // hoặc "openai/gpt-4o"
+            'model' => 'deepseek/deepseek-chat', 
             'messages' => [
                 ['role' => 'system', 'content' => 'Bạn là trợ lý hỗ trợ khách hàng cho website Barber House.'],
                 ['role' => 'user', 'content' => $request->message],
