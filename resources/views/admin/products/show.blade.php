@@ -139,14 +139,17 @@
                     <!-- Nếu sản phẩm đã xóa mềm -->
                     <form action="{{ route('admin.products.restore', $product->id) }}" method="POST" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Bạn có chắc muốn khôi phục sản phẩm này?')">
+                        <button type="submit" class="btn btn-outline-success btn-sm restore-btn"
+                        data-id="{{ $product->id }}">
+                            
                             <i class="fa fa-undo me-1"></i> Khôi phục
                         </button>
                     </form>
                     <form action="{{ route('admin.products.forceDelete', $product->id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa vĩnh viễn sản phẩm này? Hành động này không thể hoàn tác!')">
+                        <button type="submit"   class="btn btn-outline-danger btn-sm force-delete-btn"
+                        data-id="{{ $product->id }}">
                             <i class="fa fa-trash me-1"></i> Xóa vĩnh viễn
                         </button>
                     </form>
@@ -158,7 +161,8 @@
                     <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
+                        <button type="submit" class="btn btn-outline-danger btn-sm soft-delete-btn"
+                        data-id="{{ $product->id }}">
                             <i class="fa fa-trash me-1"></i> Xóa
                         </button>
                     </form>
@@ -169,5 +173,114 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+         function handleSwalAction({
+            selector,
+            title,
+            text,
+            route,
+            method = 'POST',
+            onSuccess = () => location.reload()
+        }) {
+            document.querySelectorAll(selector).forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const promoId = this.getAttribute('data-id');
 
+                    Swal.fire({
+                        title,
+                        text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát.',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                didOpen: () => Swal.showLoading()
+                            });
+
+                            fetch(route.replace(':id', promoId), {
+                                    method,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: data.success ? 'Thành công!' : 'Lỗi!',
+                                        text: data.message,
+                                        icon: data.success ? 'success' : 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        if (data.success) onSuccess();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: 'Đã có lỗi xảy ra. Vui lòng thử lại sau.',
+                                        icon: 'error',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        }
+
+        handleSwalAction({
+            selector: '.soft-delete-btn',
+            title: 'Xoá mềm Sản phẩm',
+            text: 'Bạn có chắc muốn xoá mềm sản phẩm này?',
+            route: '{{ route('admin.products.destroy', ':id') }}',
+            method: 'DELETE'
+        });
+
+        handleSwalAction({
+            selector: '.restore-btn',
+            title: 'Khôi phục Sản phẩm',
+            text: 'Khôi phục sản phẩm đã xoá?',
+            route: '{{ route('admin.products.restore', ':id') }}',
+            method: 'POST'
+        });
+
+        handleSwalAction({
+            selector: '.force-delete-btn',
+            title: 'Xoá vĩnh viễn Sản phẩm',
+            text: 'Bạn có chắc muốn xoá vĩnh viễn? Hành động không thể hoàn tác!',
+            route: '{{ route('admin.products.forceDelete', ':id') }}',
+            method: 'DELETE'
+        });
+    </script>
 @endsection
+
