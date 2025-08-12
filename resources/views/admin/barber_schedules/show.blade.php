@@ -5,20 +5,20 @@
 @section('content')
     @if (session('success'))
         <div class="alert border-start border-success border-4 alert-dismissible fade show shadow-sm" role="alert">
-            <span class="fw-bold text-dark">{{ session('success') }}</span>
+            <span class="text-dark">{{ session('success') }}</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     @endif
 
     @if (session('error'))
         <div class="alert border-start border-danger border-4 alert-dismissible fade show shadow-sm" role="alert">
-            <span class="fw-bold text-dark">{{ session('error') }}</span>
+            <span class="text-dark">{{ session('error') }}</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     @endif
 
     <div class="page-header mb-4">
-        <h3 class="fw-bold">Lịch Làm Việc Đặc Biệt: {{ $branch->name }}</h3>
+        <h3 class="fw-bold">Lịch Làm việc: {{ $branch->name }}</h3>
         <ul class="breadcrumbs">
             <li class="nav-home"><a href="{{ url('admin/dashboard') }}"><i class="icon-home"></i></a></li>
             <li class="separator"><i class="icon-arrow-right"></i></li>
