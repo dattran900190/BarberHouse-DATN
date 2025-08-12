@@ -60,6 +60,7 @@
                         <tr>
                             <th>STT</th>
                             <th>Ảnh</th>
+                            <th>Ngày tạo</th>
                             <th>Trạng thái</th>
                             <th>Hành động</th>
                         </tr>
@@ -77,6 +78,7 @@
                                         <span class="text-muted">Không có ảnh</span>
                                     @endif
                                 </td>
+                                <td>{{ $img->created_at->format('d/m/Y H:i') }}</td>
                                 <td>
                                     @if ($img->status === 1)
                                         <span class="badge bg-success">Hiển thị</span>

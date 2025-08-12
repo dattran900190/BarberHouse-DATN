@@ -6,6 +6,7 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class SettingController extends Controller
 {
@@ -35,41 +36,85 @@ class SettingController extends Controller
 
 
     public function saveSettings(Request $request)
-    {
-        // Xử lý social links
-        $social_keys = ['youtube', 'facebook', 'instagram', 'tiktok'];
-        foreach ($social_keys as $key) {
-            $value = $request->input("social_links.{$key}.value", '');
-            Setting::updateOrCreate(
-                ['key' => $key, 'type' => 'url'],
-                ['value' => $value]
-            );
-        }
+{
+    // Define validation rules
+    $rules = [
+        'social_links.youtube.value' => 'nullable|url',
+        'social_links.facebook.value' => 'nullable|url',
+        'social_links.instagram.value' => 'nullable|url',
+        'social_links.tiktok.value' => 'nullable|url',
+        'images.anh_dang_nhap.value' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'images.anh_dang_ky.value' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'images.bang_gia.value' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'images.black_logo.value' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'images.white_logo.value' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ];
 
-        // Xử lý hình ảnh
-        $image_keys = ['anh_dang_nhap', 'anh_dang_ky', 'bang_gia', 'black_logo', 'white_logo'];
-        foreach ($image_keys as $key) {
-            $existing = $request->input("images.{$key}.existing_value");
-            $file     = $request->file("images.{$key}.value");
+    // Custom error messages in Vietnamese
+    $messages = [
+        'social_links.youtube.value.url' => 'Cập nhật link YouTube sai định dạng URL.',
+        'social_links.facebook.value.url' => 'Cập nhật link Facebook sai định dạng URL.',
+        'social_links.instagram.value.url' => 'Cập nhật link Instagram sai định dạng URL.',
+        'social_links.tiktok.value.url' => 'Cập nhật link TikTok – Sai định dạng URL.',
+        'images.*.value.image' => 'File không phải là hình ảnh.',
+        'images.*.value.mimes' => 'File sai định dạng. Chỉ chấp nhận jpeg, png, jpg, gif, svg.',
+        'images.*.value.max' => 'File quá dung lượng (tối đa 2MB).',
+    ];
 
-            // Nếu có upload file mới
-            if ($file && $file->isValid()) {
-                $path = $file->store('uploads', 'public');
-                // Xoá file cũ nếu có
-                if ($existing && Storage::disk('public')->exists($existing)) {
-                    Storage::disk('public')->delete($existing);
-                }
-            } else {
-                // giữ nguyên
-                $path = $existing;
-            }
+    // Custom attribute names for better readability
+    $attributes = [
+        'images.anh_dang_nhap.value' => 'Ảnh đăng nhập',
+        'images.anh_dang_ky.value' => 'Ảnh đăng ký',
+        'images.bang_gia.value' => 'Ảnh bảng giá',
+        'images.black_logo.value' => 'Logo đen',
+        'images.white_logo.value' => 'Logo trắng',
+    ];
 
-            Setting::updateOrCreate(
-                ['key' => $key, 'type' => 'image'],
-                ['value' => $path]
-            );
-        }
+    // Validate the request
+    $validator = Validator::make($request->all(), $rules, $messages, $attributes);
 
-        return response()->json(['success' => true, 'message' => 'Cài đặt đã được lưu!']);
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation failed',
+            'errors' => $validator->errors()->all()
+        ], 422);
     }
+
+    // Xử lý social links
+    $social_keys = ['youtube', 'facebook', 'instagram', 'tiktok'];
+    foreach ($social_keys as $key) {
+        $value = $request->input("social_links.{$key}.value", '');
+        Setting::updateOrCreate(
+            ['key' => $key, 'type' => 'url'],
+            ['value' => $value]
+        );
+    }
+
+    // Xử lý hình ảnh
+    $image_keys = ['anh_dang_nhap', 'anh_dang_ky', 'bang_gia', 'black_logo', 'white_logo'];
+    foreach ($image_keys as $key) {
+        $existing = $request->input("images.{$key}.existing_value");
+        $file = $request->file("images.{$key}.value");
+
+        // Nếu có upload file mới
+        if ($file && $file->isValid()) {
+            $path = $file->store('uploads', 'public');
+            // Xoá file cũ nếu có
+            if ($existing && Storage::disk('public')->exists($existing)) {
+                Storage::disk('public')->delete($existing);
+            }
+        } else {
+            // giữ nguyên
+            $path = $existing;
+        }
+
+        Setting::updateOrCreate(
+            ['key' => $key, 'type' => 'image'],
+            ['value' => $path]
+        );
+    }
+
+    return response()->json(['success' => true, 'message' => 'Cài đặt đã được lưu!']);
+}
 }
