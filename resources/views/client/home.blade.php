@@ -291,6 +291,14 @@
                 font-size: 1.1rem;
             }
 
+            .barber-name-link {
+                font-size: 1.1rem;
+            }
+
+            .branch-link {
+                font-size: 0.9rem;
+            }
+
             .barber-info p {
                 font-size: 0.9rem;
                 margin-bottom: 5px;
@@ -354,6 +362,9 @@
             }
             .image-item {
                 width: 100%;
+                height: 220px;
+                overflow: hidden;
+                position: relative;
             }
             .image-item img {
                 width: 100%;
@@ -433,6 +444,47 @@
         .btn-xem-them:hover {
             background: #444;
         }
+
+        /* Styling cho link tên thợ cắt */
+        .barber-name-link {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 600;
+        }
+
+        .barber-name-link:hover {
+            color: #28a745;
+
+            transform: scale(1.02);
+        }
+
+        /* Styling cho link chi nhánh */
+        .branch-link {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+
+        .branch-link:hover {
+            color: #28a745;
+            background-color: #e9ecef;
+        }
+
+        /* Styling cho thông báo không có thợ cắt */
+        #barbers-list .text-center p {
+            color: #666;
+            font-size: 1.1rem;
+            font-style: italic;
+            padding: 2rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px dashed #dee2e6;
+        }
     </style>
 @endsection
 
@@ -447,6 +499,11 @@
             'expert': 'Chuyên gia'
         };
         function renderBarbers(barbers) {
+            if (barbers.length === 0) {
+                $('#barbers-list').html('<div class="text-center"><p>Hiện tại không có thợ cắt tóc nào đang làm việc.</p></div>');
+                return;
+            }
+
             let html = '<div class="barbers">';
             barbers.forEach(barber => {
                 html += `<div class="barber">
@@ -454,11 +511,13 @@
                         <img src="/storage/${barber.avatar}" alt="${barber.name}">
                     </div>
                     <div class="barber-info">
-                        <h4>${barber.name}</h4>
+                        <h4><a href="/tho-cat/${barber.id}" class="barber-name-link">${barber.name}</a></h4>
                         <p><span class="label">Kỹ năng:</span>
                             <span class="me-2 mb-2"><b>${skillLevels[barber.skill_level] ?? 'Không xác định'}</b></span>
                         </p>
-                        <p><span class="label">Chi nhánh:</span> ${barber.branch?.name ?? 'N/A'}</p>
+                        <p><span class="label">Chi nhánh:</span>
+                            ${barber.branch ? `<a href="/chi-nhanh/${barber.branch.id}" class="branch-link">${barber.branch.name}</a>` : 'N/A'}
+                        </p>
                         <p><span class="label">Đánh giá:</span> ${Number(barber.rating_avg).toFixed(1)}/5
                             <i class="fa-solid fa-star" style="color: #ffd700;"></i>
                         </p>
@@ -624,9 +683,9 @@
                 });
         }
     </script>
-  
-     
-   
+
+
+
     <script>
         $(function() {
             // Slide 1 ảnh khách hàng trên mobile

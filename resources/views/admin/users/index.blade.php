@@ -90,6 +90,7 @@
                     style="max-width: 200px; padding: 9px; border: 2px solid #EBEDF2;" onchange="this.form.submit()">
                     <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>Tất cả người dùng</option>
                     <option value="active" {{ request('filter') == 'active' ? 'selected' : '' }}>Hoạt động</option>
+                    <option value="inactive" {{ request('filter') == 'inactive' ? 'selected' : '' }}>Chưa kích hoạt</option>
                     <option value="banned" {{ request('filter') == 'banned' ? 'selected' : '' }}>Đã chặn</option>
                 </select>
             </form>
@@ -144,7 +145,7 @@
                                                 @else
                                                     <span
                                                         class="badge {{ $user->status === 'active' ? 'bg-success' : ($user->status === 'inactive' ? 'bg-warning' : 'bg-danger') }}">
-                                                        {{ $user->status === 'active' ? 'Hoạt động' : ($user->status === 'inactive' ? 'Không hoạt động' : 'Đã chặn') }}
+                                                        {{ $user->status === 'active' ? 'Hoạt động' : ($user->status === 'inactive' ? 'Chưa kích hoạt' : 'Đã chặn') }}
                                                     </span>
                                                 @endif
                                             </td>

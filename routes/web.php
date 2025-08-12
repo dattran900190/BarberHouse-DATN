@@ -51,6 +51,9 @@ Route::post('login', [AuthController::class, 'postLogin'])->name('postLogin');
 Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('register', [AuthController::class, 'postRegister'])->name('postRegister');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('verify.email');
+
+
 
 Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
 Route::post('forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('password.sendOtp');
@@ -98,6 +101,7 @@ Route::patch('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])
 // ==== Đặt lịch ====
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');
 Route::post('/dat-lich', [ClientAppointmentController::class, 'store'])->name('dat-lich.store');
+Route::post('/dat-lich/verify-otp', [ClientAppointmentController::class, 'verifyOtp'])->name('dat-lich.verifyOtp');
 Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::class, 'getBarbersByBranch'])->name('getBarbersByBranch');
 Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time}/{service_id}', [ClientAppointmentController::class, 'getAvailableBarbersByDate'])->name('getAvailableBarbersByDate');
 Route::get('/confirm-booking/{token}', [ClientAppointmentController::class, 'confirmBooking'])->name('confirm.booking');
@@ -132,7 +136,7 @@ Route::get('/chi-tiet-san-pham/{id}', [ClientProductController::class, 'show'])-
 
 // == Thợ cắt tóc ==
 Route::get('/tho-cat', [ClientBarberController::class, 'index'])->name('client.listBarber');
-Route::get('/tho-cat/{slug}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
+Route::get('/tho-cat/{id}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
 
 // == Đổi điểm ==
 Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem');
@@ -307,8 +311,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('admin/product-variants/{id}/restore', [ProductController::class, 'restoreVariant'])->name('admin.product-variants.restore');
     Route::post('admin/product-variants/{id}/soft-delete', [ProductController::class, 'softDeleteVariant'])->name('admin.product-variants.softDelete');
     Route::delete('admin/product-variants/{id}/hard-delete', [ProductController::class, 'hardDeleteVariant'])->name('admin.product-variants.hardDelete');
-  
-
 });
 
 // ==== profile ====
