@@ -116,7 +116,7 @@
                                 <p>Hình ảnh hiện tại:</p>
                                 @foreach ($product->images as $image)
                                     <div class="d-inline-block me-2 mb-2 text-center">
-                                        <img src="{{ asset('storage/' . $image->image_url) }}" width="100">
+                                        <img src="{{ asset('storage/' . $image->image_url) }}" style="width: 100px; height: 100px; object-fit: cover;">
                                         <div>
                                             <label><input type="checkbox" name="delete_images[]"
                                                     value="{{ $image->id }}"> Xóa</label>

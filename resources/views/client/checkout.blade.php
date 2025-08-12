@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <main class="container py-4 mb-3 pt-10">
+    <main class="container py-4 mb-3 pt-10" style="margin-top: 70px;">
         <div class="row justify-content-center">
             <div class="col-12 col-lg-10">
                 <form method="POST" action="{{ route('cart.checkout.process') }}" id="checkoutForm">
@@ -264,11 +264,11 @@
         /* Custom card styling */
         .card {
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
         }
 
         .card-header {
-            border-radius: 12px 12px 0 0 !important;
+            border-radius: 8px 8px 0 0 !important;
             border-bottom: none;
         }
 

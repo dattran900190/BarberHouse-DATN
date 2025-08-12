@@ -183,7 +183,7 @@
                         </div>
                         <div class="mobile-user-info">
                             <h6>{{ Auth::user()->name ?? ''}}</h6> <br>
-                            <small>{{ Auth::user()->email }}</small>
+                            <small>{{ Auth::user()->email ?? ''}}</small>
                         </div>
                     </div>
                     
