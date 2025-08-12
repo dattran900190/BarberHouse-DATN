@@ -453,11 +453,11 @@
             font-weight: 600;
         }
 
-        .barber-name-link:hover {
+        /* .barber-name-link:hover {
             color: #28a745;
 
             transform: scale(1.02);
-        }
+        } */
 
         /* Styling cho link chi nhánh */
         .branch-link {
@@ -470,10 +470,10 @@
             background-color: #f8f9fa;
         }
 
-        .branch-link:hover {
+        /* .branch-link:hover {
             color: #28a745;
             background-color: #e9ecef;
-        }
+        } */
 
         /* Styling cho thông báo không có thợ cắt */
         #barbers-list .text-center p {

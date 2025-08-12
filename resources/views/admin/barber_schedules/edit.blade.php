@@ -97,7 +97,7 @@
                 </div>
 
                 <div class="mt-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
                         <i class="fa fa-edit me-1"></i> {{ isset($schedule) ? 'Cập nhật lịch' : 'Tạo lịch' }}
                     </button>
                     @if (isset($branch))

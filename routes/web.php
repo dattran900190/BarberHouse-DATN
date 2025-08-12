@@ -79,6 +79,9 @@ Route::get('/chinh-sach-van-chuyen', [HomeController::class, 'shippingPolicy'])-
 // ==== Chính sách bảo hành - đổi trả ====
 Route::get('/chinh-sach-bao-hanh-doi-tra', [HomeController::class, 'warrantyReturnPolicy'])->name('warranty.return.policy');
 
+// == Liên hệ ==
+Route::get('/lien-he', [HomeController::class, 'contact'])->name('contact');
+
 // == Giỏ hàng ==
 Route::get('/gio-hang', [CartController::class, 'show'])->name('cart.show');
 Route::post('/gio-hang/add', [CartController::class, 'addToCart'])->name('cart.add');

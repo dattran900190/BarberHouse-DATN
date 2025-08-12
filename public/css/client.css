@@ -165,29 +165,53 @@ body a:hover {
 
 /* Link nav trắng, hover xám nhạt */
 #mainNav .nav-link {
+  position: relative;
   font-size: 1.2rem;
   color: #fff;
   font-weight: bold;
   text-transform: uppercase;
+  padding: 0;
 }
 
-#mainNav.scrolled .nav-link {
+#mainNav .nav-link-right {
+  position: relative;
+  font-size: 1.2rem;
   color: #fff;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0;
 }
 
-#mainNav .nav-link:hover {
+#mainNav .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  /* Khoảng cách gạch chân so với chữ */
+  width: 0;
+  height: 2px;
+  background-color: #ccc;
+  transition: width 0.3s ease;
+  /* Thời gian & kiểu chuyển động */
+}
+
+/* Hover */
+#mainNav .nav-link:hover::after {
+  width: 100%;
   color: #ccc;
 }
 
-/* Active Menu Styles */
-#mainNav .nav-link.active {
-  color: #ccc !important;
-  font-weight: bold;
+/* Active */
+#mainNav .nav-link.active::after {
+  width: 100%;
+  color: #ccc;
 }
 
-#mainNav .nav-link.active:hover {
+/* Giữ màu chữ khi active */
+#mainNav .nav-link.active {
   color: #ccc !important;
 }
+
 
 @media (max-width: 768px) {
   #mainNav .nav-link.active {
@@ -199,6 +223,7 @@ body a:hover {
 
 /* Mobile Banner Bé Lại */
 @media (max-width: 991.98px) {
+
   /* Banner bé lại */
   #mainNav {
     padding: 8px 12px;
@@ -503,7 +528,8 @@ section {
 /* Card chung */
 .product {
   background: #fff;
-  border-radius: 6px;               /* như barber-card */
+  border-radius: 6px;
+  /* như barber-card */
   border: 1px solid #eee;
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
@@ -529,7 +555,8 @@ section {
 /* Ảnh: kích thước cố định, cover, và zoom khi hover */
 .image-product img {
   width: 100%;
-  height: 340px;                      /* giống barber-img */
+  height: 340px;
+  /* giống barber-img */
   object-fit: cover;
   transition: transform 0.4s ease;
 }
@@ -562,13 +589,15 @@ section {
 
 /* Nút hành động gom chung vào footer */
 .button-group {
-  margin-top: auto;                  /* đẩy xuống chân card */
+  margin-top: auto;
+  /* đẩy xuống chân card */
   padding: 12px;
   display: flex;
   justify-content: center;
   gap: 8px;
   flex-wrap: wrap;
-  background: #fff;                  /* nền trắng */
+  background: #fff;
+  /* nền trắng */
 }
 
 /* price */
@@ -653,85 +682,103 @@ h2 {
 }
 
 .footer {
-    background-color: #000;
-    color: #fff;
-    padding: 40px 20px;
-    font-family: Arial, sans-serif;
-    text-align: center;
+  background-color: #000;
+  color: #fff;
+  padding: 40px 20px;
+  font-family: Arial, sans-serif;
+  text-align: center;
 }
 
 .footer-container {
-    max-width: 1100px;
-    margin: 0 auto;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .footer-top h4,
 .footer-top p {
-    margin: 5px 0;
-    font-weight: bold;
+  margin: 5px 0;
+  font-weight: bold;
 }
 
 .footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 100px;
-    margin: 30px 0;
-    flex-wrap: wrap;
-    text-align: left;
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  margin: 30px 0;
+  flex-wrap: wrap;
+  /* text-align: left; */
 }
 
 .footer-column h5 {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .footer-column ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .footer-column ul li {
-    margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 .footer-column ul li a {
-    color: #fff;
-    text-decoration: none;
-    transition: 0.3s;
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+  position: relative;
+  /* cần cho ::after */
+  padding-bottom: 2px;
+  /* để underline không dính sát chữ */
 }
 
-.footer-column ul li a:hover {
-    color: #ccc;
+/* Tạo underline ẩn mặc định */
+.footer-column ul li a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  /* ngay dưới chữ */
+  width: 0;
+  height: 2px;
+  background-color: #ccc;
+  transition: width 0.3s ease;
+}
+
+/* Khi hover thì underline trượt ra */
+.footer-column ul li a:hover::after {
+  width: 100%;
 }
 
 .footer-logo-cert {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 40px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .footer-logo-cert img {
-    width: 200px;
-    height: 110px;
+  width: 200px;
+  height: 110px;
 }
 
 .logo-footer {
-    height: 50px;
+  height: 50px;
 }
 
 .cert-footer {
-    height: 60px;
+  height: 60px;
 }
 
 .footer-bottom p {
-    font-size: 13px;
-    color: #ccc;
-    margin-top: 10px;
+  font-size: 13px;
+  color: #ccc;
+  margin-top: 10px;
 }
 
 
@@ -906,157 +953,167 @@ h2 {
 
 /* Branch Cards Styles */
 .branch-cards-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 15px;
-    margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
 }
 
 .branch-card {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 5px;
-    background: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 5px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .branch-card:hover {
-    border-color: #007bff;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
-    transform: translateY(-2px);
+  border-color: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+  transform: translateY(-2px);
 }
 
 .branch-card.selected {
-    border-color: #28a745;
-    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+  border-color: #28a745;
+  background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
 }
 
 .branch-card.selected::after {
-    content: '✓';
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #28a745;
-    color: white;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #28a745;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .branch-icon-wrapper {
-    margin-right: 15px;
-    flex-shrink: 0;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  margin-right: 15px;
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  /* background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .branch-icon {
-    color: white;
-    font-size: 20px;
+  color: #000;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.branch-icon:hover {
+  border-color: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
 }
 
 .branch-info {
-    flex: 1;
+  flex: 1;
 }
 
 .branch-name {
-    margin: 0 0 8px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
 }
 
-.branch-address, .branch-hours {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-    font-size: 12px;
-    color: #6c757d;
+.branch-address,
+.branch-hours {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 12px;
+  color: #6c757d;
 }
 
-.branch-address i, .branch-hours i {
-    margin-right: 5px;
-    font-size: 10px;
+.branch-address i,
+.branch-hours i {
+  margin-right: 5px;
+  font-size: 10px;
 }
 
 /* Time Grid Styles */
 .time-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 15px;
 }
 
 .time-slot {
-    padding: 12px 8px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    color: #333;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
-    background: #fff;
-    position: relative;
+  padding: 12px 8px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  background: #fff;
+  position: relative;
 }
 
 .time-slot:hover {
-    border-color: #007bff;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
-    transform: translateY(-2px);
-    background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+  border-color: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
 }
 
 .time-slot.selected {
-    border-color: #28a745;
-    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
-    color: #155724;
+  border-color: #28a745;
+  background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+  color: #155724;
 }
 
 .time-slot.selected::after {
-    content: '✓';
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: #28a745;
-    color: white;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: bold;
+  content: '✓';
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #28a745;
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
 }
 
 /* Responsive cho time grid */
 @media (max-width: 768px) {
-    .time-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+  .time-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
-    .time-slot {
-        padding: 10px 6px;
-        font-size: 13px;
-    }
+  .time-slot {
+    padding: 10px 6px;
+    font-size: 13px;
+  }
 }
 
 /* -----------Chi nhánh-------- */
@@ -1983,12 +2040,19 @@ h2 {
   transition: transform 0.4s ease;
 }
 
-.barber-img-wrapper:hover .barber-img {
+.barber-img-wrapper:hover .barber-img,
+  .barber-img-wrapper:hover .product-img {
   transform: scale(1.05);
 }
 
 .rating i {
   font-size: 0.9rem;
+}
+
+.product-img {
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
 }
 
 /* .book-btn {
@@ -2416,7 +2480,7 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
   margin-bottom: 0;
 }
 
-.breadcrumb-item + .breadcrumb-item::before {
+.breadcrumb-item+.breadcrumb-item::before {
   content: ">";
   color: #6c757d;
   font-weight: bold;

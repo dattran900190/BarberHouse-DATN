@@ -58,8 +58,8 @@
             <h2>4. Liên hệ hỗ trợ</h2>
             <p>Nếu có bất kỳ thắc mắc nào liên quan đến chính sách bảo hành và đổi trả, quý khách vui lòng liên hệ:</p>
             <ul>
-                <li>Hotline: 0123 456 789</li>
-                <li>Email: trandiep490@gmail.com</li>
+                <li>Hotline: <a href="tel:0123456789">0123 456 789</a></li>
+                <li>Email: <a href="mailto:trandiep490@gmail.com">trandiep490@gmail.com</a></li>
                 <li>Thời gian hỗ trợ: 8:00 – 17:00 (Thứ 2 – Thứ 7)</li>
             </ul>
         </div>
