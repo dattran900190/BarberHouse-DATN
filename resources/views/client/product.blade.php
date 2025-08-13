@@ -76,7 +76,7 @@
                                     <a href="{{ route('client.product.detail', $product->id) }}"
                                         class="text-decoration-none text-dark">
                                         <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}"
-                                            class="card-img-top barber-img">
+                                            class="card-img-top product-img" style="height: ">
                                     </a>
                                 </div>
 

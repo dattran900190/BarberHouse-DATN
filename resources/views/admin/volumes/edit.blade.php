@@ -67,7 +67,7 @@
                     <div class="input-group">
                        <input type="number" name="name" id="name" 
                         value="{{ old('name', preg_replace('/[^0-9]/', '', $volume->name)) }}" 
-                        class="form-control" required placeholder="Nhập số">
+                        class="form-control"  placeholder="Nhập số">
                         <span class="input-group-text">ml</span>
                     </div>
                 </div>

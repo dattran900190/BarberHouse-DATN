@@ -365,6 +365,14 @@ class CartController extends Controller
                 $item->quantity = $quantityMap[$item->id];
             }
         }
+        foreach ($items as $item) {
+            $stock = $item->productVariant->stock ?? 0;
+            if ($item->quantity > $stock) {
+                return redirect()
+                    ->route('cart.show')
+                    ->with('error', "Sản phẩm {$item->productVariant->product->name} dung tích ({$item->productVariant->volume->name}) chỉ còn {$stock} sản phẩm trong kho.");
+            }
+        }
 
         if ($items->isEmpty()) {
             return redirect()->route('cart.show')->with('error', 'Giỏ hàng của bạn đang trống hoặc không có sản phẩm nào được chọn.');

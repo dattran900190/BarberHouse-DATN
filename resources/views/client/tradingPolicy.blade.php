@@ -84,8 +84,8 @@
             <h2>8. Thông tin liên hệ</h2>
             <p>Mọi thắc mắc về Chính sách giao dịch vui lòng liên hệ:</p>
             <ul>
-                <li><strong>Email:</strong> trandiep490@gmail.com</li>
-                <li><strong>Hotline:</strong> 0123 456 789</li>
+                <li><strong>Email:</strong> <a href="mailto:trandiep490@gmail.com">trandiep490@gmail.com</a></li>
+                <li><strong>Hotline:</strong> <a href="tel:0123456789">0123 456 789</a></li>
                 <li><strong>Địa chỉ:</strong> Tòa nhà FPT Polytechnic, P. Trịnh Văn Bô, Xuân Phương, Nam Từ Liêm, Hà Nội</li>
             </ul>
         </div>
