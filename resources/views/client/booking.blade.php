@@ -14,7 +14,10 @@
                         title: 'Thành công!',
                         text: '{{ session('success') }}',
                         confirmButtonText: 'OK',
-                        width: '360px',
+                        // timer: 3000,
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                         timerProgressBar: true
                     });
                 });
@@ -178,7 +181,8 @@
                                     <option value="">Chọn dịch vụ</option>
                                     @foreach ($services as $service)
                                         <option value="{{ $service->id }}" data-name="{{ $service->name }}"
-                                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
+                                            data-price="{{ $service->price }}"
+                                            data-duration="{{ $service->duration }}"
                                             data-is-combo="{{ $service->is_combo ? '1' : '0' }}">
                                             {{ $service->name }} – ({{ number_format($service->price) }}đ)
                                         </option>
@@ -704,7 +708,6 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -736,11 +739,6 @@
                 font-size: 13px;
             }
         }
-
-        .swal2-popup {
-            font-size: 16px !important;
-            font-family: Arial, sans-serif !important;
-        }
     </style>
 @endsection
 
@@ -762,7 +760,11 @@
                     title: 'Thành công!',
                     text: '{{ session('success') }}',
                     confirmButtonText: 'OK',
-                    width: '360px'
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title',
+                        confirmButton: 'custom-swal-confirm'
+                    }
                 });
             @endif
 
@@ -772,7 +774,11 @@
                     title: 'Lỗi!',
                     text: '{{ session('error') }}',
                     confirmButtonText: 'Thử lại',
-                    width: '360px'
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title',
+                        confirmButton: 'custom-swal-confirm'
+                    }
                 });
             @endif
         });
@@ -1095,7 +1101,7 @@
                             setupBarberCardSelection();
                         } else {
                             barberSelect.innerHTML =
-                                '<option value="">Không có kỹ thuật viên khả dụng</option>';
+                            '<option value="">Không có kỹ thuật viên khả dụng</option>';
                             barberCardsContainer.innerHTML =
                                 '<div class="text-center text-muted py-4">Không có kỹ thuật viên khả dụng</div>';
                             // Remove scroll indicator if exists
@@ -1162,87 +1168,70 @@
                     // console.log('Main service selected:', mainServiceSelect.value);
                     // console.log('Is main service combo:', isMainServiceCombo);
 
-                                    // Tạo danh sách tùy chọn dựa trên loại dịch vụ chính
-                let options = '<option value="">Chọn dịch vụ thêm</option>';
+                    // Tạo danh sách tùy chọn dựa trên loại dịch vụ chính
+                    let options = '<option value="">Chọn dịch vụ thêm</option>';
 
-                // Nếu dịch vụ chính là combo, không cho thêm dịch vụ thêm
-                if (isMainServiceCombo) {
-                    // console.log('Main service is combo, skipping all additional services');
-                    serviceSelect.innerHTML = options;
-                } else {
-                    // Nếu dịch vụ chính là dịch vụ riêng, chỉ cho thêm dịch vụ riêng khác
-                    // console.log('Main service is individual, filtering for individual services only');
+                    // Nếu dịch vụ chính là combo, không cho thêm dịch vụ thêm
+                    if (isMainServiceCombo) {
+                        // console.log('Main service is combo, skipping all additional services');
+                        serviceSelect.innerHTML = options;
+                    } else {
+                        // Nếu dịch vụ chính là dịch vụ riêng, chỉ cho thêm dịch vụ riêng khác
+                        // console.log('Main service is individual, filtering for individual services only');
 
-                    // Lấy tất cả options từ dropdown chính
-                    const allServiceOptions = mainServiceSelect.querySelectorAll('option[value]');
+                        // Lấy tất cả options từ dropdown chính
+                        const allServiceOptions = mainServiceSelect.querySelectorAll('option[value]');
 
-                    allServiceOptions.forEach(option => {
-                        const serviceId = option.value;
-                        const serviceName = option.textContent;
-                        const isServiceCombo = option.getAttribute('data-is-combo') === '1';
+                        allServiceOptions.forEach(option => {
+                            const serviceId = option.value;
+                            const serviceName = option.textContent;
+                            const isServiceCombo = option.getAttribute('data-is-combo') === '1';
 
-                        // console.log('Processing option:', serviceName, 'ID:', serviceId, 'is_combo:',
-                        //     isServiceCombo);
+                            // console.log('Processing option:', serviceName, 'ID:', serviceId, 'is_combo:',
+                            //     isServiceCombo);
 
-                        // Lấy danh sách dịch vụ đã được chọn
-                        const selectedServices = getSelectedAdditionalServices();
-                        const isAlreadySelected = selectedServices.includes(serviceId);
+                            // Lấy danh sách dịch vụ đã được chọn
+                            const selectedServices = getSelectedAdditionalServices();
+                            const isAlreadySelected = selectedServices.includes(serviceId);
 
-                        // console.log(`Service ${serviceName} already selected:`, isAlreadySelected);
+                            // console.log(`Service ${serviceName} already selected:`, isAlreadySelected);
 
-                        // Chỉ thêm dịch vụ riêng (không phải combo), không phải dịch vụ chính, và chưa được chọn
-                        if (!isServiceCombo &&
-                            serviceId != mainServiceSelect.value &&
-                            !isAlreadySelected) {
-                            // console.log('Adding service to dropdown:', serviceName);
+                            // Chỉ thêm dịch vụ riêng (không phải combo), không phải dịch vụ chính, và chưa được chọn
+                            if (!isServiceCombo &&
+                                serviceId != mainServiceSelect.value &&
+                                !isAlreadySelected) {
+                                // console.log('Adding service to dropdown:', serviceName);
 
-                            // Lấy thông tin giá và thời lượng từ data attributes
-                            const price = option.getAttribute('data-price');
-                            const duration = option.getAttribute('data-duration');
-                            const is_combo = option.getAttribute('data-is-combo');
+                                // Lấy thông tin giá và thời lượng từ data attributes
+                                const price = option.getAttribute('data-price');
+                                const duration = option.getAttribute('data-duration');
+                                const is_combo = option.getAttribute('data-is-combo');
 
-                            options += `
-                                <option value="${serviceId}" data-name="${option.getAttribute('data-name')}"
-                                    data-price="${price}" data-duration="${duration}" data-is-combo="${is_combo}">
-                                    ${serviceName}
-                                </option>
-                            `;
-                        } else {
-                            // console.log('Skipping service:', serviceName, '- Reason:',
-                            //     isServiceCombo ? 'is combo' :
-                            //     serviceId == mainServiceSelect.value ? 'is main service' :
-                            //     'already selected');
-                        }
-                    });
-                }
-
-                // console.log('Final options HTML:', options);
-                serviceSelect.innerHTML = options;
-
-                // Khởi tạo Select2 cho dropdown dịch vụ bổ sung
-                $(serviceSelect).select2({
-                    placeholder: 'Chọn hoặc tìm dịch vụ thêm',
-                    allowClear: true,
-                    width: '100%',
-                    language: {
-                        noResults: function() {
-                            return "Không tìm thấy dịch vụ phù hợp";
-                        }
+                                options += `
+                                    <option value="${serviceId}" data-name="${option.getAttribute('data-name')}"
+                                        data-price="${price}" data-duration="${duration}" data-is-combo="${is_combo}">
+                                        ${serviceName}
+                                    </option>
+                                `;
+                            } else {
+                                // console.log('Skipping service:', serviceName, '- Reason:',
+                                //     isServiceCombo ? 'is combo' :
+                                //     serviceId == mainServiceSelect.value ? 'is main service' :
+                                //     'already selected');
+                            }
+                        });
                     }
-                });
+
+                    // console.log('Final options HTML:', options);
+                    serviceSelect.innerHTML = options;
 
                     const removeBtn = document.createElement('button');
                     removeBtn.type = 'button';
                     removeBtn.className = 'btn-outline-buy btn-sm ms-2';
-                    removeBtn.style.padding = '0.5rem 0.5rem';
+                    removeBtn.style.padding = '0.25rem 0.5rem';
                     removeBtn.style.border = '1px solid #ccc';
-                    removeBtn.textContent = 'Xóa';
-                    // removeBtn.innerHTML = '<i class="fa fa-times"></i>';
+                    removeBtn.innerHTML = '<i class="fa fa-times"></i>';
                     removeBtn.addEventListener('click', function() {
-                        // Destroy Select2 trước khi xóa element
-                        if ($(serviceSelect).data('select2')) {
-                            $(serviceSelect).select2('destroy');
-                        }
                         additionalServicesContainer.removeChild(serviceWrapper);
                         updateAdditionalServicesInput();
                         updateBarbers();
@@ -1309,18 +1298,6 @@
                         });
 
                         select.innerHTML = options;
-
-                        // Khởi tạo lại Select2 cho dropdown sau khi cập nhật
-                        $(select).select2({
-                            placeholder: 'Chọn hoặc tìm dịch vụ thêm',
-                            allowClear: true,
-                            width: '100%',
-                            language: {
-                                noResults: function() {
-                                    return "Không tìm thấy dịch vụ phù hợp";
-                                }
-                            }
-                        });
                     });
                 }
 
@@ -1340,23 +1317,25 @@
                     const selectedServiceId = serviceSelect.value;
                     if (!selectedServiceId) {
                         // Xóa thông báo cũ nếu có
-                        const existingNotices = additionalServicesContainer.querySelectorAll(
-                            '.service-notice');
+                        const existingNotices = additionalServicesContainer.querySelectorAll('.service-notice');
                         existingNotices.forEach(notice => notice.remove());
-
+                        
                         // Tạo thông báo đẹp
                         const noticeNoSelectMainService = document.createElement('div');
                         noticeNoSelectMainService.className = 'service-notice notice-warning';
                         noticeNoSelectMainService.innerHTML = `
                             <div class="notice-content">
+                                <div class="notice-icon">
                                     <i class="fas fa-exclamation-triangle"></i>
+                                </div>
                                 <div class="notice-text">
-                                    <p>Vui lòng chọn dịch vụ trước khi thêm dịch vụ bổ sung.</p>
+                                    <h6>Vui lòng chọn dịch vụ</h6>
+                                    <p>Bạn cần chọn dịch vụ trước khi thêm dịch vụ bổ sung.</p>
                                 </div>
                             </div>
                         `;
                         additionalServicesContainer.appendChild(noticeNoSelectMainService);
-
+                        
                         // Tự động xóa thông báo sau 5 giây
                         setTimeout(() => {
                             if (noticeNoSelectMainService.parentNode) {
@@ -1372,23 +1351,25 @@
 
                     if (isMainServiceCombo) {
                         // Xóa thông báo cũ nếu có
-                        const existingNotices = additionalServicesContainer.querySelectorAll(
-                            '.service-notice');
+                        const existingNotices = additionalServicesContainer.querySelectorAll('.service-notice');
                         existingNotices.forEach(notice => notice.remove());
-
+                        
                         // Tạo thông báo đẹp cho combo
                         const noticeNoAddAdditionalService = document.createElement('div');
                         noticeNoAddAdditionalService.className = 'service-notice notice-info';
                         noticeNoAddAdditionalService.innerHTML = `
                             <div class="notice-content">
+                                <div class="notice-icon">
                                     <i class="fas fa-info-circle"></i>
+                                </div>
                                 <div class="notice-text">
-                                    <p>Combo đã bao gồm đầy đủ dịch vụ cần thiết. Không thể thêm dịch vụ bổ sung.</p>
+                                    <h6>Combo đã bao gồm đầy đủ dịch vụ</h6>
+                                    <p>Dịch vụ combo đã bao gồm tất cả dịch vụ cần thiết. Không cần thêm dịch vụ bổ sung.</p>
                                 </div>
                             </div>
                         `;
                         additionalServicesContainer.appendChild(noticeNoAddAdditionalService);
-
+                        
                         // Tự động xóa thông báo sau 5 giây
                         setTimeout(() => {
                             if (noticeNoAddAdditionalService.parentNode) {
@@ -1409,21 +1390,6 @@
                         updateAdditionalServicesDropdowns();
                     }
                 });
-
-                // Xử lý sự kiện Select2 cho dịch vụ bổ sung
-                additionalServicesContainer.addEventListener('select2:select', function(e) {
-                    if (e.target.classList.contains('additional-service-select')) {
-                        updateAdditionalServicesInput();
-                        updateBarbers();
-                    }
-                });
-
-                additionalServicesContainer.addEventListener('select2:unselect', function(e) {
-                    if (e.target.classList.contains('additional-service-select')) {
-                        updateAdditionalServicesInput();
-                        updateBarbers();
-                    }
-                });
             }
 
             // Thêm sự kiện lắng nghe cho các trường
@@ -1437,21 +1403,6 @@
                 updateBarbers();
                 // Cập nhật lại dropdown nếu cần
                 updateAdditionalServicesDropdowns();
-                
-                // Cập nhật lại Select2 cho dịch vụ chính nếu cần
-                if ($(this).data('select2')) {
-                    $(this).select2('destroy');
-                }
-                $(this).select2({
-                    placeholder: 'Chọn hoặc tìm dịch vụ',
-                    allowClear: true,
-                    width: '100%',
-                    language: {
-                        noResults: function() {
-                            return "Không tìm thấy dịch vụ phù hợp";
-                        }
-                    }
-                });
             });
             additionalServicesInput.addEventListener('change', updateBarbers);
 
@@ -1518,20 +1469,6 @@
             // Trigger cập nhật ban đầu nếu có dữ liệu cũ
             if (serviceSelect.value || branchInput.value || appointmentDate.value) {
                 updateBarbers();
-            }
-
-            // Khởi tạo Select2 cho dịch vụ chính nếu chưa có
-            if (!$(serviceSelect).data('select2')) {
-                $(serviceSelect).select2({
-                    placeholder: 'Chọn hoặc tìm dịch vụ',
-                    allowClear: true,
-                    width: '100%',
-                    language: {
-                        noResults: function() {
-                            return "Không tìm thấy dịch vụ phù hợp";
-                        }
-                    }
-                });
             }
         });
     </script>
@@ -1619,68 +1556,15 @@
                                         document.body.appendChild(vnpayForm);
                                         vnpayForm.submit();
                                     } else {
-                                        // Thanh toán tiền mặt: hiện modal nhập OTP
-                                        const bookingData = data.booking_data;
-                                        const otpEmail = data.otp_email;
-
                                         Swal.fire({
-                                            title: 'Nhập mã OTP',
-                                            text: `Mã OTP đã gửi tới ${otpEmail}. Vui lòng nhập trong 2 phút.`,
-                                            input: 'text',
+                                            title: 'Thành công!',
+                                            text: data.message,
+                                            icon: 'success',
                                             customClass: {
                                                 popup: 'custom-swal-popup'
-                                            },
-                                            showCancelButton: true,
-                                            confirmButtonText: 'Xác nhận',
-                                            cancelButtonText: 'Hủy',
-                                            showLoaderOnConfirm: true,
-                                            allowOutsideClick: () => !Swal.isLoading(),
-                                            preConfirm: (otp) => {
-                                                if (!otp) {
-                                                    Swal.showValidationMessage(
-                                                        'Vui lòng nhập mã OTP');
-                                                    return false;
-                                                }
-                                                return fetch(
-                                                        '{{ route('dat-lich.verifyOtp') }}', {
-                                                            method: 'POST',
-                                                            headers: {
-                                                                'Content-Type': 'application/json',
-                                                                'Accept': 'application/json',
-                                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                                            },
-                                                            body: JSON.stringify({
-                                                                otp,
-                                                                booking_data: bookingData
-                                                            })
-                                                        }).then(response => response.json())
-                                                    .then(resp => {
-                                                        if (!resp.success) {
-                                                            throw new Error(resp
-                                                                .message ||
-                                                                'Mã OTP không hợp lệ hoặc đã hết hạn.'
-                                                            );
-                                                        }
-                                                        return resp;
-                                                    }).catch(err => {
-                                                        Swal.showValidationMessage(err
-                                                            .message);
-                                                    });
                                             }
-                                        }).then((result) => {
-                                            if (result.isConfirmed && result.value && result
-                                                .value.success) {
-                                                Swal.fire({
-                                                    title: 'Thành công!',
-                                                    text: 'Xác nhận OTP thành công! Lịch hẹn của bạn đã được tạo.',
-                                                    icon: 'success',
-                                                    customClass: {
-                                                        popup: 'custom-swal-popup'
-                                                    },
-                                                }).then(() => {
-                                                    window.location.reload();
-                                                });
-                                            }
+                                        }).then(() => {
+                                            location.reload();
                                         });
                                     }
                                 }
@@ -1756,7 +1640,6 @@
             }
         });
         $(document).ready(function() {
-            // Select2 cho mã giảm giá
             $('#voucher_id').select2({
                 placeholder: 'Chọn hoặc tìm mã khuyến mãi',
                 allowClear: true,
@@ -1764,18 +1647,6 @@
                 language: {
                     noResults: function() {
                         return "Không tìm thấy mã phù hợp";
-                    }
-                }
-            });
-
-            // Select2 cho dịch vụ chính
-            $('#service').select2({
-                placeholder: 'Chọn hoặc tìm dịch vụ',
-                allowClear: true,
-                width: '100%',
-                language: {
-                    noResults: function() {
-                        return "Không tìm thấy dịch vụ phù hợp";
                     }
                 }
             });
@@ -1855,8 +1726,6 @@
         }
 
         $('#service').on('change', updateTotal);
-        $('#service').on('select2:select', updateTotal);
-        $('#service').on('select2:unselect', updateTotal);
         $('#voucher_id').on('select2:select', updateTotal);
         $('#voucher_id').on('change', updateTotal);
         $('#additionalServicesContainer').on('change', '.additional-service-select', updateTotal);
