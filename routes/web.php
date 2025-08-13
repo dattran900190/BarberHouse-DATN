@@ -323,3 +323,7 @@ Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->
 
 // Form tạo nghỉ lễ
 Route::get('/barber-schedules/holiday/create', [BarberScheduleController::class, 'createHoliday'])->name('barber_schedules.createHoliday');
+// Thêm vào cuối file routes/web.php
+Route::fallback(function () {
+    return response()->view('errors.404', [], 404);
+});
