@@ -107,8 +107,9 @@
                                 onmouseout="this.style.textDecoration='none'">Đăng nhập</a></p>
                     </form>
                 </div>
-                <a href="{{ asset('/') }}" class="back-button">&#8592;</a>
             </div>
+        </div>
+        <a href="{{ asset('/') }}" class="back-button">&#8592;</a>
         </div>
     </main>
 
@@ -121,7 +122,7 @@
         }
 
         .image-login {
-            flex: 1;
+            flex: 8;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -135,45 +136,46 @@
         }
 
         .form-login {
-            flex: 1;
+            flex: 2;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 50px;
+            padding: 25px;
             background: #fff;
             position: relative;
         }
 
         .form-login .image {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         .form-login .image img {
-            max-width: 250px;
+            max-width: 180px;
             height: auto;
             display: block;
             margin: 0 auto;
         }
 
         .form-login h3 {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             color: #000;
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 600;
         }
 
         .form-label {
             font-weight: 600;
             color: #000;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
         }
 
         .input-field {
             border-radius: 8px;
             border: 2px solid #e1e5e9;
-            padding: 12px 15px;
-            font-size: 16px;
+            padding: 8px 10px;
+            font-size: 13px;
             transition: all 0.3s ease;
         }
 
@@ -196,8 +198,8 @@
             background: #000;
             border: none;
             border-radius: 8px;
-            padding: 12px;
-            font-size: 16px;
+            padding: 8px;
+            font-size: 13px;
             font-weight: 600;
             transition: all 0.3s ease;
         }
@@ -225,6 +227,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
             border: none;
+            z-index: 1000;
         }
 
         .back-button:hover {

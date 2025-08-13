@@ -36,7 +36,17 @@ class VolumeController extends Controller
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.volumes.index')->with('error', 'Bạn không có quyền thêm dung tích.');
         }
-        $request->validate(['name' => 'required|numeric']);
+        $request->validate(
+            [
+                'name' => 'required|numeric|min:1'
+            ],
+            [
+                'name.required' => 'Vui lòng nhập dung tích',
+                'name.numeric' => 'Dung tích phải là số.',
+                'name.min' => 'Dung tích phải lớn hơn 0.'
+            ]
+        );
+        
         $name = $request->input('name') . 'ml';
         Volume::create(['name' => $name]);
         return redirect()->route('admin.volumes.index')->with('success', 'Thêm dung tích thành công!');
@@ -55,7 +65,16 @@ class VolumeController extends Controller
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.volumes.index')->with('error', 'Bạn không có quyền sửa dung tích.');
         }
-        $request->validate(['name' => 'required|numeric']);
+        $request->validate(
+            [
+                'name' => 'required|numeric|min:1'
+            ],
+            [
+                'name.required' => 'Vui lòng nhập dung tích',
+                'name.numeric' => 'Dung tích phải là số.',
+                'name.min' => 'Dung tích phải lớn hơn 0.'
+            ]
+        );
         $name = $request->input('name') . 'ml';
         $volume->update(['name' => $name]);
 

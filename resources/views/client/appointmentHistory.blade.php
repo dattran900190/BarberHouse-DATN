@@ -95,7 +95,7 @@
                                         <span class="status-label status-completed">Đã hoàn thành</span>
                                     @endif
                                 </div>
-                                
+
                                 <div class="col-md-4 text-center">
                                     <div class="d-flex justify-content-center gap-2">
 
@@ -160,6 +160,12 @@
             padding: 10px;
             border-radius: 4px;
             border: 1px solid #ced4da;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 80px 10px 10px 10px !important;
+            }
         }
     </style>
 @endsection
