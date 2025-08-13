@@ -355,11 +355,11 @@
                 color: #dc3545 !important;
             }
 
-                    .mobile-menu-divider {
-            height: 1px;
-            background: #eee;
-            margin: 10px 0;
-        }
+            .mobile-menu-divider {
+                height: 1px;
+                background: #eee;
+                margin: 10px 0;
+            }
 
         /* Desktop User Dropdown */
         .desktop-user-dropdown {
@@ -371,82 +371,82 @@
             margin-top: 10px;
         }
 
-        .desktop-user-dropdown .dropdown-header {
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-            background: #f8f9fa;
-            border-radius: 10px 10px 0 0;
-        }
+            .desktop-user-dropdown .dropdown-header {
+                padding: 20px;
+                border-bottom: 1px solid #eee;
+                background: #f8f9fa;
+                border-radius: 10px 10px 0 0;
+            }
 
-        .desktop-user-dropdown .user-info {
-            display: flex;
-            align-items: center;
-            padding: 0;
-            border: none;
-            background: none;
-        }
+            .desktop-user-dropdown .user-info {
+                display: flex;
+                align-items: center;
+                padding: 0;
+                border: none;
+                background: none;
+            }
 
-        .desktop-user-dropdown .user-avatar {
-            width: 50px;
-            height: 50px;
-            background: #e9ecef;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 20px;
-            color: #6c757d;
-        }
+            .desktop-user-dropdown .user-avatar {
+                width: 50px;
+                height: 50px;
+                background: #e9ecef;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 15px;
+                font-size: 20px;
+                color: #6c757d;
+            }
 
-        .desktop-user-dropdown .user-details h6 {
-            margin: 0;
-            color: #333;
-            font-weight: 600;
-            font-size: 16px;
-        }
+            .desktop-user-dropdown .user-details h6 {
+                margin: 0;
+                color: #333;
+                font-weight: 600;
+                font-size: 16px;
+            }
 
-        .desktop-user-dropdown .user-details small {
-            color: #6c757d;
-            font-size: 12px;
-        }
+            .desktop-user-dropdown .user-details small {
+                color: #6c757d;
+                font-size: 12px;
+            }
 
-        .desktop-user-dropdown .dropdown-item {
-            padding: 12px 20px;
-            color: #333;
-            font-size: 14px;
-            transition: background 0.3s ease;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            cursor: pointer;
-        }
+            .desktop-user-dropdown .dropdown-item {
+                padding: 12px 20px;
+                color: #333;
+                font-size: 14px;
+                transition: background 0.3s ease;
+                border: none;
+                background: none;
+                width: 100%;
+                text-align: left;
+                cursor: pointer;
+            }
 
-        .desktop-user-dropdown .dropdown-item:hover {
-            background: #f8f9fa;
-            color: #333;
-        }
+            .desktop-user-dropdown .dropdown-item:hover {
+                background: #f8f9fa;
+                color: #333;
+            }
 
-        .desktop-user-dropdown .dropdown-item i {
-            color: #007bff;
-            font-size: 14px;
-        }
+            .desktop-user-dropdown .dropdown-item i {
+                color: #007bff;
+                font-size: 14px;
+            }
 
-        .desktop-user-dropdown .logout-btn {
-            color: #dc3545 !important;
-        }
+            .desktop-user-dropdown .logout-btn {
+                color: #dc3545 !important;
+            }
 
-        .desktop-user-dropdown .logout-btn i {
-            color: #dc3545 !important;
-        }
+            .desktop-user-dropdown .logout-btn i {
+                color: #dc3545 !important;
+            }
 
-        .desktop-user-dropdown .dropdown-divider {
-            margin: 0;
-            border-color: #eee;
-        }
+            .desktop-user-dropdown .dropdown-divider {
+                margin: 0;
+                border-color: #eee;
+            }
 
-        /* Mobile Menu Overlay */
+            /* Mobile Menu Overlay */
             .mobile-menu-overlay {
                 position: fixed;
                 top: 0;
@@ -885,9 +885,14 @@
                     <i class="fa-solid fa-headset"></i>
                     <span>Hỗ trợ khách hàng</span>
                 </div>
-                <button id="newChatClose" class="new-chat-close">
-                    <i class="fa-solid fa-times"></i>
-                </button>
+                <div class="new-chat-actions">
+                    <button id="clearChatHistory" class="new-chat-clear" title="Reset chat">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                    <button id="newChatClose" class="new-chat-close">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
             </div>
             <div class="new-chat-messages" id="newChatMessages">
                 <div class="new-message new-message-ai">
@@ -1010,6 +1015,30 @@
             }
 
             .new-chat-close:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            .new-chat-actions {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+
+            .new-chat-clear {
+                background: rgba(255, 255, 255, 0.2);
+                color: #fff;
+                border: none;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.3s;
+            }
+
+            .new-chat-clear:hover {
                 background: rgba(255, 255, 255, 0.3);
             }
 
@@ -1337,6 +1366,7 @@
                 const newChatInput = document.querySelector('#newChatInput');
                 const newSendMessage = document.querySelector('#newSendMessage');
                 const newChatMessages = document.querySelector('#newChatMessages');
+                const clearChatHistory = document.querySelector('#clearChatHistory');
 
                 // Đảm bảo chat không hiện khi load trang và CSS đã load
                 newChatContainer.classList.remove('open');
@@ -1351,28 +1381,6 @@
                     }, 100);
                 }
 
-                function toggleNewChat(open = null) {
-                    if (open === true) {
-                        newChatContainer.style.display = 'flex';
-                        // Delay để animation hoạt động
-                        setTimeout(() => {
-                            newChatContainer.classList.add('open');
-                        }, 10);
-                    } else if (open === false) {
-                        newChatContainer.classList.remove('open');
-                        // Delay để animation hoàn thành trước khi ẩn
-                        setTimeout(() => {
-                            newChatContainer.style.display = 'none';
-                        }, 400);
-                    } else {
-                        if (newChatContainer.classList.contains('open')) {
-                            toggleNewChat(false);
-                        } else {
-                            toggleNewChat(true);
-                        }
-                    }
-                }
-
                 newChatToggle.addEventListener('click', () => toggleNewChat(true));
                 newChatClose.addEventListener('click', () => toggleNewChat(false));
 
@@ -1380,6 +1388,11 @@
                 newChatInput.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') sendNewMessage();
                 });
+
+                // Event listener cho nút xóa lịch sử chat
+                if (clearChatHistory) {
+                    clearChatHistory.addEventListener('click', clearChatHistoryHandler);
+                }
 
                 // Hàm loại bỏ markdown như #, *, dấu thừa
                 function cleanAIResponse(text) {
@@ -1440,6 +1453,20 @@
 
                         // Đưa text đã sạch vào hiển thị
                         typeNewText(bubble, `<strong>BarberHouse:</strong> ${cleanReply}`);
+
+                        // Xử lý trường hợp giới hạn đạt được
+                        if (data.limit_reached) {
+                            // Vô hiệu hóa input và nút gửi
+                            newChatInput.disabled = true;
+                            newSendMessage.disabled = true;
+                            newChatInput.placeholder = 'Đã đạt giới hạn câu hỏi';
+
+                            // Thêm style cho input bị vô hiệu hóa
+                            newChatInput.style.backgroundColor = '#f8f9fa';
+                            newChatInput.style.cursor = 'not-allowed';
+                            newSendMessage.style.opacity = '0.5';
+                            newSendMessage.style.cursor = 'not-allowed';
+                        }
                     } catch (err) {
                         bubble.innerHTML = `<strong>BarberHouse:</strong> <span style="color:red">Không thể kết nối</span>`;
                     }
@@ -1456,6 +1483,147 @@
                             element.innerHTML = text;
                         }
                     }, speed);
+                }
+
+                // Hàm lấy lịch sử chat
+                async function loadChatHistory() {
+                    try {
+                        const response = await fetch('/chat-history', {
+                            method: 'GET',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.chat_history && data.chat_history.length > 0) {
+                                // Hiển thị lịch sử chat
+                                displayChatHistory(data.chat_history);
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Không thể lấy lịch sử chat:', err);
+                    }
+                }
+
+                // Hàm hiển thị lịch sử chat
+                function displayChatHistory(chatHistory) {
+                    // Xóa tin nhắn mặc định
+                    newChatMessages.innerHTML = '';
+
+                    // Hiển thị tin nhắn từ lịch sử
+                    chatHistory.reverse().forEach(chat => {
+                        // Tin nhắn của user
+                        appendNewMessage(`<strong>Bạn:</strong> ${chat.message}`, 'user');
+                        // Tin nhắn của AI
+                        appendNewMessage(`<strong>BarberHouse:</strong> ${chat.reply}`, 'ai');
+                    });
+                }
+
+                // Hàm reset giao diện chat (không xóa dữ liệu)
+                function clearChatHistoryHandler() {
+                    Swal.fire({
+                        title: 'Reset Chat',
+                        text: 'Bạn có muốn reset lại chat để bắt đầu cuộc trò chuyện mới?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        confirmButtonColor: '#007bff',
+                        cancelButtonColor: '#6c757d',
+                        width: '400px',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Chỉ xóa tin nhắn hiện tại trên giao diện
+                            newChatMessages.innerHTML = '';
+
+                            // Hiển thị tin nhắn mặc định
+                            appendNewMessage(
+                                `<strong>BarberHouse:</strong> Xin chào! Tôi có thể giúp gì cho bạn?`,
+                                'ai'
+                            );
+
+                            // Hiển thị thông báo thành công bằng toastr
+                            Swal.fire({
+                                title: 'Thành công!',
+                                text: 'Đã reset chat thành công!',
+                                icon: 'success',
+                                confirmButtonText: 'OK',
+                                width: '400px',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // Hàm kiểm tra và hiển thị số câu hỏi còn lại cho khách vãng lai
+                async function checkGuestLimit() {
+                    try {
+                        const response = await fetch('/chat-ai', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                message: 'check_limit'
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        // Nếu là khách vãng lai và chưa đạt giới hạn, hiển thị thông báo
+                        if (data.remaining_questions !== undefined) {
+                            const limitMessage = document.createElement('div');
+                            limitMessage.className = 'new-message new-message-ai';
+                            limitMessage.innerHTML = `
+                                <div class="new-bubble" style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404;">
+                                    <strong>Thông báo:</strong> Bạn còn ${data.remaining_questions} câu hỏi miễn phí trong ngày.
+                                    <a href="/register" style="color: #007bff; text-decoration: underline;">Đăng ký ngay</a> để sử dụng không giới hạn!
+                                </div>
+                            `;
+                            newChatMessages.appendChild(limitMessage);
+                            newChatMessages.scrollTop = newChatMessages.scrollHeight;
+                        }
+                    } catch (err) {
+                        console.error('Không thể kiểm tra giới hạn:', err);
+                    }
+                }
+
+                // Load lịch sử chat khi mở chat
+                function toggleNewChat(open = null) {
+                    if (open === true) {
+                        newChatContainer.style.display = 'flex';
+                        // Delay để animation hoạt động
+                        setTimeout(() => {
+                            newChatContainer.classList.add('open');
+                            // Load lịch sử chat khi mở
+                            loadChatHistory();
+                            // Chỉ kiểm tra giới hạn cho khách vãng lai khi mở chat lần đầu
+                            if (!newChatContainer.hasAttribute('data-initialized')) {
+                                checkGuestLimit();
+                                newChatContainer.setAttribute('data-initialized', 'true');
+                            }
+                        }, 10);
+                    } else if (open === false) {
+                        newChatContainer.classList.remove('open');
+                        // Delay để animation hoàn thành trước khi ẩn
+                        setTimeout(() => {
+                            newChatContainer.style.display = 'none';
+                        }, 400);
+                    } else {
+                        if (newChatContainer.classList.contains('open')) {
+                            toggleNewChat(false);
+                        } else {
+                            toggleNewChat(true);
+                        }
+                    }
                 }
             });
 
