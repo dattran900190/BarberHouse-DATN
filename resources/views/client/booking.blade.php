@@ -14,7 +14,10 @@
                         title: 'Thành công!',
                         text: '{{ session('success') }}',
                         confirmButtonText: 'OK',
-                        width: '360px',
+                        // timer: 3000,
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                         timerProgressBar: true
                     });
                 });
@@ -178,7 +181,8 @@
                                     <option value="">Chọn dịch vụ</option>
                                     @foreach ($services as $service)
                                         <option value="{{ $service->id }}" data-name="{{ $service->name }}"
-                                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
+                                            data-price="{{ $service->price }}"
+                                            data-duration="{{ $service->duration }}"
                                             data-is-combo="{{ $service->is_combo ? '1' : '0' }}">
                                             {{ $service->name }} – ({{ number_format($service->price) }}đ)
                                         </option>
@@ -704,7 +708,6 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -736,11 +739,6 @@
                 font-size: 13px;
             }
         }
-
-        .swal2-popup {
-            font-size: 16px !important;
-            font-family: Arial, sans-serif !important;
-        }
     </style>
 @endsection
 
@@ -762,7 +760,11 @@
                     title: 'Thành công!',
                     text: '{{ session('success') }}',
                     confirmButtonText: 'OK',
-                    width: '360px'
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title',
+                        confirmButton: 'custom-swal-confirm'
+                    }
                 });
             @endif
 
@@ -772,7 +774,11 @@
                     title: 'Lỗi!',
                     text: '{{ session('error') }}',
                     confirmButtonText: 'Thử lại',
-                    width: '360px'
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title',
+                        confirmButton: 'custom-swal-confirm'
+                    }
                 });
             @endif
         });
@@ -1095,7 +1101,7 @@
                             setupBarberCardSelection();
                         } else {
                             barberSelect.innerHTML =
-                                '<option value="">Không có kỹ thuật viên khả dụng</option>';
+                            '<option value="">Không có kỹ thuật viên khả dụng</option>';
                             barberCardsContainer.innerHTML =
                                 '<div class="text-center text-muted py-4">Không có kỹ thuật viên khả dụng</div>';
                             // Remove scroll indicator if exists
@@ -1311,23 +1317,25 @@
                     const selectedServiceId = serviceSelect.value;
                     if (!selectedServiceId) {
                         // Xóa thông báo cũ nếu có
-                        const existingNotices = additionalServicesContainer.querySelectorAll(
-                            '.service-notice');
+                        const existingNotices = additionalServicesContainer.querySelectorAll('.service-notice');
                         existingNotices.forEach(notice => notice.remove());
-
+                        
                         // Tạo thông báo đẹp
                         const noticeNoSelectMainService = document.createElement('div');
                         noticeNoSelectMainService.className = 'service-notice notice-warning';
                         noticeNoSelectMainService.innerHTML = `
                             <div class="notice-content">
+                                <div class="notice-icon">
                                     <i class="fas fa-exclamation-triangle"></i>
+                                </div>
                                 <div class="notice-text">
-                                    <p>Vui lòng chọn dịch vụ trước khi thêm dịch vụ bổ sung.</p>
+                                    <h6>Vui lòng chọn dịch vụ</h6>
+                                    <p>Bạn cần chọn dịch vụ trước khi thêm dịch vụ bổ sung.</p>
                                 </div>
                             </div>
                         `;
                         additionalServicesContainer.appendChild(noticeNoSelectMainService);
-
+                        
                         // Tự động xóa thông báo sau 5 giây
                         setTimeout(() => {
                             if (noticeNoSelectMainService.parentNode) {
@@ -1343,23 +1351,25 @@
 
                     if (isMainServiceCombo) {
                         // Xóa thông báo cũ nếu có
-                        const existingNotices = additionalServicesContainer.querySelectorAll(
-                            '.service-notice');
+                        const existingNotices = additionalServicesContainer.querySelectorAll('.service-notice');
                         existingNotices.forEach(notice => notice.remove());
-
+                        
                         // Tạo thông báo đẹp cho combo
                         const noticeNoAddAdditionalService = document.createElement('div');
                         noticeNoAddAdditionalService.className = 'service-notice notice-info';
                         noticeNoAddAdditionalService.innerHTML = `
                             <div class="notice-content">
+                                <div class="notice-icon">
                                     <i class="fas fa-info-circle"></i>
+                                </div>
                                 <div class="notice-text">
-                                    <p>Combo đã bao gồm đầy đủ dịch vụ cần thiết. Không thể thêm dịch vụ bổ sung.</p>
+                                    <h6>Combo đã bao gồm đầy đủ dịch vụ</h6>
+                                    <p>Dịch vụ combo đã bao gồm tất cả dịch vụ cần thiết. Không cần thêm dịch vụ bổ sung.</p>
                                 </div>
                             </div>
                         `;
                         additionalServicesContainer.appendChild(noticeNoAddAdditionalService);
-
+                        
                         // Tự động xóa thông báo sau 5 giây
                         setTimeout(() => {
                             if (noticeNoAddAdditionalService.parentNode) {
@@ -1546,68 +1556,15 @@
                                         document.body.appendChild(vnpayForm);
                                         vnpayForm.submit();
                                     } else {
-                                        // Thanh toán tiền mặt: hiện modal nhập OTP
-                                        const bookingData = data.booking_data;
-                                        const otpEmail = data.otp_email;
-
                                         Swal.fire({
-                                            title: 'Nhập mã OTP',
-                                            text: `Mã OTP đã gửi tới ${otpEmail}. Vui lòng nhập trong 2 phút.`,
-                                            input: 'text',
+                                            title: 'Thành công!',
+                                            text: data.message,
+                                            icon: 'success',
                                             customClass: {
                                                 popup: 'custom-swal-popup'
-                                            },
-                                            showCancelButton: true,
-                                            confirmButtonText: 'Xác nhận',
-                                            cancelButtonText: 'Hủy',
-                                            showLoaderOnConfirm: true,
-                                            allowOutsideClick: () => !Swal.isLoading(),
-                                            preConfirm: (otp) => {
-                                                if (!otp) {
-                                                    Swal.showValidationMessage(
-                                                        'Vui lòng nhập mã OTP');
-                                                    return false;
-                                                }
-                                                return fetch(
-                                                        '{{ route('dat-lich.verifyOtp') }}', {
-                                                            method: 'POST',
-                                                            headers: {
-                                                                'Content-Type': 'application/json',
-                                                                'Accept': 'application/json',
-                                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                                            },
-                                                            body: JSON.stringify({
-                                                                otp,
-                                                                booking_data: bookingData
-                                                            })
-                                                        }).then(response => response.json())
-                                                    .then(resp => {
-                                                        if (!resp.success) {
-                                                            throw new Error(resp
-                                                                .message ||
-                                                                'Mã OTP không hợp lệ hoặc đã hết hạn.'
-                                                            );
-                                                        }
-                                                        return resp;
-                                                    }).catch(err => {
-                                                        Swal.showValidationMessage(err
-                                                            .message);
-                                                    });
                                             }
-                                        }).then((result) => {
-                                            if (result.isConfirmed && result.value && result
-                                                .value.success) {
-                                                Swal.fire({
-                                                    title: 'Thành công!',
-                                                    text: 'Xác nhận OTP thành công! Lịch hẹn của bạn đã được tạo.',
-                                                    icon: 'success',
-                                                    customClass: {
-                                                        popup: 'custom-swal-popup'
-                                                    },
-                                                }).then(() => {
-                                                    window.location.reload();
-                                                });
-                                            }
+                                        }).then(() => {
+                                            location.reload();
                                         });
                                     }
                                 }
