@@ -42,6 +42,7 @@ use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\BarberController as ClientBarberController;
 use App\Http\Controllers\Client\ReviewController as ClientReviewController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
+use App\Http\Controllers\AdminChatController;
 
 Broadcast::routes(['middleware' => ['auth']]);
 
@@ -78,6 +79,11 @@ Route::get('/chinh-sach-van-chuyen', [HomeController::class, 'shippingPolicy'])-
 
 // ==== Chính sách bảo hành - đổi trả ====
 Route::get('/chinh-sach-bao-hanh-doi-tra', [HomeController::class, 'warrantyReturnPolicy'])->name('warranty.return.policy');
+
+// ==== Chat AI ====
+Route::post('/chat-ai', [\App\Http\Controllers\Client\ChatController::class, 'chatAI'])->name('chat.ai');
+Route::get('/chat-history', [\App\Http\Controllers\Client\ChatController::class, 'getChatHistory'])->name('chat.history');
+Route::delete('/chat-history', [\App\Http\Controllers\Client\ChatController::class, 'clearChatHistory'])->name('chat.clear');
 
 // == Giỏ hàng ==
 Route::get('/gio-hang', [CartController::class, 'show'])->name('cart.show');
@@ -229,6 +235,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Ảnh khách hàng ====
     Route::resource('customer-images', CustomerImageController::class);
 
+    // ==== Chatbot ====
+Route::resource('chatbot', AdminChatController::class);
+Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMessage'])->name('chatbot.message.destroy');
+
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
     Route::get('/user_redeemed_vouchers/{id}', [UserRedeemedVoucherController::class, 'show'])->name('admin.user_redeemed_vouchers.show');
@@ -311,8 +321,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('admin/product-variants/{id}/restore', [ProductController::class, 'restoreVariant'])->name('admin.product-variants.restore');
     Route::post('admin/product-variants/{id}/soft-delete', [ProductController::class, 'softDeleteVariant'])->name('admin.product-variants.softDelete');
     Route::delete('admin/product-variants/{id}/hard-delete', [ProductController::class, 'hardDeleteVariant'])->name('admin.product-variants.hardDelete');
-
-
 });
 
 // ==== profile ====

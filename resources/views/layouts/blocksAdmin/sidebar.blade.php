@@ -69,7 +69,7 @@
                     <a href="{{ route('refunds.index') }}">
                         <i class="icon-docs"></i> {{-- Biểu tượng phù hợp với hoàn tiền --}}
                         <p>Danh sách hoàn tiền</p>
-                        
+
                         <span class="badge badge-count-refunds bg-danger" id="sidebar-pending-refund-count"
                             style="{{ $pendingRefundCount > 0 ? '' : 'display: none;' }}">
                             {{ $pendingRefundCount }}
@@ -206,6 +206,11 @@
                             <li>
                                 <a href="{{ asset('admin/customer-images') }}">
                                     <span class="sub-item">Ảnh khách hàng</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ asset('admin/chatbot') }}">
+                                    <span class="sub-item">Chatbot</span>
                                 </a>
                             </li>
                         </ul>
