@@ -346,11 +346,42 @@ class AppointmentController extends Controller
             // Kích hoạt Pusher
             $this->triggerPusher($appointment);
 
-            return redirect()->route('dat-lich')->with('success', 'Lịch hẹn đã được xác nhận thành công!');
+            // Lưu thông tin lịch hẹn vào session để hiển thị trên trang xác nhận
+            session(['confirmed_appointment' => $appointment]);
+
+            return redirect()->route('booking.confirmed');
         } catch (\Exception $e) {
 
             return redirect()->route('home')->with('error', 'Có lỗi xảy ra khi xác nhận lịch hẹn.');
         }
+    }
+
+    public function showBookingConfirmed()
+    {
+        // Lấy thông tin lịch hẹn từ session hoặc flash data
+        $appointment = session('confirmed_appointment');
+        
+        if (!$appointment) {
+            // Nếu không có thông tin lịch hẹn, redirect về trang chủ
+            return redirect()->route('home')->with('error', 'Không tìm thấy thông tin lịch hẹn.');
+        }
+        
+        // Load các relationships cần thiết
+        $appointment->load(['service', 'barber', 'branch']);
+    
+        // Lấy dịch vụ bổ sung nếu có
+        $additionalServices = [];
+        if ($appointment->additional_services) {
+            $serviceIds = json_decode($appointment->additional_services, true);
+            if (is_array($serviceIds)) {
+                $additionalServices = Service::whereIn('id', $serviceIds)
+                    ->pluck('name')
+                    ->toArray();
+            }
+        }
+        
+        
+        return view('client.booking-confirmed', compact('appointment',  'additionalServices'));
     }
 
     protected function handleVoucher($request, $service)
