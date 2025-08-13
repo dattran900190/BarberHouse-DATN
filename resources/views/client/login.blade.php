@@ -376,7 +376,7 @@
         }
 
         .image-login {
-            flex: 1;
+            flex: 8;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -390,7 +390,7 @@
         }
 
         .form-login {
-            flex: 1;
+            flex: 2;
             display: flex;
             flex-direction: column;
             justify-content: center;
