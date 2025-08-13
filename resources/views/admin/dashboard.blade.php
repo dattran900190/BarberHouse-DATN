@@ -3,6 +3,19 @@
 @section('title', 'Dashboard')
 
 @section('content')
+    <style>
+        .scroll-rows-5 {
+            height: 260px;
+            min-height: 260px;
+            overflow-y: auto;
+        }
+        .scroll-rows-5 table {
+            margin-bottom: 0;
+        }
+        .scroll-rows-5 ul {
+            margin-bottom: 0;
+        }
+    </style>
     <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
         <div>
             <h3 class="fw-bold mb-3">Bảng điều khiển</h3>
@@ -218,43 +231,47 @@
                             <div class="tab-content">
                                 <!-- Phổ biến -->
                                 <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
-                                    <ul class="list-group list-group-flush">
-                                        @forelse ($topServices as $item)
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <strong>{{ $item->service->name ?? 'Không xác định' }}</strong><br>
-                                                    <small
-                                                        class="text-muted">{{ number_format($item->service->price ?? 0) }}
-                                                        VNĐ</small>
-                                                </div>
-                                                <span class="badge bg-primary rounded-pill">
-                                                    {{ $item->usage_count }} lượt
-                                                </span>
-                                            </li>
-                                        @empty
-                                            <li class="list-group-item text-center text-muted">Không có dịch vụ nào</li>
-                                        @endforelse
-                                    </ul>
+                                    <div class="scroll-rows-5">
+                                        <ul class="list-group list-group-flush">
+                                            @forelse ($topServices as $item)
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>{{ $item->service->name ?? 'Không xác định' }}</strong><br>
+                                                        <small
+                                                            class="text-muted">{{ number_format($item->service->price ?? 0) }}
+                                                            VNĐ</small>
+                                                    </div>
+                                                    <span class="badge bg-primary rounded-pill">
+                                                        {{ $item->usage_count }} lượt
+                                                    </span>
+                                                </li>
+                                            @empty
+                                                <li class="list-group-item text-center text-muted">Không có dịch vụ nào</li>
+                                            @endforelse
+                                        </ul>
+                                    </div>
                                 </div>
 
                                 <!-- Ít dùng -->
                                 <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
-                                    <ul class="list-group list-group-flush">
-                                        @forelse ($lowUsageServices as $item)
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <strong>{{ $item->name ?? 'Không xác định' }}</strong><br>
-                                                    <small class="text-muted">{{ number_format($item->price ?? 0) }}
-                                                        VNĐ</small>
-                                                </div>
-                                                <span class="badge bg-secondary rounded-pill">
-                                                    {{ $item->usage_count }} lượt
-                                                </span>
-                                            </li>
-                                        @empty
-                                            <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
-                                        @endforelse
-                                    </ul>
+                                    <div class="scroll-rows-5">
+                                        <ul class="list-group list-group-flush">
+                                            @forelse ($lowUsageServices as $item)
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>{{ $item->name ?? 'Không xác định' }}</strong><br>
+                                                        <small class="text-muted">{{ number_format($item->price ?? 0) }}
+                                                            VNĐ</small>
+                                                    </div>
+                                                    <span class="badge bg-secondary rounded-pill">
+                                                        {{ $item->usage_count }} lượt
+                                                    </span>
+                                                </li>
+                                            @empty
+                                                <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
+                                            @endforelse
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -300,7 +317,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
+                            <div class="table-responsive scroll-rows-5">
                                 <table id="barberLeaveTable" class="table table-hover table-sm align-middle mb-0">
                                     <thead>
                                         <tr>
@@ -352,31 +369,34 @@
                             <div class="tab-content">
                                 <!-- Bán chạy -->
                                 <div class="tab-pane fade show active" id="pills-top-product" role="tabpanel">
-                                    <ul class="list-group list-group-flush">
-                                        @forelse ($topProducts as $item)
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <strong>{{ $item->productVariant->product->name ?? 'Không xác định' }}</strong><br>
-                                                    <small
-                                                        class="text-muted">{{ number_format($item->productVariant->price ?? 0) }}
-                                                        VNĐ</small>
-                                                </div>
-                                                <span class="badge bg-success rounded-pill">
-                                                    {{ $item->total_sold }} sp
-                                                </span>
-                                            </li>
-                                        @empty
-                                            <li class="list-group-item text-center text-muted">Không có sản phẩm nào được
-                                                bán</li>
-                                        @endforelse
-                                    </ul>
+                                    <div class="scroll-rows-5">
+                                        <ul class="list-group list-group-flush">
+                                            @forelse ($topProducts as $item)
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>{{ $item->productVariant->product->name ?? 'Không xác định' }}</strong><br>
+                                                        <small
+                                                            class="text-muted">{{ number_format($item->productVariant->price ?? 0) }}
+                                                            VNĐ</small>
+                                                    </div>
+                                                    <span class="badge bg-success rounded-pill">
+                                                        {{ $item->total_sold }} sp
+                                                    </span>
+                                                </li>
+                                            @empty
+                                                <li class="list-group-item text-center text-muted">Không có sản phẩm nào được
+                                                    bán</li>
+                                            @endforelse
+                                        </ul>
+                                    </div>
                                 </div>
 
                                 <!-- Ít bán -->
                                 <div class="tab-pane fade" id="pills-low-product" role="tabpanel">
-                                    <ul class="list-group list-group-flush">
-                                        @forelse ($lowSellingProducts as $item)
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="scroll-rows-5">
+                                        <ul class="list-group list-group-flush">
+                                            @forelse ($lowSellingProducts as $item)
+                                                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
                                                 <div>
                                                     <strong>{{ $item->product->name ?? 'Không xác định' }}</strong><br>
                                                     <small class="text-muted">{{ number_format($item->price) }}
@@ -386,10 +406,11 @@
                                                     {{ $item->total_sold }} sp
                                                 </span>
                                             </li>
-                                        @empty
-                                            <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
-                                        @endforelse
-                                    </ul>
+                                            @empty
+                                                <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
+                                            @endforelse
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -437,7 +458,7 @@
                         </div>
 
                         <div class="card-body">
-                            <div class="table-responsive">
+                            <div class="table-responsive scroll-rows-5">
                                 <table id="barberPerformanceTable" class="table table-hover table-sm align-middle mb-0">
                                     <thead>
                                         <tr>
@@ -486,7 +507,7 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
+                    <div class="table-responsive scroll-rows-5">
                         <table class="table align-items-center mb-0">
                             <thead class="thead-light">
                                 <tr>
