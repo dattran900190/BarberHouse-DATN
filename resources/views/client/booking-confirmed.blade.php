@@ -12,6 +12,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
+    <link rel="icon" href="{{ asset('images/favicon_logo.png') }}" type="image/png" />
+
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -268,7 +270,7 @@
 <body>
     <div class="background-particles"></div>
     <div class="logo">
-        <img src="{{ asset('storage/' . ($imageSettings['black_logo'] ?? 'default-images/black_logo.png')) }}" alt="BarberHouse Logo" class="logo-img">
+        <img src="{{ asset('storage/' . ($imageSettings['white_logo'] ?? 'default-images/white_logo.png')) }}" alt="BarberHouse Logo" class="logo-img">
     </div>
 
     <div class="content-wrapper">

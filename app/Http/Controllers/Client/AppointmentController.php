@@ -48,9 +48,18 @@ class AppointmentController extends Controller
 
         // Lấy danh sách mã giảm giá khả dụng của người dùng
         $vouchers = Auth::check() ? UserRedeemedVoucher::where('user_id', Auth::id())
-            ->where('is_used', false)
-            ->with('promotion')
-            ->get() : collect();
+                ->where('is_used', false)
+                ->with('promotion')
+                ->get()
+                ->filter(function ($voucher) {
+                    // Kiểm tra promotion còn hiệu lực (chưa hết hạn, còn active, còn số lượng)
+                    $promotion = $voucher->promotion;
+                    return $promotion && 
+                           $promotion->is_active && 
+                           $promotion->quantity > 0 && 
+                           now()->gte($promotion->start_date) && 
+                           now()->lte($promotion->end_date);
+                }) : collect();
 
         // Lấy voucher công khai (required_points null hoặc 0)
         $publicPromotions = Promotion::where(function ($q) {
@@ -679,7 +688,7 @@ class AppointmentController extends Controller
 
             // Gửi email xác nhận chỉ cho các phương thức thanh toán khác VNPay
             if ($request->payment_method !== 'vnpay') {
-                Mail::to($appointment->email)->send(new ConfirmBookingMail($appointment, $AdditionalServices));
+                Mail::to($appointment->email)->queue(new ConfirmBookingMail($appointment, $AdditionalServices));
             }
 
             // Xử lý voucher
