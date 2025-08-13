@@ -38,12 +38,6 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     @endif
-                    @if (session('success'))
-                        <div class="alert alert-success alert-dismissible fade show">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
 
                     @if ($promotions->count())
                         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
@@ -75,13 +69,14 @@
                                             </ul>
 
                                             <div class="mt-auto text-center">
-                                                <form action="{{ route('client.redeem.store') }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="promotion_id" value="{{ $promo->id }}">
-                                                    <button type="submit" class="btn-outline-booking btn-sm" style="padding: 5px 10px;">
-                                                        Đổi Voucher
-                                                    </button>
-                                                </form>
+                                                <button type="button" 
+                                                        class="btn-outline-booking btn-sm redeem-btn" 
+                                                        style="padding: 5px 10px;"
+                                                        data-promotion-id="{{ $promo->id }}"
+                                                        data-promotion-code="{{ $promo->code }}"
+                                                        data-required-points="{{ $promo->required_points }}">
+                                                    Đổi Voucher
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -131,5 +126,130 @@
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
+
+        .redeem-btn {
+            transition: all 0.3s ease;
+        }
+
+        .redeem-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 768px) {
+            .custom-swal-popup {
+                width: 95vw !important;
+                max-width: 95vw !important;
+                padding: 15px;
+            }
+
+            .swal2-title {
+                font-size: 18px !important;
+            }
+
+            .swal2-html-container {
+                font-size: 14px !important;
+            }
+        }
     </style>
+
+    {{-- SweetAlert2 CSS và JS --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- JavaScript --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Xử lý sự kiện click vào nút đổi voucher
+            document.querySelectorAll('.redeem-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const promotionId = this.getAttribute('data-promotion-id');
+                    const promotionCode = this.getAttribute('data-promotion-code');
+                    const requiredPoints = this.getAttribute('data-required-points');
+                    const currentPoints = {{ Auth::user()->points_balance }};
+                    
+                    // Hiển thị SweetAlert2 để xác nhận
+                    Swal.fire({
+                        title: 'Xác nhận đổi voucher',
+                        html: `
+                            <p>Bạn có chắc chắn muốn đổi mã giảm giá <strong>${promotionCode}</strong> không?</p>
+                            <p>Số điểm cần thiết: <strong>${requiredPoints}</strong> điểm</p>
+                            <p>Số điểm hiện tại: <strong>${currentPoints}</strong> điểm</p>
+                        `,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận đổi',
+                        cancelButtonText: 'Hủy',
+                        reverseButtons: true,
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Tạo form và submit
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = '{{ route("client.redeem.store") }}';
+                            
+                            const csrfToken = document.createElement('input');
+                            csrfToken.type = 'hidden';
+                            csrfToken.name = '_token';
+                            csrfToken.value = '{{ csrf_token() }}';
+                            
+                            const promotionIdInput = document.createElement('input');
+                            promotionIdInput.type = 'hidden';
+                            promotionIdInput.name = 'promotion_id';
+                            promotionIdInput.value = promotionId;
+                            
+                            form.appendChild(csrfToken);
+                            form.appendChild(promotionIdInput);
+                            document.body.appendChild(form);
+                            
+                            // Hiển thị loading
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                            
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            // Kiểm tra nếu có thông báo thành công, hiển thị SweetAlert2
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: '{{ session("success") }}',
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
+                });
+            @endif
+
+            // Kiểm tra nếu có thông báo lỗi, hiển thị SweetAlert2
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Có lỗi xảy ra!',
+                    text: '{{ session("error") }}',
+                    confirmButtonText: 'Đóng',
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    }
+                });
+            @endif
+        });
+    </script>
 @endsection

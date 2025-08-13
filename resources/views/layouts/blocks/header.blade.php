@@ -119,7 +119,7 @@
                                 <i class="fa-solid fa-user-cog me-2"></i>Quản lý tài khoản</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.detailWallet') }}">
-                                <i class="fa-solid fa-wallet me-2"></i>Hoàn tiền</a>
+                                <i class="fa-solid fa-wallet me-2"></i>Lịch sử hoàn tiền</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.redeem') }}">
                                 <i class="fa-solid fa-gift me-2"></i>Đổi mã giảm giá</a>
@@ -204,7 +204,7 @@
                             </a>
                             <a href="{{ route('client.detailWallet') }}" class="mobile-menu-item">
                                 <i class="fa-solid fa-wallet"></i>
-                                Hoàn tiền
+                                Lịch sử hoàn tiền
                             </a>
                             <a href="{{ route('client.redeem') }}" class="mobile-menu-item">
                                 <i class="fa-solid fa-gift"></i>
@@ -366,17 +366,17 @@
                     </div>
                     <ul class="mobile-user-menu">
                         <li><a href="{{ url('/profile') }}"><i class="fa-solid fa-user-cog"></i> Quản lý tài khoản</a></li>
-                        <li><a href="{{ route('client.detailWallet') }}"><i class="fa-solid fa-wallet"></i> Hoàn tiền</a></li>
+                        <li><a href="{{ route('client.detailWallet') }}"><i class="fa-solid fa-wallet"></i>Lịch sử hoàn tiền</a></li>
                         <li><a href="{{ route('client.redeem') }}"><i class="fa-solid fa-gift"></i> Đổi mã giảm giá</a></li>
                         <li><a href="{{ route('client.orderHistory') }}"><i class="fa-solid fa-shopping-bag"></i> Lịch sử đặt hàng</a></li>
                         <li><a href="{{ route('client.appointmentHistory') }}"><i class="fa-solid fa-calendar"></i> Lịch sử đặt lịch</a></li>
                         
                         @if (Auth::user()->role === 'admin_branch')
-                            <li><a href="{{ route('dashboard') }}"><i class="fa-solid fa-cogs"></i> Quản lý chi nhánh</a></li>
+                            <li><a href="{{ route('dashboard') }}"><i class="fa-solid fa-cogs"></i>Quản lý chi nhánh</a></li>
                         @endif
                         
                         @if (Auth::user()->role != 'user')
-                            <li><a href="{{ route('dashboard') }}"><i class="fa-solid fa-user-shield"></i> Trang quản trị</a></li>
+                            <li><a href="{{ route('dashboard') }}"><i class="fa-solid fa-user-shield"></i>Trang quản trị</a></li>
                         @endif
                         
                         <li>
