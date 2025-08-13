@@ -317,7 +317,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive scroll-rows-5">
+                            <div class="table-responsive">
                                 <table id="barberLeaveTable" class="table table-hover table-sm align-middle mb-0">
                                     <thead>
                                         <tr>
@@ -458,7 +458,7 @@
                         </div>
 
                         <div class="card-body">
-                            <div class="table-responsive scroll-rows-5">
+                            <div class="table-responsive">
                                 <table id="barberPerformanceTable" class="table table-hover table-sm align-middle mb-0">
                                     <thead>
                                         <tr>
