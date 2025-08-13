@@ -6,6 +6,8 @@ use App\Models\Review;
 use App\Models\Checkin;
 use App\Models\Service;
 use App\Models\Appointment;
+use App\Models\Barber;
+use App\Models\Branch;
 use App\Mail\CustomerNoShow;
 use Illuminate\Http\Request;
 use App\Mail\CheckinCodeMail;
@@ -357,7 +359,9 @@ class AppointmentController extends Controller
     {
         $appointments = Appointment::all();
         $services = Service::all();
-        return view('admin.appointments.edit', compact('appointment', 'services'));
+        $barbers = Barber::all();
+        $branches = Branch::all();
+        return view('admin.appointments.edit', compact('appointment', 'services', 'barbers', 'branches'));
     }
 
     public function update(AppointmentRequest $request, Appointment $appointment)
@@ -368,6 +372,31 @@ class AppointmentController extends Controller
 
             $serviceId = $request->input('service_id');
             $additionalServices = json_decode($request->input('additional_services', '[]'), true) ?? [];
+
+            // Kiểm tra xem có lịch hẹn nào khác trùng thời gian không
+            $conflictingAppointment = Appointment::where('id', '!=', $appointment->id)
+                ->where('barber_id', $appointment->barber_id)
+                ->where('branch_id', $appointment->branch_id)
+                ->where('status', '!=', 'cancelled')
+                ->where(function ($query) use ($request) {
+                    $appointmentTime = \Carbon\Carbon::parse($request->appointment_time);
+                    $endTime = $appointmentTime->copy()->addMinutes(30);
+                    
+                    $query->where(function ($q) use ($appointmentTime, $endTime) {
+                        $q->where('appointment_time', '>=', $appointmentTime)
+                          ->where('appointment_time', '<', $endTime);
+                    })->orWhere(function ($q) use ($appointmentTime, $endTime) {
+                        $q->where('appointment_time', '<=', $appointmentTime)
+                          ->where(DB::raw('DATE_ADD(appointment_time, INTERVAL 30 MINUTE)'), '>', $appointmentTime);
+                    });
+                })
+                ->first();
+
+            if ($conflictingAppointment) {
+                return redirect()->back()
+                    ->with('error', 'Thời gian này đã có lịch hẹn khác với barber và chi nhánh này. Vui lòng chọn thời gian khác.')
+                    ->withInput();
+            }
 
             $appointment->update([
                 'service_id' => $serviceId,
