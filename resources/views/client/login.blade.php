@@ -139,7 +139,7 @@
                 flex-direction: column;
                 min-height: 100vh;
                 padding: 20px;
-                background: #000;
+                background: #f5f5f5;
             }
 
             .image-login {
@@ -157,16 +157,7 @@
                 position: relative;
             }
 
-            .form-login::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 4px;
-                background: #000;
-                border-radius: 20px 20px 0 0;
-            }
+
 
             .form-login .image {
                 text-align: center;
@@ -272,6 +263,11 @@
 
             .mb-3 a:hover {
                 color: #333;
+            }
+
+            .forgot-password-link:hover {
+                color: #dc3545 !important;
+                text-decoration: underline !important;
             }
 
             /* Cải thiện thông báo lỗi */
@@ -459,6 +455,16 @@
 
         .toggle-password:hover {
             color: #000;
+        }
+
+        .forgot-password-link {
+            color: #000;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password-link:hover {
+            color: #dc3545;
+            text-decoration: underline !important;
         }
 
         .btn-primary {
