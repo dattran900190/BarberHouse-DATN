@@ -99,8 +99,24 @@ document.addEventListener("DOMContentLoaded", function () {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lọc...';
       }
     });
+  }
+
+  // —— Booking Confirmed Page ——
+  const bookingConfirmedCard = document.querySelector('.booking-confirmed-card');
+  if (bookingConfirmedCard) {
+    // Add entrance animation
+    bookingConfirmedCard.style.opacity = '0';
+    bookingConfirmedCard.style.transform = 'translateY(20px)';
     
-    // Add smooth transition when changing filters
+    setTimeout(() => {
+      bookingConfirmedCard.style.transition = 'all 0.6s ease';
+      bookingConfirmedCard.style.opacity = '1';
+      bookingConfirmedCard.style.transform = 'translateY(0)';
+    }, 100);
+  }
+  
+  // Add smooth transition when changing filters
+  if (filterForm) {
     const selects = filterForm.querySelectorAll('select');
     selects.forEach(select => {
       select.addEventListener('change', function() {

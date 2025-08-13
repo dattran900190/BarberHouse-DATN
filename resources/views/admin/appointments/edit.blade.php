@@ -75,6 +75,19 @@
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="page" value="{{ request('page', 1) }}">
+                <input type="hidden" name="barber_id" value="{{ $appointment->barber_id }}">
+                <input type="hidden" name="branch_id" value="{{ $appointment->branch_id }}">
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Barber</label>
+                        <input type="text" class="form-control" value="{{ $appointment->barber->name ?? 'N/A' }}" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Chi nhánh</label>
+                        <input type="text" class="form-control" value="{{ $appointment->branch->name ?? 'N/A' }}" readonly>
+                    </div>
+                </div>
 
                 <div class="mb-3">
                     <label for="appointment_time" class="form-label">Thời gian hẹn</label>

@@ -114,6 +114,7 @@ Route::post('/dat-lich/verify-otp', [ClientAppointmentController::class, 'verify
 Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::class, 'getBarbersByBranch'])->name('getBarbersByBranch');
 Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time}/{service_id}', [ClientAppointmentController::class, 'getAvailableBarbersByDate'])->name('getAvailableBarbersByDate');
 Route::get('/confirm-booking/{token}', [ClientAppointmentController::class, 'confirmBooking'])->name('confirm.booking');
+Route::get('/xac-nhan-dat-lich', [ClientAppointmentController::class, 'showBookingConfirmed'])->name('booking.confirmed');
 
 // ==== Profile ====
 Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
