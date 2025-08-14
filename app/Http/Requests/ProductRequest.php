@@ -38,7 +38,7 @@ class ProductRequest extends FormRequest
     public function messages()
 {
     return [
-        'product_category_id.required' => 'Danh mục sản phẩm là bắt buộc.',
+        'product_category_id.required' => 'Vui lòng chọn danh mục.',
         'product_category_id.exists' => 'Danh mục sản phẩm không tồn tại.',
 
         'name.required' => 'Tên sản phẩm là bắt buộc.',

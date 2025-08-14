@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\CustomerImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class CustomerImageController extends Controller
 {
@@ -33,31 +34,37 @@ class CustomerImageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, CustomerImage $customerImage)
+    public function store(Request $request)
     {
-        $request->validate([
-            'image' => 'required|image|max:2048',
+        // Define validation rules
+        $rules = [
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'boolean',
-        ], [
+        ];
+
+        // Custom error messages
+        $messages = [
             'image.required' => 'Vui lòng chọn hình ảnh.',
-            'image.image' => 'Tệp tải lên phải là hình ảnh.',
-            'image.max' => 'Hình ảnh không được vượt quá 2MB.',
+            'image.image' => 'Thêm ảnh với file không hợp lệ.',
+            'image.mimes' => 'Sửa với file ảnh không hợp lệ. Chỉ chấp nhận jpeg, png, jpg, gif, svg.',
+            'image.max' => 'Upload ảnh dung lượng quá lớn (tối đa 2MB).',
             'status.boolean' => 'Trạng thái không hợp lệ.',
-        ]);
+        ];
 
+        // Validate the request
+        $validator = Validator::make($request->all(), $rules, $messages);
 
-        if ($request->hasFile('image')) {
-            // Xoá ảnh cũ nếu có
-            if ($customerImage->image && Storage::disk('public')->exists($customerImage->image)) {
-                Storage::disk('public')->delete($customerImage->image);
-            }
-
-            // Lưu ảnh mới
-            $path = $request->file('image')->store('customer_images', 'public');
-            $customerImage->image = $path;
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        // Handle image upload
+        $path = null;
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $path = $request->file('image')->store('customer_images', 'public');
+        }
 
+        // Create new CustomerImage record
         CustomerImage::create([
             'image' => $path,
             'status' => $request->input('status', true),
@@ -94,24 +101,42 @@ class CustomerImageController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'image' => 'required|image|max:2048',
+        // Define validation rules
+        $rules = [
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'boolean',
-        ], [
-            'image.required' => 'Vui lòng chọn hình ảnh.',
-            'image.image' => 'Tệp tải lên phải là hình ảnh.',
-            'image.max' => 'Hình ảnh không được vượt quá 2MB.',
+        ];
+
+        // Custom error messages
+        $messages = [
+            'image.image' => 'Sửa ảnh với file không hợp lệ.',
+            'image.mimes' => 'Sửa với file ảnh không hợp lệ. Chỉ chấp nhận jpeg, png, jpg, gif, svg.',
+            'image.max' => 'Upload ảnh dung lượng quá lớn (tối đa 2MB).',
             'status.boolean' => 'Trạng thái không hợp lệ.',
-        ]);
+        ];
 
+        // Validate the request
+        $validator = Validator::make($request->all(), $rules, $messages);
 
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Find the CustomerImage record
         $customerImage = CustomerImage::findOrFail($id);
 
-        if ($request->hasFile('image')) {
+        // Handle image upload
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            // Delete old image if it exists
+            if ($customerImage->image && Storage::disk('public')->exists($customerImage->image)) {
+                Storage::disk('public')->delete($customerImage->image);
+            }
+            // Store new image
             $path = $request->file('image')->store('customer_images', 'public');
             $customerImage->image = $path;
         }
 
+        // Update status
         $customerImage->status = $request->input('status', true);
         $customerImage->save();
 

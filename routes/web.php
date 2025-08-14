@@ -17,10 +17,12 @@ use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\AdminChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\ChatController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PointController;
 use App\Http\Controllers\PointHistoryController;
@@ -64,8 +66,8 @@ Route::post('verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name(
 
 // ==== Trang chủ ====
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/api/barbers', [\App\Http\Controllers\Client\HomeController::class, 'getBarbers']);
-Route::get('/api/products', [\App\Http\Controllers\Client\HomeController::class, 'getProducts']);
+Route::get('/api/barbers', [HomeController::class, 'getBarbers']);
+Route::get('/api/products', [HomeController::class, 'getProducts']);
 
 // ==== Chính sách bảo mật ====
 Route::get('/chinh-sach-bao-mat', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');
@@ -79,6 +81,10 @@ Route::get('/chinh-sach-van-chuyen', [HomeController::class, 'shippingPolicy'])-
 // ==== Chính sách bảo hành - đổi trả ====
 Route::get('/chinh-sach-bao-hanh-doi-tra', [HomeController::class, 'warrantyReturnPolicy'])->name('warranty.return.policy');
 
+// ==== Chat AI ====
+Route::post('/chat-ai', [ChatController::class, 'chatAI'])->name('chat.ai');
+Route::get('/chat-history', [ChatController::class, 'getChatHistory'])->name('chat.history');
+Route::delete('/chat-history', [ChatController::class, 'clearChatHistory'])->name('chat.clear');
 // == Liên hệ ==
 Route::get('/lien-he', [HomeController::class, 'contact'])->name('contact');
 
@@ -108,6 +114,7 @@ Route::post('/dat-lich/verify-otp', [ClientAppointmentController::class, 'verify
 Route::get('/get-barbers-by-branch/{branch_id}', [ClientAppointmentController::class, 'getBarbersByBranch'])->name('getBarbersByBranch');
 Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time}/{service_id}', [ClientAppointmentController::class, 'getAvailableBarbersByDate'])->name('getAvailableBarbersByDate');
 Route::get('/confirm-booking/{token}', [ClientAppointmentController::class, 'confirmBooking'])->name('confirm.booking');
+Route::get('/xac-nhan-dat-lich', [ClientAppointmentController::class, 'showBookingConfirmed'])->name('booking.confirmed');
 
 // ==== Profile ====
 Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
@@ -231,6 +238,10 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 
     // ==== Ảnh khách hàng ====
     Route::resource('customer-images', CustomerImageController::class);
+
+    // ==== Chatbot ====
+Route::resource('chatbot', AdminChatController::class);
+Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMessage'])->name('chatbot.message.destroy');
 
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);

@@ -3,6 +3,21 @@
 @section('title', 'Dashboard')
 
 @section('content')
+    <style>
+        .scroll-rows-5 {
+            height: 260px;
+            min-height: 260px;
+            overflow-y: auto;
+        }
+
+        .scroll-rows-5 table {
+            margin-bottom: 0;
+        }
+
+        .scroll-rows-5 ul {
+            margin-bottom: 0;
+        }
+    </style>
     <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
         <div>
             <h3 class="fw-bold mb-3">Bảng điều khiển</h3>
@@ -218,43 +233,50 @@
                             <div class="tab-content">
                                 <!-- Phổ biến -->
                                 <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
-                                    <ul class="list-group list-group-flush">
-                                        @forelse ($topServices as $item)
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <strong>{{ $item->service->name ?? 'Không xác định' }}</strong><br>
-                                                    <small
-                                                        class="text-muted">{{ number_format($item->service->price ?? 0) }}
-                                                        VNĐ</small>
-                                                </div>
-                                                <span class="badge bg-primary rounded-pill">
-                                                    {{ $item->usage_count }} lượt
-                                                </span>
-                                            </li>
-                                        @empty
-                                            <li class="list-group-item text-center text-muted">Không có dịch vụ nào</li>
-                                        @endforelse
-                                    </ul>
+                                    <div class="scroll-rows-5">
+                                        <ul class="list-group list-group-flush">
+                                            @forelse ($topServices as $item)
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>{{ $item->service->name ?? 'Không xác định' }}</strong><br>
+                                                        <small
+                                                            class="text-muted">{{ number_format($item->service->price ?? 0) }}
+                                                            VNĐ</small>
+                                                    </div>
+                                                    <span class="badge bg-primary rounded-pill">
+                                                        {{ $item->usage_count }} lượt
+                                                    </span>
+                                                </li>
+                                            @empty
+                                                <li class="list-group-item text-center text-muted">Không có dịch vụ nào
+                                                </li>
+                                            @endforelse
+                                        </ul>
+                                    </div>
                                 </div>
 
                                 <!-- Ít dùng -->
                                 <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
-                                    <ul class="list-group list-group-flush">
-                                        @forelse ($lowUsageServices as $item)
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <strong>{{ $item->name ?? 'Không xác định' }}</strong><br>
-                                                    <small class="text-muted">{{ number_format($item->price ?? 0) }}
-                                                        VNĐ</small>
-                                                </div>
-                                                <span class="badge bg-secondary rounded-pill">
-                                                    {{ $item->usage_count }} lượt
-                                                </span>
-                                            </li>
-                                        @empty
-                                            <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
-                                        @endforelse
-                                    </ul>
+                                    <div class="scroll-rows-5">
+                                        <ul class="list-group list-group-flush">
+                                            @forelse ($lowUsageServices as $item)
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>{{ $item->name ?? 'Không xác định' }}</strong><br>
+                                                        <small class="text-muted">{{ number_format($item->price ?? 0) }}
+                                                            VNĐ</small>
+                                                    </div>
+                                                    <span class="badge bg-secondary rounded-pill">
+                                                        {{ $item->usage_count }} lượt
+                                                    </span>
+                                                </li>
+                                            @empty
+                                                <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
+                                            @endforelse
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -425,187 +447,48 @@
                             <div class="tab-content">
                                 <!-- Tab Bán chạy -->
                                 <div class="tab-pane fade show active" id="pills-top-product" role="tabpanel">
-                                    <div id="top-products-content">
+                                    <div class="scroll-rows-5">
                                         <ul class="list-group list-group-flush">
-                                            @forelse ($topProducts as $index => $item)
-                                                <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 product-item"
-                                                    data-name="{{ strtolower($item->productVariant->product->name ?? 'không xác định') }}">
-                                                    <div class="d-flex align-items-center">
-                                                        <!-- Ranking -->
-                                                        <div class="me-3">
-                                                            @if ($index < 3)
-                                                                <span class="badge bg-warning rounded-circle p-2">
-                                                                    <i class="fas fa-medal"></i>
-                                                                </span>
-                                                            @else
-                                                                <span class="badge bg-light text-dark rounded-circle p-2">
-                                                                    {{ $index + 1 }}
-                                                                </span>
-                                                            @endif
-                                                        </div>
-
-                                                        <!-- Product info -->
-                                                        <div>
-                                                            <strong
-                                                                class="d-block">{{ $item->productVariant->product->name ?? 'Không xác định' }}</strong>
-                                                            <small class="text-muted">
-                                                                {{ number_format($item->productVariant->price ?? 0) }} VNĐ
-                                                                @if ($item->productVariant->product->category ?? false)
-                                                                    • {{ $item->productVariant->product->category->name }}
-                                                                @endif
-                                                            </small>
-
-                                                            <!-- Progress bar cho tỷ lệ -->
-                                                            @php
-                                                                $totalSales = $topProducts->sum('total_sold');
-                                                                $percentage =
-                                                                    $totalSales > 0
-                                                                        ? round(
-                                                                            ($item->total_sold / $totalSales) * 100,
-                                                                            1,
-                                                                        )
-                                                                        : 0;
-                                                            @endphp
-                                                            <div class="progress mt-1" style="height: 4px;">
-                                                                <div class="progress-bar bg-success"
-                                                                    style="width: {{ $percentage }}%"></div>
-                                                            </div>
-                                                            <small class="text-muted">{{ $percentage }}% tổng doanh
-                                                                số</small>
-                                                        </div>
+                                            @forelse ($topProducts as $item)
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>{{ $item->productVariant->product->name ?? 'Không xác định' }}</strong><br>
+                                                        <small
+                                                            class="text-muted">{{ number_format($item->productVariant->price ?? 0) }}
+                                                            VNĐ</small>
                                                     </div>
-
-                                                    <div class="text-end">
-                                                        <span class="badge bg-success rounded-pill fs-6 mb-1">
-                                                            {{ $item->total_sold }} sp
-                                                        </span>
-                                                        <br>
-                                                        <small class="text-muted">
-                                                            {{ number_format($item->total_sold * ($item->productVariant->price ?? 0)) }}
-                                                            VNĐ
-                                                        </small>
-
-                                                        <!-- Quick actions -->
-                                                        <div class="btn-group btn-group-sm mt-1">
-                                                            <button class="btn btn-outline-primary btn-sm"
-                                                                onclick="viewProduct({{ $item->productVariant->product->id ?? 0 }})"
-                                                                title="Xem chi tiết">
-                                                                <i class="fas fa-eye"></i>
-                                                            </button>
-                                                            <button class="btn btn-outline-success btn-sm"
-                                                                onclick="boostProduct({{ $item->productVariant->product->id ?? 0 }})"
-                                                                title="Đẩy mạnh bán hàng">
-                                                                <i class="fas fa-rocket"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
+                                                    <span class="badge bg-success rounded-pill">
+                                                        {{ $item->total_sold }} sp
+                                                    </span>
                                                 </li>
                                             @empty
-                                                <li class="list-group-item text-center text-muted border-0">
-                                                    <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                                                    Không có sản phẩm nào được bán
-                                                </li>
+                                                <li class="list-group-item text-center text-muted">Không có sản phẩm nào
+                                                    được
+                                                    bán</li>
                                             @endforelse
                                         </ul>
-
-                                        <!-- Pagination for top products -->
-                                        @if (method_exists($topProducts, 'links'))
-                                            <div class="mt-3">
-                                                {{ $topProducts->appends(request()->query())->fragment('pills-top-product')->links() }}
-                                            </div>
-                                        @endif
                                     </div>
                                 </div>
 
                                 <!-- Tab Ít bán -->
                                 <div class="tab-pane fade" id="pills-low-product" role="tabpanel">
-                                    <div id="low-products-content">
-                                        <ul class="list-group list-group-flush">
-                                            @forelse ($lowSellingProducts as $index => $item)
-                                                <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 product-item"
-                                                    data-name="{{ strtolower($item->product->name ?? 'không xác định') }}">
-                                                    <div class="d-flex align-items-center">
-                                                        <!-- Warning icon -->
-                                                        <div class="me-3">
-                                                            @if (($item->total_sold ?? 0) == 0)
-                                                                <span class="badge bg-danger rounded-circle p-2">
-                                                                    <i class="fas fa-exclamation"></i>
-                                                                </span>
-                                                            @else
-                                                                <span class="badge bg-warning rounded-circle p-2">
-                                                                    <i class="fas fa-slow"></i>
-                                                                </span>
-                                                            @endif
-                                                        </div>
-
-                                                        <!-- Product info -->
-                                                        <div>
-                                                            <strong
-                                                                class="d-block">{{ $item->product->name ?? 'Không xác định' }}</strong>
-                                                            <small class="text-muted">
-                                                                {{ number_format($item->price) }} VNĐ
-                                                                @if ($item->product->category ?? false)
-                                                                    • {{ $item->product->category->name }}
-                                                                @endif
-                                                            </small>
-
-                                                            <!-- Ngày tạo -->
-                                                            <div class="mt-1">
-                                                                <small class="text-muted">
-                                                                    <i class="fas fa-calendar-alt me-1"></i>
-                                                                    Tạo: {{ $item->product->created_at->format('d/m/Y') }}
-                                                                    ({{ $item->product->created_at->diffForHumans() }})
-                                                                </small>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="text-end">
-                                                        @if (($item->total_sold ?? 0) == 0)
-                                                            <span class="badge bg-danger rounded-pill fs-6 mb-1">
-                                                                Chưa bán
-                                                            </span>
-                                                        @else
-                                                            <span class="badge bg-warning rounded-pill fs-6 mb-1">
-                                                                {{ $item->total_sold }} sp
-                                                            </span>
-                                                        @endif
-
-                                                        <!-- Quick actions for low selling products -->
-                                                        <div class="btn-group btn-group-sm mt-1">
-                                                            <button class="btn btn-outline-primary btn-sm"
-                                                                onclick="viewProduct({{ $item->product->id }})"
-                                                                title="Xem chi tiết">
-                                                                <i class="fas fa-eye"></i>
-                                                            </button>
-                                                            <button class="btn btn-outline-warning btn-sm"
-                                                                onclick="editProduct({{ $item->product->id }})"
-                                                                title="Chỉnh sửa">
-                                                                <i class="fas fa-edit"></i>
-                                                            </button>
-                                                            <button class="btn btn-outline-success btn-sm"
-                                                                onclick="createPromotion({{ $item->product->id }})"
-                                                                title="Tạo khuyến mãi">
-                                                                <i class="fas fa-percentage"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            @empty
-                                                <li class="list-group-item text-center text-muted border-0">
-                                                    <i class="fas fa-smile fa-2x mb-2 d-block text-success"></i>
-                                                    Tất cả sản phẩm đều bán tốt!
-                                                </li>
-                                            @endforelse
-                                        </ul>
-
-                                        <!-- Pagination for low selling products -->
-                                        @if (method_exists($lowSellingProducts, 'links'))
-                                            <div class="mt-3">
-                                                {{ $lowSellingProducts->appends(request()->query())->fragment('pills-low-product')->links() }}
-                                            </div>
-                                        @endif
-                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        @forelse ($lowSellingProducts as $item)
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>{{ $item->product->name ?? 'Không xác định' }}</strong><br>
+                                                    <small class="text-muted">{{ number_format($item->price) }}
+                                                        VNĐ</small>
+                                                </div>
+                                                <span class="badge bg-warning rounded-pill">
+                                                    {{ $item->total_sold }} sp
+                                                </span>
+                                            </li>
+                                        @empty
+                                            <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
+                                        @endforelse
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -762,7 +645,7 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
+                    <div class="table-responsive scroll-rows-5">
                         <table class="table align-items-center mb-0">
                             <thead class="thead-light">
                                 <tr>

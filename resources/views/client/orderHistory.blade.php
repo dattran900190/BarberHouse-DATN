@@ -19,7 +19,7 @@
         $currentStatus = request('status', '');
         $currentStatusLabel = $statusLabels[$currentStatus] ?? $currentStatus;
     @endphp
-    <main>
+    <main style="padding: 10%">
         <div class="container-fluid">
             <div class="card order-history mt-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center border-0 m-3">
@@ -126,14 +126,14 @@
             background-color: #000;
         }
 
-        main {
-            padding: 120px 60px 60px 60px;
+        /* main {
+            padding: 120px 60px 60px 60px; */
             /* Desktop mặc định */
-        }
+        /* } */
 
         @media (max-width: 768px) {
             main {
-                padding: 80px 10px 10px 10px;
+                padding: 80px 10px 10px 10px !important;
             }
         }
 

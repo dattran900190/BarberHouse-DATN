@@ -131,18 +131,13 @@
             reader.onload = e => document.getElementById(id).src = e.target.result;
             reader.readAsDataURL(input.files[0]);
         }
-    </script>
 
-    <script>
         function handleSwalAction({
             selector,
             title,
             text,
             route,
             method = 'POST',
-            withInput = false,
-            inputPlaceholder = '',
-            inputValidator = null,
             onSuccess = () => location.reload()
         }) {
             document.querySelectorAll(selector).forEach(button => {
@@ -177,37 +172,53 @@
                         const fd = new FormData(form);
 
                         fetch(form.action, {
-                                method,
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                body: fd
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                Swal.close();
+                            method,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: fd
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            Swal.close();
+                            if (data.success) {
                                 Swal.fire({
-                                    title: data.success ? 'Thành công!' : 'Lỗi!',
+                                    title: 'Thành công!',
                                     text: data.message,
-                                    icon: data.success ? 'success' : 'error',
+                                    icon: 'success',
                                     customClass: {
                                         popup: 'custom-swal-popup'
                                     }
                                 }).then(() => {
-                                    if (data.success) onSuccess();
+                                    onSuccess();
                                 });
-                            })
-                            .catch(error => {
-                                Swal.close();
+                            } else {
+                                // Display validation errors
+                                let errorMessage = data.message;
+                                if (data.errors && data.errors.length > 0) {
+                                    errorMessage = data.errors.join('<br>');
+                                }
                                 Swal.fire({
                                     title: 'Lỗi!',
-                                    text: 'Đã có lỗi xảy ra: ' + error.message,
+                                    html: errorMessage, // Use html instead of text to support <br>
                                     icon: 'error',
                                     customClass: {
                                         popup: 'custom-swal-popup'
                                     }
                                 });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.close();
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Đã có lỗi xảy ra: ' + error.message,
+                                icon: 'error',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
                             });
+                        });
                     });
                 });
             });
@@ -222,5 +233,4 @@
             method: 'POST'
         });
     </script>
-
 @endsection
