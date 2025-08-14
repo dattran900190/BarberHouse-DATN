@@ -187,7 +187,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
         ->only(['index', 'show']);
     // ==== Admin Dashboard ====
     Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
-
+    Route::post('/dashboard/filter-products', [DashboardController::class, 'filterProducts'])->name('dashboard.filter-products');
     // Hiển thị giao diện Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -240,8 +240,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('customer-images', CustomerImageController::class);
 
     // ==== Chatbot ====
-Route::resource('chatbot', AdminChatController::class);
-Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMessage'])->name('chatbot.message.destroy');
+    Route::resource('chatbot', AdminChatController::class);
+    Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMessage'])->name('chatbot.message.destroy');
 
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
