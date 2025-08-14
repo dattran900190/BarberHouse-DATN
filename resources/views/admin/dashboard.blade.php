@@ -381,8 +381,8 @@
 
                         <!-- Bộ lọc và tìm kiếm -->
                         <div class="card-body border-bottom">
-                            <form method="GET" action="{{ route('dashboard') }}" class="row g-3"
-                                id="product-filter-form">
+                            <!-- Bỏ form wrapper, chỉ dùng các input riêng lẻ -->
+                            <div class="row g-3" id="product-filter-controls">
                                 <!-- Tìm kiếm -->
                                 <div class="col-md-4">
                                     <div class="input-group input-group-sm">
@@ -427,20 +427,24 @@
                                     </select>
                                 </div>
 
-                                <!-- Buttons -->
+                                <!-- Action buttons -->
                                 <div class="col-md-2">
                                     <div class="btn-group btn-group-sm w-100">
-                                        <button type="button" class="btn btn-light" onclick="resetFilters()"
-                                            title="Reset bộ lọc">
-                                            <i class="fas fa-refresh"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-primary" onclick="exportProducts()"
-                                            title="Xuất Excel">
-                                            <i class="fas fa-download"></i>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()"
+                                            title="Reset lọc">
+                                            <i class="fas fa-undo"></i>
                                         </button>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
+
+                            <!-- Loading spinner -->
+                            <div class="text-center loading-spinner" style="display: none;">
+                                <div class="spinner-border spinner-border-sm text-primary mt-2" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <small class="text-muted d-block mt-1">Đang tải...</small>
+                            </div>
                         </div>
 
                         <div class="card-body">
@@ -448,108 +452,161 @@
                                 <!-- Tab Bán chạy -->
                                 <div class="tab-pane fade show active" id="pills-top-product" role="tabpanel">
                                     <div class="scroll-rows-5">
-                                        <ul class="list-group list-group-flush">
-                                            @forelse ($topProducts as $item)
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <strong>{{ $item->productVariant->product->name ?? 'Không xác định' }}</strong><br>
-                                                        <small
-                                                            class="text-muted">{{ number_format($item->productVariant->price ?? 0) }}
-                                                            VNĐ</small>
-                                                    </div>
-                                                    <span class="badge bg-success rounded-pill">
-                                                        {{ $item->total_sold }} sp
-                                                    </span>
-                                                </li>
-                                            @empty
-                                                <li class="list-group-item text-center text-muted">Không có sản phẩm nào
-                                                    được
-                                                    bán</li>
-                                            @endforelse
-                                        </ul>
+                                        <div id="top-products-content">
+                                            <ul class="list-group list-group-flush">
+                                                @forelse ($topProducts as $index => $item)
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 product-item"
+                                                        data-name="{{ strtolower($item->productVariant->product->name ?? 'không xác định') }}">
+                                                        <div class="d-flex align-items-center">
+                                                            <!-- Ranking -->
+                                                            <div class="me-3">
+                                                                @if ($index < 3)
+                                                                    <span class="badge bg-warning rounded-circle p-2">
+                                                                        <i class="fas fa-medal"></i>
+                                                                    </span>
+                                                                @else
+                                                                    <span
+                                                                        class="badge bg-light text-dark rounded-circle p-2">
+                                                                        {{ $index + 1 }}
+                                                                    </span>
+                                                                @endif
+                                                            </div>
+
+                                                            <!-- Product info -->
+                                                            <div>
+                                                                <strong
+                                                                    class="d-block">{{ $item->productVariant->product->name ?? 'Không xác định' }}</strong>
+                                                                <small class="text-muted">
+                                                                    {{ number_format($item->productVariant->price ?? 0) }}
+                                                                    VNĐ
+                                                                    @if ($item->productVariant->product->category ?? false)
+                                                                        •
+                                                                        {{ $item->productVariant->product->category->name }}
+                                                                    @endif
+                                                                </small>
+                                                                @php
+                                                                    $totalSales = $topProducts->sum('total_sold');
+                                                                    $percentage =
+                                                                        $totalSales > 0
+                                                                            ? round(
+                                                                                ($item->total_sold / $totalSales) * 100,
+                                                                                1,
+                                                                            )
+                                                                            : 0;
+                                                                @endphp
+                                                                <div class="progress mt-1" style="height: 4px;">
+                                                                    <div class="progress-bar bg-success"
+                                                                        style="width: {{ $percentage }}%"></div>
+                                                                </div>
+                                                                <small class="text-muted">{{ $percentage }}% tổng doanh
+                                                                    số</small>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="text-end">
+                                                            <span class="badge bg-success rounded-pill fs-6 mb-1">
+                                                                {{ $item->total_sold }} sp
+                                                            </span>
+                                                            <br>
+                                                            <small class="text-muted">
+                                                                {{ number_format($item->total_sold * ($item->productVariant->price ?? 0)) }}
+                                                                VNĐ
+                                                            </small>
+
+                                                            <div class="btn-group btn-group-sm mt-1">
+
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                @empty
+                                                    <li class="list-group-item text-center text-muted border-0">
+                                                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                                        Không có sản phẩm nào được bán
+                                                    </li>
+                                                @endforelse
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Tab Ít bán -->
                                 <div class="tab-pane fade" id="pills-low-product" role="tabpanel">
-                                    <ul class="list-group list-group-flush">
-                                        @forelse ($lowSellingProducts as $item)
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <strong>{{ $item->product->name ?? 'Không xác định' }}</strong><br>
-                                                    <small class="text-muted">{{ number_format($item->price) }}
-                                                        VNĐ</small>
-                                                </div>
-                                                <span class="badge bg-warning rounded-pill">
-                                                    {{ $item->total_sold }} sp
-                                                </span>
-                                            </li>
-                                        @empty
-                                            <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
-                                        @endforelse
-                                    </ul>
+                                    <div class="scroll-rows-5">
+                                        <!-- Nội dung cho sản phẩm ít bán -->
+                                        <div id="low-products-content">
+                                            <ul class="list-group list-group-flush">
+                                                @forelse ($lowSellingProducts as $index => $item)
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 product-item"
+                                                        data-name="{{ strtolower($item->product->name ?? 'không xác định') }}">
+                                                        <div class="d-flex align-items-center">
+                                                            <!-- Warning icon -->
+                                                            <div class="me-3">
+                                                                @if (($item->total_sold ?? 0) == 0)
+                                                                    <span class="badge bg-danger rounded-circle p-2">
+                                                                        <i class="fas fa-exclamation"></i>
+                                                                    </span>
+                                                                @else
+                                                                    <span class="badge bg-warning rounded-circle p-2">
+                                                                        <i class="fas fa-slow"></i>
+                                                                    </span>
+                                                                @endif
+                                                            </div>
+
+                                                            <!-- Product info -->
+                                                            <div>
+                                                                <strong
+                                                                    class="d-block">{{ $item->product->name ?? 'Không xác định' }}</strong>
+                                                                <small class="text-muted">
+                                                                    {{ number_format($item->price) }} VNĐ
+                                                                    @if ($item->product->category ?? false)
+                                                                        • {{ $item->product->category->name }}
+                                                                    @endif
+                                                                </small>
+
+                                                                <!-- Ngày tạo -->
+                                                                <div class="mt-1">
+                                                                    <small class="text-muted">
+                                                                        <i class="fas fa-calendar-alt me-1"></i>
+                                                                        Tạo:
+                                                                        {{ $item->product->created_at->format('d/m/Y') }}
+                                                                        ({{ $item->product->created_at->diffForHumans() }})
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="text-end">
+                                                            @if (($item->total_sold ?? 0) == 0)
+                                                                <span class="badge bg-danger rounded-pill fs-6 mb-1">
+                                                                    Chưa bán
+                                                                </span>
+                                                            @else
+                                                                <span class="badge bg-warning rounded-pill fs-6 mb-1">
+                                                                    {{ $item->total_sold }} sp
+                                                                </span>
+                                                            @endif
+
+
+                                                            <div class="btn-group btn-group-sm mt-1">
+
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                @empty
+                                                    <li class="list-group-item text-center text-muted border-0">
+                                                        <i class="fas fa-smile fa-2x mb-2 d-block text-success"></i>
+                                                        Tất cả sản phẩm đều bán tốt!
+                                                    </li>
+                                                @endforelse
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Modal tạo khuyến mãi nhanh -->
-                <div class="modal fade" id="promotionModal" tabindex="-1">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header border-0">
-                                <h5 class="modal-title">
-                                    <i class="fas fa-percentage text-success me-2"></i>
-                                    Tạo khuyến mãi
-                                </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="promotionForm">
-                                    <input type="hidden" id="promotion_product_id">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">Loại khuyến mãi</label>
-                                            <select class="form-select" name="discount_type">
-                                                <option value="percentage">Giảm % (khuyên dùng)</option>
-                                                <option value="fixed">Giảm giá cố định</option>
-                                                <option value="buy_get">Mua 1 tặng 1</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">Giá trị</label>
-                                            <input type="number" class="form-control" name="discount_value"
-                                                min="1" max="90" value="20" required>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Thời gian khuyến mãi</label>
-                                        <select class="form-select" name="duration">
-                                            <option value="3">3 ngày</option>
-                                            <option value="7" selected>1 tuần</option>
-                                            <option value="14">2 tuần</option>
-                                            <option value="30">1 tháng</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Mô tả khuyến mãi</label>
-                                        <textarea class="form-control" name="description" rows="2"
-                                            placeholder="VD: Khuyến mãi đặc biệt để đẩy mạnh doanh số..."></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer border-0">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
-                                <button type="button" class="btn btn-success" onclick="savePromotion()">
-                                    <i class="fas fa-save me-1"></i>
-                                    Tạo khuyến mãi
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
 
 
@@ -1033,33 +1090,64 @@
         document.getElementById('performance_branch').addEventListener('change', handlePerformanceFilter);
     </script>
     <script>
-        // Real-time search với debounce
+        // Global variables
         let searchTimeout;
-        document.getElementById('product-search').addEventListener('input', function() {
-            const searchValue = this.value.toLowerCase();
+        let isLoading = false;
 
-            // Clear previous timeout
-            clearTimeout(searchTimeout);
+        // CSRF Token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            // Client-side filtering for immediate feedback
-            searchTimeout = setTimeout(() => {
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeProductFilter();
+        });
+
+        function initializeProductFilter() {
+            // Real-time search với debounce
+            document.getElementById('product-search').addEventListener('input', function() {
+                const searchValue = this.value;
+                clearTimeout(searchTimeout);
+
+                // Client-side filtering for immediate feedback
                 filterProductsClientSide(searchValue);
 
-                // Submit form after 1 second for server-side search
-                if (searchValue.length > 2 || searchValue.length === 0) {
-                    document.getElementById('product-filter-form').submit();
-                }
-            }, 300);
-        });
+                // Server-side search after delay
+                searchTimeout = setTimeout(() => {
+                    filterProductsAjax();
+                }, 800); // Tăng delay để giảm số request
+            });
+
+            // Auto-submit on select change
+            document.getElementById('per-page-select').addEventListener('change', function() {
+                filterProductsAjax();
+            });
+
+            document.getElementById('sort-select').addEventListener('change', function() {
+                filterProductsAjax();
+            });
+
+            // Handle tab switching
+            document.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function(e) {
+                    // Optionally refresh data when switching tabs
+                    // filterProductsAjax();
+                });
+            });
+        }
 
         // Client-side filtering for immediate feedback
         function filterProductsClientSide(searchValue) {
-            const productItems = document.querySelectorAll('.product-item');
+            const searchLower = searchValue.toLowerCase();
+            const activeTabPane = document.querySelector('.tab-pane.active');
+
+            if (!activeTabPane) return;
+
+            const productItems = activeTabPane.querySelectorAll('.product-item');
             let visibleCount = 0;
 
             productItems.forEach(item => {
-                const productName = item.dataset.name;
-                if (productName.includes(searchValue)) {
+                const productName = item.dataset.name || '';
+                if (productName.includes(searchLower)) {
                     item.style.display = 'flex';
                     visibleCount++;
                 } else {
@@ -1067,116 +1155,307 @@
                 }
             });
 
-            // Update badges
-            const activeTab = document.querySelector('.tab-pane.active');
-            if (activeTab) {
-                const countBadge = activeTab.id === 'pills-top-product' ?
-                    document.getElementById('top-count') :
-                    document.getElementById('low-count');
-                if (searchValue) {
-                    countBadge.textContent = visibleCount;
-                }
-            }
+            // Update badge count for immediate feedback
+            updateTabBadges(visibleCount, searchValue);
         }
 
-        // Auto-submit on select change
-        document.getElementById('per-page-select').addEventListener('change', function() {
-            document.getElementById('product-filter-form').submit();
-        });
+        // AJAX filter function
+        function filterProductsAjax() {
+            if (isLoading) return;
 
-        document.getElementById('sort-select').addEventListener('change', function() {
-            document.getElementById('product-filter-form').submit();
-        });
+            isLoading = true;
+            showLoadingState();
 
-        // Reset filters
-        function resetFilters() {
-            window.location.href = '{{ route('dashboard') }}';
-        }
+            const formData = new FormData();
+            formData.append('search', document.getElementById('product-search').value);
+            formData.append('per_page', document.getElementById('per-page-select').value);
+            formData.append('sort_by', document.getElementById('sort-select').value);
+            formData.append('_token', csrfToken);
 
-        // Export products
-        function exportProducts() {
-            const activeTab = document.querySelector('.nav-link.active').textContent.trim();
-            const searchParams = new URLSearchParams(window.location.search);
-            searchParams.set('export', activeTab === 'Bán chạy' ? 'top' : 'low');
-
-            window.location.href = '{{ route('dashboard') }}?' + searchParams.toString();
-        }
-
-        // Product actions
-        function viewProduct(productId) {
-            window.open('/admin/products/' + productId, '_blank');
-        }
-
-        function editProduct(productId) {
-            window.location.href = '/admin/products/' + productId + '/edit';
-        }
-
-        function boostProduct(productId) {
-            // Implement boost product logic
-            alert('Tính năng đẩy mạnh sản phẩm đang phát triển!');
-        }
-
-        function createPromotion(productId) {
-            document.getElementById('promotion_product_id').value = productId;
-            new bootstrap.Modal(document.getElementById('promotionModal')).show();
-        }
-
-        function savePromotion() {
-            const form = document.getElementById('promotionForm');
-            const formData = new FormData(form);
-            const productId = document.getElementById('promotion_product_id').value;
-
-            // Implement AJAX call to save promotion
-            fetch('/admin/promotions', {
+            fetch('{{ route('dashboard.filter-products') }}', {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
-                        bootstrap.Modal.getInstance(document.getElementById('promotionModal')).hide();
-                        // Show success message
-                        alert('Tạo khuyến mãi thành công!');
-                        // Optionally reload the page
-                        location.reload();
+                        updateProductTables(data);
+                        updateTabBadges(data.topCount, data.lowCount);
+                    } else {
+                        throw new Error(data.message || 'Unknown error occurred');
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra, vui lòng thử lại!');
+                    console.error('Filter error:', error);
+                    showErrorMessage('Có lỗi xảy ra khi lọc sản phẩm. Vui lòng thử lại!');
+                })
+                .finally(() => {
+                    isLoading = false;
+                    hideLoadingState();
                 });
+        }
+
+        // Update product tables with new data
+        function updateProductTables(data) {
+            // Update top products
+            const topProductsContent = document.getElementById('top-products-content');
+            if (topProductsContent && data.topProductsHtml) {
+                topProductsContent.innerHTML = data.topProductsHtml;
+            }
+
+            // Update low products  
+            const lowProductsContent = document.getElementById('low-products-content');
+            if (lowProductsContent && data.lowProductsHtml) {
+                lowProductsContent.innerHTML = data.lowProductsHtml;
+            }
+        }
+
+        // Update tab badges
+        function updateTabBadges(topCount, lowCount) {
+            const topBadge = document.getElementById('top-count');
+            const lowBadge = document.getElementById('low-count');
+
+            if (topBadge && typeof topCount !== 'undefined') {
+                topBadge.textContent = topCount;
+            }
+
+            if (lowBadge && typeof lowCount !== 'undefined') {
+                lowBadge.textContent = lowCount;
+            }
+        }
+
+        // Loading state functions
+        function showLoadingState() {
+            const activeTabPane = document.querySelector('.tab-pane.active');
+            if (activeTabPane) {
+                const content = activeTabPane.querySelector('.scroll-rows-5') || activeTabPane;
+                content.style.opacity = '0.6';
+                content.style.pointerEvents = 'none';
+            }
+
+            // Show loading spinner if exists
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'block';
+            }
+        }
+
+        function hideLoadingState() {
+            const activeTabPane = document.querySelector('.tab-pane.active');
+            if (activeTabPane) {
+                const content = activeTabPane.querySelector('.scroll-rows-5') || activeTabPane;
+                content.style.opacity = '1';
+                content.style.pointerEvents = 'auto';
+            }
+
+            // Hide loading spinner
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        // Error handling
+        function showErrorMessage(message) {
+            // Create or update error alert
+            let errorAlert = document.querySelector('.error-alert');
+            if (!errorAlert) {
+                errorAlert = document.createElement('div');
+                errorAlert.className = 'alert alert-danger alert-dismissible fade show error-alert';
+                errorAlert.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span class="error-message"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+                const cardBody = document.querySelector('.card-body');
+                cardBody.insertBefore(errorAlert, cardBody.firstChild);
+            }
+
+            errorAlert.querySelector('.error-message').textContent = message;
+            errorAlert.style.display = 'block';
+
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                if (errorAlert) {
+                    errorAlert.style.display = 'none';
+                }
+            }, 5000);
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('product-search').value = '';
+            document.getElementById('per-page-select').value = '10';
+            document.getElementById('sort-select').value = 'total_sold';
+            filterProductsAjax();
+        }
+
+        // Product action functions - Updated to use modals instead of new tabs
+        function viewProductModal(productId) {
+            // Tạo modal để hiển thị thông tin sản phẩm thay vì mở tab mới
+            showProductDetailModal(productId);
+        }
+
+        function showProductDetailModal(productId) {
+            // Create and show product detail modal
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = 'productDetailModal';
+            modal.innerHTML = `
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Chi tiết sản phẩm</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Đang tải thông tin sản phẩm...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            document.body.appendChild(modal);
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
+
+            // Load product details via AJAX
+            fetch(`/admin/products/${productId}/details`)
+                .then(response => response.json())
+                .then(data => {
+                    modal.querySelector('.modal-body').innerHTML = data.html;
+                })
+                .catch(error => {
+                    modal.querySelector('.modal-body').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Không thể tải thông tin sản phẩm
+                    </div>
+                `;
+                });
+
+            // Clean up modal when closed
+            modal.addEventListener('hidden.bs.modal', function() {
+                document.body.removeChild(modal);
+            });
+        }
+
+        function createPromotionModal(productId) {
+            // Create promotion modal instead of redirecting
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Tạo khuyến mãi</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="promotionForm">
+                            <input type="hidden" name="product_id" value="${productId}">
+                            <div class="mb-3">
+                                <label class="form-label">Tên khuyến mãi</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Giảm giá (%)</label>
+                                <input type="number" class="form-control" name="discount" min="1" max="100" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Từ ngày</label>
+                                <input type="date" class="form-control" name="start_date" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Đến ngày</label>
+                                <input type="date" class="form-control" name="end_date" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" onclick="savePromotion()">Tạo khuyến mãi</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            document.body.appendChild(modal);
+            new bootstrap.Modal(modal).show();
+
+            modal.addEventListener('hidden.bs.modal', function() {
+                document.body.removeChild(modal);
+            });
+        }
+
+        function boostProduct(productId) {
+            // Show boost product options
+            alert('Tính năng đẩy mạnh sản phẩm đang phát triển!');
+        }
+
+        function analyzeProduct(productId) {
+            // Show product analytics
+            alert('Tính năng phân tích sản phẩm đang phát triển!');
+        }
+
+        function savePromotion() {
+            // Implementation for saving promotion
+            alert('Tính năng tạo khuyến mãi đang phát triển!');
         }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
-            // Ctrl + F để focus search
+            // Ctrl + F to focus search
             if (e.ctrlKey && e.key === 'f') {
                 e.preventDefault();
                 document.getElementById('product-search').focus();
             }
 
-            // Ctrl + 1 để chuyển tab bán chạy
+            // Ctrl + 1 for top products tab
             if (e.ctrlKey && e.key === '1') {
                 e.preventDefault();
                 document.getElementById('pills-top-product-tab').click();
             }
 
-            // Ctrl + 2 để chuyển tab ít bán
+            // Ctrl + 2 for low products tab
             if (e.ctrlKey && e.key === '2') {
                 e.preventDefault();
                 document.getElementById('pills-low-product-tab').click();
             }
+
+            // Ctrl + R to reset filters
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                resetFilters();
+            }
         });
 
-        // Auto-refresh every 5 minutes
-        setInterval(() => {
-            if (document.getElementById('product-search').value === '') {
-                location.reload();
-            }
-        }, 300000); // 5 minutes
+        // Export functionality
+        function exportProducts() {
+            const activeTab = document.querySelector('.nav-link.active');
+            const type = activeTab.getAttribute('href') === '#pills-top-product' ? 'top' : 'low';
+
+            const searchParams = new URLSearchParams();
+            searchParams.set('export', type);
+            searchParams.set('search', document.getElementById('product-search').value);
+            searchParams.set('sort_by', document.getElementById('sort-select').value);
+
+            window.open(`{{ route('dashboard') }}?${searchParams.toString()}`, '_blank');
+        }
     </script>
 
     <style>
