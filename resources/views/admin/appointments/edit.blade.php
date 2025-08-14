@@ -99,7 +99,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="service_id" class="form-label">Dịch vụ chính</label>
+                    <label for="service_id" class="form-label">Dịch vụ</label>
                     <select class="form-control" id="service_id" name="service_id" required>
                         @foreach ($services as $service)
                             <option value="{{ $service->id }}"

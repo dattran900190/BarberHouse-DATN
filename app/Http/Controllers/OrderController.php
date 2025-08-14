@@ -91,7 +91,7 @@ class OrderController extends Controller
             // Dispatch event để gửi thông báo realtime
             event(new OrderStatusUpdated($order));
             
-            return response()->json(['success' => true, 'message' => 'Đã xác nhận đơn hàng.', 'activeTab' => 'processing']);
+            return response()->json(['success' => true, 'message' => 'Đã xác nhận đơn hàng.', 'activeTab' => 'pending']);
         }
         return response()->json(['success' => false, 'message' => 'Đơn hàng không thể xác nhận.']);
     }
@@ -121,7 +121,7 @@ class OrderController extends Controller
         // Dispatch event để gửi thông báo realtime
         event(new OrderStatusUpdated($order));
 
-        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Đang giao hàng.', 'activeTab' => 'shipping']);
+        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Đang giao hàng.', 'activeTab' => 'processing']);
     }
 
     /**
@@ -150,7 +150,7 @@ class OrderController extends Controller
         // Dispatch event để gửi thông báo realtime
         event(new OrderStatusUpdated($order));
 
-        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Hoàn thành.', 'activeTab' => 'completed']);
+        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Hoàn thành.', 'activeTab' => 'shipping']);
     }
 
     /**

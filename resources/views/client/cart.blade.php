@@ -215,6 +215,10 @@
         </section>
     </main>
     <style>
+    #mainNav {
+            background-color: #000;
+        }
+        
         .alert-box {
             display: flex;
             justify-content: space-between;

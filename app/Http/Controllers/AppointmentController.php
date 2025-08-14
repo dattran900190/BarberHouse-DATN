@@ -12,7 +12,7 @@ use App\Mail\CustomerNoShow;
 use Illuminate\Http\Request;
 use App\Mail\CheckinCodeMail;
 use Illuminate\Support\Carbon;
-use App\Mail\AdminCancelBookingMail; // Thêm dòng này
+use App\Mail\AdminCancelBookingMail; 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\CancelledAppointment;
@@ -271,6 +271,8 @@ class AppointmentController extends Controller
             // Gửi email với dữ liệu từ CancelledAppointment
             Mail::to($cancelledAppointment->email)->queue(new AdminCancelBookingMail($cancelledAppointment));
 
+            // Gắn trạng thái để payload broadcast hiển thị đúng
+            $appointment->status = 'cancelled';
             $appointment->delete();
 
             event(new AppointmentStatusUpdated($appointment));
@@ -512,6 +514,8 @@ class AppointmentController extends Controller
             // Gửi email với dữ liệu từ CancelledAppointment
             Mail::to($cancelledAppointment->email)->queue(new AdminCancelBookingMail($cancelledAppointment));
 
+            // Gắn trạng thái để payload broadcast hiển thị đúng
+            $appointment->status = 'cancelled';
             $appointment->delete();
 
             event(new AppointmentStatusUpdated($appointment));

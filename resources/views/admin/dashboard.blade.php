@@ -1,6 +1,6 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Dashboard')
+@section('title', 'Tổng quan')
 
 @section('content')
     <style>
@@ -25,7 +25,6 @@
         </div>
     </div>
 
-    <!-- Stats Cards -->
     <!-- Stats Cards -->
     <div class="row g-3 mb-4">
         <div class="col-sm-6 col-xl-3">

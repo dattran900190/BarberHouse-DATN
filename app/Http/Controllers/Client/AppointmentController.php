@@ -10,12 +10,13 @@ use App\Models\Checkin;
 use App\Models\Service;
 use App\Models\Promotion;
 use App\Models\Appointment;
-use App\Models\BarberSchedule;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Mail\CheckinCodeMail;
 use App\Events\NewAppointment;
+use App\Models\BarberSchedule;
 use Illuminate\Support\Carbon;
+use App\Mail\CancelBookingMail;
 use App\Mail\ConfirmBookingMail;
 use App\Mail\PendingBookingMail;
 use App\Events\AppointmentCreated;
@@ -29,7 +30,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\BookingRequest;
-use App\Mail\CancelBookingMail;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends Controller
@@ -724,6 +725,15 @@ class AppointmentController extends Controller
             }
             return redirect()->route('dat-lich')->with('success', 'Đặt lịch thành công! Vui lòng kiểm tra email để xác nhận.');
 
+        }  catch (QueryException $e) {
+            // Lỗi duplicate key 1062
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Khung giờ này đã có người đặt. Vui lòng chọn khung giờ khác.'
+                ], 422);
+            }
+            throw $e;
         } catch (\Exception $e) {
 
             session()->flash('error', 'Lỗi khi đặt lịch: ' . $e->getMessage());
