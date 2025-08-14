@@ -150,7 +150,7 @@ class OrderController extends Controller
         // Dispatch event để gửi thông báo realtime
         event(new OrderStatusUpdated($order));
 
-        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Hoàn thành.', 'activeTab' => 'completed']);
+        return response()->json(['success' => true, 'message' => 'Đơn hàng đã được chuyển sang trạng thái Hoàn thành.', 'activeTab' => 'shipping']);
     }
 
     /**
