@@ -7,8 +7,7 @@
 </head>
 
 <body style="font-family: Arial, sans-serif; line-height: 1.6; background-color: #f7f7f7; padding: 20px;">
-    <div
-        style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
         <h2 style="color: #007BFF;">Xác nhận tài khoản - Barber House</h2>
 
         <div style="padding: 30px;">

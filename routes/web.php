@@ -48,9 +48,9 @@ use App\Http\Controllers\Client\AppointmentController as ClientAppointmentContro
 Broadcast::routes(['middleware' => ['auth']]);
 
 // ==== Auth ====
-Route::get('login', [AuthController::class, 'login'])->name('login');
+Route::get('dang-nhap', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postLogin'])->name('postLogin');
-Route::get('register', [AuthController::class, 'register'])->name('register');
+Route::get('dang-ky', [AuthController::class, 'register'])->name('register');
 Route::post('register', [AuthController::class, 'postRegister'])->name('postRegister');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('verify.email');
@@ -328,7 +328,7 @@ Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMess
 });
 
 // ==== profile ====
-Route::get('/profile', [ProfileController::class, 'index'])->name('client.profile');
+Route::get('/ho-so', [ProfileController::class, 'index'])->name('client.profile');
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('client.update');
 Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('client.password');
 

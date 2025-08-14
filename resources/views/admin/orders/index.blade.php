@@ -120,8 +120,8 @@
                                     <th>Tổng tiền</th>
                                     <th>Phương thức</th>
                                     <th>Ngày đặt hàng</th>
-                                    <th>Trạng thái thanh toán</th>
                                     <th>Trạng thái</th>
+                                    <th>Trạng thái thanh toán</th>
                                     @if ($currentRole == 'admin')
                                         <th class="text-center">Hành động</th>
                                     @endif
@@ -141,7 +141,8 @@
                                                 {{ $paymentMethodMap[$order->payment_method] ?? ucfirst($order->payment_method) }}
                                             </td>
                                             <td>{{ $order->created_at?->format('d/m/Y H:i') }}</td>
-                                            <td>
+                                            <td><span class="badge bg-warning">Chờ xác nhận</span></td>
+                                            <td class="text-center">
                                                 @if (isset($paymentMap[$order->payment_status]))
                                                     <span class="badge {{ $paymentMap[$order->payment_status]['class'] }}">
                                                         {{ $paymentMap[$order->payment_status]['text'] }}
@@ -150,7 +151,6 @@
                                                     <span class="badge bg-secondary">Không rõ</span>
                                                 @endif
                                             </td>
-                                            <td><span class="badge bg-warning">Chờ xác nhận</span></td>
                                             @if ($currentRole == 'admin')
                                                 <td class="text-center">
                                                     <div class="dropdown">

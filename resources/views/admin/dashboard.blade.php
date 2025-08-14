@@ -1,6 +1,6 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Dashboard')
+@section('title', 'Tổng quan')
 
 @section('content')
     <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
@@ -10,7 +10,6 @@
         </div>
     </div>
 
-    <!-- Stats Cards -->
     <!-- Stats Cards -->
     <div class="row g-3 mb-4">
         <div class="col-sm-6 col-xl-3">

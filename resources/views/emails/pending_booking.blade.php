@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>Xác nhận đặt lịch tại Barber House</title>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; background-color: #f9f9f9; padding: 20px; color: #333;">
-    <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+<body style="font-family: Arial, sans-serif; line-height: 1.6; background-color: #f7f7f7; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
         <h2 style="color: #007BFF;">Cảm ơn bạn đã đặt lịch tại Barber House</h2>
 
         <p>Xin chào <strong>{{ $appointment->name }}</strong>,</p>

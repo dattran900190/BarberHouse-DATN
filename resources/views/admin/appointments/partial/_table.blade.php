@@ -7,12 +7,12 @@
             <th>Số điện thoại</th>
             <th>Thợ</th>
             <th>Dịch vụ</th>
-            <th>Phương thức thanh toán</th>
+            <th>Phương thức</th>
             <th>Thời gian</th>
             @if ($type === 'cancelled')
                 <th>Lý do</th>
             @endif
-            <th>Trạng thái lịch hẹn</th>
+            <th>Trạng thái</th>
             <th>Trạng thái thanh toán</th>
             <th class="text-center">Hành động</th>
         </tr>
@@ -26,25 +26,6 @@
                     <td>{{ $appointment->name ?? ($appointment->user?->name ?? 'N/A') }}</td>
                     <td>{{ $appointment->phone ?? ($appointment->user?->phone ?? 'N/A') }}</td>
                     <td>{{ $appointment->barber?->name ?? 'Thợ đã nghỉ' }}</td>
-                    {{-- <td>
-                        {{ $appointment->service?->name ?? 'N/A' }}</strong>
-
-                        @if ($appointment->additional_services && $appointment->additional_services !== '[]')
-                            @php
-                                $serviceIds = json_decode($appointment->additional_services, true);
-                                $additionalServices = App\Models\Service::whereIn('id', $serviceIds)->get();
-                            @endphp
-
-                            <div class="mt-2">
-                                <strong class="text-muted">Dịch vụ thêm:</strong>
-                                <ul class="mb-0 mt-1 ps-3 text-muted">
-                                    @foreach ($additionalServices as $service)
-                                        <li>{{ $service->name }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                    </td> --}}
                     <td>
                         {{ $appointment->service?->name ?? 'N/A' }}
 

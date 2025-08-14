@@ -8,7 +8,7 @@
 
 <body style="font-family: Arial, sans-serif; line-height: 1.6; background-color: #f7f7f7; padding: 20px;">
     <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-        <h2 style="color: #2c3e50;">Xin chào {{ $appointment->user->name }},</h2>
+        <h2 style="color: #007BFF;">Xin chào {{ $appointment->user->name }},</h2>
 
         <p>
             Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Dưới đây là thông tin chi tiết về lịch hẹn của bạn:

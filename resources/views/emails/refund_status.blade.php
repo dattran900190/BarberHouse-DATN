@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <title>Thông báo trạng thái yêu cầu hoàn tiền</title>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-    <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd;">
+
+<body style="font-family: Arial, sans-serif; line-height: 1.6; background-color: #f7f7f7; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
         @if ($status === 'refunded')
-            <h2 style="color: #28a745;">Yêu cầu hoàn tiền đã được duyệt</h2>
+            <h2 style="color: #007BFF;">Yêu cầu hoàn tiền đã được duyệt</h2>
             <p>Kính chào {{ $user->name ?? 'Khách hàng' }},</p>
             <p>Chúng tôi xin thông báo rằng yêu cầu hoàn tiền của bạn đã được xử lý thành công. Dưới đây là chi tiết:</p>
             
