@@ -105,6 +105,10 @@ class AppointmentController extends Controller
 
     public function appointmentHistory(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('messageError', 'Vui lòng đăng nhập để xem lịch sử đặt lịch.');
+        }
+
         $userId = Auth::id();
         $search = $request->input('search');
         $status = $request->input('status');
