@@ -180,7 +180,7 @@
                                                                 <span class="text-muted">SL:
                                                                     {{ $item['quantity'] }}</span><br>
                                                                 <span class="text-muted">Dung tích:
-                                                                    {{ $item['volume_name']}}</span><br>
+                                                                    {{ $item['volume_name'] }}</span><br>
                                                                 <span
                                                                     class="text-primary">{{ number_format($item['price'], 0, ',', '.') }}
                                                                     VNĐ</span>
@@ -331,6 +331,9 @@
                         icon: 'warning',
                         title: 'Thiếu thông tin',
                         html: errors.join('<br>'),
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                     });
                     return;
                 }
@@ -343,13 +346,21 @@
                         showCancelButton: true,
                         confirmButtonText: 'Đặt hàng',
                         cancelButtonText: 'Hủy',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             Swal.fire({
                                 title: 'Đang xử lý...',
                                 text: 'Vui lòng chờ trong giây lát.',
                                 allowOutsideClick: false,
-                                didOpen: () => Swal.showLoading()
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
                             });
 
                             const formData = new FormData(form);
@@ -385,7 +396,10 @@
                                         Swal.fire({
                                             title: 'Thành công!',
                                             text: data.message,
-                                            icon: 'success'
+                                            icon: 'success',
+                                            customClass: {
+                                                popup: 'custom-swal-popup'
+                                            }
                                         }).then(() => window.location.href = data
                                             .redirect_url);
                                     }
