@@ -143,10 +143,10 @@
                                                                             </div>
                                                                         @endif
                                                                     </td>
-                                                                    <td class="unit-price"  data-label="Đơn giá">
+                                                                    <td class="unit-price" data-label="Đơn giá">
                                                                         {{ number_format($item->price, 0, ',', '.') }} VNĐ
                                                                     </td>
-                                                                    <td class="subtotal"  data-label="Thành tiền">
+                                                                    <td class="subtotal" data-label="Thành tiền">
                                                                         {{ number_format($item->price * $item->quantity, 0, ',', '.') }}
                                                                         VNĐ
                                                                     </td>
@@ -575,6 +575,9 @@
                             icon: 'warning',
                             title: 'Vượt quá tồn kho',
                             text: `Chỉ còn lại ${max} sản phẩm.`,
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            }
                         });
                     }
 
