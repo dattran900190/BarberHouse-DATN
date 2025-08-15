@@ -82,7 +82,7 @@
 
                         <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
 
-                        <p class="mt-3">Bạn chưa có tài khoản? <a href="{{ asset('register') }}"
+                        <p class="mt-3">Bạn chưa có tài khoản? <a href="{{ asset('dang-ky') }}"
                                 style="text-decoration: none;" onmouseover="this.style.textDecoration='underline'"
                                 onmouseout="this.style.textDecoration='none'">Đăng ký</a></p>
                     </form>
