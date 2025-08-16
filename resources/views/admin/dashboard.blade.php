@@ -109,6 +109,7 @@
     </div>
 
     <!-- Doanh thu hôm nay -->
+    <!-- Doanh thu hôm nay - CẢI THIỆN -->
     <div class="row g-3 mb-4">
         <div class="col-lg-4">
             <div class="card card-stats card-round h-100">
@@ -123,10 +124,81 @@
                             <div class="numbers">
                                 <p class="card-category">Doanh thu hôm nay</p>
                                 <h4 class="card-title">{{ number_format($todayRevenue) }} VNĐ</h4>
-                                <small class="text-muted">
-                                    Dịch vụ: {{ number_format($todayServiceRevenue) }} VNĐ<br>
-                                    Sản phẩm: {{ number_format($todayProductRevenue) }} VNĐ
-                                </small>
+                                <div class="mt-2">
+                                    <small class="text-success d-block">
+                                        <i class="fas fa-cut me-1"></i>
+                                        Dịch vụ: {{ number_format($todayServiceRevenue) }} VNĐ
+                                        @if ($todayServiceCount > 0)
+                                            ({{ $todayServiceCount }} lượt)
+                                        @endif
+                                    </small>
+                                    <small class="text-info d-block">
+                                        <i class="fas fa-shopping-cart me-1"></i>
+                                        Sản phẩm: {{ number_format($todayProductRevenue) }} VNĐ
+                                        @if ($todayProductOrderCount > 0)
+                                            ({{ $todayProductOrderCount }} đơn)
+                                        @endif
+                                    </small>
+
+                                    <!-- Hiển thị tỷ lệ -->
+                                    @if ($todayRevenue > 0)
+                                        @php
+                                            $servicePercent = round(($todayServiceRevenue / $todayRevenue) * 100, 1);
+                                            $productPercent = round(($todayProductRevenue / $todayRevenue) * 100, 1);
+                                        @endphp
+                                        <div class="progress mt-2" style="height: 6px;">
+                                            <div class="progress-bar bg-success" role="progressbar"
+                                                style="width: {{ $servicePercent }}%"
+                                                title="Dịch vụ: {{ $servicePercent }}%"></div>
+                                            <div class="progress-bar bg-info" role="progressbar"
+                                                style="width: {{ $productPercent }}%"
+                                                title="Sản phẩm: {{ $productPercent }}%"></div>
+                                        </div>
+                                        <small class="text-muted">
+                                            Dịch vụ {{ $servicePercent }}% • Sản phẩm {{ $productPercent }}%
+                                        </small>
+                                    @endif
+
+                                    <!-- So sánh với hôm qua -->
+                                    @php
+                                        $yesterday = \Carbon\Carbon::yesterday();
+                                        $yesterdayServiceRevenue = \App\Models\Appointment::whereDate(
+                                            'appointment_time',
+                                            $yesterday,
+                                        )
+                                            ->where('status', 'completed')
+                                            ->sum('total_amount');
+                                        $yesterdayProductRevenue = \App\Models\Order::whereDate(
+                                            'created_at',
+                                            $yesterday,
+                                        )
+                                            ->where('status', 'completed')
+                                            ->sum('total_money');
+                                        $yesterdayTotal = $yesterdayServiceRevenue + $yesterdayProductRevenue;
+
+                                        if ($yesterdayTotal > 0) {
+                                            $changePercent =
+                                                (($todayRevenue - $yesterdayTotal) / $yesterdayTotal) * 100;
+                                            $isIncrease = $changePercent > 0;
+                                            $changeClass = $isIncrease ? 'text-success' : 'text-danger';
+                                            $changeIcon = $isIncrease ? 'fa-arrow-up' : 'fa-arrow-down';
+                                        }
+                                    @endphp
+
+                                    @if (isset($changePercent) && $yesterdayTotal > 0)
+                                        <div class="mt-2 pt-2 border-top">
+                                            <small class="{{ $changeClass }}">
+                                                <i class="fas {{ $changeIcon }} me-1"></i>
+                                                {{ $isIncrease ? '+' : '' }}{{ number_format($changePercent, 1) }}% so với
+                                                hôm qua
+                                            </small>
+                                            <br>
+                                            <small class="text-muted">
+                                                Hôm qua: {{ number_format($yesterdayTotal) }} VNĐ
+                                            </small>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -134,9 +206,120 @@
             </div>
         </div>
 
-        <!-- Có thể thêm các card khác ở đây -->
-        <div class="col-lg-8">
-            <!-- Phần khác của dashboard -->
+        <!-- Thêm thống kê bổ sung -->
+        <div class="col-lg-4">
+            <div class="card card-stats card-round h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-icon">
+                            <div class="icon-big text-center icon-success bubble-shadow-small">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                        </div>
+                        <div class="col col-stats ms-3 ms-sm-0">
+                            <div class="numbers">
+                                <p class="card-category">Hoạt động hôm nay</p>
+                                <div class="mt-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-muted">Lịch đã hoàn thành:</span>
+                                        <strong class="text-success">{{ $todayServiceCount ?? 0 }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-muted">Đơn hàng hoàn thành:</span>
+                                        <strong class="text-info">{{ $todayProductOrderCount ?? 0 }}</strong>
+                                    </div>
+
+                                    @php
+                                        $todayPendingAppointments = \App\Models\Appointment::whereDate(
+                                            'appointment_time',
+                                            \Carbon\Carbon::today(),
+                                        )
+                                            ->whereIn('status', ['confirmed', 'checked-in', 'progress'])
+                                            ->count();
+                                        $todayPendingOrders = \App\Models\Order::whereDate(
+                                            'created_at',
+                                            \Carbon\Carbon::today(),
+                                        )
+                                            ->whereIn('status', ['pending', 'confirmed'])
+                                            ->count();
+                                    @endphp
+
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-muted">Lịch đang xử lý:</span>
+                                        <strong class="text-warning">{{ $todayPendingAppointments }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted">Đơn hàng chờ:</span>
+                                        <strong class="text-warning">{{ $todayPendingOrders }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trung bình doanh thu -->
+        <div class="col-lg-4">
+            <div class="card card-stats card-round h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-icon">
+                            <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                        </div>
+                        <div class="col col-stats ms-3 ms-sm-0">
+                            <div class="numbers">
+                                <p class="card-category">Trung bình tháng này</p>
+                                @php
+                                    $currentMonth = date('n');
+                                    $currentYear = date('Y');
+                                    $daysInMonth = \Carbon\Carbon::now()->daysInMonth;
+                                    $currentDay = date('j');
+
+                                    $monthServiceRevenue = \App\Models\Appointment::whereMonth(
+                                        'appointment_time',
+                                        $currentMonth,
+                                    )
+                                        ->whereYear('appointment_time', $currentYear)
+                                        ->where('status', 'completed')
+                                        ->sum('total_amount');
+                                    $monthProductRevenue = \App\Models\Order::whereMonth('created_at', $currentMonth)
+                                        ->whereYear('created_at', $currentYear)
+                                        ->where('status', 'completed')
+                                        ->sum('total_money');
+                                    $monthTotal = $monthServiceRevenue + $monthProductRevenue;
+
+                                    $avgPerDay = $currentDay > 0 ? $monthTotal / $currentDay : 0;
+                                    $projectedMonth = $avgPerDay * $daysInMonth;
+                                @endphp
+                                <h4 class="card-title">{{ number_format($avgPerDay) }} VNĐ/ngày</h4>
+                                <div class="mt-2">
+                                    <small class="text-muted d-block">
+                                        Tổng tháng này: {{ number_format($monthTotal) }} VNĐ
+                                    </small>
+                                    <small class="text-muted d-block">
+                                        Dự kiến cuối tháng: {{ number_format($projectedMonth) }} VNĐ
+                                    </small>
+                                    @if ($projectedMonth > 0 && $monthTotal > 0)
+                                        @php
+                                            $monthProgress = ($monthTotal / $projectedMonth) * 100;
+                                        @endphp
+                                        <div class="progress mt-2" style="height: 4px;">
+                                            <div class="progress-bar bg-primary" role="progressbar"
+                                                style="width: {{ min($monthProgress, 100) }}%"></div>
+                                        </div>
+                                        <small class="text-primary">{{ number_format($monthProgress, 1) }}% tiến độ
+                                            tháng</small>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Chart Section -->

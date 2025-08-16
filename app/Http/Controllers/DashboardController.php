@@ -33,18 +33,32 @@ class DashboardController extends Controller
         // Tổng doanh thu sản phẩm (chỉ tính những đơn hàng hoàn thành - đã thanh toán)
         $productRevenue = Order::where('status', 'completed')->sum('total_money');
 
-        // Doanh thu hôm nay
-        $today = Carbon::today();
-        $todayServiceRevenue = Appointment::whereDate('created_at', $today)
+        // ===== PHẦN DOANH THU HÔM NAY ĐÃ CẢI THIỆN =====
+        $today = Carbon::today(); // Sử dụng today() thay vì now() để chỉ so sánh ngày
+
+        // Doanh thu dịch vụ hôm nay - Dựa trên ngày appointment_time (khi dịch vụ được thực hiện)
+        // và chỉ tính những appointment đã hoàn thành (đã thanh toán)
+        $todayServiceRevenue = Appointment::whereDate('appointment_time', $today)
             ->where('status', 'completed')
             ->sum('total_amount');
 
+        // Doanh thu sản phẩm hôm nay - Dựa trên ngày đặt hàng (created_at) 
+        // và chỉ tính những đơn hàng đã hoàn thành (đã thanh toán)
         $todayProductRevenue = Order::whereDate('created_at', $today)
             ->where('status', 'completed')
             ->sum('total_money');
 
         // Tổng doanh thu hôm nay (sản phẩm + dịch vụ)
         $todayRevenue = $todayServiceRevenue + $todayProductRevenue;
+
+        // Lấy thống kê bổ sung cho doanh thu hôm nay
+        $todayServiceCount = Appointment::whereDate('appointment_time', $today)
+            ->where('status', 'completed')
+            ->count();
+
+        $todayProductOrderCount = Order::whereDate('created_at', $today)
+            ->where('status', 'completed')
+            ->count();
 
         // Lấy tuần hiện tại cho hiển thị
         $startOfWeek = Carbon::now()->startOfWeek();
@@ -324,6 +338,9 @@ class DashboardController extends Controller
             'todayRevenue',
             'todayServiceRevenue',
             'todayProductRevenue',
+            // Thêm các biến mới cho thống kê bổ sung
+            'todayServiceCount',
+            'todayProductOrderCount',
             'barberStats',
             'barberLeaves',
             'weekRange',
@@ -377,13 +394,15 @@ class DashboardController extends Controller
         for ($date = $start->copy(); $date <= $end; $date->addDay()) {
             $labels[] = $date->format('d/m'); // Format ngắn gọn hơn
 
-            $serviceRevenue[] = Appointment::whereDate('created_at', $date)
+            // ===== DOANH THU DỊCH VỤ THEO APPOINTMENT_TIME =====
+            $serviceRevenue[] = Appointment::whereDate('appointment_time', $date)
                 ->where('status', 'completed')
-                ->sum('total_amount') ?: 0; // Đảm bảo trả về 0 thay vì null
+                ->sum('total_amount') ?: 0;
 
+            // ===== DOANH THU SẢN PHẨM THEO CREATED_AT =====
             $productRevenue[] = Order::whereDate('created_at', $date)
                 ->where('status', 'completed')
-                ->sum('total_money') ?: 0; // Đảm bảo trả về 0 thay vì null
+                ->sum('total_money') ?: 0;
         }
     }
 
@@ -408,10 +427,12 @@ class DashboardController extends Controller
 
                 $labels[] = $date->format('d/m');
 
-                $serviceRevenue[] = Appointment::whereDate('created_at', $date)
+                // ===== DOANH THU DỊCH VỤ THEO APPOINTMENT_TIME =====
+                $serviceRevenue[] = Appointment::whereDate('appointment_time', $date)
                     ->where('status', 'completed')
                     ->sum('total_amount') ?: 0;
 
+                // ===== DOANH THU SẢN PHẨM THEO CREATED_AT =====
                 $productRevenue[] = Order::whereDate('created_at', $date)
                     ->where('status', 'completed')
                     ->sum('total_money') ?: 0;
@@ -421,11 +442,13 @@ class DashboardController extends Controller
             for ($i = 1; $i <= $currentMonth; $i++) {
                 $labels[] = 'T' . $i; // Format ngắn gọn hơn
 
-                $serviceRevenue[] = Appointment::whereMonth('created_at', $i)
-                    ->whereYear('created_at', $year)
+                // ===== DOANH THU DỊCH VỤ THEO APPOINTMENT_TIME =====
+                $serviceRevenue[] = Appointment::whereMonth('appointment_time', $i)
+                    ->whereYear('appointment_time', $year)
                     ->where('status', 'completed')
                     ->sum('total_amount') ?: 0;
 
+                // ===== DOANH THU SẢN PHẨM THEO CREATED_AT =====
                 $productRevenue[] = Order::whereMonth('created_at', $i)
                     ->whereYear('created_at', $year)
                     ->where('status', 'completed')
