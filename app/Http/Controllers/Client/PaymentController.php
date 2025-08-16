@@ -13,9 +13,16 @@ use App\Events\OrderPaymentStatusUpdated;
 use App\Events\NewAppointment;
 use Illuminate\Support\Facades\Mail;
 use Pusher\Pusher;
+use App\Services\PusherService;
 
 class PaymentController extends Controller
 {
+    protected $pusherService;
+
+    public function __construct(PusherService $pusherService)
+    {
+        $this->pusherService = $pusherService;
+    }
 
 
     public function vnpayPayment(Request $request)
@@ -154,7 +161,7 @@ class PaymentController extends Controller
             event(new NewAppointment($appointment));
 
             // Kích hoạt Pusher để thông báo cho admin
-            $this->triggerPusher($appointment);
+            $this->pusherService->triggerAppointmentCreated($appointment);
 
             // Gửi email thông báo pending
             try {
@@ -214,35 +221,5 @@ class PaymentController extends Controller
             }
             return redirect()->route('client.gio-hang')->with('error', 'Thanh toán thất bại!');
         }
-    }
-
-    protected function triggerPusher(Appointment $appointment)
-    {
-        $additionalServiceIds = json_decode($appointment->additional_services ?? '[]', true);
-        $additionalServicesNames = Service::whereIn('id', $additionalServiceIds)->pluck('name')->toArray();
-
-        $pusherData = [
-            'id' => $appointment->id,
-            'appointment_code' => $appointment->appointment_code,
-            'user_name' => $appointment->name ?? 'N/A',
-            'phone' => $appointment->phone ?? 'N/A',
-            'barber_name' => $appointment->barber->name ?? 'N/A',
-            'service_name' => $appointment->service->name ?? 'N/A',
-            'status' => $appointment->status,
-            'payment_status' => $appointment->payment_status,
-            'created_at' => $appointment->created_at->format('d/m/Y H:i'),
-            'additional_services' => $additionalServicesNames ?? [],
-            'payment_method' => $appointment->payment_method,
-            'appointment_time' => $appointment->appointment_time->format('d/m/Y H:i'),
-        ];
-
-        $pusher = new Pusher(
-            config('broadcasting.connections.pusher.key'),
-            config('broadcasting.connections.pusher.secret'),
-            config('broadcasting.connections.pusher.app_id'),
-            ['cluster' => config('broadcasting.connections.pusher.options.cluster'), 'useTLS' => true]
-        );
-
-        $pusher->trigger('appointments', 'App\\Events\\AppointmentCreated', $pusherData);
     }
 }

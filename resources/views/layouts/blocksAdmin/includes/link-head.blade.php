@@ -36,37 +36,144 @@
 
     }
 
-     .toast {
-            min-width: 300px;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin-top: 10px;
-            /* Khoảng cách giữa các Toast */
+    .toast {
+        min-width: 300px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin-top: 10px;
+        /* Khoảng cách giữa các Toast */
+    }
+
+    .toast-header {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .toast-body {
+        font-size: 13px;
+        padding: 12px;
+    }
+
+    .btn-close {
+        background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707A1 1 0 01.293.293z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+        width: 1em;
+        height: 1em;
+        opacity: 0.8;
+        border: none;
+        padding: 0;
+        margin-left: 8px;
+    }
+
+    .btn-close:hover {
+        opacity: 1;
+    }
+
+
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
         }
 
-        .toast-header {
-            font-size: 14px;
-            padding: 8px 12px;
-        }
-
-        .toast-body {
-            font-size: 13px;
-            padding: 12px;
-        }
-
-        .btn-close {
-            background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707A1 1 0 01.293.293z'/%3e%3c/svg%3e") center/1em auto no-repeat;
-            width: 1em;
-            height: 1em;
-            opacity: 0.8;
-            border: none;
-            padding: 0;
-            margin-left: 8px;
-        }
-
-        .btn-close:hover {
+        to {
+            transform: translateX(0);
             opacity: 1;
         }
+    }
+
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    /* Highlight cho row mới */
+    .highlight-new-appointment {
+        animation: highlightPulse 2s ease-in-out;
+        border-left: 4px solid #28a745 !important;
+    }
+
+    @keyframes highlightPulse {
+
+        0%,
+        100% {
+            background-color: #fff3cd;
+            box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+        }
+
+        50% {
+            background-color: #d4edda;
+            box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+        }
+    }
+
+    /* Toast template từ allToast.blade.php */
+    #toastContainer .toast {
+        min-width: 350px;
+        max-width: 450px;
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    #toastContainer .toast-header {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border-bottom: none;
+        padding: 12px 15px;
+    }
+
+    #toastContainer .toast-header .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 0.8;
+    }
+
+    #toastContainer .toast-header .btn-close:hover {
+        opacity: 1;
+    }
+
+    #toastContainer .toast-body {
+        padding: 15px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    #toastContainer .toast-body p {
+        margin-bottom: 15px;
+        font-size: 15px;
+        font-weight: 500;
+        color: #495057;
+    }
+
+    #toastContainer .btn-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border: none;
+        border-radius: 20px;
+        padding: 8px 16px;
+        font-size: 13px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    #toastContainer .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        text-decoration: none;
+    }
+
+    /* Responsive cho mobile */
+    @media (max-width: 768px) {
+        #toastContainer .toast {
+            min-width: 300px;
+            max-width: 350px;
+        }
+    }
 </style>
 
 <!-- Fonts and icons -->

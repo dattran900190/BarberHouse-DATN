@@ -273,8 +273,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::patch('product_categories/{id}/soft-delete', [ProductCategoryController::class, 'softDelete'])->name('product_categories.softDelete');
     Route::post('product_categories/{id}/restore', [ProductCategoryController::class, 'restore'])->name('product_categories.restore');
     Route::delete('product_categories/{id}/force-delete', [ProductCategoryController::class, 'destroy'])->name('product_categories.destroy');
+    
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
+    Route::post('/appointments/{appointment}/checkin', [CheckinController::class, 'checkin'])->name('appointments.checkin');
+    Route::post('/checkin/check/{appointmentId}', [CheckinController::class, 'checkCheckinCode'])->name('checkin.check');
 
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
