@@ -49,18 +49,18 @@ class AppointmentController extends Controller
 
         // Lấy danh sách mã giảm giá khả dụng của người dùng
         $vouchers = Auth::check() ? UserRedeemedVoucher::where('user_id', Auth::id())
-                ->where('is_used', false)
-                ->with('promotion')
-                ->get()
-                ->filter(function ($voucher) {
-                    // Kiểm tra promotion còn hiệu lực (chưa hết hạn, còn active, còn số lượng)
-                    $promotion = $voucher->promotion;
-                    return $promotion && 
-                           $promotion->is_active && 
-                           $promotion->quantity > 0 && 
-                           now()->gte($promotion->start_date) && 
-                           now()->lte($promotion->end_date);
-                }) : collect();
+            ->where('is_used', false)
+            ->with('promotion')
+            ->get()
+            ->filter(function ($voucher) {
+                // Kiểm tra promotion còn hiệu lực (chưa hết hạn, còn active, còn số lượng)
+                $promotion = $voucher->promotion;
+                return $promotion &&
+                    $promotion->is_active &&
+                    $promotion->quantity > 0 &&
+                    now()->gte($promotion->start_date) &&
+                    now()->lte($promotion->end_date);
+            }) : collect();
 
         // Lấy voucher công khai (required_points null hoặc 0)
         $publicPromotions = Promotion::where(function ($q) {
@@ -374,15 +374,15 @@ class AppointmentController extends Controller
     {
         // Lấy thông tin lịch hẹn từ session hoặc flash data
         $appointment = session('confirmed_appointment');
-        
+
         if (!$appointment) {
             // Nếu không có thông tin lịch hẹn, redirect về trang chủ
             return redirect()->route('home')->with('error', 'Không tìm thấy thông tin lịch hẹn.');
         }
-        
+
         // Load các relationships cần thiết
         $appointment->load(['service', 'barber', 'branch']);
-    
+
         // Lấy dịch vụ bổ sung nếu có
         $additionalServices = [];
         if ($appointment->additional_services) {
@@ -393,8 +393,8 @@ class AppointmentController extends Controller
                     ->toArray();
             }
         }
-        
-        
+
+
         return view('client.booking-confirmed', compact('appointment',  'additionalServices'));
     }
 
@@ -693,7 +693,7 @@ class AppointmentController extends Controller
 
             // Gửi email xác nhận chỉ cho các phương thức thanh toán khác VNPay
             if ($request->payment_method !== 'vnpay') {
-                Mail::to($appointment->email)->queue(new ConfirmBookingMail($appointment, $AdditionalServices));
+                Mail::to($appointment->email)->send(new ConfirmBookingMail($appointment, $AdditionalServices));
             }
 
             // Xử lý voucher
@@ -724,8 +724,7 @@ class AppointmentController extends Controller
                 ]);
             }
             return redirect()->route('dat-lich')->with('success', 'Đặt lịch thành công! Vui lòng kiểm tra email để xác nhận.');
-
-        }  catch (QueryException $e) {
+        } catch (QueryException $e) {
             // Lỗi duplicate key 1062
             if ($e->errorInfo[1] == 1062) {
                 return response()->json([

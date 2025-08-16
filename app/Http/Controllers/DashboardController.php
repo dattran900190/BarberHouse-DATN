@@ -21,6 +21,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+
         // Đếm tổng lượt đặt lịch hoàn thành
         $totalBookings = Appointment::where('status', 'completed')->count();
 
@@ -33,23 +34,19 @@ class DashboardController extends Controller
         // Tổng doanh thu sản phẩm (chỉ tính những đơn hàng hoàn thành - đã thanh toán)
         $productRevenue = Order::where('status', 'completed')->sum('total_money');
 
-        // ===== PHẦN DOANH THU HÔM NAY ĐÃ CẢI THIỆN =====
-        $today = Carbon::today(); // Sử dụng today() thay vì now() để chỉ so sánh ngày
-
-        // Doanh thu dịch vụ hôm nay - Dựa trên ngày appointment_time (khi dịch vụ được thực hiện)
-        // và chỉ tính những appointment đã hoàn thành (đã thanh toán)
-        $todayServiceRevenue = Appointment::whereDate('appointment_time', $today)
+        $today = Carbon::today();
+        $todayServiceRevenue = Appointment::whereDate('created_at', $today)
             ->where('status', 'completed')
             ->sum('total_amount');
 
-        // Doanh thu sản phẩm hôm nay - Dựa trên ngày đặt hàng (created_at) 
-        // và chỉ tính những đơn hàng đã hoàn thành (đã thanh toán)
         $todayProductRevenue = Order::whereDate('created_at', $today)
             ->where('status', 'completed')
             ->sum('total_money');
 
         // Tổng doanh thu hôm nay (sản phẩm + dịch vụ)
         $todayRevenue = $todayServiceRevenue + $todayProductRevenue;
+
+
 
         // Lấy thống kê bổ sung cho doanh thu hôm nay
         $todayServiceCount = Appointment::whereDate('appointment_time', $today)
@@ -305,7 +302,7 @@ class DashboardController extends Controller
         $availableMonths = range(1, $currentMonth);
 
         // Nếu là AJAX request, chỉ trả về dữ liệu JSON cho biểu đồ
-        if ($request->ajax()) {
+        if ($request->get('ajax')) {
             return response()->json([
                 'success' => true,
                 'weekLabels' => $weekLabels,
@@ -338,9 +335,6 @@ class DashboardController extends Controller
             'todayRevenue',
             'todayServiceRevenue',
             'todayProductRevenue',
-            // Thêm các biến mới cho thống kê bổ sung
-            'todayServiceCount',
-            'todayProductOrderCount',
             'barberStats',
             'barberLeaves',
             'weekRange',
@@ -394,15 +388,13 @@ class DashboardController extends Controller
         for ($date = $start->copy(); $date <= $end; $date->addDay()) {
             $labels[] = $date->format('d/m'); // Format ngắn gọn hơn
 
-            // ===== DOANH THU DỊCH VỤ THEO APPOINTMENT_TIME =====
-            $serviceRevenue[] = Appointment::whereDate('appointment_time', $date)
+            $serviceRevenue[] = Appointment::whereDate('created_at', $date)
                 ->where('status', 'completed')
-                ->sum('total_amount') ?: 0;
+                ->sum('total_amount') ?: 0; // Đảm bảo trả về 0 thay vì null
 
-            // ===== DOANH THU SẢN PHẨM THEO CREATED_AT =====
             $productRevenue[] = Order::whereDate('created_at', $date)
                 ->where('status', 'completed')
-                ->sum('total_money') ?: 0;
+                ->sum('total_money') ?: 0; // Đảm bảo trả về 0 thay vì null
         }
     }
 
@@ -427,12 +419,10 @@ class DashboardController extends Controller
 
                 $labels[] = $date->format('d/m');
 
-                // ===== DOANH THU DỊCH VỤ THEO APPOINTMENT_TIME =====
-                $serviceRevenue[] = Appointment::whereDate('appointment_time', $date)
+                $serviceRevenue[] = Appointment::whereDate('created_at', $date)
                     ->where('status', 'completed')
                     ->sum('total_amount') ?: 0;
 
-                // ===== DOANH THU SẢN PHẨM THEO CREATED_AT =====
                 $productRevenue[] = Order::whereDate('created_at', $date)
                     ->where('status', 'completed')
                     ->sum('total_money') ?: 0;
@@ -442,13 +432,11 @@ class DashboardController extends Controller
             for ($i = 1; $i <= $currentMonth; $i++) {
                 $labels[] = 'T' . $i; // Format ngắn gọn hơn
 
-                // ===== DOANH THU DỊCH VỤ THEO APPOINTMENT_TIME =====
-                $serviceRevenue[] = Appointment::whereMonth('appointment_time', $i)
-                    ->whereYear('appointment_time', $year)
+                $serviceRevenue[] = Appointment::whereMonth('created_at', $i)
+                    ->whereYear('created_at', $year)
                     ->where('status', 'completed')
                     ->sum('total_amount') ?: 0;
 
-                // ===== DOANH THU SẢN PHẨM THEO CREATED_AT =====
                 $productRevenue[] = Order::whereMonth('created_at', $i)
                     ->whereYear('created_at', $year)
                     ->where('status', 'completed')
@@ -458,111 +446,8 @@ class DashboardController extends Controller
     }
 
     /**
-     * Filter products via AJAX
-     */
-    public function filterProducts(Request $request)
-    {
-        if (!$request->ajax()) {
-            return response()->json(['success' => false, 'message' => 'Only AJAX requests allowed'], 400);
-        }
-
-        $search = $request->get('search');
-        $sortBy = $request->get('sort_by', 'total_sold');
-        $perPage = $request->get('per_page', 10);
-
-        // Xử lý per_page
-        $perPageValue = $perPage === 'all' ? 999999 : (int)$perPage;
-
-        // Query top products
-        $topProductsQuery = OrderItem::select('product_variant_id', DB::raw('SUM(quantity) as total_sold'))
-            ->whereHas('order', function ($q) {
-                $q->where('status', 'completed');
-            })
-            ->with('productVariant.product')
-            ->groupBy('product_variant_id');
-
-        // Thêm search filter
-        if ($search) {
-            $topProductsQuery->whereHas('productVariant.product', function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Thêm sorting
-        switch ($sortBy) {
-            case 'name':
-                $topProductsQuery->join('product_variants', 'order_items.product_variant_id', '=', 'product_variants.id')
-                    ->join('products', 'product_variants.product_id', '=', 'products.id')
-                    ->orderBy('products.name', 'asc');
-                break;
-            case 'price':
-                $topProductsQuery->join('product_variants', 'order_items.product_variant_id', '=', 'product_variants.id')
-                    ->orderBy('product_variants.price', 'desc');
-                break;
-            default: // total_sold
-                $topProductsQuery->orderByDesc('total_sold');
-        }
-
-        $topProducts = $topProductsQuery->paginate($perPageValue, ['*'], 'top_page');
-
-        // Query low selling products
-        $lowSellingQuery = ProductVariant::select(
-            'product_variants.id',
-            'product_variants.product_id',
-            'product_variants.price',
-            DB::raw('COALESCE(SUM(order_items.quantity), 0) as total_sold')
-        )
-            ->leftJoin('order_items', 'product_variants.id', '=', 'order_items.product_variant_id')
-            ->leftJoin('orders', function ($join) {
-                $join->on('order_items.order_id', '=', 'orders.id')
-                    ->where('orders.status', '=', 'completed');
-            })
-            ->with('product')
-            ->groupBy('product_variants.id', 'product_variants.product_id', 'product_variants.price');
-
-        // Thêm search filter
-        if ($search) {
-            $lowSellingQuery->whereHas('product', function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Thêm sorting
-        switch ($sortBy) {
-            case 'name':
-                $lowSellingQuery->join('products', 'product_variants.product_id', '=', 'products.id')
-                    ->orderBy('products.name', 'asc');
-                break;
-            case 'price':
-                $lowSellingQuery->orderBy('product_variants.price', 'asc');
-                break;
-            case 'created_at':
-                $lowSellingQuery->join('products', 'product_variants.product_id', '=', 'products.id')
-                    ->orderBy('products.created_at', 'desc');
-                break;
-            default: // total_sold
-                $lowSellingQuery->orderBy('total_sold', 'asc');
-        }
-
-        $lowSellingProducts = $lowSellingQuery->paginate($perPageValue, ['*'], 'low_page');
-
-        // Render HTML - Bạn cần tạo các view partial này
-        $topProductsHtml = view('partials.top-products', compact('topProducts'))->render();
-        $lowProductsHtml = view('partials.low-products', compact('lowSellingProducts'))->render();
-
-        return response()->json([
-            'success' => true,
-            'topProductsHtml' => $topProductsHtml,
-            'lowProductsHtml' => $lowProductsHtml,
-            'topCount' => $topProducts->total(),
-            'lowCount' => $lowSellingProducts->total()
-        ]);
-    }
-
-    /**
-     * Get chart data via AJAX
+     * API endpoint riêng cho AJAX requests (tùy chọn)
+     * Bạn có thể tạo route riêng cho điều này nếu muốn
      */
     public function getChartData(Request $request)
     {
