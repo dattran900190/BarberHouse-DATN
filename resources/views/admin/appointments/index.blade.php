@@ -60,7 +60,11 @@
         <div class="card-header text-white d-flex justify-content-between align-items-center">
             <div class="card-title mb-0">Danh sách đặt lịch</div>
 
-
+            <a href="{{ route('appointments.create') }}"
+                class="btn btn-sm btn-outline-success d-flex align-items-center ms-auto mb-3">
+                <i class="fas fa-plus"></i>
+                <span class="ms-2">Thêm lịch hẹn</span>
+            </a>
         </div>
 
 
@@ -773,7 +777,8 @@
                                     }).then(() => {
                                         if (data.success) {
                                             if (data.redirect_url) {
-                                                window.location.href = data.redirect_url;
+                                                window.location.href = data
+                                                .redirect_url;
                                             } else {
                                                 onSuccess();
                                             }
@@ -866,7 +871,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         const code = result.value;
-                        
+
                         // Bước 1: Kiểm tra mã check-in
                         Swal.fire({
                             title: 'Đang kiểm tra mã...',
@@ -880,94 +885,101 @@
                             }
                         });
 
-                        fetch(`{{ route('checkin.check', ':id') }}`.replace(':id', appointmentId), {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({ code: code })
-                        })
-                        .then(res => res.json())
-                        .then(checkData => {
-                            if (checkData.valid) {
+                        fetch(`{{ route('checkin.check', ':id') }}`.replace(':id',
+                            appointmentId), {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    code: code
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(checkData => {
+                                if (checkData.valid) {
 
-                                fetch(`{{ route('appointments.checkin', ':id') }}`.replace(':id', appointmentId), {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                    },
-                                    body: JSON.stringify({ 
-                                        code: code,
-                                        current_tab: '{{ $activeTab }}'
-                                    })
-                                })
-                                .then(res => res.json())
-                                .then(data => {
-                                    Swal.close();
-                                    if (data.success) {
-                                        Swal.fire({
-                                            title: 'Thành công!',
-                                            text: data.message,
-                                            icon: 'success',
-                                            customClass: {
-                                                popup: 'custom-swal-popup'
-                                            }
-                                        }).then(() => {
-                                            if (data.redirect_url) {
-                                                window.location.href = data.redirect_url;
+                                    fetch(`{{ route('appointments.checkin', ':id') }}`.replace(
+                                            ':id', appointmentId), {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                            },
+                                            body: JSON.stringify({
+                                                code: code,
+                                                current_tab: '{{ $activeTab }}'
+                                            })
+                                        })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            Swal.close();
+                                            if (data.success) {
+                                                Swal.fire({
+                                                    title: 'Thành công!',
+                                                    text: data.message,
+                                                    icon: 'success',
+                                                    customClass: {
+                                                        popup: 'custom-swal-popup'
+                                                    }
+                                                }).then(() => {
+                                                    if (data.redirect_url) {
+                                                        window.location.href = data
+                                                            .redirect_url;
+                                                    } else {
+                                                        location.reload();
+                                                    }
+                                                });
                                             } else {
-                                                location.reload();
+                                                Swal.fire({
+                                                    title: 'Thất bại!',
+                                                    text: data.message ||
+                                                        'Không thể thực hiện check-in.',
+                                                    icon: 'error',
+                                                    customClass: {
+                                                        popup: 'custom-swal-popup'
+                                                    }
+                                                });
                                             }
+                                        })
+                                        .catch(err => {
+                                            Swal.close();
+                                            Swal.fire({
+                                                title: 'Lỗi!',
+                                                text: 'Không thể thực hiện check-in. Vui lòng thử lại.',
+                                                icon: 'error',
+                                                customClass: {
+                                                    popup: 'custom-swal-popup'
+                                                }
+                                            });
+                                            console.error(err);
                                         });
-                                    } else {
-                                        Swal.fire({
-                                            title: 'Thất bại!',
-                                            text: data.message || 'Không thể thực hiện check-in.',
-                                            icon: 'error',
-                                            customClass: {
-                                                popup: 'custom-swal-popup'
-                                            }
-                                        });
-                                    }
-                                })
-                                .catch(err => {
+                                } else {
                                     Swal.close();
                                     Swal.fire({
-                                        title: 'Lỗi!',
-                                        text: 'Không thể thực hiện check-in. Vui lòng thử lại.',
+                                        title: 'Mã không hợp lệ!',
+                                        text: checkData.message ||
+                                            'Mã check-in không đúng hoặc không khớp với lịch hẹn này.',
                                         icon: 'error',
                                         customClass: {
                                             popup: 'custom-swal-popup'
                                         }
                                     });
-                                    console.error(err);
-                                });
-                            } else {
+                                }
+                            })
+                            .catch(err => {
                                 Swal.close();
                                 Swal.fire({
-                                    title: 'Mã không hợp lệ!',
-                                    text: checkData.message || 'Mã check-in không đúng hoặc không khớp với lịch hẹn này.',
+                                    title: 'Lỗi!',
+                                    text: 'Không thể kiểm tra mã check-in. Vui lòng thử lại.',
                                     icon: 'error',
                                     customClass: {
                                         popup: 'custom-swal-popup'
                                     }
                                 });
-                            }
-                        })
-                        .catch(err => {
-                            Swal.close();
-                            Swal.fire({
-                                title: 'Lỗi!',
-                                text: 'Không thể kiểm tra mã check-in. Vui lòng thử lại.',
-                                icon: 'error',
-                                customClass: {
-                                    popup: 'custom-swal-popup'
-                                }
+                                console.error(err);
                             });
-                            console.error(err);
-                        });
                     }
                 });
             });

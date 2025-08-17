@@ -515,10 +515,10 @@ class AppointmentController extends Controller
         ];
     }
 
-    protected function triggerPusher(Appointment $appointment)
-    {
-        $this->pusherService->triggerAppointmentCreated($appointment);
-    }
+    // protected function triggerPusher(Appointment $appointment)
+    // {
+    //     $this->pusherService->triggerAppointmentCreated($appointment);
+    // }
 
     function calculateAppointmentDuration(Request $request, $service_id)
     {
@@ -836,7 +836,7 @@ class AppointmentController extends Controller
             if ($datetime && $totalDuration) {
                 $appointmentEnd = $datetime->copy()->addMinutes($totalDuration);
                 $query->whereDoesntHave('appointments', function ($q) use ($datetime, $appointmentEnd, $parsedDate) {
-                    $q->whereIn('status', ['pending', 'confirmed'])
+                    $q->whereIn('status', ['pending', 'confirmed', 'progress', 'checked-in', 'completed', 'unconfirmed'])
                         ->whereDate('appointment_time', $parsedDate)
                         ->where(function ($q2) use ($datetime, $appointmentEnd) {
                             // Kiểm tra mọi trường hợp chồng lấn

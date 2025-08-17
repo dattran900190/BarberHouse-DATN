@@ -198,6 +198,133 @@
     });
 </script>
 
+
+<style>
+    .required {
+        color: #ff4444;
+    }
+
+    .select2-container--default .select2-selection--single {
+        height: 40px !important;
+        padding: 5px 14px !important;
+        border-radius: 5px !important;
+        background-color: #fff !important;
+        font-size: 1rem !important;
+        border-color: #ebedf2 !important;
+        outline: none !important;
+        border: 2px solid #e9ecef;
+        color: #333;
+    }
+
+    .select2-container--default .select2-selection--single:focus,
+    .select2-container--default .select2-selection--single.select2-selection--focus {
+        background-color: #fff !important;
+        box-shadow: 0 0 0 2px #007bff !important;
+    }
+
+    /* Branch Cards Styles */
+    .branch-cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .branch-card {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 5px;
+        background: #fff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .branch-card:hover {
+        border-color: #007bff;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .branch-card.selected {
+        border-color: #28a745;
+        background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+    }
+
+    .branch-card.selected::after {
+        content: '✓';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #28a745;
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .branch-icon-wrapper {
+        margin-right: 15px;
+        flex-shrink: 0;
+        width: 50px;
+        height: 50px;
+        /* background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); */
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .branch-icon {
+        color: #000;
+        font-size: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .branch-icon:hover {
+        border-color: #007bff;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+    }
+
+    .branch-info {
+        flex: 1;
+    }
+
+    .branch-name {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .branch-address,
+    .branch-hours {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+        font-size: 12px;
+        color: #6c757d;
+    }
+
+    .branch-address i,
+    .branch-hours i {
+        margin-right: 5px;
+        font-size: 10px;
+    }
+</style>
+
+
+
 <!-- CSS Files -->
 <link rel="stylesheet" href="{{ asset('kaiadmin-lite-1.2.0/assets/css/bootstrap.min.css') }}" />
 <link rel="stylesheet" href="{{ asset('kaiadmin-lite-1.2.0/assets/css/plugins.min.css') }}" />
