@@ -322,7 +322,27 @@ class AppointmentController extends Controller
             $appointmentData['appointment_time'] = $appointment->appointment_time
                 ? Carbon::parse($appointment->appointment_time)->format('Y-m-d H:i:s')
                 : null;
+              
+              // Hoàn lại voucher nếu có
+            $oldPromotionId = $appointment->promotion_id;
+            if ($oldPromotionId) {
+                $oldPromotion = Promotion::find($oldPromotionId);
+                if ($oldPromotion) {
+                    // Chỉ hoàn lại quantity cho voucher công khai (required_points là null)
+                    if (is_null($oldPromotion->required_points)) {
+                        $oldPromotion->increment('quantity'); // Hoàn lại số lượng voucher
+                    }
 
+                    // Nếu voucher từ bảng UserRedeemedVoucher thì mở lại (cho voucher cá nhân)
+                    $oldRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
+                        ->where('promotion_id', $oldPromotionId)
+                        ->where('is_used', true)
+                        ->first();
+                    if ($oldRedeemed) {
+                        $oldRedeemed->update(['is_used' => false]);
+                    }
+                }
+            }
             // Tạo bản ghi CancelledAppointment
             $cancelledAppointment = CancelledAppointment::create(array_merge($appointmentData, [
                 'status' => 'cancelled',
