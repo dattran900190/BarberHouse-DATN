@@ -23,6 +23,7 @@ class CancelledAppointment extends Model
         'appointment_time',
         'status',
         'payment_status',
+        'payment_method',
         'note',
         'cancellation_reason',
         'cancellation_type',
