@@ -263,7 +263,8 @@
         <div class="card-body">
             <div class="d-flex gap-2">
                 {{-- nếu là trạng thái thành công hoặc huỷ thì không hiển thị nút sửa và hủy --}}
-                @if (!$isCancelled && $appointment->status == 'pending')
+                @if (!$isCancelled && $appointment->status == 'pending' || $appointment->status == 'confirmed' || $appointment->status == 'progress')
+                    {{-- Chỉ hiển thị nút sửa và hủy nếu lịch hẹn chưa bị hủy --}}
                     <a href="{{ route('appointments.edit', $appointment->id) }}" class="btn btn-outline-primary btn-sm"><i
                             class="fa fa-edit me-1"></i> Sửa</a>
                     <button type="button" class="btn btn-outline-danger btn-sm cancel-action"
