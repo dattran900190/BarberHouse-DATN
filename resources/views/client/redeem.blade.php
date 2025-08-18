@@ -178,9 +178,9 @@
                         `,
                         icon: 'question',
                         showCancelButton: true,
-                        confirmButtonText: 'Xác nhận đổi',
+                        confirmButtonText: 'Xác nhận',
                         cancelButtonText: 'Hủy',
-                        reverseButtons: true,
+                        // reverseButtons: true,
                         customClass: {
                             popup: 'custom-swal-popup'
                         }

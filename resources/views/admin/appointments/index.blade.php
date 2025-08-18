@@ -778,7 +778,7 @@
                                         if (data.success) {
                                             if (data.redirect_url) {
                                                 window.location.href = data
-                                                .redirect_url;
+                                                    .redirect_url;
                                             } else {
                                                 onSuccess();
                                             }
@@ -825,6 +825,12 @@
             withInput: true,
             inputPlaceholder: 'Nhập lý do no-show (tối đa 255 ký tự)...',
             inputValidator: (value) => {
+                if (!value) {
+                    return 'Lý do hủy không được để trống!';
+                }
+                if (value.length < 5) {
+                    return 'Lý do hủy phải có ít nhất 5 ký tự!';
+                }
                 if (value && value.length > 255) return 'Lý do không được vượt quá 255 ký tự!';
             }
         });
@@ -837,6 +843,12 @@
             withInput: true,
             inputPlaceholder: 'Nhập lý do cancel (tối đa 255 ký tự)...',
             inputValidator: (value) => {
+                if (!value) {
+                    return 'Lý do hủy không được để trống!';
+                }
+                if (value.length < 5) {
+                    return 'Lý do hủy phải có ít nhất 5 ký tự!';
+                }
                 if (value && value.length > 255) return 'Lý do không được vượt quá 255 ký tự!';
             }
         });
@@ -850,6 +862,7 @@
                 Swal.fire({
                     title: 'Check-in lịch hẹn',
                     text: 'Vui lòng nhập mã check-in',
+                    icon: 'question',
                     input: 'number',
                     inputPlaceholder: 'Nhập mã check-in 6 chữ số',
                     inputValidator: (value) => {
@@ -886,7 +899,7 @@
                         });
 
                         fetch(`{{ route('checkin.check', ':id') }}`.replace(':id',
-                            appointmentId), {
+                                appointmentId), {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
