@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <main class="container py-4 mb-3 pt-10" style="margin-top: 70px;">
+    <main class="container py-4 mb-3 pt-10" style="margin-top: 20px;">
         <div class="row justify-content-center">
             <div class="col-12 col-lg-10">
                 <form method="POST" action="{{ route('cart.checkout.process') }}" id="checkoutForm">

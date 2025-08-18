@@ -115,8 +115,8 @@
                                     </div>
                                 </div>
                             </li>
-                            <li><a class="dropdown-item" href="{{ url('/profile') }}">
-                                <i class="fa-solid fa-user-cog me-2"></i>Quản lý tài khoản</a>
+                            <li><a class="dropdown-item" href="{{ route('cai-dat-tai-khoan') }}">
+                                <i class="fa-solid fa-user-cog me-2"></i>Cài đặt tài khoản</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('client.detailWallet') }}">
                                 <i class="fa-solid fa-wallet me-2"></i>Lịch sử hoàn tiền</a>
