@@ -224,17 +224,18 @@
                 });
             });
 
-            // Kiểm tra nếu có thông báo thành công, hiển thị SweetAlert2
+            // Kiểm tra nếu có thông báo thành công, hiển thị SweetAlert2 với nút OK
             @if(session('success'))
                 Swal.fire({
                     icon: 'success',
                     title: 'Thành công!',
                     text: '{{ session("success") }}',
-                    timerProgressBar: true,
-                    showConfirmButton: false,
+                    confirmButtonText: 'OK', // Thêm nút OK
                     customClass: {
-                        popup: 'custom-swal-popup'
-                    }
+                        popup: 'custom-swal-popup',
+                        confirmButton: 'btn btn-primary' // Đồng bộ style với nút xác nhận
+                    },
+                    buttonsStyling: false
                 });
             @endif
 
@@ -246,8 +247,10 @@
                     text: '{{ session("error") }}',
                     confirmButtonText: 'Đóng',
                     customClass: {
-                        popup: 'custom-swal-popup'
-                    }
+                        popup: 'custom-swal-popup',
+                        confirmButton: 'btn btn-primary'
+                    },
+                    buttonsStyling: false
                 });
             @endif
         });

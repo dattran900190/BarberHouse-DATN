@@ -920,69 +920,107 @@ class AppointmentController extends Controller
     }
 
     private function handleAppointmentStatus(Appointment $appointment, string $newStatus, array $additionalServices, Request $request)
-{
-    // Tính lại tổng tiền
-    $mainService = Service::find($appointment->service_id);
-    $additionalServiceTotal = Service::whereIn('id', $additionalServices)->sum('price');
-    $totalAmount = ($mainService->price ?? 0) + $additionalServiceTotal - ($appointment->discount_amount ?? 0);
-    $appointment->update(['total_amount' => $totalAmount]);
+    {
+        // Tính lại tổng tiền
+        $mainService = Service::find($appointment->service_id);
+        $additionalServiceTotal = Service::whereIn('id', $additionalServices)->sum('price');
+        $totalAmount = ($mainService->price ?? 0) + $additionalServiceTotal - ($appointment->discount_amount ?? 0);
+        $appointment->update(['total_amount' => $totalAmount]);
 
-    // Nếu xác nhận
-    if ($newStatus === 'confirmed') {
-        $qrCode = rand(100000, 999999);
-        Checkin::create([
-            'appointment_id' => $appointment->id,
-            'qr_code_value' => $qrCode,
-            'is_checked_in' => false,
-            'checkin_time' => null,
-        ]);
+        // Nếu xác nhận
+        if ($newStatus === 'confirmed') {
+            $qrCode = rand(100000, 999999);
+            Checkin::create([
+                'appointment_id' => $appointment->id,
+                'qr_code_value' => $qrCode,
+                'is_checked_in' => false,
+                'checkin_time' => null,
+            ]);
 
-        $additionalServicesNames = !empty($additionalServices)
-            ? Service::whereIn('id', $additionalServices)->pluck('name')->toArray()
-            : [];
+            $additionalServicesNames = !empty($additionalServices)
+                ? Service::whereIn('id', $additionalServices)->pluck('name')->toArray()
+                : [];
 
-        event(new AppointmentStatusUpdated($appointment));
+            event(new AppointmentStatusUpdated($appointment));
 
-        $checkin = Checkin::where('appointment_id', $appointment->id)->first();
-        Mail::to($appointment->email)
-            ->queue(new CheckinCodeMail($checkin->qr_code_value, $appointment, $additionalServicesNames));
+            $checkin = Checkin::where('appointment_id', $appointment->id)->first();
+            Mail::to($appointment->email)
+                ->queue(new CheckinCodeMail($checkin->qr_code_value, $appointment, $additionalServicesNames));
+        }
+
+        // Nếu hủy
+        if ($newStatus === 'cancelled') {
+            // $appointmentData = $appointment->toArray();
+            // $appointmentData['appointment_time'] = $appointment->appointment_time
+            //     ? Carbon::parse($appointment->appointment_time)->format('Y-m-d H:i:s')
+            //     : null;
+
+            // CancelledAppointment::create(array_merge($appointmentData, [
+            //     'status' => 'cancelled',
+            //     'payment_status' => $appointment->payment_status,
+            //     'cancellation_type' => 'admin_cancel',
+            //     'status_before_cancellation' => $appointment->status,
+            //     'additional_services' => $appointment->additional_services,
+            //     'payment_method' => $appointment->payment_method,
+            //     'note' => $appointment->note,
+            //     'cancellation_reason' => $request->input('cancellation_reason', 'Không có lý do cụ thể'),
+            // ]));
+
+            // DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
+            // DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
+
+            // Mail::to($appointmentData['email'])
+            //     ->queue(new AdminCancelBookingMail((object) $appointmentData));
+
+            // $appointment->delete();
+
+            // event(new AppointmentStatusUpdated($appointment));
+
+            $checkCancelledAppointment = CancelledAppointment::where('id', $appointment->id)->first();
+            if ($checkCancelledAppointment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lịch hẹn này đã bị hủy trước đó.'
+                ], 400);
+            }
+
+            $appointmentData = $appointment->toArray();
+            $appointmentData['appointment_time'] = $appointment->appointment_time
+                ? Carbon::parse($appointment->appointment_time)->format('Y-m-d H:i:s')
+                : null;
+
+            // Tạo bản ghi CancelledAppointment
+            $cancelledAppointment = CancelledAppointment::create(array_merge($appointmentData, [
+                'status' => 'cancelled',
+                'payment_status' => $appointment->payment_status,
+                'cancellation_type' => 'admin_cancel',
+                'status_before_cancellation' => $appointment->status,
+                'additional_services' => $appointment->additional_services,
+                'payment_method' => $appointment->payment_method,
+                'note' => $appointment->note,
+                'cancellation_reason' => $request->input('cancellation_reason', 'Không có lý do cụ thể'),
+            ]));
+
+            // Xóa các bản ghi liên quan
+            DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
+            DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
+
+            // Gửi email với dữ liệu từ CancelledAppointment
+            Mail::to($cancelledAppointment->email)->queue(new AdminCancelBookingMail($cancelledAppointment));
+
+            // Gắn trạng thái để payload broadcast hiển thị đúng
+            $appointment->status = 'cancelled';
+            $appointment->delete();
+
+            event(new AppointmentStatusUpdated($appointment));
+        }
+
+        // Nếu hoàn tất
+        if ($newStatus === 'completed') {
+            $appointment->payment_status = 'paid';
+            $appointment->save();
+        }
     }
-
-    // Nếu hủy
-    if ($newStatus === 'cancelled') {
-        $appointmentData = $appointment->toArray();
-        $appointmentData['appointment_time'] = $appointment->appointment_time
-            ? Carbon::parse($appointment->appointment_time)->format('Y-m-d H:i:s')
-            : null;
-
-        CancelledAppointment::create(array_merge($appointmentData, [
-            'status' => 'cancelled',
-            'payment_status' => $appointment->payment_status,
-            'cancellation_type' => 'admin_cancel',
-            'status_before_cancellation' => $appointment->status,
-            'additional_services' => $appointment->additional_services,
-            'payment_method' => $appointment->payment_method,
-            'note' => $appointment->note,
-            'cancellation_reason' => $request->input('cancellation_reason', 'Không có lý do cụ thể'),
-        ]));
-
-        DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
-        DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
-
-        Mail::to($appointmentData['email'])
-            ->queue(new AdminCancelBookingMail((object) $appointmentData));
-
-        $appointment->delete();
-
-        event(new AppointmentStatusUpdated($appointment));
-    }
-
-    // Nếu hoàn tất
-    if ($newStatus === 'completed') {
-        $appointment->payment_status = 'paid';
-        $appointment->save();
-    }
-}
 
 
     public function edit(Appointment $appointment)
@@ -1203,6 +1241,4 @@ class AppointmentController extends Controller
                 ->with('error', 'Lỗi khi hủy lịch hẹn: ' . $e->getMessage());
         }
     }
-
-    
 }
