@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,6 +13,11 @@ class SettingController extends Controller
 {
     public function index()
     {
+        // nếu là admin branch thì không cho truy cập
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('appointments.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
+
         $settings = Setting::all()->keyBy('key');
 
         // Lấy social links theo key cố định

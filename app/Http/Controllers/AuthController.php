@@ -128,7 +128,7 @@ class AuthController extends Controller
         $user->name = $req->name;
         $user->email = $req->email;
         $user->phone = $req->phone;
-        $user->gender = $req->gender;
+        $user->gender = 'other';
         $user->address = $req->address;
         $user->role = 'user';
         $user->status = 'inactive';

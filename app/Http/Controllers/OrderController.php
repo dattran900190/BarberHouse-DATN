@@ -19,6 +19,9 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+         if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('appointments.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         $search = $request->input('search');
         $activeTab = $request->input('tab', 'pending');
 

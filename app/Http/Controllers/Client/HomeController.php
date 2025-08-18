@@ -36,7 +36,7 @@ class HomeController extends Controller
             ->get();
 
         // Sản phẩm
-        $products = Product::with('variants')->latest()->take(9)->get();
+        $products = Product::with('variants')->latest()->take(6)->get();
 
         // ảnh khách hàng
         $customerImages = CustomerImage::where('status', true)
