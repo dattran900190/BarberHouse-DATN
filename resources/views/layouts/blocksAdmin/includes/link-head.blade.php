@@ -222,6 +222,15 @@
         box-shadow: 0 0 0 2px #007bff !important;
     }
 
+     .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top: 8px !important;
+            right: 8px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 28px !important;
+        }
+
     /* Branch Cards Styles */
     .branch-cards-container {
         display: grid;

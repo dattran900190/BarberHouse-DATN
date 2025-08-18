@@ -35,88 +35,147 @@ class AppointmentController extends Controller
     {
         $this->appointmentService = $appointmentService;
     }
-    public function index(Request $request)
-    {
-        $search = $request->input('search');
-        $activeTab = $request->input('status', 'pending');
-        $allAppointments = collect();
-        $statuses = ['pending', 'confirmed', 'checked-in', 'progress', 'completed'];
-        $appointments = [];
-        $user = Auth::user();
+   public function index(Request $request)
+{
+    $search = $request->input('search');
+    $activeTab = $request->input('status', 'pending');
+    $allAppointments = collect();
+    $statuses = ['pending', 'confirmed', 'checked-in', 'progress', 'completed'];
+    $appointments = [];
+    $user = Auth::user();
 
-        $buildAppointmentQuery = function ($query, $search) use ($user) {
-            $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
-                ->when($user->role === 'admin_branch', function ($q) use ($user) {
-                    $q->where('branch_id', $user->branch_id);
-                })
-                ->when($search, function ($q) use ($search) {
-                    $q->where(function ($subQuery) use ($search) {
-                        $subQuery->where('appointment_code', 'like', '%' . $search . '%')
-                            ->orWhereHas('user', function ($q2) use ($search) {
-                                $q2->where('name', 'like', '%' . $search . '%');
-                            })
-                            ->orWhereHas('barber', function ($q2) use ($search) {
-                                $q2->where('name', 'like', '%' . $search . '%');
-                            })
-                            ->orWhereHas('service', function ($q2) use ($search) {
-                                $q2->where('name', 'like', '%' . $search . '%');
-                            });
-                    });
-                })
-                ->orderBy('created_at', 'DESC');
-        };
+    // Query builder cho Appointments
+    $buildAppointmentQuery = function ($query, $search) use ($user) {
+        $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
+            ->when($user->role === 'admin_branch', function ($q) use ($user) {
+                $q->where('branch_id', $user->branch_id);
+            })
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($subQuery) use ($search) {
+                    $searchableFields = [
+                        'name',
+                        'phone',
+                        'email',
+                        'appointment_code',
+                        'additional_services',
+                        'status',
+                        'payment_method',
+                        'payment_status',
+                        'note',
+                        'cancellation_reason',
+                    ];
 
-        $buildCancelledQuery = function ($query, $search) use ($user) {
-            $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
-                ->when($user->role === 'admin_branch', fn($q) => $q->where('branch_id', $user->branch_id))
-                ->when($search, function ($q) use ($search) {
-                    $q->where(function ($subQuery) use ($search) {
-                        $subQuery->where('appointment_code', 'like', '%' . $search . '%')
-                            ->orWhereHas('user', function ($q2) use ($search) {
-                                $q2->where('name', 'like', '%' . $search . '%');
-                            })
-                            ->orWhereHas('barber', function ($q2) use ($search) {
-                                $q2->where('name', 'like', '%' . $search . '%');
-                            })
-                            ->orWhereHas('service', function ($q2) use ($search) {
-                                $q2->where('name', 'like', '%' . $search . '%');
-                            });
-                    });
-                })
-                ->orderBy('created_at', 'DESC');
-        };
+                    foreach ($searchableFields as $field) {
+                        $subQuery->orWhere($field, 'like', "%{$search}%");
+                    }
 
-        if ($search && !$request->has('status')) {
-            $appointmentQuery = Appointment::query();
-            $buildAppointmentQuery($appointmentQuery, $search);
-            $appointmentsResult = $appointmentQuery->get();
+                    // ✅ Search theo ngày nhập d/m/Y
+                    try {
+                        $date = Carbon::createFromFormat('d/m/Y', $search)->format('Y-m-d');
+                        $subQuery->orWhereDate('appointment_time', $date);
+                    } catch (\Exception $e) {
+                        // bỏ qua nếu không phải dạng ngày
+                    }
 
-            $cancelledQuery = CancelledAppointment::query();
-            $buildCancelledQuery($cancelledQuery, $search);
-            $cancelledResult = $cancelledQuery->get();
+                    // Search quan hệ
+                    $subQuery->orWhereHas('user', fn($q2) => $q2->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('barber', fn($q2) => $q2->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('service', fn($q2) => $q2->where('name', 'like', "%{$search}%"));
+                });
+            })
+            ->orderBy('created_at', 'DESC');
+    };
 
-            $allAppointments = $appointmentsResult->merge($cancelledResult);
+    // Query builder cho Cancelled
+    $buildCancelledQuery = function ($query, $search) use ($user) {
+        $query->with(['user:id,name', 'barber:id,name', 'service:id,name'])
+            ->when($user->role === 'admin_branch', fn($q) => $q->where('branch_id', $user->branch_id))
+            ->when($search, function ($q) use ($search) {
+                 $q->where(function ($subQuery) use ($search) {
+                    $searchableFields = [
+                        'name',
+                        'phone',
+                        'email',
+                        'appointment_code',
+                        'additional_services',
+                        'status',
+                        'payment_method',
+                        'payment_status',
+                        'note',
+                        'cancellation_reason',
+                    ];
 
-            if ($allAppointments->count() > 0) {
-                $activeTab = $allAppointments->first()->status;
-            }
-        }
+                    foreach ($searchableFields as $field) {
+                        $subQuery->orWhere($field, 'like', "%{$search}%");
+                    }
 
-        foreach ($statuses as $status) {
-            $query = Appointment::where('status', $status);
-            $buildAppointmentQuery($query, $search);
-            $appointments[$status . 'Appointments'] = $query->paginate(10, ['*'], $status . '_page');
-        }
+                    // ✅ Search theo ngày nhập d/m/Y
+                    try {
+                        $date = Carbon::createFromFormat('d/m/Y', $search)->format('Y-m-d');
+                        $subQuery->orWhereDate('appointment_time', $date);
+                    } catch (\Exception $e) {
+                        // bỏ qua nếu không phải dạng ngày
+                    }
+
+                    // Search quan hệ
+                    $subQuery->orWhereHas('user', fn($q2) => $q2->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('barber', fn($q2) => $q2->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('service', fn($q2) => $q2->where('name', 'like', "%{$search}%"));
+                });
+            })
+            ->orderBy('created_at', 'DESC');
+    };
+
+    // Nếu search mà không có status cụ thể → tìm cả 2 bảng
+    if ($search) {
+    if (!$request->has('status')) {
+        // search tất cả (appointments + cancelled)
+        $appointmentQuery = Appointment::query();
+        $buildAppointmentQuery($appointmentQuery, $search);
+        $appointmentsResult = $appointmentQuery->get();
 
         $cancelledQuery = CancelledAppointment::query();
         $buildCancelledQuery($cancelledQuery, $search);
-        $appointments['cancelledAppointments'] = $cancelledQuery->paginate(10, ['*'], 'cancelled_page');
+        $cancelledResult = $cancelledQuery->get();
 
-        return view('admin.appointments.index', array_merge(
-            compact('activeTab', 'allAppointments', 'search'),
-            $appointments
-        ));
+        $allAppointments = $appointmentsResult->merge($cancelledResult);
+
+        if ($allAppointments->count() > 0) {
+            $activeTab = $allAppointments->first()->status ?? 'cancelled';
+        }
+    } else {
+        // search theo đúng status được chọn
+        if ($activeTab === 'cancelled') {
+            $cancelledQuery = CancelledAppointment::query();
+            $buildCancelledQuery($cancelledQuery, $search);
+            $allAppointments = $cancelledQuery->get();
+        } else {
+            $appointmentQuery = Appointment::where('status', $activeTab);
+            $buildAppointmentQuery($appointmentQuery, $search);
+            $allAppointments = $appointmentQuery->get();
+        }
     }
+}
+
+
+    // Lấy danh sách phân trang cho từng tab
+    foreach ($statuses as $status) {
+        $query = Appointment::where('status', $status);
+        $buildAppointmentQuery($query, $search);
+        $appointments[$status . 'Appointments'] = $query->paginate(10, ['*'], $status . '_page');
+    }
+
+    $cancelledQuery = CancelledAppointment::query();
+    $buildCancelledQuery($cancelledQuery, $search);
+    $appointments['cancelledAppointments'] = $cancelledQuery->paginate(10, ['*'], 'cancelled_page');
+
+    // Trả về view
+    return view('admin.appointments.index', array_merge(
+        compact('activeTab', 'allAppointments', 'search'),
+        $appointments
+    ));
+}
+
 
     public function markNoShow(Request $request, Appointment $appointment)
     {
@@ -507,7 +566,7 @@ class AppointmentController extends Controller
                 'status' => 'progress', // Trạng thái ban đầu là 'progress'
                 'payment_status' => 'unpaid', // Trạng thái thanh toán ban đầu là 'unpaid'
                 'payment_method' => 'cash',
-                
+
                 'note' => $request->note,
                 'name' => $name,
                 'promotion_id' => $promotion ? $promotion->id : null,
@@ -910,6 +969,54 @@ class AppointmentController extends Controller
             $serviceId = $request->input('service_id');
             $additionalServices = json_decode($request->input('additional_services', '[]'), true) ?? [];
 
+            $datetime = Carbon::parse($request->appointment_time);
+
+            // Tính thời lượng và kiểm tra dịch vụ
+            $durationData = $this->calculateAppointmentDuration($request, $request->service_id);
+            // $service = $durationData['service'];
+            $totalDuration = $durationData['total_duration'];
+            // $additionalServicesInput = $durationData['additional_services'];
+
+            // Kiểm tra trùng lặp lịch hẹn
+            $appointments = Appointment::with('service')
+                ->where('barber_id', $request->barber_id)
+                ->where('branch_id', $request->branch_id)
+                ->whereIn('status', ['pending', 'confirmed', 'pending_cancellation'])
+                ->whereDate('appointment_time', $datetime->format('Y-m-d'))
+                ->get();
+
+
+            $start = $datetime;
+            $end = $datetime->copy()->addMinutes($totalDuration);
+
+            $conflict = $appointments->first(function ($appointment) use ($start, $end) {
+                $appointmentStart = Carbon::parse($appointment->appointment_time);
+                $appointmentEnd = $appointmentStart->copy()->addMinutes($appointment->duration ?? 0);
+
+                return $start->lt($appointmentEnd) && $end->gt($appointmentStart);
+            });
+
+            if ($conflict) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Thợ này đã có lịch hẹn trong khoảng thời gian này.'
+                ], 422);
+            }
+
+            // Kiểm tra trùng lặp lịch hẹn
+            $existingAppointment = Appointment::where('branch_id', $request->branch_id)
+                ->where('barber_id', $request->barber_id)
+                ->where('appointment_time', $datetime)
+                ->whereIn('status', ['unconfirmed', 'pending'])
+                ->first();
+
+            if ($existingAppointment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Khung giờ này đã có lịch hẹn đang chờ xác nhận hoặc đã được đặt. Vui lòng chọn khung giờ khác.',
+                ], 422);
+            }
+
             // Kiểm tra xem có lịch hẹn nào khác trùng thời gian không
             $conflictingAppointment = Appointment::where('id', '!=', $appointment->id)
                 ->where('barber_id', $appointment->barber_id)
@@ -1003,10 +1110,10 @@ class AppointmentController extends Controller
                 // Mail::to($appointment->email)->send(new CompleteBookingMail($appointment));
             }
 
-             // Lấy tab hiện tại từ request
+            // Lấy tab hiện tại từ request
             $currentTab = $request->input('current_tab', $appointment->status);
 
-             // trả về JSON thành công
+            // trả về JSON thành công
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
@@ -1015,7 +1122,7 @@ class AppointmentController extends Controller
                     'redirect_url' => route('appointments.index', ['status' => $currentTab])
                 ]);
             }
-            
+
             // trả về trang đặt lịch tab nếu sửa sang trạng thái nào thì sẽ vào tab đó và có thông báo thành công
             return redirect()->route('appointments.index', ['status' => $newStatus, 'page' => $currentPage])
                 ->with('success', 'Lịch hẹn ' . $appointment->appointment_code . ' đã được cập nhật.');

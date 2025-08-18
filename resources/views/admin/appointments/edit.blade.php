@@ -146,8 +146,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label">Khuyến mãi</label>
-                        <select name="voucher_code" id="voucher_id" class="form-control"
-                            {{ $appointment->promotion ? 'disabled' : '' }}>
+                        <select name="voucher_code" id="voucher_id" class="form-control">
                             <option value="">Không sử dụng mã giảm giá</option>
                             @foreach ($vouchers as $voucher)
                                 <option value="{{ $voucher->promotion->code }}"
@@ -803,7 +802,7 @@
 
             // Initialize Select2 for voucher
             $('#voucher_id').select2({
-                placeholder: 'Chọn hoặc tìm mã khuyến mãi',
+                // placeholder: 'Chọn hoặc tìm mã khuyến mãi',
                 allowClear: true,
                 width: '100%',
                 language: {
@@ -1248,18 +1247,18 @@
                 filterVouchersByDate();
             }
         });
-        $(document).ready(function() {
-            $('#voucher_id').select2({
-                placeholder: 'Chọn hoặc tìm mã khuyến mãi',
-                allowClear: true,
-                width: '100%',
-                language: {
-                    noResults: function() {
-                        return "Không tìm thấy mã phù hợp";
-                    }
-                }
-            });
-        });
+        // $(document).ready(function() {
+        //     $('#voucher_id').select2({
+        //         placeholder: 'Chọn hoặc tìm mã khuyến mãi',
+        //         allowClear: true,
+        //         width: '100%',
+        //         language: {
+        //             noResults: function() {
+        //                 return "Không tìm thấy mã phù hợp";
+        //             }
+        //         }
+        //     });
+        // });
 
         function getServiceInfo(opt) {
             if (!opt.length) return {

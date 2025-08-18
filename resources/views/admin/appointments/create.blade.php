@@ -126,7 +126,7 @@
                         <div class="col-md-6">
                             <label class="form-label">Khuyến mãi</label>
                             <input type="hidden" id="service_price" value="{{ $service->price ?? 0 }}">
-                            <select name="voucher_code" id="voucher_id">
+                            <select name="voucher_code" id="voucher_id" class="form-control">
                                 <option value="">Không sử dụng mã giảm giá</option>
                                 @foreach ($vouchers as $voucher)
                                     <option value="{{ $voucher->promotion->code }}"
@@ -1491,7 +1491,7 @@
         });
         $(document).ready(function() {
             $('#voucher_id').select2({
-                placeholder: 'Chọn hoặc tìm mã khuyến mãi',
+                // placeholder: 'Chọn hoặc tìm mã khuyến mãi',
                 allowClear: true,
                 width: '100%',
                 language: {
