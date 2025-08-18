@@ -367,6 +367,10 @@ class AppointmentController extends Controller
 
     public function show(Appointment $appointment)
     {
+        // kiểm tra nếu không phải admin chi nhánh 1 thì không thể xem được chi tiết của chi nhánh 2
+        if (Auth::user()->role === 'admin_branch' && Auth::user()->branch_id !== $appointment->branch_id) {
+            return redirect()->route('appointments.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         $appointment->load(['user', 'barber', 'service', 'branch', 'promotion']);
         $isCancelled = false;
 
@@ -917,6 +921,11 @@ class AppointmentController extends Controller
 
     public function edit(Appointment $appointment)
     {
+        // Kiểm tra quyền truy cập và chi nhánh
+        if (Auth::user()->role === 'admin_branch' && Auth::user()->branch_id !== $appointment->branch_id) {
+            return redirect()->route('appointments.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
+
         $appointments = Appointment::all();
         $services = Service::all();
         $barbers = Barber::all();

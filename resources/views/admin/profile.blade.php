@@ -2,6 +2,9 @@
 
 @section('title', 'Cài đặt tài khoản')
 
+@php
+    $currentRole = Auth::user()->role;
+@endphp
 @section('content')
     <div class="page-header">
         <h3 class="fw-bold mb-3 page-header text-uppercase">Cài đặt tài khoản</h3>
@@ -110,18 +113,27 @@
                             @enderror
 
                         </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Ảnh đại diện</label>
+                                <input type="file" name="avatar"
+                                    class="form-control @error('avatar') is-invalid @enderror">
+                                @error('avatar')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
 
-                        <div class="mb-3">
-                            <label class="form-label">Ảnh đại diện</label>
-                            <input type="file" name="avatar" class="form-control @error('avatar') is-invalid @enderror">
-                            @error('avatar')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-
-                            @if ($user->avatar)
-                                <div class="mt-2">
-                                    <img src="{{ asset('storage/' . $user->avatar) }}" alt="avatar"
-                                        class="rounded" width="100" height="80">
+                                @if ($user->avatar)
+                                    <div class="mt-2">
+                                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="avatar" class="rounded"
+                                            width="100" height="80">
+                                    </div>
+                                @endif
+                            </div>
+                            @if ($currentRole == 'admin_branch')
+                                <div class="col-md-6">
+                                    <label class="form-label">Chi nhánh</label>
+                                    <input type="text" class="form-control"
+                                           value="{{ $user->branch->name ?? 'Chưa chọn chi nhánh' }}" disabled>
                                 </div>
                             @endif
                         </div>

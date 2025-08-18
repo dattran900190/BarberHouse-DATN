@@ -23,7 +23,7 @@ class UserRequest extends FormRequest
             'email' => 'required|email|max:255|unique:users,email,' . $userId,
             'password' => $this->isMethod('post') ? 'required|string|min:8|max:255' : 'nullable|string|min:8|max:255',
             'phone' => 'required|string|max:20|unique:users,phone,' . $userId,
-            'gender' => 'required|in:male,female,other',
+            // 'gender' => 'required|in:male,female,other',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'address' => 'nullable|string',
             'role' => 'required|in:user,admin,super_admin,admin_branch',

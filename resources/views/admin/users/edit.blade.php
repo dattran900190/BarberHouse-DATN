@@ -85,13 +85,14 @@
                     <div class="col-md-6">
                         <label for="gender" class="form-label">Giới tính</label>
                         <select class="form-control readonly-select" name="gender" disabled>
-                            <option value="">Chọn giới tính</option>
+                            {{-- <option value="">Chọn giới tính</option> --}}
+                            <option value="other" {{ old('gender', $user->gender) == 'other' ? 'selected' : '' }}>Khác
+                            </option>
                             <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : '' }}>Nam
                             </option>
                             <option value="female" {{ old('gender', $user->gender) == 'female' ? 'selected' : '' }}>Nữ
                             </option>
-                            <option value="other" {{ old('gender', $user->gender) == 'other' ? 'selected' : '' }}>Khác
-                            </option>
+                            
                         </select>
                         <input type="hidden" name="gender" value="{{ old('gender', $user->gender) }}">
 
