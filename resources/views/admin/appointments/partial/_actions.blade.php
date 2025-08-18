@@ -27,8 +27,7 @@
         <!-- Hành động tùy theo type -->
         @if ($type == 'pending')
             <li>
-                <button type="button" class="dropdown-item text-success confirm-btn"
-                    data-id="{{ $appointment->id }}">
+                <button type="button" class="dropdown-item text-success confirm-btn" data-id="{{ $appointment->id }}">
                     <i class="fas fa-check me-2"></i> Xác nhận
                 </button>
             </li>
@@ -38,6 +37,11 @@
                 </button>
             </li>
         @elseif($type == 'confirmed')
+        <li>
+            <button type="button" class="dropdown-item text-info checkin-btn" data-id="{{ $appointment->id }}" data-bs-toggle="collapse" data-bs-target="#checkinForm{{ $appointment->id }}">
+                <i class="fas fa-sign-in-alt me-2"></i> Check-in
+            </button>
+        </li>
             <li>
                 <button type="button" class="dropdown-item text-primary no-show-btn" data-id="{{ $appointment->id }}">
                     <i class="fas fa-user-times me-2"></i> Không đến
@@ -50,7 +54,8 @@
             </li>
         @elseif($type == 'progress')
             <li>
-                <button type="button" class="dropdown-item text-success complete-btn" data-id="{{ $appointment->id }}">
+                <button type="button" class="dropdown-item text-success complete-btn"
+                    data-id="{{ $appointment->id }}">
                     <i class="fas fa-check-circle me-2"></i> Hoàn thành
                 </button>
             </li>

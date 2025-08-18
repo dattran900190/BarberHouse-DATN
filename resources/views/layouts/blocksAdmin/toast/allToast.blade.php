@@ -1,7 +1,7 @@
  <div aria-live="polite" aria-atomic="true" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"
      id="toastContainer">
      <!-- Toast mẫu (sẽ được clone động) -->
-     <div id="appointmentToastTemplate" class="toast" role="alert" data-bs-delay="180000" style="display: none;">
+     <div id="appointmentToastTemplate" class="toast" role="alert" data-bs-delay="30000" style="display: none;">
          <div class="toast-header bg-success text-white">
              <strong class="me-auto">Thông báo lịch hẹn</strong>
              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>

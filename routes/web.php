@@ -256,11 +256,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/appointments/{appointment}/reject-cancel', [AppointmentController::class, 'rejectCancel'])->name('appointments.reject-cancel');
     Route::post('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow'])->name('appointments.no-show');
     Route::get('/appointments/cancelled/{cancelledAppointment}', [AppointmentController::class, 'showCancelled'])->name('appointments.show_cancelled');
+    Route::post('/appointments/createAppointment', [AppointmentController::class, 'createAppointment'])->name('appointments.createAppointment');
 
     // ==== Thống kê lịch thợ ====
     Route::get('/barber-statistics', [BarberStatisticsController::class, 'index'])->name('barber_statistics.index');
     Route::get('/barber-statistics/{barber}', [BarberStatisticsController::class, 'show'])->name('barber_statistics.show');
-    // Route::get('/barber-statistics/export', [BarberStatisticsController::class, 'export'])->name('barber_statistics.export');
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);
@@ -273,8 +273,11 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::patch('product_categories/{id}/soft-delete', [ProductCategoryController::class, 'softDelete'])->name('product_categories.softDelete');
     Route::post('product_categories/{id}/restore', [ProductCategoryController::class, 'restore'])->name('product_categories.restore');
     Route::delete('product_categories/{id}/force-delete', [ProductCategoryController::class, 'destroy'])->name('product_categories.destroy');
+    
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
+    Route::post('/appointments/{appointment}/checkin', [CheckinController::class, 'checkin'])->name('appointments.checkin');
+    Route::post('/checkin/check/{appointmentId}', [CheckinController::class, 'checkCheckinCode'])->name('checkin.check');
 
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
@@ -306,7 +309,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::delete('/barber-schedules/delete-holiday/{id}', [BarberScheduleController::class, 'deleteHoliday'])
         ->name('barber_schedules.deleteHoliday');
 
-
     // ==== Người dùng ====
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::resource('users', UserController::class);
@@ -317,6 +319,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('promotions', PromotionController::class);
     Route::delete('/{id}/soft-delete', [PromotionController::class, 'softDelete'])->name('promotions.softDelete');
     Route::put('/{id}/restore', [PromotionController::class, 'restore'])->name('promotions.restore');
+
     // ==== Sản phẩm ====
     Route::resource('products', ProductController::class)->names('admin.products');
     Route::post('/products/{id}/restore', [ProductController::class, 'restore'])->name('admin.products.restore');
