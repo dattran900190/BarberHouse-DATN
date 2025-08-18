@@ -40,7 +40,16 @@
                             </div>
                         @endif
                     </td>
-                    <td>{{ $appointment->payment_method === 'cash' ? 'Thanh toán tại tiệm' : 'Thanh toán VNPAY' }}</td>
+                    <td>
+                        @if ($appointment->payment_method === 'cash')
+                            Thanh toán tại tiệm
+                        @elseif ($appointment->payment_method === 'vnpay')
+                            Thanh toán VNPAY
+                        @else
+                            Không rõ
+                        @endif
+                    </td>
+
                     <td>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('d/m/Y H:i') }}</td>
                     @if ($type === 'cancelled')
                         <td>{{ $appointment->cancellation_reason ?? 'N/A' }}</td>
