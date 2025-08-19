@@ -52,18 +52,18 @@ class AppointmentController extends Controller
 
         // Lấy danh sách mã giảm giá khả dụng của người dùng
         $vouchers = Auth::check() ? UserRedeemedVoucher::where('user_id', Auth::id())
-                ->where('is_used', false)
-                ->with('promotion')
-                ->get()
-                ->filter(function ($voucher) {
-                    // Kiểm tra promotion còn hiệu lực (chưa hết hạn, còn active, còn số lượng)
-                    $promotion = $voucher->promotion;
-                    return $promotion && 
-                           $promotion->is_active && 
-                           $promotion->quantity > 0 && 
-                           now()->gte($promotion->start_date) && 
-                           now()->lte($promotion->end_date);
-                }) : collect();
+            ->where('is_used', false)
+            ->with('promotion')
+            ->get()
+            ->filter(function ($voucher) {
+                // Kiểm tra promotion còn hiệu lực (chưa hết hạn, còn active, còn số lượng)
+                $promotion = $voucher->promotion;
+                return $promotion &&
+                    $promotion->is_active &&
+                    $promotion->quantity > 0 &&
+                    now()->gte($promotion->start_date) &&
+                    now()->lte($promotion->end_date);
+            }) : collect();
 
         // Lấy voucher công khai (required_points null hoặc 0)
         $publicPromotions = Promotion::where(function ($q) {
@@ -377,15 +377,15 @@ class AppointmentController extends Controller
     {
         // Lấy thông tin lịch hẹn từ session hoặc flash data
         $appointment = session('confirmed_appointment');
-        
+
         if (!$appointment) {
             // Nếu không có thông tin lịch hẹn, redirect về trang chủ
             return redirect()->route('home')->with('error', 'Không tìm thấy thông tin lịch hẹn.');
         }
-        
+
         // Load các relationships cần thiết
         $appointment->load(['service', 'barber', 'branch']);
-    
+
         // Lấy dịch vụ bổ sung nếu có
         $additionalServices = [];
         if ($appointment->additional_services) {
@@ -396,8 +396,8 @@ class AppointmentController extends Controller
                     ->toArray();
             }
         }
-        
-        
+
+
         return view('client.booking-confirmed', compact('appointment',  'additionalServices'));
     }
 
@@ -435,7 +435,6 @@ class AppointmentController extends Controller
                     ->count();
 
                 if ($promotion->usage_limit !== null && $usage_count >= $promotion->usage_limit) {
-                    session()->flash('error', 'Bạn đã sử dụng voucher này quá số lần cho phép.');
                     return [
                         'error' => true,
                         'message' => 'Bạn đã sử dụng voucher này quá số lần cho phép.'
@@ -444,7 +443,6 @@ class AppointmentController extends Controller
 
                 // Kiểm tra min_order_value
                 if ($promotion->min_order_value !== null && $totalAmount < $promotion->min_order_value) {
-                    session()->flash('error', "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher.");
                     return [
                         'error' => true,
                         'message' => "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher."
@@ -477,7 +475,6 @@ class AppointmentController extends Controller
                         ->count();
 
                     if ($promotion->usage_limit !== null && $usage_count >= $promotion->usage_limit) {
-                        session()->flash('error', 'Bạn đã sử dụng voucher công khai này quá số lần cho phép.');
                         return [
                             'error' => true,
                             'message' => 'Bạn đã sử dụng voucher công khai này quá số lần cho phép.'
@@ -486,7 +483,6 @@ class AppointmentController extends Controller
 
                     // Kiểm tra min_order_value
                     if ($promotion->min_order_value !== null && $totalAmount < $promotion->min_order_value) {
-                        session()->flash('error', "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher.");
                         return [
                             'error' => true,
                             'message' => "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher."
@@ -500,7 +496,6 @@ class AppointmentController extends Controller
                     }
                     $totalAmount -= $discountAmount;
                 } else {
-                    session()->flash('error', 'Mã voucher không tồn tại hoặc đã hết hạn.');
                     return [
                         'error' => true,
                         'message' => 'Mã voucher không tồn tại hoặc đã hết hạn.'
@@ -702,8 +697,7 @@ class AppointmentController extends Controller
                 ]);
             }
             return redirect()->route('dat-lich')->with('success', 'Đặt lịch thành công! Vui lòng kiểm tra email để xác nhận.');
-
-        }  catch (QueryException $e) {
+        } catch (QueryException $e) {
             // Lỗi duplicate key 1062
             if ($e->errorInfo[1] == 1062) {
                 return response()->json([
@@ -714,7 +708,6 @@ class AppointmentController extends Controller
             throw $e;
         } catch (\Exception $e) {
 
-            session()->flash('error', 'Lỗi khi đặt lịch: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi đặt lịch: ' . $e->getMessage()

@@ -119,7 +119,6 @@ Route::get('/xac-nhan-dat-lich', [ClientAppointmentController::class, 'showBooki
 // ==== Profile ====
 Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
 Route::post('/store-errors', function (Request $request) {
-    session()->flash('errors', $request->input('errors'));
     return response()->json(['success' => true]);
 })->name('store.errors');
 
@@ -149,18 +148,18 @@ Route::get('/tho-cat', [ClientBarberController::class, 'index'])->name('client.l
 Route::get('/tho-cat/{id}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
 
 // == Đổi điểm ==
-Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem');
-Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redeem.store');
+Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem')->middleware('auth');
+Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redeem.store')->middleware('auth');
 
 // == Lịch sử đơn hàng ==
-Route::get('/lich-su-don-hang', [ClientOrderController::class, 'index'])->name('client.orderHistory');
-Route::get('/chi-tiet-don-hang/{order}', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory');
+Route::get('/lich-su-don-hang', [ClientOrderController::class, 'index'])->name('client.orderHistory')->middleware('auth');
+Route::get('/chi-tiet-don-hang/{order}', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory')->middleware('auth');
 
 
 // == hoàn tiền ==
-Route::get('hoan-tien', [WalletController::class, 'index'])->name('client.detailWallet');
-Route::get('hoan-tien/create', [WalletController::class, 'create'])->name('client.wallet');
-Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.wallet.store');
+Route::get('hoan-tien', [WalletController::class, 'index'])->name('client.detailWallet')->middleware('auth');
+Route::get('hoan-tien/create', [WalletController::class, 'create'])->name('client.wallet')->middleware('auth');
+Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.wallet.store')->middleware('auth');
 
 
 // == Thanh toán ==
@@ -188,6 +187,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Admin Dashboard ====
     Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::post('/dashboard/filter-products', [DashboardController::class, 'filterProducts'])->name('dashboard.filter-products');
+    // Thêm vào routes/web.php
+    Route::post('/dashboard/filter-services', [DashboardController::class, 'filterServices'])->name('dashboard.filter-services');
     // Hiển thị giao diện Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -257,6 +258,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow'])->name('appointments.no-show');
     Route::get('/appointments/cancelled/{cancelledAppointment}', [AppointmentController::class, 'showCancelled'])->name('appointments.show_cancelled');
     Route::post('/appointments/createAppointment', [AppointmentController::class, 'createAppointment'])->name('appointments.createAppointment');
+    Route::post('/appointments/validate-voucher', [AppointmentController::class, 'validateVoucher'])->name('appointments.validate-voucher');
 
     // ==== Thống kê lịch thợ ====
     Route::get('/barber-statistics', [BarberStatisticsController::class, 'index'])->name('barber_statistics.index');
@@ -334,6 +336,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 Route::get('/ho-so', [ProfileController::class, 'index'])->name('client.profile');
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('client.update');
 Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('client.password');
+Route::get('/branch-revenue/{id}', [DashboardController::class, 'getBranchRevenue'])
+    ->name('branch.revenue');
 
 // Form tạo nghỉ lễ
 Route::get('/barber-schedules/holiday/create', [BarberScheduleController::class, 'createHoliday'])->name('barber_schedules.createHoliday');
