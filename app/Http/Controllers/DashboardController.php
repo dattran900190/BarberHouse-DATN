@@ -16,11 +16,40 @@ use App\Models\BarberSchedule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        $today = Carbon::today();
+        // Lấy danh sách chi nhánh cho thống kê doanh thu
+        $branchesForRevenue = Branch::all();
+
+        // Lấy chi nhánh được chọn từ request (nếu không chọn thì mặc định null)
+        $selectedBranchRevenue = $request->input('branch_revenue_id');
+        $selectedBranchName = 'Tất cả chi nhánh';
+
+        // Doanh thu theo chi nhánh (chỉ dịch vụ)
+        if ($selectedBranchRevenue) {
+            $selectedBranch = Branch::find($selectedBranchRevenue);
+            if ($selectedBranch) {
+                $selectedBranchName = $selectedBranch->name;
+
+                $branchTodayRevenue = Appointment::whereDate('created_at', $today)
+                    ->where('status', 'completed')
+                    ->where('branch_id', $selectedBranchRevenue)
+                    ->sum('total_amount');
+            } else {
+                $branchTodayRevenue = 0;
+            }
+        } else {
+            // Mặc định: tất cả chi nhánh
+            $branchTodayRevenue = Appointment::whereDate('created_at', $today)
+                ->where('status', 'completed')
+                ->sum('total_amount');
+            $selectedBranchName = 'Tất cả chi nhánh';
+        }
 
         // Đếm tổng lượt đặt lịch hoàn thành
         $totalBookings = Appointment::where('status', 'completed')->count();
@@ -363,9 +392,128 @@ class DashboardController extends Controller
             'selectedBranch',
             'selectedPerformanceMonth',
             'selectedPerformanceBranch',
-            'branches'
+            'branches',
+            'branchesForRevenue',
+            'selectedBranchRevenue',
+            'selectedBranchName',
+            'branchTodayRevenue'
+
         ));
     }
+
+
+    public function filterServices(Request $request)
+    {
+        if (!$request->ajax()) {
+            return response()->json(['success' => false, 'message' => 'Only AJAX requests allowed'], 400);
+        }
+
+        $search = $request->get('search');
+        $sortBy = $request->get('sort_by', 'usage_count');
+        $perPage = $request->get('per_page', 10);
+
+        $perPageValue = $perPage === 'all' ? 999999 : (int)$perPage;
+
+        // Top dịch vụ phổ biến
+        $topServicesQuery = Appointment::select('service_id', DB::raw('COUNT(*) as usage_count'))
+            ->where('status', 'completed')
+            ->groupBy('service_id')
+            ->with('service');
+
+        if ($search) {
+            $topServicesQuery->whereHas('service', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+
+        switch ($sortBy) {
+            case 'name':
+                $topServicesQuery->join('services', 'appointments.service_id', '=', 'services.id')
+                    ->orderBy('services.name', 'asc');
+                break;
+            case 'price':
+                $topServicesQuery->join('services', 'appointments.service_id', '=', 'services.id')
+                    ->orderBy('services.price', 'desc');
+                break;
+            default:
+                $topServicesQuery->orderByDesc('usage_count');
+        }
+
+        $topServices = $topServicesQuery->take($perPageValue)->get();
+
+        // Dịch vụ ít dùng
+        $lowUsageQuery = Service::select(
+            'services.id',
+            'services.name',
+            'services.price',
+            DB::raw('COALESCE(COUNT(appointments.id), 0) as usage_count')
+        )
+            ->leftJoin('appointments', function ($join) {
+                $join->on('services.id', '=', 'appointments.service_id')
+                    ->where('appointments.status', '=', 'completed');
+            })
+            ->groupBy('services.id', 'services.name', 'services.price');
+
+        if ($search) {
+            $lowUsageQuery->where('services.name', 'like', "%{$search}%");
+        }
+
+        switch ($sortBy) {
+            case 'name':
+                $lowUsageQuery->orderBy('services.name', 'asc');
+                break;
+            case 'price':
+                $lowUsageQuery->orderBy('services.price', 'desc');
+                break;
+            default:
+                $lowUsageQuery->orderBy('usage_count', 'asc');
+        }
+
+        $lowUsageServices = $lowUsageQuery->take($perPageValue)->get();
+
+        // Render HTML partials
+        $topServicesHtml = view('partials.top-services', compact('topServices'))->render();
+        $lowServicesHtml = view('partials.low-services', compact('lowUsageServices'))->render();
+
+        return response()->json([
+            'success' => true,
+            'topServicesHtml' => $topServicesHtml,
+            'lowServicesHtml' => $lowServicesHtml,
+            'topCount' => $topServices->count(),
+            'lowCount' => $lowUsageServices->count()
+        ]);
+    }
+    public function getBranchRevenue($id)
+    {
+        $today = Carbon::today();
+
+        if ($id) {
+            $branch = Branch::find($id);
+            if (!$branch) {
+                return response()->json(['error' => 'Chi nhánh không tồn tại'], 404);
+            }
+
+            $revenue = Appointment::whereDate('created_at', $today)
+                ->where('status', 'completed')
+                ->where('branch_id', $id)
+                ->sum('total_amount');
+
+            return response()->json([
+                'branchName' => $branch->name,
+                'revenue' => number_format($revenue) . ' VNĐ'
+            ]);
+        } else {
+            $revenue = Appointment::whereDate('created_at', $today)
+                ->where('status', 'completed')
+                ->sum('total_amount');
+
+            return response()->json([
+                'branchName' => 'Tất cả chi nhánh',
+                'revenue' => number_format($revenue) . ' VNĐ'
+            ]);
+        }
+    }
+
 
     private function generateWeekChart($weekStart, $weekEnd, &$labels, &$serviceRevenue, &$productRevenue)
     {
@@ -444,7 +592,122 @@ class DashboardController extends Controller
             }
         }
     }
+    // Thêm method này vào DashboardController
 
+    public function filterProducts(Request $request)
+    {
+        if (!$request->ajax()) {
+            return response()->json(['success' => false, 'message' => 'Only AJAX requests allowed'], 400);
+        }
+
+        try {
+            // Lấy parameters từ request
+            $search = $request->get('search');
+            $perPage = $request->get('per_page', 10);
+            $sortBy = $request->get('sort_by', 'total_sold');
+
+            // Xử lý per_page
+            $perPageValue = $perPage === 'all' ? 999999 : (int)$perPage;
+
+            // Sản phẩm bán chạy
+            $topProductsQuery = OrderItem::select('product_variant_id', DB::raw('SUM(quantity) as total_sold'))
+                ->whereHas('order', function ($q) {
+                    $q->where('status', 'completed');
+                })
+                ->with('productVariant.product.category')
+                ->groupBy('product_variant_id');
+
+            // Thêm search filter cho top products
+            if ($search) {
+                $topProductsQuery->whereHas('productVariant.product', function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
+
+            // Thêm sorting cho top products
+            switch ($sortBy) {
+                case 'name':
+                    $topProductsQuery->join('product_variants', 'order_items.product_variant_id', '=', 'product_variants.id')
+                        ->join('products', 'product_variants.product_id', '=', 'products.id')
+                        ->orderBy('products.name', 'asc');
+                    break;
+                case 'price':
+                    $topProductsQuery->join('product_variants', 'order_items.product_variant_id', '=', 'product_variants.id')
+                        ->orderBy('product_variants.price', 'desc');
+                    break;
+                case 'created_at':
+                    $topProductsQuery->join('product_variants', 'order_items.product_variant_id', '=', 'product_variants.id')
+                        ->join('products', 'product_variants.product_id', '=', 'products.id')
+                        ->orderBy('products.created_at', 'desc');
+                    break;
+                default: // total_sold
+                    $topProductsQuery->orderByDesc('total_sold');
+            }
+
+            $topProducts = $topProductsQuery->take($perPageValue)->get();
+
+            // Sản phẩm ít bán
+            $lowSellingQuery = ProductVariant::select(
+                'product_variants.id',
+                'product_variants.product_id',
+                'product_variants.price',
+                DB::raw('COALESCE(SUM(order_items.quantity), 0) as total_sold')
+            )
+                ->leftJoin('order_items', 'product_variants.id', '=', 'order_items.product_variant_id')
+                ->leftJoin('orders', function ($join) {
+                    $join->on('order_items.order_id', '=', 'orders.id')
+                        ->where('orders.status', '=', 'completed');
+                })
+                ->with('product.category')
+                ->groupBy('product_variants.id', 'product_variants.product_id', 'product_variants.price');
+
+            // Thêm search filter cho low selling products
+            if ($search) {
+                $lowSellingQuery->whereHas('product', function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
+
+            // Thêm sorting cho low selling products
+            switch ($sortBy) {
+                case 'name':
+                    $lowSellingQuery->join('products', 'product_variants.product_id', '=', 'products.id')
+                        ->orderBy('products.name', 'asc');
+                    break;
+                case 'price':
+                    $lowSellingQuery->orderBy('product_variants.price', 'asc');
+                    break;
+                case 'created_at':
+                    $lowSellingQuery->join('products', 'product_variants.product_id', '=', 'products.id')
+                        ->orderBy('products.created_at', 'desc');
+                    break;
+                default: // total_sold
+                    $lowSellingQuery->orderBy('total_sold', 'asc');
+            }
+
+            $lowSellingProducts = $lowSellingQuery->take($perPageValue)->get();
+
+            // Render HTML partials
+            $topProductsHtml = view('partials.top-products', compact('topProducts'))->render();
+            $lowProductsHtml = view('partials.low-products', compact('lowSellingProducts'))->render();
+
+            return response()->json([
+                'success' => true,
+                'topProductsHtml' => $topProductsHtml,
+                'lowProductsHtml' => $lowProductsHtml,
+                'topCount' => $topProducts->count(),
+                'lowCount' => $lowSellingProducts->count()
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in filterProducts: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi lọc dữ liệu: ' . $e->getMessage()
+            ], 500);
+        }
+    }
     /**
      * API endpoint riêng cho AJAX requests (tùy chọn)
      * Bạn có thể tạo route riêng cho điều này nếu muốn

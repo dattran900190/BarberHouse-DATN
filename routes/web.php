@@ -188,6 +188,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     // ==== Admin Dashboard ====
     Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::post('/dashboard/filter-products', [DashboardController::class, 'filterProducts'])->name('dashboard.filter-products');
+    // Thêm vào routes/web.php
+    Route::post('/dashboard/filter-services', [DashboardController::class, 'filterServices'])->name('dashboard.filter-services');
     // Hiển thị giao diện Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -331,6 +333,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
 Route::get('/ho-so', [ProfileController::class, 'index'])->name('client.profile');
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('client.update');
 Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('client.password');
+Route::get('/branch-revenue/{id}', [DashboardController::class, 'getBranchRevenue'])
+    ->name('branch.revenue');
 
 // Form tạo nghỉ lễ
 Route::get('/barber-schedules/holiday/create', [BarberScheduleController::class, 'createHoliday'])->name('barber_schedules.createHoliday');
