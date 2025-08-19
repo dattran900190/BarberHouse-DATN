@@ -112,7 +112,7 @@
                     <div class="col-md-6">
                         <label for="required_points" class="form-label">Điểm yêu cầu</label>
                         <input type="number" name="required_points" class="form-control"
-                            value="{{ old('required_points', 0) }}" placeholder="Điểm cần để đổi mã">
+                            value="{{ old('required_points', null) }}" placeholder="Điểm cần để đổi mã nếu không nhập điểm là voucher công khai">
                         @error('required_points')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
