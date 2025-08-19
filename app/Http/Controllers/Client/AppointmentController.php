@@ -435,7 +435,6 @@ class AppointmentController extends Controller
                     ->count();
 
                 if ($promotion->usage_limit !== null && $usage_count >= $promotion->usage_limit) {
-                    session()->flash('error', 'Bạn đã sử dụng voucher này quá số lần cho phép.');
                     return [
                         'error' => true,
                         'message' => 'Bạn đã sử dụng voucher này quá số lần cho phép.'
@@ -444,7 +443,6 @@ class AppointmentController extends Controller
 
                 // Kiểm tra min_order_value
                 if ($promotion->min_order_value !== null && $totalAmount < $promotion->min_order_value) {
-                    session()->flash('error', "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher.");
                     return [
                         'error' => true,
                         'message' => "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher."
@@ -477,7 +475,6 @@ class AppointmentController extends Controller
                         ->count();
 
                     if ($promotion->usage_limit !== null && $usage_count >= $promotion->usage_limit) {
-                        session()->flash('error', 'Bạn đã sử dụng voucher công khai này quá số lần cho phép.');
                         return [
                             'error' => true,
                             'message' => 'Bạn đã sử dụng voucher công khai này quá số lần cho phép.'
@@ -486,7 +483,6 @@ class AppointmentController extends Controller
 
                     // Kiểm tra min_order_value
                     if ($promotion->min_order_value !== null && $totalAmount < $promotion->min_order_value) {
-                        session()->flash('error', "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher.");
                         return [
                             'error' => true,
                             'message' => "Giá trị đơn hàng phải ít nhất " . number_format($promotion->min_order_value) . " VNĐ để áp dụng voucher."
@@ -500,7 +496,6 @@ class AppointmentController extends Controller
                     }
                     $totalAmount -= $discountAmount;
                 } else {
-                    session()->flash('error', 'Mã voucher không tồn tại hoặc đã hết hạn.');
                     return [
                         'error' => true,
                         'message' => 'Mã voucher không tồn tại hoặc đã hết hạn.'
@@ -713,7 +708,6 @@ class AppointmentController extends Controller
             throw $e;
         } catch (\Exception $e) {
 
-            session()->flash('error', 'Lỗi khi đặt lịch: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi đặt lịch: ' . $e->getMessage()
