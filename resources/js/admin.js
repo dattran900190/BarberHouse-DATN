@@ -1,35 +1,62 @@
 function initEchoListener() {
     if (typeof Echo !== "undefined" && Echo !== null) {
         // console.log('Echo is defined:', Echo);
-        const channel = Echo.channel("appointments");
-        channel
-            .subscribed(() => {
-                // console.log('Subscribed to appointments channel');
-            })
-            .listen("NewAppointment", (event) => {
-                // console.log('New appointment event received:', event);
-                showToast(event);
-                updatePendingCount(1); // Tăng badge khi có lịch mới
-            })
-            .listen(".NewAppointment", (event) => {
-                // console.log('New appointment event received:', event);
-                showToast(event);
-                updatePendingCount(1); // Tăng badge khi có lịch mới
-            })
-            .listen("AppointmentConfirmed", (event) => {
-                // console.log('Appointment confirmed:', event);
-                updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
-            })
-            .listen("App\\Events\\NewAppointment", (event) => {
-                showToast(event);
-                updatePendingCount(1); // Tăng badge khi có lịch mới
-            })
-            .listen(".App\\Events\\AppointmentConfirmed", (event) => {
-                updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
-            })
-            .error((error) => {
-                console.error("Echo channel error:", error);
-            });
+        
+        // Lấy thông tin user từ meta tag hoặc biến global
+        const userRole = document.querySelector('meta[name="user-role"]')?.getAttribute('content');
+        const userBranchId = document.querySelector('meta[name="user-branch-id"]')?.getAttribute('content');
+        
+        // Admin chính subscribe vào channel chung
+        if (userRole === 'admin') {
+            const channel = Echo.channel("appointments");
+            channel
+                .subscribed(() => {
+                    // console.log('Admin subscribed to appointments channel');
+                })
+                .listen("NewAppointment", (event) => {
+                    // console.log('New appointment event received:', event);
+                    showToast(event);
+                    updatePendingCount(1); // Tăng badge khi có lịch mới
+                })
+                .listen(".NewAppointment", (event) => {
+                    // console.log('New appointment event received:', event);
+                    showToast(event);
+                    updatePendingCount(1); // Tăng badge khi có lịch mới
+                })
+                .listen("AppointmentConfirmed", (event) => {
+                    // console.log('Appointment confirmed:', event);
+                    updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
+                })
+                .listen("App\\Events\\NewAppointment", (event) => {
+                    showToast(event);
+                    updatePendingCount(1); // Tăng badge khi có lịch mới
+                })
+                .listen(".App\\Events\\AppointmentConfirmed", (event) => {
+                    updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
+                })
+                .error((error) => {
+                    console.error("Echo channel error:", error);
+                });
+        }
+        
+        // Admin chi nhánh subscribe vào channel riêng của chi nhánh
+        if (userRole === 'admin_branch' && userBranchId) {
+            const branchChannel = Echo.channel(`branch.${userBranchId}`);
+            branchChannel
+                .subscribed(() => {
+                    console.log(`Admin branch subscribed to branch.${userBranchId} channel`);
+                })
+                .listen("App\\Events\\AppointmentCreated", (event) => {
+                    // Chỉ hiển thị thông báo nếu lịch hẹn thuộc chi nhánh của admin
+                    if (event.branch_id == userBranchId) {
+                        showToast(event);
+                        updatePendingCount(1); // Tăng badge khi có lịch mới
+                    }
+                })
+                .error((error) => {
+                    console.error("Echo branch channel error:", error);
+                });
+        }
     } else {
         console.error("Echo is not defined or null, retrying...");
         setTimeout(initEchoListener, 200);
@@ -91,7 +118,7 @@ function showToast(event) {
         toastContainer.appendChild(newToast);
 
         const toast = new bootstrap.Toast(newToast, {
-            delay: 180000, // 3 phút
+            delay: 30000, // 3 phút
         });
         toast.show();
         // console.log('Toast shown successfully');

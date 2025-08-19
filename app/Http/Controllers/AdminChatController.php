@@ -8,6 +8,7 @@ use App\Models\ChatbotLog;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AdminChatController extends Controller
 {
@@ -16,6 +17,8 @@ class AdminChatController extends Controller
      */
     public function index(Request $request)
     {
+        
+        
         $query = ChatbotLog::with('user');
 
         // Lọc theo user
@@ -75,6 +78,9 @@ class AdminChatController extends Controller
      */
     public function show($id)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('appointments.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         $log = ChatbotLog::with('user')->findOrFail($id);
 
         // Lấy tất cả tin nhắn của user này
@@ -90,6 +96,11 @@ class AdminChatController extends Controller
      */
     public function destroy($id)
     {
+        // Kiểm tra quyền truy cập
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('appointments.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
+
         try {
             $chatLog = ChatbotLog::findOrFail($id);
             $chatLog->delete();
@@ -104,6 +115,9 @@ class AdminChatController extends Controller
      */
     public function destroyMessage($id)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('appointments.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         try {
             $chatLog = ChatbotLog::findOrFail($id);
             $chatLog->delete();

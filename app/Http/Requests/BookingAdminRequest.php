@@ -3,18 +3,14 @@
 namespace App\Http\Requests;
 
 use Carbon\Carbon;
+use App\Models\Appointment;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class BookingRequest extends FormRequest
+class BookingAdminRequest extends FormRequest
 {
-    // public function authorize(): bool
-    // {
-    //     return Auth::check();
-    // }
-
     public function authorize()
     {
         // Cho phép tất cả yêu cầu, kiểm tra đăng nhập sẽ được xử lý trong controller
@@ -34,17 +30,17 @@ class BookingRequest extends FormRequest
                 'regex:/^([01]\d|2[0-3]):([0-5]\d)$/',
             ],
             'name' => 'nullable|string|max:100|required_if:other_person,1',
-            'phone' => [
-                'nullable',
-                'required_if:other_person,1',
-                'regex:/^0[0-9]{9}$/'
-            ],
-            'email' => [
-                'nullable',
-                'required_if:other_person,1',
-                'email:rfc,dns'
-            ],
-            'payment_method' => 'required|in:cash,vnpay',
+            // 'phone' => [
+            //     'nullable',
+            //     'required_if:other_person,1',
+            //     'regex:/^0[0-9]{9}$/'
+            // ],
+            // 'email' => [
+            //     'nullable',
+            //     'required_if:other_person,1',
+            //     'email:rfc,dns'
+            // ],
+            // 'payment_method' => 'required|in:cash,vnpay',
             'additional_services' => 'nullable|json',
             'additional_services.*' => 'exists:services,id',
         ];
@@ -67,10 +63,10 @@ class BookingRequest extends FormRequest
             'name.string' => 'Tên không hợp lệ.',
             'name.max' => 'Tên quá dài (tối đa 100 ký tự).',
             'required_if' => 'Vui lòng nhập :attribute khi đặt cho người khác.',
-            'phone.regex' => 'Số điện thoại không hợp lệ. Phải có 10 chữ số và bắt đầu bằng 0.',
-            'email.required_if' => 'Vui lòng nhập email khi đặt cho người khác.',
-            'email.email' => 'Email không hợp lệ.',
-            'payment_method.required' => 'Vui lòng chọn phương thức thanh toán.',
+            // 'phone.regex' => 'Số điện thoại không hợp lệ. Phải có 10 chữ số và bắt đầu bằng 0.',
+            // 'email.required_if' => 'Vui lòng nhập email khi đặt cho người khác.',
+            // 'email.email' => 'Email không hợp lệ.',
+            // 'payment_method.required' => 'Vui lòng chọn phương thức thanh toán.',
             'payment_method.in' => 'Phương thức thanh toán không hợp lệ.',
             'additional_services.*.exists' => 'Dịch vụ bổ sung không hợp lệ.',
         ];

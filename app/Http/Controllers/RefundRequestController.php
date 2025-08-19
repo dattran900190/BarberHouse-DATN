@@ -18,6 +18,11 @@ class RefundRequestController extends Controller
 {
     public function index(Request $request)
     {
+        // Kiểm tra quyền truy cập
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('appointments.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
+
         $status = $request->query('status');
         $search = $request->query('search');
         $filter = $request->query('filter', 'all');
@@ -66,6 +71,9 @@ class RefundRequestController extends Controller
 
     public function show($id)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('appointments.index')->with('error', 'Bạn không có quyền truy cập.');
+        }
         $refund = RefundRequest::withTrashed()->findOrFail($id);
         $refund->load([
             'user',

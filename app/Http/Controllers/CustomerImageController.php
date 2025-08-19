@@ -146,24 +146,31 @@ class CustomerImageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-          if (Auth::user()->role === 'admin_branch') {
-            return redirect()->route('customer-images.index')->with('error', 'Bạn không có quyền truy cập.');
+   public function destroy(string $id)
+{
+    if (Auth::user()->role === 'admin_branch') {
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền truy cập.'
+            ], 403);
         }
-        $customerImage = CustomerImage::findOrFail($id);
-
-        // Xoá ảnh khỏi thư mục storage nếu tồn tại
-        if ($customerImage->image && Storage::disk('public')->exists($customerImage->image)) {
-            Storage::disk('public')->delete($customerImage->image);
-        }
-
-        // Xoá bản ghi trong DB
-        $customerImage->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Xóa ảnh thành công!',
-        ]);
+        return redirect()->route('customer-images.index')
+            ->with('error', 'Bạn không có quyền truy cập.');
     }
+
+    $customerImage = CustomerImage::findOrFail($id);
+
+    if ($customerImage->image && Storage::disk('public')->exists($customerImage->image)) {
+        Storage::disk('public')->delete($customerImage->image);
+    }
+
+    $customerImage->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Xóa ảnh thành công!'
+    ]);
+}
+
 }
