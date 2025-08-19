@@ -24,8 +24,10 @@
 
             <div class="form-login">
                 <div class="image">
-                    <img src="{{ asset('images/black_logo.png') }}" alt="Barber House Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <h2 style="display: none; color: #000; font-weight: bold; font-size: 2rem; margin: 0;">BARBER HOUSE</h2>
+                    <img src="{{ asset('images/black_logo.png') }}" alt="Barber House Logo"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <h2 style="display: none; color: #000; font-weight: bold; font-size: 2rem; margin: 0;">BARBER HOUSE
+                    </h2>
                 </div>
                 @if (session('success'))
                     <div class="alert-box" id="customAlert">
@@ -217,6 +219,7 @@
                 font-weight: 600;
                 transition: all 0.3s ease;
                 margin-top: 10px;
+
             }
 
             .btn-primary:hover {
@@ -295,6 +298,7 @@
             .image-login img {
                 max-width: 100%;
                 height: auto;
+
             }
 
             .form-login .image img {
@@ -381,18 +385,28 @@
 
         .image-login img {
             width: 100%;
-            height: 100%;
+            height: 100vh;
+            /* luôn khớp với chiều cao màn hình */
             object-fit: cover;
+            /* cắt ảnh cho đẹp */
+            object-position: center 35%;
         }
+
 
         .form-login {
             flex: 2;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
+            /* căn giữa ngang */
             padding: 50px;
             background: #fff;
+            height: 100vh;
+            /* cố định cùng chiều cao với ảnh */
+            box-sizing: border-box;
         }
+
 
         .form-login .image {
             text-align: center;

@@ -481,43 +481,6 @@
                 formData.append('voucher_code', voucherCode || '');
                 formData.append('appointment_id', appointmentId); // Thêm appointment_id
                 formData.append('_token', '{{ csrf_token() }}');
-
-                // fetch('{{ route('appointments.validate-voucher') }}', {
-                //         method: 'POST',
-                //         body: formData
-                //     })
-                //     .then(response => response.json())
-                //     .then(data => {
-                //         if (!data.success) {
-                //             Swal.fire({
-                //                 icon: 'warning',
-                //                 title: 'Voucher không hợp lệ',
-                //                 html: data.message,
-                //                 showCancelButton: true,
-                //                 confirmButtonText: 'Tiếp tục (Bỏ voucher)',
-                //                 cancelButtonText: 'Hủy',
-                //                 customClass: {
-                //                     popup: 'custom-swal-popup'
-                //                 }
-                //             }).then(result => {
-                //                 if (result.isConfirmed) {
-                //                     // Bỏ voucher
-                //                     $('#voucher_id').val('').trigger('change.select2');
-                //                     document.querySelector('input[name="voucher_code"]').value = ''; // Xóa input ẩn nếu có
-                //                     updateTotal();
-                //                 }
-                //             });
-                //         } else {
-                //             updateTotal(); // Cập nhật giao diện nếu voucher hợp lệ
-                //         }
-                //     })
-                //     .catch(error => {
-                //         Swal.fire({
-                //             icon: 'error',
-                //             title: 'Lỗi!',
-                //             text: 'Không thể kiểm tra voucher: ' + error.message
-                //         });
-                //     });
             }
         });
 
@@ -702,13 +665,30 @@
         }
 
         // Event listeners for updates
+        // $('#service').on('change', function() {
+        //     checkVoucherValidity();
+        //     updateAdditionalServicesDropdowns();
+        //     updateAdditionalServicesInput();
+        //     updateTotal();
+        //     setupServiceManagement();
+        // });
+        // $('#voucher_id').on('select2:select change', updateTotal);
+        // $('#appointment_time').on('change', updateTotal);
+        // $('#status').on('change', updateTotal);
+        // $('#payment_status').on('change', updateTotal);
+        // new MutationObserver(updateTotal).observe(document.getElementById('additionalServicesContainer'), {
+        //     childList: true,
+        //     subtree: true
+        // });
         $('#service').on('change', function() {
-            updateAdditionalServicesDropdowns();
+            document.getElementById('additionalServicesContainer').innerHTML = '';
             updateAdditionalServicesInput();
             updateTotal();
             setupServiceManagement();
         });
-        $('#voucher_id').on('select2:select change', updateTotal);
+        $('#voucher_id').on('select2:select', updateTotal);
+        $('#voucher_id').on('change', updateTotal);
+        $('#additionalServicesContainer').on('change', '.additional-service-select', updateTotal);
         $('#appointment_time').on('change', updateTotal);
         $('#status').on('change', updateTotal);
         $('#payment_status').on('change', updateTotal);
@@ -763,7 +743,7 @@
                 if (totalPrice < minOrderValue) {
                     $('#total_after_discount').html(
                         `<span class="text-danger">Giá trị lịch hẹn phải đạt tối thiểu ${minOrderValue.toLocaleString('vi-VN')} VNĐ để áp dụng voucher này.</span>`
-                        )
+                    )
                     $('#totalPrice').text(totalPrice.toLocaleString('vi-VN') + ' VNĐ');
                     $('#totalDuration').text(totalDuration + ' Phút');
                     return;
@@ -816,7 +796,7 @@
         }
 
         // Submit form handling
-         document.querySelector('#editBookingForm').addEventListener('submit', function(event) {
+        document.querySelector('#editBookingForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const form = this;
 
@@ -838,7 +818,6 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
-                        icon: 'info',
                         title: 'Đang xử lý...',
                         text: 'Vui lòng chờ trong giây lát.',
                         allowOutsideClick: false,
@@ -851,9 +830,10 @@
                     });
 
                     const formData = new FormData(form);
-                     if (!formData.get('voucher_code')) {
-                formData.set('ignore_voucher_error', '1'); // Đảm bảo bỏ voucher nếu voucher_code rỗng
-            }
+                    if (!formData.get('voucher_code')) {
+                        formData.set('ignore_voucher_error',
+                        '1'); // Đảm bảo bỏ voucher nếu voucher_code rỗng
+                    }
                     fetch(form.action, {
                             method: 'POST',
                             body: formData,
@@ -886,9 +866,9 @@
                                     }).then(result => {
                                         if (result.isConfirmed) {
                                             // Thêm flag để bỏ voucher
-                                            
-                                formData.set('voucher_code', '');
-                                formData.set('ignore_voucher_error', '1');
+
+                                            formData.set('voucher_code', '');
+                                            formData.set('ignore_voucher_error', '1');
                                             fetch(form.action, {
                                                     method: 'POST',
                                                     body: formData,
@@ -898,10 +878,10 @@
                                                     }
                                                 })
                                                 .then(response => response.json().then(data =>
-                                            ({
-                                                    status: response.status,
-                                                    data
-                                                })))
+                                                    ({
+                                                        status: response.status,
+                                                        data
+                                                    })))
                                                 .then(({
                                                     status,
                                                     data

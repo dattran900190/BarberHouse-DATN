@@ -131,18 +131,26 @@
 
         .image-login img {
             width: 100%;
-            height: 100%;
+            height: 100vh;
+            /* luôn khớp với chiều cao màn hình */
             object-fit: cover;
+            /* cắt ảnh cho đẹp */
+            object-position: center 35%;
         }
+
 
         .form-login {
             flex: 2;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 25px;
+            align-items: center;
+            /* căn giữa ngang */
+            padding: 50px;
             background: #fff;
-            position: relative;
+            height: 100vh;
+            /* cố định cùng chiều cao với ảnh */
+            box-sizing: border-box;
         }
 
         .form-login .image {

@@ -29,7 +29,7 @@ class BookingAdminRequest extends FormRequest
                 'required',
                 'regex:/^([01]\d|2[0-3]):([0-5]\d)$/',
             ],
-            'name' => 'nullable|string|max:100|required_if:other_person,1',
+            'name' => 'required|string|max:100|required_if:other_person,1',
             // 'phone' => [
             //     'nullable',
             //     'required_if:other_person,1',
@@ -61,6 +61,7 @@ class BookingAdminRequest extends FormRequest
             'appointment_time.required' => 'Vui lòng chọn thời gian đặt lịch.',
             'appointment_time.regex' => 'Thời gian phải có định dạng HH:MM (ví dụ: 14:30).',
             'name.string' => 'Tên không hợp lệ.',
+            'name.required' => 'Vui lòng nhập tên khách hàng.',
             'name.max' => 'Tên quá dài (tối đa 100 ký tự).',
             'required_if' => 'Vui lòng nhập :attribute khi đặt cho người khác.',
             // 'phone.regex' => 'Số điện thoại không hợp lệ. Phải có 10 chữ số và bắt đầu bằng 0.',
