@@ -20,16 +20,16 @@ class UserController extends Controller
         $filter = $request->input('filter', 'all');
 
         $usersQuery = User::withTrashed()->where('role', 'user')
-            ->when($search && $request->input('role_filter') === 'user', function ($query) use ($search) {
-                return $query->where(function ($query2) use ($search) {
+            ->when($search && $role === 'user', function ($query) use ($search) {
+                $query->where(function ($query2) use ($search) {
                     $query2->where('name', 'like', '%' . $search . '%')
                         ->orWhere('email', 'like', '%' . $search . '%');
                 });
             });
 
         $adminsQuery = User::withTrashed()->whereIn('role', ['admin', 'admin_branch'])
-            ->when($search && $request->input('role_filter') === 'admin', function ($query) use ($search) {
-                return $query->where(function ($query2) use ($search) {
+            ->when($search && $role === 'admin', function ($query) use ($search) {
+                $query->where(function ($query2) use ($search) {
                     $query2->where('name', 'like', '%' . $search . '%')
                         ->orWhere('email', 'like', '%' . $search . '%');
                 });
@@ -45,10 +45,6 @@ class UserController extends Controller
         } elseif ($filter === 'inactive') {
             $usersQuery->where('status', 'inactive')->whereNull('deleted_at');
             $adminsQuery->where('status', 'inactive')->whereNull('deleted_at');
-        } else {
-            // Tất cả người dùng
-            $usersQuery->whereNull('deleted_at');
-            $adminsQuery->whereNull('deleted_at');
         }
 
         $users = $usersQuery->orderBy('created_at', 'DESC')->paginate(10);
@@ -111,6 +107,9 @@ class UserController extends Controller
 
     public function show($id, Request $request)
     {
+        if (Auth::user()->role === 'admin_branch') {
+            return redirect()->route('users.index')->with('error', 'Bạn không có quyền truy cập.');
+        }   
         $role = $request->input('role', 'user');
 
         // 👉 Lấy user bao gồm đã bị xóa mềm

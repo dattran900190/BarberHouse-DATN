@@ -12,6 +12,9 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('messageError', 'Vui lòng đăng nhập để xem lịch sử đơn hàng.');
+        }
         $query = Order::with('items.productVariant.product')
             ->where('user_id', Auth::id())
             ->orderByDesc('created_at');

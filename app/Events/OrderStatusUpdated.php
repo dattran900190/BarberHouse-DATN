@@ -42,7 +42,7 @@ class OrderStatusUpdated implements ShouldBroadcast
         $translatedStatus = $statusTranslations[$this->order->status] ?? $this->order->status;
 
         return [
-            'message' => 'Đơn hàng của bạn đã được cập nhật trạng thái thành ' . $translatedStatus,
+            'message' => 'Đơn hàng ' . $this->order->order_code . ' của bạn đã được cập nhật trạng thái thành ' . $translatedStatus,
             'order_id' => $this->order->id,
             'status' => $translatedStatus, // Trả về trạng thái đã dịch
         ];

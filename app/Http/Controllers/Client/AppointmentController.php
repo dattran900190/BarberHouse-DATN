@@ -10,12 +10,13 @@ use App\Models\Checkin;
 use App\Models\Service;
 use App\Models\Promotion;
 use App\Models\Appointment;
-use App\Models\BarberSchedule;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Mail\CheckinCodeMail;
 use App\Events\NewAppointment;
+use App\Models\BarberSchedule;
 use Illuminate\Support\Carbon;
+use App\Mail\CancelBookingMail;
 use App\Mail\ConfirmBookingMail;
 use App\Mail\PendingBookingMail;
 use App\Events\AppointmentCreated;
@@ -25,20 +26,23 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\CancelledAppointment;
 use App\Services\AppointmentService;
+use App\Services\PusherService;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\BookingRequest;
-use App\Mail\CancelBookingMail;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends Controller
 {
     protected $appointmentService;
+    protected $pusherService;
 
-    public function __construct(AppointmentService $appointmentService)
+    public function __construct(AppointmentService $appointmentService, PusherService $pusherService)
     {
         $this->appointmentService = $appointmentService;
+        $this->pusherService = $pusherService;
     }
 
     public function index(Request $request)
@@ -50,7 +54,16 @@ class AppointmentController extends Controller
         $vouchers = Auth::check() ? UserRedeemedVoucher::where('user_id', Auth::id())
             ->where('is_used', false)
             ->with('promotion')
-            ->get() : collect();
+            ->get()
+            ->filter(function ($voucher) {
+                // Kiểm tra promotion còn hiệu lực (chưa hết hạn, còn active, còn số lượng)
+                $promotion = $voucher->promotion;
+                return $promotion &&
+                    $promotion->is_active &&
+                    $promotion->quantity > 0 &&
+                    now()->gte($promotion->start_date) &&
+                    now()->lte($promotion->end_date);
+            }) : collect();
 
         // Lấy voucher công khai (required_points null hoặc 0)
         $publicPromotions = Promotion::where(function ($q) {
@@ -96,6 +109,10 @@ class AppointmentController extends Controller
 
     public function appointmentHistory(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('messageError', 'Vui lòng đăng nhập để xem lịch sử đặt lịch.');
+        }
+
         $userId = Auth::id();
         $search = $request->input('search');
         $status = $request->input('status');
@@ -344,7 +361,7 @@ class AppointmentController extends Controller
             event(new NewAppointment($appointment));
 
             // Kích hoạt Pusher
-            $this->triggerPusher($appointment);
+            $this->pusherService->triggerAppointmentCreated($appointment);
 
             // Lưu thông tin lịch hẹn vào session để hiển thị trên trang xác nhận
             session(['confirmed_appointment' => $appointment]);
@@ -360,15 +377,15 @@ class AppointmentController extends Controller
     {
         // Lấy thông tin lịch hẹn từ session hoặc flash data
         $appointment = session('confirmed_appointment');
-        
+
         if (!$appointment) {
             // Nếu không có thông tin lịch hẹn, redirect về trang chủ
             return redirect()->route('home')->with('error', 'Không tìm thấy thông tin lịch hẹn.');
         }
-        
+
         // Load các relationships cần thiết
         $appointment->load(['service', 'barber', 'branch']);
-    
+
         // Lấy dịch vụ bổ sung nếu có
         $additionalServices = [];
         if ($appointment->additional_services) {
@@ -379,8 +396,8 @@ class AppointmentController extends Controller
                     ->toArray();
             }
         }
-        
-        
+
+
         return view('client.booking-confirmed', compact('appointment',  'additionalServices'));
     }
 
@@ -498,35 +515,10 @@ class AppointmentController extends Controller
         ];
     }
 
-    protected function triggerPusher(Appointment $appointment)
-    {
-        $additionalServiceIds = json_decode($appointment->additional_services ?? '[]', true);
-        $additionalServicesNames = Service::whereIn('id', $additionalServiceIds)->pluck('name')->toArray();
-
-        $pusherData = [
-            'id' => $appointment->id,
-            'appointment_code' => $appointment->appointment_code,
-            'user_name' => $appointment->name ?? 'N/A',
-            'phone' => $appointment->phone ?? 'N/A',
-            'barber_name' => $appointment->barber->name ?? 'N/A',
-            'service_name' => $appointment->service->name ?? 'N/A',
-            'status' => $appointment->status,
-            'payment_status' => $appointment->payment_status,
-            'created_at' => $appointment->created_at->format('d/m/Y H:i'),
-            'additional_services' => $additionalServicesNames ?? [],
-            'payment_method' => $appointment->payment_method,
-            'appointment_time' => $appointment->appointment_time->format('d/m/Y H:i'),
-        ];
-
-        $pusher = new Pusher(
-            config('broadcasting.connections.pusher.key'),
-            config('broadcasting.connections.pusher.secret'),
-            config('broadcasting.connections.pusher.app_id'),
-            ['cluster' => config('broadcasting.connections.pusher.options.cluster'), 'useTLS' => true]
-        );
-
-        $pusher->trigger('appointments', 'App\\Events\\AppointmentCreated', $pusherData);
-    }
+    // protected function triggerPusher(Appointment $appointment)
+    // {
+    //     $this->pusherService->triggerAppointmentCreated($appointment);
+    // }
 
     function calculateAppointmentDuration(Request $request, $service_id)
     {
@@ -710,7 +702,15 @@ class AppointmentController extends Controller
                 ]);
             }
             return redirect()->route('dat-lich')->with('success', 'Đặt lịch thành công! Vui lòng kiểm tra email để xác nhận.');
-
+        } catch (QueryException $e) {
+            // Lỗi duplicate key 1062
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Khung giờ này đã có người đặt. Vui lòng chọn khung giờ khác.'
+                ], 422);
+            }
+            throw $e;
         } catch (\Exception $e) {
 
             session()->flash('error', 'Lỗi khi đặt lịch: ' . $e->getMessage());
@@ -835,7 +835,7 @@ class AppointmentController extends Controller
             if ($datetime && $totalDuration) {
                 $appointmentEnd = $datetime->copy()->addMinutes($totalDuration);
                 $query->whereDoesntHave('appointments', function ($q) use ($datetime, $appointmentEnd, $parsedDate) {
-                    $q->whereIn('status', ['pending', 'confirmed'])
+                    $q->whereIn('status', ['pending', 'confirmed', 'progress', 'checked-in', 'completed', 'unconfirmed'])
                         ->whereDate('appointment_time', $parsedDate)
                         ->where(function ($q2) use ($datetime, $appointmentEnd) {
                             // Kiểm tra mọi trường hợp chồng lấn

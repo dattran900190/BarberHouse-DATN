@@ -27,7 +27,7 @@
             <ul style="font-size: 16px; padding-left: 20px; line-height: 1.6;">
                 <li><strong>Ngày:</strong> {{ $appointment->appointment_time->format('d/m/Y') }}</li>
                 <li><strong>Giờ:</strong> {{ $appointment->appointment_time->format('H:i') }}</li>
-                <li><strong>Dịch vụ chính:</strong> {{ $appointment->service->name }}</li>
+                <li><strong>Dịch vụ:</strong> {{ $appointment->service->name }}</li>
                 @if (!empty($additionalServices))
                     <li><strong>Dịch vụ bổ sung:</strong>
                         <ul>

@@ -1,749 +1,308 @@
-@extends('layouts.ClientLayout')
+@extends('layouts.AdminLayout')
 
-@section('title-page')
-    Đặt lịch Baber House
-@endsection
+@section('title', 'Tạo đặt lịch tại tiệm')
 
 @section('content')
-    <main class="container" style="padding: 10% 0;">
-        @if (session('success'))
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Thành công!',
-                        text: '{{ session('success') }}',
-                        confirmButtonText: 'OK',
-                        // timer: 3000,
-                        customClass: {
-                            popup: 'custom-swal-popup'
-                        }
-                        timerProgressBar: true
-                    });
-                });
-            </script>
-        @endif
+    <div class="page-header">
+        <h3 class="fw-bold mb-3 text-uppercase">Đặt lịch cắt tóc tại tiệm</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{{ url('admin/dashboard') }}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/appointments') }}">Quản lý đặt lịch</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('admin/appointments/create') }}">Tạo đặt lịch</a>
+            </li>
+        </ul>
+    </div>
 
-        <div class="booking-container">
-            <!-- Header -->
-            <div class="booking-header">
-                <h1 class="booking-title">Đặt lịch cắt tóc</h1>
-                <p class="booking-subtitle">Giờ mở cửa: 08:00 - 19:30</p>
-                <p class="booking-note">
-                    <i class="fas fa-exclamation-circle"></i>
-                    Vui lòng nhập thông tin bắt buộc để lọc thợ phù hợp
-                </p>
-            </div>
+    <div class="card">
+        <div class="card-header text-black align-items-center">
+            <div class="card-title">Tạo đặt lịch</div>
+        </div>
 
-            <form id="bookingForm" method="POST" action="{{ route('dat-lich.store') }}">
-                @csrf
+        <div class="card-body p-4">
+            <div class="card-body">
+                @if (session('success'))
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công!',
+                                text: '{{ session('success') }}',
+                                confirmButtonText: 'OK',
+                                // timer: 3000,
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                                timerProgressBar: true
+                            });
+                        });
+                    </script>
+                @endif
 
-                <div class="row align-items-center">
-                    <div class="col-sm-1">
-                        <div class="form-group mb-3">
-                            <input class="form-check-input" type="checkbox" value="1" id="other_person"
-                                name="other_person" {{ old('other_person') ? 'checked' : '' }}>
+                <form id="bookingForm" method="POST" action="{{ route('appointments.createAppointment') }}">
+                    @csrf
+
+                    <div class="row g-3 form-group">
+                        <div class="col-md-6">
+                            <label class="form-label">Họ và tên <span class="required">*</span></label>
+                            <input id="name" name="name" class="form-control" type="text"
+                                placeholder="Nhập họ và tên" value="{{ old('name') }}">
+                            @error('name')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
-                    </div>
-                    <div class="col-sm-11">
-                        <div class="form-group mb-3">
-                            <label class="form-check-label" for="other_person">
-                                Tôi muốn đặt lịch cho người khác
-                            </label>
-                        </div>
-                    </div>
-                </div>
 
-
-                <div id="other-info" style="{{ old('other_person') ? '' : 'display:none;' }}">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group mb-3">
-                                <label class="form-label">Họ và tên <span class="required">*</span></label>
-                                <input id="name" name="name" class="form-control" type="text"
-                                    placeholder="Nhập họ và tên" value="{{ old('name') }}">
-                                @error('name')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
+                        <div class="col-md-6">
+                            <label class="form-label">Ngày đặt lịch <span class="required">*</span></label>
+                            <div class="date-input">
+                                <input type="text" class="form-control" id="appointment_date" name="appointment_date"
+                                    placeholder="Chọn thời điểm"
+                                    value="{{ old('appointment_date', $currentDate) }} style="background-color: #fff
+                                    !important;" readonly>
                             </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group mb-3">
-                                <label class="form-label">Số điện thoại <span class="required">*</span></label>
-                                <input id="phone" name="phone" class="form-control" type="tel"
-                                    placeholder="Nhập số điện thoại" value="{{ old('phone') }}">
-                                @error('phone')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
+                            @error('appointment_date')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
-                    <div class="form-group mb-3">
-                        <label class="form-label">Email <span class="required">*</span></label>
-                        <input id="email" name="email" value="{{ old('email') }}"class="form-control"
-                            placeholder="Nhập email" type="text">
-                        @error('email')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <label class="form-label">Ngày đặt lịch <span class="required">*</span></label>
-                    <div class="date-input">
-                        <input type="text" class="form-control" id="appointment_date" name="appointment_date"
-                            placeholder="Chọn thời điểm" readonly>
-                    </div>
-                    @error('appointment_date')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
+                    <div class="form-group">
+                        <label class="form-label">Chọn chi nhánh <span class="required">*</span></label>
+                        <div class="position-relative">
+                            <!-- Hidden input for form submission -->
+                            <input type="hidden" id="branch_input" name="branch_id" value="{{ old('branch_id') }}">
 
-                <div class="form-group">
-                    <label class="form-label">Chọn chi nhánh <span class="required">*</span></label>
-                    <div class="position-relative">
-                        <!-- Hidden input for form submission -->
-                        <input type="hidden" id="branch_input" name="branch_id" value="{{ old('branch_id') }}">
-
-                        <!-- Branch selection cards -->
-                        <div class="branch-cards-container" id="branchCards">
-                            @foreach ($branches as $branch)
-                                <div class="branch-card" data-branch-id="{{ $branch->id }}"
-                                    data-branch-name="{{ $branch->name }}">
-                                    <div class="branch-icon-wrapper">
-                                        <i class="fas fa-map-marker-alt branch-icon"
-                                            data-value="{{ $branch->google_map_url }}"></i>
-                                    </div>
-                                    <div class="branch-info">
-                                        <h6 class="branch-name">{{ $branch->name }}</h6>
-                                        <div class="branch-address">
-                                            <i class="fas fa-map-pin"></i>
-                                            <span>{{ $branch->address ?? 'Địa chỉ chi nhánh' }}</span>
+                            <!-- Branch selection cards -->
+                            <div class="branch-cards-container" id="branchCards">
+                                @foreach ($branches as $branch)
+                                    <div class="branch-card" data-branch-id="{{ $branch->id }}"
+                                        data-branch-name="{{ $branch->name }}">
+                                        <div class="branch-icon-wrapper">
+                                            <i class="fas fa-map-marker-alt branch-icon"
+                                                data-value="{{ $branch->google_map_url }}"></i>
                                         </div>
-                                        <div class="branch-hours">
-                                            <i class="fas fa-clock"></i>
-                                            <span>08:00 - 19:30</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-
-                        @error('branch_id')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Chọn khung giờ dịch vụ <span class="required">*</span></label>
-                    <input type="hidden" name="appointment_time" id="appointment_time"
-                        value="{{ old('appointment_time') }}">
-                    <div class="time-grid" id="timeGrid">
-                        <span class="time-slot" data-value="08:00">08:00</span>
-                        <span class="time-slot" data-value="08:30">08:30</span>
-                        <span class="time-slot" data-value="09:00">09:00</span>
-                        <span class="time-slot" data-value="09:30">09:30</span>
-                        <span class="time-slot" data-value="10:00">10:00</span>
-                        <span class="time-slot" data-value="10:30">10:30</span>
-                        <span class="time-slot" data-value="11:00">11:00</span>
-                        <span class="time-slot" data-value="11:30">11:30</span>
-                        <span class="time-slot" data-value="12:00">12:00</span>
-                        <span class="time-slot" data-value="12:30">12:30</span>
-                        <span class="time-slot" data-value="13:00">13:00</span>
-                        <span class="time-slot" data-value="13:30">13:30</span>
-                        <span class="time-slot" data-value="14:00">14:00</span>
-                        <span class="time-slot" data-value="14:30">14:30</span>
-                        <span class="time-slot" data-value="15:00">15:00</span>
-                        <span class="time-slot" data-value="15:30">15:30</span>
-                        <span class="time-slot" data-value="16:00">16:00</span>
-                        <span class="time-slot" data-value="16:30">16:30</span>
-                        <span class="time-slot" data-value="17:00">17:00</span>
-                        <span class="time-slot" data-value="17:30">17:30</span>
-                        <span class="time-slot" data-value="18:00">18:00</span>
-                        <span class="time-slot" data-value="18:30">18:30</span>
-                        <span class="time-slot" data-value="19:00">19:00</span>
-                        <span class="time-slot" data-value="19:30">19:30</span>
-                    </div>
-                    @error('appointment_time')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
-
-
-                <div class="form-group">
-                    <label class="form-label">Dịch vụ <span class="required">*</span></label>
-                    <div id="servicesList">
-                        <div class="service-item" data-service-index="0">
-                            <div class="position-relative">
-                                <select id="service" name="service_id" class="form-select service-select"
-                                    data-index="0">
-                                    <option value="">Chọn dịch vụ</option>
-                                    @foreach ($services as $service)
-                                        <option value="{{ $service->id }}" data-name="{{ $service->name }}"
-                                            data-price="{{ $service->price }}" data-duration="{{ $service->duration }}"
-                                            data-is-combo="{{ $service->is_combo ? '1' : '0' }}">
-                                            {{ $service->name }} – ({{ number_format($service->price) }}đ)
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('service_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="additionalServicesContainer" class="mt-2"></div>
-                    <input type="hidden" name="additional_services" id="additionalServicesInput">
-                    <button class="add-service-btn mt-2" type="button" id="addServiceBtn">Thêm dịch vụ</button>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Yêu cầu kĩ thuật viên <span class="required">*</span></label>
-                    <div class="position-relative">
-                        <!-- Hidden select for form submission -->
-                        <select class="form-select d-none" id="barber" name="barber_id">
-                            <option value="">Chọn kĩ thuật viên</option>
-                            @foreach ($barbers as $barber)
-                                <option value="{{ $barber->id }}"
-                                    {{ old('barber_id') == $barber->id ? 'selected' : '' }}>
-                                    {{ $barber->name }}</option>
-                            @endforeach
-                        </select>
-
-                        <!-- Barber selection cards -->
-                        <div class="barber-cards-wrapper">
-                            @if (!request('branch_id'))
-                                <div class="all-barbers-notice">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span>Đang hiển thị tất cả thợ. Vui lòng chọn chi nhánh để xem thợ cụ thể.</span>
-                                </div>
-                            @endif
-                            <div class="barber-cards-container" id="barberCards">
-                                @foreach ($barbers as $barber)
-                                    <div class="barber-card" data-barber-id="{{ $barber->id }}"
-                                        data-barber-name="{{ $barber->name }}">
-                                        <div class="barber-avatar">
-                                            @if ($barber->avatar)
-                                                <img src="{{ asset('storage/' . $barber->avatar) }}"
-                                                    alt="{{ $barber->name }}" class="barber-img">
-                                            @else
-                                                <div class="barber-img-placeholder">
-                                                    <i class="fas fa-user"></i>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div class="barber-info">
-                                            <h6 class="barber-name">{{ $barber->name }}</h6>
-                                            <div class="barber-rating">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if ($i <= $barber->rating_avg)
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    @else
-                                                        <i class="far fa-star text-muted"></i>
-                                                    @endif
-                                                @endfor
-                                                <span
-                                                    class="rating-text">({{ number_format($barber->rating_avg, 1) }})</span>
+                                        <div class="branch-info">
+                                            <h6 class="branch-name">{{ $branch->name }}</h6>
+                                            <div class="branch-address">
+                                                <i class="fas fa-map-pin"></i>
+                                                <span>{{ $branch->address ?? 'Địa chỉ chi nhánh' }}</span>
                                             </div>
-                                            <div class="barber-skill">
-                                                @php
-                                                    $skillLevels = [
-                                                        'assistant' => 'Thử việc',
-                                                        'junior' => 'Sơ cấp',
-                                                        'senior' => 'Chuyên nghiệp',
-                                                        'master' => 'Bậc thầy',
-                                                        'expert' => 'Chuyên gia',
-                                                    ];
-                                                    $skillLevelColors = [
-                                                        'assistant' => 'secondary',
-                                                        'junior' => 'info',
-                                                        'senior' => 'primary',
-                                                        'master' => 'success',
-                                                        'expert' => 'warning',
-                                                    ];
-                                                    $levelKey = $barber->skill_level;
-                                                    $levelText = $skillLevels[$levelKey] ?? 'Chuyên nghiệp';
-                                                    $levelColor = $skillLevelColors[$levelKey] ?? 'dark';
-                                                @endphp
-                                                <span
-                                                    class="skill-badge bg-{{ $levelColor }}">{{ $levelText }}</span>
+                                            <div class="branch-hours">
+                                                <i class="fas fa-clock"></i>
+                                                <span>08:00 - 19:30</span>
                                             </div>
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
-                            @if (count($barbers) > 5)
-                                <div class="scroll-indicator">
-                                    <i class="fas fa-chevron-down"></i>
-                                    <span>Cuộn để xem thêm thợ</span>
-                                </div>
-                            @endif
+
+                            @error('branch_id')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="row g-3 form-group">
+                        <div class="col-md-6">
+                            <label class="form-label">Chọn khung giờ dịch vụ <span class="required">*</span></label>
+                            <input type="time" name="appointment_time" id="appointment_time" class="form-control"
+                                value="{{ old('appointment_time', $currentTime) }}">
+                            @error('appointment_time')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
 
-                        @error('barber_id')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-                </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Khuyến mãi</label>
+                            <input type="hidden" id="service_price" value="{{ $service->price ?? 0 }}">
+                            <select name="voucher_code" id="voucher_id" class="form-control">
+                                <option value="">Không sử dụng mã giảm giá</option>
+                                @foreach ($vouchers as $voucher)
+                                    <option value="{{ $voucher->promotion->code }}"
+                                        data-discount-type="{{ $voucher->promotion->discount_type }}"
+                                        data-discount-value="{{ $voucher->promotion->discount_value }}"
+                                        data-expired-at="{{ $voucher->promotion->end_date }}"
+                                        data-voucher-id="{{ $voucher->id }}"
+                                        data-max-discount="{{ $voucher->promotion->max_discount_amount ?? 0 }}">
+                                        {{ $voucher->promotion->code }}
+                                        ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
+                                    </option>
+                                @endforeach
+                                @foreach ($publicPromotions as $promotion)
+                                    <option value="{{ $promotion->code }}"
+                                        data-discount-type="{{ $promotion->discount_type }}"
+                                        data-discount-value="{{ $promotion->discount_value }}"
+                                        data-expired-at="{{ $promotion->end_date }}"
+                                        data-promotion-id="public_{{ $promotion->id }}"
+                                        data-max-discount="{{ $promotion->max_discount_amount ?? 0 }}">
+                                        {{ $promotion->code }}
+                                        ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                <div class="form-group">
-                    <label class="form-label">Khuyến mãi</label>
-                    <input type="hidden" id="service_price" value="{{ $service->price ?? 0 }}">
-                    <select name="voucher_code" id="voucher_id" class="form-control">
-                        <option value="">Không sử dụng mã giảm giá</option>
-                        @foreach ($vouchers as $voucher)
-                            <option value="{{ $voucher->promotion->code }}"
-                                data-discount-type="{{ $voucher->promotion->discount_type }}"
-                                data-discount-value="{{ $voucher->promotion->discount_value }}"
-                                data-expired-at="{{ $voucher->promotion->end_date }}"
-                                data-voucher-id="{{ $voucher->id }}"
-                                data-max-discount="{{ $voucher->promotion->max_discount_amount ?? 0 }}">
-                                {{ $voucher->promotion->code }}
-                                ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
-                            </option>
-                        @endforeach
-                        @foreach ($publicPromotions as $promotion)
-                            <option value="{{ $promotion->code }}" data-discount-type="{{ $promotion->discount_type }}"
-                                data-discount-value="{{ $promotion->discount_value }}"
-                                data-expired-at="{{ $promotion->end_date }}"
-                                data-promotion-id="public_{{ $promotion->id }}"
-                                data-max-discount="{{ $promotion->max_discount_amount ?? 0 }}">
-                                {{ $promotion->code }}
-                                ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <textarea class="form-control notes-textarea" name="note" placeholder="ghi chú có thể bỏ trống ..."
-                        id="notes">{{ old('note') }}</textarea>
-                </div>
-
-                <div class="service-info">
-                    <p>Tổng tiền: <strong id="totalPrice">0 vnđ</strong></p>
-                    <span id="total_after_discount"></span>
-                    <p>Thời lượng dự kiến: <strong id="totalDuration">0 Phút</strong></p>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label me-3">Phương thức thanh toán <span class="required">*</span></label>
-
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="payment_method" id="payment_cash"
-                            value="cash" {{ old('payment_method') == 'cash' ? 'checked' : '' }}>
-                        <label class="form-check-label" for="payment_cash">Tiền mặt</label>
                     </div>
 
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="payment_method" id="payment_vnpay"
-                            value="vnpay" {{ old('payment_method') == 'vnpay' ? 'checked' : '' }}>
-                        <label class="form-check-label" for="payment_vnpay">VNPay</label>
+                    <div class="form-group">
+                        <label class="form-label">Dịch vụ <span class="required">*</span></label>
+                        <div id="servicesList">
+                            <div class="servicesList" data-service-index="0">
+                                <div class="d-flex align-items-start gap-2">
+
+                                    <div class="flex-grow-1 position-relative col-md-8">
+                                        <select id="service" name="service_id" class="form-control service-select"
+                                            data-index="0">
+                                            <option value="">Chọn dịch vụ</option>
+                                            @foreach ($services as $service)
+                                                <option value="{{ $service->id }}" data-name="{{ $service->name }}"
+                                                    data-price="{{ $service->price }}"
+                                                    data-duration="{{ $service->duration }}"
+                                                    data-is-combo="{{ $service->is_combo ? '1' : '0' }}">
+                                                    {{ $service->name }} – ({{ number_format($service->price) }}đ)
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('service_id')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+
+                                    <button class="add-service-btn btn btn-outline-primary col-md-4" type="button"
+                                        id="addServiceBtn">
+                                        Thêm dịch vụ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="additionalServicesContainer" class="mt-2"></div>
+                        <input type="hidden" name="additional_services" id="additionalServicesInput">
                     </div>
 
-                    @error('payment_method')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Yêu cầu kĩ thuật viên <span class="required">*</span></label>
+                        <div class="position-relative">
+                            <select class="form-select d-none" id="barber" name="barber_id">
+                                <option value="">Chọn kĩ thuật viên</option>
+                                @foreach ($barbers as $barber)
+                                    <option value="{{ $barber->id }}"
+                                        {{ old('barber_id') == $barber->id ? 'selected' : '' }}>
+                                        {{ $barber->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="barber-cards-wrapper">
+                                <div class="barber-cards-container" id="barberCards">
+                                    @foreach ($barbers as $barber)
+                                        <div class="barber-card" data-barber-id="{{ $barber->id }}"
+                                            data-barber-name="{{ $barber->name }}">
+                                            <div class="barber-avatar">
+                                                @if ($barber->avatar)
+                                                    <img src="{{ asset('storage/' . $barber->avatar) }}"
+                                                        alt="{{ $barber->name }}" class="barber-img">
+                                                @else
+                                                    <div class="barber-img-placeholder">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <div class="barber-info">
+                                                <h6 class="barber-name">{{ $barber->name }}</h6>
+                                                <div class="barber-rating">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= $barber->rating_avg)
+                                                            <i class="fas fa-star text-warning"></i>
+                                                        @else
+                                                            <i class="far fa-star text-muted"></i>
+                                                        @endif
+                                                    @endfor
+                                                    <span
+                                                        class="rating-text">({{ number_format($barber->rating_avg, 1) }})</span>
+                                                </div>
+                                                <div class="barber-skill">
+                                                    @php
+                                                        $skillLevels = [
+                                                            'assistant' => 'Thử việc',
+                                                            'junior' => 'Sơ cấp',
+                                                            'senior' => 'Chuyên nghiệp',
+                                                            'master' => 'Bậc thầy',
+                                                            'expert' => 'Chuyên gia',
+                                                        ];
+                                                        $skillLevelColors = [
+                                                            'assistant' => 'secondary',
+                                                            'junior' => 'info',
+                                                            'senior' => 'primary',
+                                                            'master' => 'success',
+                                                            'expert' => 'warning',
+                                                        ];
+                                                        $levelKey = $barber->skill_level;
+                                                        $levelText = $skillLevels[$levelKey] ?? 'Chuyên nghiệp';
+                                                        $levelColor = $skillLevelColors[$levelKey] ?? 'dark';
+                                                    @endphp
+                                                    <span
+                                                        class="skill-badge bg-{{ $levelColor }}">{{ $levelText }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                @if (count($barbers) > 12)
+                                    <div class="scroll-indicator">
+                                        <i class="fas fa-chevron-down"></i>
+                                        <span>Cuộn để xem thêm thợ</span>
+                                    </div>
+                                @endif
+                            </div>
+
+                            @error('barber_id')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
 
 
 
-                <div class="form-btn mt-3">
-                    <button type="submit" class="booking-btn btn-outline-booking " style="padding: 16px 24px;"
-                        data-id="{{ $service->id }}">
-                        Đặt lịch
-                    </button>
-                </div>
-            </form>
+                    <div class="form-group">
+                        <label class="form-label">Ghi chú</label>
+                        <textarea class="form-control notes-textarea" name="note" rows="4"
+                            placeholder="ghi chú có thể bỏ trống ..." id="notes">{{ old('note') }}</textarea>
+                    </div>
+
+                    <div class="service-info form-group">
+                        <p>Tổng tiền: <strong id="totalPrice">0 vnđ</strong></p>
+                        <span id="total_after_discount"></span>
+                        <p>Thời lượng dự kiến: <strong id="totalDuration">0 Phút</strong></p>
+                    </div>
+
+                    <div class="form-btn mt-3">
+                        <button type="submit" class="btn btn-sm btn-outline-success booking-btn"
+                            data-id="{{ $service->id }}">
+                            <i class="fas fa-plus"></i> Tạo đặt lịch
+                        </button>
+                        <a href="{{ route('appointments.index') }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fa fa-arrow-left me-1"></i> Quay lại
+                        </a>
+                    </div>
+                </form>
+            </div>
+
         </div>
-    </main>
-
-    <style>
-        #mainNav {
-            background-color: #000;
-        }
-
-
-        /* Barber Cards Styles */
-        .barber-cards-wrapper {
-            position: relative;
-        }
-
-        .all-barbers-notice {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-            color: #856404;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .all-barbers-notice i {
-            color: #f39c12;
-            font-size: 14px;
-        }
-
-        .barber-cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            margin-top: 10px;
-            padding-top: 10px;
-            padding-bottom: 25px;
-            max-height: 400px;
-            /* Giới hạn chiều cao */
-            overflow-y: auto;
-            /* Cho phép scroll */
-            padding-right: 10px;
-            /* Tạo khoảng cách cho scrollbar */
-        }
-
-        .scroll-indicator {
-            text-align: center;
-            padding: 10px;
-            color: #6c757d;
-            font-size: 12px;
-            background: linear-gradient(to bottom, transparent, #fff);
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            pointer-events: none;
-            opacity: 0.8;
-        }
-
-        .scroll-indicator i {
-            margin-right: 5px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-
-            0%,
-            20%,
-            50%,
-            80%,
-            100% {
-                transform: translateY(0);
-            }
-
-            40% {
-                transform: translateY(-5px);
-            }
-
-            60% {
-                transform: translateY(-3px);
-            }
-        }
-
-        /* Custom scrollbar cho barber cards */
-        .barber-cards-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .barber-cards-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-
-        .barber-cards-container::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-
-        .barber-cards-container::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-
-        .barber-card {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 5px;
-            background: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .barber-card:hover {
-            border-color: #007bff;
-            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .barber-card.selected {
-            border-color: #28a745;
-            background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
-        }
-
-        .barber-card.selected::after {
-            content: '✓';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #28a745;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .barber-avatar {
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-
-        .barber-img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #f8f9fa;
-        }
-
-        .barber-img-placeholder {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid #e9ecef;
-        }
-
-        .barber-img-placeholder i {
-            font-size: 24px;
-            color: #6c757d;
-        }
-
-        .barber-info {
-            flex: 1;
-        }
-
-        .barber-name {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .barber-rating {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .barber-rating i {
-            font-size: 14px;
-            margin-right: 2px;
-        }
-
-        .rating-text {
-            margin-left: 5px;
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        .barber-skill {
-            margin-top: 5px;
-        }
-
-        .skill-badge {
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .skill-badge.bg-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
-        }
-
-        .skill-badge.bg-info {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-        }
-
-        .skill-badge.bg-primary {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-        }
-
-        .skill-badge.bg-success {
-            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
-        }
-
-        .skill-badge.bg-warning {
-            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-            color: #212529;
-        }
-
-        .skill-badge.bg-dark {
-            background: linear-gradient(135deg, #343a40 0%, #1d2124 100%);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .barber-cards-container {
-                grid-template-columns: 1fr;
-            }
-
-            .barber-card {
-                padding: 12px;
-            }
-
-            .barber-img,
-            .barber-img-placeholder {
-                width: 50px;
-                height: 50px;
-            }
-
-            .barber-name {
-                font-size: 14px;
-            }
-        }
-
-        /* Responsive cho time grid */
-        @media (max-width: 768px) {
-            .time-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .time-slot {
-                padding: 10px 6px;
-                font-size: 13px;
-            }
-        }
-
-        /* Service Notice Styles */
-        .service-notice {
-            margin: 15px 0;
-            padding: 16px 20px;
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .service-notice:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .notice-warning {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border-left: 4px solid #f39c12;
-        }
-
-        .notice-info {
-            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-            border-left: 4px solid #17a2b8;
-        }
-
-        .notice-content {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .notice-icon {
-            flex-shrink: 0;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-        }
-
-        .notice-warning .notice-icon {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-            color: white;
-        }
-
-        .notice-info .notice-icon {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-            color: white;
-        }
-
-        .notice-text {
-            flex: 1;
-        }
-
-        .notice-text h6 {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .notice-text p {
-            margin: 0;
-            font-size: 14px;
-            color: #5a6c7d;
-            line-height: 1.4;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive cho service notice */
-        @media (max-width: 768px) {
-            .service-notice {
-                padding: 12px 16px;
-                margin: 10px 0;
-            }
-
-            .notice-content {
-                gap: 12px;
-            }
-
-            .notice-icon {
-                width: 35px;
-                height: 35px;
-                font-size: 16px;
-            }
-
-            .notice-text h6 {
-                font-size: 15px;
-            }
-
-            .notice-text p {
-                font-size: 13px;
-            }
-        }
-    </style>
+    </div>
 @endsection
 
-
-@section('scripts')
+@section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -856,38 +415,6 @@
                 }
             }
         }
-
-        // chọn giờ
-        function setupTimeCardSelection() {
-            const timeSlots = document.querySelectorAll('.time-slot');
-            const timeInput = document.getElementById('appointment_time');
-
-            timeSlots.forEach(slot => {
-                slot.addEventListener('click', function() {
-                    // xóa lựa chọn trước đó
-                    timeSlots.forEach(s => s.classList.remove('selected'));
-
-                    // chọn slot hiện tại
-                    this.classList.add('selected');
-
-                    // cập nhật hidden input
-                    const timeValue = this.dataset.value;
-                    timeInput.value = timeValue;
-
-                    // trigger change event cho bất kỳ listener nào
-                    timeInput.dispatchEvent(new Event('change'));
-                });
-            });
-
-            // chọn giờ
-            const preSelectedTime = timeInput.value;
-            if (preSelectedTime) {
-                const selectedSlot = document.querySelector(`[data-value="${preSelectedTime}"]`);
-                if (selectedSlot) {
-                    selectedSlot.classList.add('selected');
-                }
-            }
-        }
     </script>
 
     <script>
@@ -956,8 +483,8 @@
             // Hàm cập nhật danh sách kỹ thuật viên
             function updateBarbers() {
                 const branch = branchInput.value || 'null';
-                const date = appointmentDate.value || 'null';
-                const time = appointmentTime.value || 'null';
+                const date = appointmentDate.value || '{{ $currentDate }}';
+                const time = appointmentTime.value || '{{ $currentTime }}';
                 const service = serviceSelect.value || 'null';
                 let additional = [];
                 try {
@@ -1075,7 +602,7 @@
                             const existingIndicator = barberCardsWrapper.querySelector('.scroll-indicator');
                             if (existingIndicator) existingIndicator.remove();
 
-                            if (data.length > 5) {
+                            if (data.length > 12) {
                                 const scrollIndicator = document.createElement('div');
                                 scrollIndicator.className = 'scroll-indicator';
                                 scrollIndicator.innerHTML = `
@@ -1147,8 +674,6 @@
                 }
             }
 
-
-
             // Xử lý thêm/xóa dịch vụ thêm
             if (addServiceBtn && additionalServicesContainer) {
                 function addAdditionalService() {
@@ -1156,7 +681,7 @@
                     serviceWrapper.className = 'service-wrapper mt-2 d-flex align-items-center';
 
                     const serviceSelect = document.createElement('select');
-                    serviceSelect.className = 'form-select additional-service-select';
+                    serviceSelect.className = 'form-control additional-service-select';
                     serviceSelect.name = 'additional_services[]';
 
                     // Lấy dịch vụ chính đã chọn
@@ -1164,20 +689,15 @@
                     const mainServiceOption = mainServiceSelect.options[mainServiceSelect.selectedIndex];
                     const isMainServiceCombo = mainServiceOption.getAttribute('data-is-combo') === '1';
 
-                    // console.log('=== DEBUG ADD ADDITIONAL SERVICE ===');
-                    // console.log('Main service selected:', mainServiceSelect.value);
-                    // console.log('Is main service combo:', isMainServiceCombo);
 
                     // Tạo danh sách tùy chọn dựa trên loại dịch vụ chính
                     let options = '<option value="">Chọn dịch vụ thêm</option>';
 
                     // Nếu dịch vụ chính là combo, không cho thêm dịch vụ thêm
                     if (isMainServiceCombo) {
-                        // console.log('Main service is combo, skipping all additional services');
                         serviceSelect.innerHTML = options;
                     } else {
                         // Nếu dịch vụ chính là dịch vụ riêng, chỉ cho thêm dịch vụ riêng khác
-                        // console.log('Main service is individual, filtering for individual services only');
 
                         // Lấy tất cả options từ dropdown chính
                         const allServiceOptions = mainServiceSelect.querySelectorAll('option[value]');
@@ -1187,20 +707,17 @@
                             const serviceName = option.textContent;
                             const isServiceCombo = option.getAttribute('data-is-combo') === '1';
 
-                            // console.log('Processing option:', serviceName, 'ID:', serviceId, 'is_combo:',
                             //     isServiceCombo);
 
                             // Lấy danh sách dịch vụ đã được chọn
                             const selectedServices = getSelectedAdditionalServices();
                             const isAlreadySelected = selectedServices.includes(serviceId);
 
-                            // console.log(`Service ${serviceName} already selected:`, isAlreadySelected);
 
                             // Chỉ thêm dịch vụ riêng (không phải combo), không phải dịch vụ chính, và chưa được chọn
                             if (!isServiceCombo &&
                                 serviceId != mainServiceSelect.value &&
                                 !isAlreadySelected) {
-                                // console.log('Adding service to dropdown:', serviceName);
 
                                 // Lấy thông tin giá và thời lượng từ data attributes
                                 const price = option.getAttribute('data-price');
@@ -1214,7 +731,6 @@
                                     </option>
                                 `;
                             } else {
-                                // console.log('Skipping service:', serviceName, '- Reason:',
                                 //     isServiceCombo ? 'is combo' :
                                 //     serviceId == mainServiceSelect.value ? 'is main service' :
                                 //     'already selected');
@@ -1222,15 +738,14 @@
                         });
                     }
 
-                    // console.log('Final options HTML:', options);
                     serviceSelect.innerHTML = options;
 
                     const removeBtn = document.createElement('button');
                     removeBtn.type = 'button';
-                    removeBtn.className = 'btn-outline-buy btn-sm ms-2';
-                    removeBtn.style.padding = '0.25rem 0.5rem';
+                    removeBtn.className = 'btn btn-outline-danger btn-sm ms-2 col-md-1';
+                    removeBtn.style.padding = '10px 0.5rem';
                     removeBtn.style.border = '1px solid #ccc';
-                    removeBtn.innerHTML = '<i class="fa fa-times"></i>';
+                    removeBtn.innerHTML = '<i class="fa fa-times"></i> Xóa';
                     removeBtn.addEventListener('click', function() {
                         additionalServicesContainer.removeChild(serviceWrapper);
                         updateAdditionalServicesInput();
@@ -1433,38 +948,14 @@
                 maxDate: new Date().fp_incr(90),
                 dateFormat: 'Y-m-d',
                 disableMobile: true,
+                defaultDate: '{{ $currentDate }}',
                 onChange: function(selectedDates, dateStr) {
                     appointmentDate.value = dateStr;
                     updateBarbers();
                 }
             });
-
-            // Xử lý search overlay
-            const icon = document.getElementById('search-icon');
-            const overlay = document.getElementById('search-overlay');
-            const closeBtn = document.querySelector('.close-btn');
-            if (icon && overlay) {
-                icon.addEventListener('click', e => {
-                    e.preventDefault();
-                    overlay.style.display = 'flex';
-                });
-                closeBtn?.addEventListener('click', () => overlay.style.display = 'none');
-                overlay.addEventListener('click', e => {
-                    if (!e.target.closest('.search-content')) overlay.style.display = 'none';
-                });
-                document.addEventListener('keydown', e => {
-                    if (e.key === 'Escape') overlay.style.display = 'none';
-                });
-            }
-
-            // Xử lý checkbox "Đặt lịch cho người khác"
-            const checkbox = document.getElementById('other_person');
-            const otherInfo = document.getElementById('other-info');
-            if (checkbox && otherInfo) {
-                checkbox.addEventListener('change', function() {
-                    otherInfo.style.display = this.checked ? 'block' : 'none';
-                });
-            }
+            // Đặt giờ mặc định và cập nhật kỹ thuật viên
+            appointmentTime.value = '{{ $currentTime }}';
 
             // Trigger cập nhật ban đầu nếu có dữ liệu cũ
             if (serviceSelect.value || branchInput.value || appointmentDate.value) {
@@ -1475,12 +966,10 @@
     <script>
         serviceSelect.addEventListener('change', function() {
             const sel = this.options[this.selectedIndex];
-            // console.log('DEBUG sel.dataset =', sel.dataset);…
         });
     </script>
 
     <script>
-        window.userLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
 
         document.querySelector('.booking-btn').addEventListener('click', function(event) {
             event.preventDefault();
@@ -1492,7 +981,6 @@
                 return;
             }
 
-            if (window.userLoggedIn) {
                 // Hiển thị SweetAlert2 để xác nhận khi đã đăng nhập
                 Swal.fire({
                     title: 'Xác nhận đặt lịch',
@@ -1523,7 +1011,7 @@
                         const formData = new FormData(form);
 
                         // Gửi yêu cầu AJAX
-                        fetch('{{ route('dat-lich.store') }}', {
+                        fetch('{{ route('appointments.createAppointment') }}', {
                                 method: 'POST',
                                 body: formData,
                                 headers: {
@@ -1564,7 +1052,9 @@
                                                 popup: 'custom-swal-popup'
                                             }
                                         }).then(() => {
-                                            location.reload();
+                                            // Chuyển hướng về trang lịch sử đặt lịch
+                                            window.location.href =
+                                                '{{ route('appointments.index') }}';
                                         });
                                     }
                                 }
@@ -1589,23 +1079,7 @@
                             });
                     }
                 });
-            } else {
-                Swal.fire({
-                    title: 'Cần đăng nhập',
-                    text: 'Bạn cần đăng nhập để đặt lịch.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Đăng nhập',
-                    cancelButtonText: 'Hủy',
-                    customClass: {
-                        popup: 'custom-swal-popup'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '{{ route('login') }}';
-                    }
-                });
-            }
+            
         });
     </script>
     <script>
@@ -1641,7 +1115,7 @@
         });
         $(document).ready(function() {
             $('#voucher_id').select2({
-                placeholder: 'Chọn hoặc tìm mã khuyến mãi',
+                // placeholder: 'Chọn hoặc tìm mã khuyến mãi',
                 allowClear: true,
                 width: '100%',
                 language: {

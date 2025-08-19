@@ -25,7 +25,10 @@ class AppointmentCreated implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new Channel('appointments');
+        return [
+            new Channel('appointments'), // Channel chung cho admin chính
+            new Channel('branch.' . $this->appointment->branch_id), // Channel riêng cho chi nhánh
+        ];
     }
 
     public function broadcastWith()
@@ -45,6 +48,7 @@ class AppointmentCreated implements ShouldBroadcast
                 []
             )->pluck('name'),
             'payment_method' => $this->appointment->payment_method ?? 'undefined',
+            'branch_id' => $this->appointment->branch_id, // Thêm branch_id
         ];
     }
 }

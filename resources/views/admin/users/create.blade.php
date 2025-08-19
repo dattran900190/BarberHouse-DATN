@@ -67,7 +67,7 @@
                     </div>
                 </div>
 
-                <div class="row mb-3">
+                {{-- <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="gender" class="form-label">Giới tính</label>
                         <select class="form-control" name="gender">
@@ -83,7 +83,7 @@
                         <input type="file" class="form-control" name="avatar" id="avatar" accept="image/*">
                         @error('avatar')<div class="text-danger">{{ $message }}</div>@enderror
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="row mb-3">
                     <div class="col-md-6">
@@ -108,11 +108,11 @@
                         <select class="form-control" name="role" id="role-select">
                             <option value="">Chọn vai trò</option>
                             @if ($role == 'user')
-                                <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>
+                                <option value="user" {{ old('role') == 'user' ? 'selected' : '' }} selected>
                                     Người dùng</option>
                             @else
                                 <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Quản trị viên</option>
-                                <option value="admin_branch" {{ old('role') == 'admin_branch' ? 'selected' : '' }}>Quản lý chi nhánh</option>
+                                <option value="admin_branch" {{ old('role') == 'admin_branch' ? 'selected' : '' }} selected>Quản lý chi nhánh</option>
                             @endif
                         </select>
                         @error('role')<div class="text-danger">{{ $message }}</div>@enderror
@@ -170,19 +170,19 @@
 
 @section('js')
     <script>
-        document.getElementById('avatar').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('avatar-preview');
+        // document.getElementById('avatar').addEventListener('change', function(event) {
+        //     const file = event.target.files[0];
+        //     const preview = document.getElementById('avatar-preview');
 
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        //     if (file && file.type.startsWith('image/')) {
+        //         const reader = new FileReader();
+        //         reader.onload = function(e) {
+        //             preview.src = e.target.result;
+        //             preview.style.display = 'block';
+        //         };
+        //         reader.readAsDataURL(file);
+        //     }
+        // });
 
         function toggleFields() {
             const role = document.getElementById('role-select').value;

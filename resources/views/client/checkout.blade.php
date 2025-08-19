@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <main class="container py-4 mb-3 pt-10" style="margin-top: 70px;">
+    <main class="container py-4 mb-3 pt-10" style="margin-top: 20px;">
         <div class="row justify-content-center">
             <div class="col-12 col-lg-10">
                 <form method="POST" action="{{ route('cart.checkout.process') }}" id="checkoutForm">
@@ -18,7 +18,7 @@
                         <div class="col-12 col-lg-8 mb-4">
                             {{-- Thông tin người dùng --}}
                             <div class="card shadow-sm mb-4">
-                                <div class="card-header bg-primary text-white">
+                                <div class="card-header bg-info">
                                     <h5 class="mb-0"><i class="fa-solid fa-user me-2"></i>Thông tin nhận hàng</h5>
                                 </div>
                                 <div class="card-body">
@@ -75,7 +75,7 @@
 
                             {{-- Vận chuyển --}}
                             <div class="card shadow-sm mb-4">
-                                <div class="card-header bg-info text-white">
+                                <div class="card-header bg-info">
                                     <h5 class="mb-0"><i class="fa-solid fa-truck me-2"></i>Vận chuyển</h5>
                                 </div>
                                 <div class="card-body">
@@ -112,7 +112,7 @@
 
                             {{-- Thanh toán --}}
                             <div class="card shadow-sm mb-4">
-                                <div class="card-header bg-success text-white">
+                                <div class="card-header bg-info">
                                     <h5 class="mb-0"><i class="fa-solid fa-credit-card me-2"></i>Thanh toán</h5>
                                 </div>
                                 <div class="card-body">
@@ -146,7 +146,7 @@
                         {{-- Cột phải - Thông tin sản phẩm và tổng tiền --}}
                         <div class="col-12 col-lg-4">
                             <div class="card shadow-sm sticky-top" style="top: 20px;">
-                                <div class="card-header bg-warning text-dark">
+                                <div class="card-header bg-info">
                                     <h5 class="mb-0"><i class="fa-solid fa-shopping-cart me-2"></i>Thông tin đơn hàng
                                     </h5>
                                 </div>
@@ -180,7 +180,7 @@
                                                                 <span class="text-muted">SL:
                                                                     {{ $item['quantity'] }}</span><br>
                                                                 <span class="text-muted">Dung tích:
-                                                                    {{ $item['volume_name']}}</span><br>
+                                                                    {{ $item['volume_name'] }}</span><br>
                                                                 <span
                                                                     class="text-primary">{{ number_format($item['price'], 0, ',', '.') }}
                                                                     VNĐ</span>
@@ -331,6 +331,9 @@
                         icon: 'warning',
                         title: 'Thiếu thông tin',
                         html: errors.join('<br>'),
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                     });
                     return;
                 }
@@ -343,13 +346,21 @@
                         showCancelButton: true,
                         confirmButtonText: 'Đặt hàng',
                         cancelButtonText: 'Hủy',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             Swal.fire({
                                 title: 'Đang xử lý...',
                                 text: 'Vui lòng chờ trong giây lát.',
                                 allowOutsideClick: false,
-                                didOpen: () => Swal.showLoading()
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
                             });
 
                             const formData = new FormData(form);
@@ -385,7 +396,10 @@
                                         Swal.fire({
                                             title: 'Thành công!',
                                             text: data.message,
-                                            icon: 'success'
+                                            icon: 'success',
+                                            customClass: {
+                                                popup: 'custom-swal-popup'
+                                            }
                                         }).then(() => window.location.href = data
                                             .redirect_url);
                                     }

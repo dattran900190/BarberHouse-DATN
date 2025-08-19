@@ -16,6 +16,9 @@ class AuthController extends Controller
 {
     public function login()
     {
+        if (Auth::check()) {
+            return redirect()->route('home');
+        }
         return view('client.login');
     }
 
@@ -61,7 +64,7 @@ class AuthController extends Controller
     private function mergeGuestCartToUser($user)
     {
         $guestCartId = Session::get('cart_id');
-        
+
         // Tìm hoặc tạo giỏ hàng của user
         $userCart = Cart::where('user_id', $user->id)->first();
         if (!$userCart) {
@@ -71,17 +74,17 @@ class AuthController extends Controller
         // Nếu có guest cart, merge vào user cart
         if ($guestCartId) {
             $guestCart = Cart::where('id', $guestCartId)
-                            ->whereNull('user_id')
-                            ->with('items.productVariant')
-                            ->first();
+                ->whereNull('user_id')
+                ->with('items.productVariant')
+                ->first();
 
             if ($guestCart) {
                 // Chuyển các item từ guest cart sang user cart
                 foreach ($guestCart->items as $guestItem) {
                     // Kiểm tra xem item này đã có trong user cart chưa
                     $existingItem = $userCart->items()
-                                           ->where('product_variant_id', $guestItem->product_variant_id)
-                                           ->first();
+                        ->where('product_variant_id', $guestItem->product_variant_id)
+                        ->first();
 
                     if ($existingItem) {
                         // Nếu đã có, cộng thêm số lượng
@@ -105,7 +108,7 @@ class AuthController extends Controller
                 Session::forget('cart_id');
             }
         }
-        
+
         // Luôn cập nhật số lượng trong session (dù có guest cart hay không)
         $cartCount = $userCart->items()->sum('quantity');
         Session::put('cart_count', $cartCount);
@@ -113,6 +116,9 @@ class AuthController extends Controller
 
     public function register()
     {
+        if (Auth::check()) {
+            return redirect()->route('home');
+        }
         return view('client.register');
     }
 
@@ -122,7 +128,7 @@ class AuthController extends Controller
         $user->name = $req->name;
         $user->email = $req->email;
         $user->phone = $req->phone;
-        $user->gender = $req->gender;
+        $user->gender = 'other';
         $user->address = $req->address;
         $user->role = 'user';
         $user->status = 'inactive';

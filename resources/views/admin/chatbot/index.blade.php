@@ -117,51 +117,6 @@
         </div>
     </div>
 @endsection
-
-        {{-- <style>
-        .custom-swal-popup {
-            border-radius: 10px !important;
-            font-family: 'Roboto', sans-serif !important;
-        }
-
-        .custom-swal-popup .swal2-title {
-            color: #333 !important;
-            font-weight: 600 !important;
-            font-size: 18px !important;
-        }
-
-        .custom-swal-popup .swal2-content {
-            color: #666 !important;
-            font-size: 14px !important;
-        }
-
-        .custom-swal-popup .swal2-confirm {
-            background-color: #7e84f3 !important;
-            border: none !important;
-            border-radius: 5px !important;
-            padding: 10px 30px !important;
-            font-weight: 500 !important;
-            color: white !important;
-        }
-
-        .custom-swal-popup .swal2-confirm:hover {
-            background-color: #6c75e8 !important;
-        }
-
-        .custom-swal-popup .swal2-cancel {
-            background-color: #6c757d !important;
-            border: none !important;
-            border-radius: 5px !important;
-            padding: 10px 30px !important;
-            font-weight: 500 !important;
-            color: white !important;
-        }
-
-        .custom-swal-popup .swal2-cancel:hover {
-            background-color: #5a6268 !important;
-        }
-    </style> --}}
-
     @section('js')
         <script>
             // Hiển thị thông báo success bằng SweetAlert

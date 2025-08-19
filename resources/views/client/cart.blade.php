@@ -1,4 +1,3 @@
-
 @extends('layouts.ClientLayout')
 
 @section('title-page')
@@ -6,15 +5,16 @@
 @endsection
 
 @section('content')
-    <main class="container-fluid">
-        <section class="h-custom">
+    <br>
+    <main class="container-fluid mt-5">
+        <section class="h-custom mt-3">
             <div class="padding-5vh">
                 <div class="flex-center">
                     <div class="col-12">
                         <div class="card-registration w-100" style="max-width: 100%;">
                             <div class="card-body no-padding">
-                                <div class="flex-row no-gap">
-                                    <div class="col-left-66">
+                                <div class="row g-0">
+                                    <div class="col-12 col-lg-8">
                                         <div class="p-5vh">
                                             <div class="d-flex justify-content-between align-items-center mb-5">
                                                 <h1 class="fw-bold mb-0">Giỏ hàng</h1>
@@ -36,19 +36,19 @@
                                             @if ($cart->items->isEmpty())
                                                 <p id="empty-cart-message">Giỏ hàng trống.</p>
                                             @else
-                                                <div class="table-responsive">
+                                                <div class="table-responsive cart-section">
                                                     <table class="table">
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col">
+                                                                <th>
                                                                     <input type="checkbox" id="check-all-cart">
                                                                 </th>
-                                                                <th scope="col">Tên sản phẩm</th>
-                                                                <th scope="col">Hình ảnh</th>
-                                                                <th scope="col">Số lượng</th>
-                                                                <th scope="col">Đơn giá</th>
-                                                                <th scope="col">Thành tiền</th>
-                                                                <th scope="col"></th>
+                                                                <th>Tên sản phẩm</th>
+                                                                <th>Hình ảnh</th>
+                                                                <th>Số lượng</th>
+                                                                <th>Đơn giá</th>
+                                                                <th>Thành tiền</th>
+                                                                <th></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody id="cart-items">
@@ -60,7 +60,7 @@
                                                                             {{ $item->canCheckout() && $item->productVariant->stock > 0 ? 'checked' : 'disabled' }}
                                                                             {{ !$item->canCheckout() || $item->productVariant->stock <= 0 ? 'style=opacity:0.5' : '' }}>
                                                                     </td>
-                                                                    <td>
+                                                                    <td data-label="Sản phẩm">
                                                                         @if ($item->isProductAvailable())
                                                                             <strong>{{ $item->productVariant->product->name }}</strong><br>
                                                                             @php
@@ -103,13 +103,13 @@
                                                                             </div>
                                                                         @endif
                                                                     </td>
-                                                                    <td>
+                                                                    <td data-label="Hình ảnh">
                                                                         <img src="{{ $item->productVariant->image ? Storage::url($item->productVariant->image) : asset('images/no-image.png') }}"
                                                                             alt="{{ $item->productVariant->product->name ?? 'Sản phẩm' }}"
                                                                             class="img-fluid rounded-3 {{ !$item->canCheckout() ? 'opacity-50' : '' }}"
                                                                             style="width: 100px;">
                                                                     </td>
-                                                                    <td>
+                                                                    <td data-label="Số lượng">
                                                                         @if ($item->canCheckout() && $item->productVariant->stock > 0)
                                                                             <div class="quantity d-flex align-items-center">
                                                                                 <button type="button"
@@ -143,14 +143,14 @@
                                                                             </div>
                                                                         @endif
                                                                     </td>
-                                                                    <td class="unit-price">
+                                                                    <td class="unit-price" data-label="Đơn giá">
                                                                         {{ number_format($item->price, 0, ',', '.') }} VNĐ
                                                                     </td>
-                                                                    <td class="subtotal">
+                                                                    <td class="subtotal" data-label="Thành tiền">
                                                                         {{ number_format($item->price * $item->quantity, 0, ',', '.') }}
                                                                         VNĐ
                                                                     </td>
-                                                                    <td class="text-end">
+                                                                    <td data-label="Xóa" class="text-end">
                                                                         <form
                                                                             action="{{ route('cart.remove', $item->id) }}"
                                                                             method="POST" class="remove-form">
@@ -194,16 +194,17 @@
                                                 <h6 class="mb-0"><a href="/" class="text-body"><i
                                                             class="fas fa-long-arrow-alt-left me-2"></i>Quay lại cửa
                                                         hàng</a></h6>
-                                                        
-                                            <form id="checkout-form" action="{{ route('cart.checkout') }}"
-                                                method="GET" class="text-end" style="margin-top: -5px;">
-                                                @guest
-                                                    <button type="button" class="btn btn-dark btn-block btn-lg"
-                                                        id="btn-checkout-guest">Mua hàng</button>
-                                                @else
-                                                    <button type="submit" class="btn-outline-buy">Mua hàng</button>
-                                                @endguest
-                                            </form>
+
+                                                <form id="checkout-form" action="{{ route('cart.checkout') }}"
+                                                    method="GET" class="text-end" style="margin-top: -5px;">
+                                                    @guest
+                                                        <button type="button" class="btn btn-dark btn-block btn-lg"
+                                                            id="btn-checkout-guest">Mua hàng</button>
+                                                    @else
+                                                        <button type="submit" class="btn-outline-buy">Mua hàng</button>
+                                                    @endguest
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -211,10 +212,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </section>
     </main>
     <style>
+    #mainNav {
+            background-color: #000;
+        }
+        
         .alert-box {
             display: flex;
             justify-content: space-between;
@@ -235,6 +239,11 @@
             gap: 10px;
         }
 
+        .alert-icon {
+            color: #16a34a;
+            font-size: 20px;
+        }
+
         .alert-close {
             cursor: pointer;
             font-size: 20px;
@@ -244,6 +253,100 @@
 
         .alert-close:hover {
             color: #111827;
+        }
+
+        #mainNav {
+            background-color: #000;
+        }
+
+        @media (min-width: 992px) {
+            .cart-section table {
+                width: 100%;
+            }
+        }
+
+        /* Tablet & Mobile */
+        @media (max-width: 991px) {
+
+            /* Full-width on mobile: remove outer paddings/margins */
+            main.container-fluid,
+            .container-fluid {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            section.h-custom {
+                padding: 0 !important;
+            }
+
+            .cart-section table {
+                border: 0;
+            }
+
+            .cart-section thead {
+                display: none;
+            }
+
+            .cart-section tbody tr {
+                display: block;
+                margin-bottom: 1rem;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 10px;
+                background: #fff;
+            }
+
+            .cart-section tbody tr td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 6px 10px;
+                border: none;
+            }
+
+            .cart-section tbody tr td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                flex-basis: 40%;
+                text-align: left;
+            }
+
+            .cart-section img {
+                max-width: 70px;
+                height: auto;
+                border-radius: 5px;
+            }
+
+            .quantity {
+                flex-wrap: wrap;
+            }
+
+            /* Reduce paddings on small screens */
+            .p-5vh {
+                padding: 12px !important;
+            }
+
+            .padding-5vh {
+                padding: 0 !important;
+            }
+
+            .bg-body-tertiary .p-5 {
+                padding: 12px !important;
+            }
+
+            /* Edge-to-edge card on mobile */
+            .card-registration {
+                border-radius: 0 !important;
+            }
+        }
+
+        /* Improve table spacing on desktop */
+        @media (min-width: 992px) {
+
+            .cart-section .table td,
+            .cart-section .table th {
+                vertical-align: middle;
+            }
         }
     </style>
 @endsection
@@ -476,6 +579,9 @@
                             icon: 'warning',
                             title: 'Vượt quá tồn kho',
                             text: `Chỉ còn lại ${max} sản phẩm.`,
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            }
                         });
                     }
 
@@ -492,7 +598,8 @@
             if (checkAllBox) {
                 checkAllBox.addEventListener('change', function() {
                     const checked = this.checked;
-                    document.querySelectorAll('.cart-item-checkbox:not([disabled])').forEach(box => box.checked = checked);
+                    document.querySelectorAll('.cart-item-checkbox:not([disabled])').forEach(box => box
+                        .checked = checked);
                     updateTotal();
                 });
             }
@@ -602,7 +709,6 @@
                 }
             });
         });
-        
     </script>
     <script>
         @if (session('error'))
@@ -618,5 +724,4 @@
             });
         @endif
     </script>
-    
 @endsection

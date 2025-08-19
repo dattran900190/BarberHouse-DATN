@@ -48,9 +48,9 @@ use App\Http\Controllers\Client\AppointmentController as ClientAppointmentContro
 Broadcast::routes(['middleware' => ['auth']]);
 
 // ==== Auth ====
-Route::get('login', [AuthController::class, 'login'])->name('login');
+Route::get('dang-nhap', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postLogin'])->name('postLogin');
-Route::get('register', [AuthController::class, 'register'])->name('register');
+Route::get('dang-ky', [AuthController::class, 'register'])->name('register');
 Route::post('register', [AuthController::class, 'postRegister'])->name('postRegister');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('verify.email');
@@ -149,18 +149,18 @@ Route::get('/tho-cat', [ClientBarberController::class, 'index'])->name('client.l
 Route::get('/tho-cat/{id}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
 
 // == Đổi điểm ==
-Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem');
-Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redeem.store');
+Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem')->middleware('auth');
+Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redeem.store')->middleware('auth');
 
 // == Lịch sử đơn hàng ==
-Route::get('/lich-su-don-hang', [ClientOrderController::class, 'index'])->name('client.orderHistory');
-Route::get('/chi-tiet-don-hang/{order}', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory');
+Route::get('/lich-su-don-hang', [ClientOrderController::class, 'index'])->name('client.orderHistory')->middleware('auth');
+Route::get('/chi-tiet-don-hang/{order}', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory')->middleware('auth');
 
 
 // == hoàn tiền ==
-Route::get('hoan-tien', [WalletController::class, 'index'])->name('client.detailWallet');
-Route::get('hoan-tien/create', [WalletController::class, 'create'])->name('client.wallet');
-Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.wallet.store');
+Route::get('hoan-tien', [WalletController::class, 'index'])->name('client.detailWallet')->middleware('auth');
+Route::get('hoan-tien/create', [WalletController::class, 'create'])->name('client.wallet')->middleware('auth');
+Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.wallet.store')->middleware('auth');
 
 
 // == Thanh toán ==
@@ -187,7 +187,9 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
         ->only(['index', 'show']);
     // ==== Admin Dashboard ====
     Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
-
+    Route::post('/dashboard/filter-products', [DashboardController::class, 'filterProducts'])->name('dashboard.filter-products');
+    // Thêm vào routes/web.php
+    Route::post('/dashboard/filter-services', [DashboardController::class, 'filterServices'])->name('dashboard.filter-services');
     // Hiển thị giao diện Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -240,8 +242,8 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::resource('customer-images', CustomerImageController::class);
 
     // ==== Chatbot ====
-Route::resource('chatbot', AdminChatController::class);
-Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMessage'])->name('chatbot.message.destroy');
+    Route::resource('chatbot', AdminChatController::class);
+    Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMessage'])->name('chatbot.message.destroy');
 
     // ==== Đổi điểm voucher ====
     Route::resource('user_redeemed_vouchers', UserRedeemedVoucherController::class);
@@ -256,11 +258,11 @@ Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMess
     Route::post('/appointments/{appointment}/reject-cancel', [AppointmentController::class, 'rejectCancel'])->name('appointments.reject-cancel');
     Route::post('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow'])->name('appointments.no-show');
     Route::get('/appointments/cancelled/{cancelledAppointment}', [AppointmentController::class, 'showCancelled'])->name('appointments.show_cancelled');
+    Route::post('/appointments/createAppointment', [AppointmentController::class, 'createAppointment'])->name('appointments.createAppointment');
 
     // ==== Thống kê lịch thợ ====
     Route::get('/barber-statistics', [BarberStatisticsController::class, 'index'])->name('barber_statistics.index');
     Route::get('/barber-statistics/{barber}', [BarberStatisticsController::class, 'show'])->name('barber_statistics.show');
-    // Route::get('/barber-statistics/export', [BarberStatisticsController::class, 'export'])->name('barber_statistics.export');
 
     // ==== Bài viết ====
     Route::resource('posts', PostController::class);
@@ -273,8 +275,11 @@ Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMess
     Route::patch('product_categories/{id}/soft-delete', [ProductCategoryController::class, 'softDelete'])->name('product_categories.softDelete');
     Route::post('product_categories/{id}/restore', [ProductCategoryController::class, 'restore'])->name('product_categories.restore');
     Route::delete('product_categories/{id}/force-delete', [ProductCategoryController::class, 'destroy'])->name('product_categories.destroy');
+    
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
+    Route::post('/appointments/{appointment}/checkin', [CheckinController::class, 'checkin'])->name('appointments.checkin');
+    Route::post('/checkin/check/{appointmentId}', [CheckinController::class, 'checkCheckinCode'])->name('checkin.check');
 
     // ==== Volums ====
     Route::resource('volumes', VolumeController::class)->names('admin.volumes');
@@ -306,7 +311,6 @@ Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMess
     Route::delete('/barber-schedules/delete-holiday/{id}', [BarberScheduleController::class, 'deleteHoliday'])
         ->name('barber_schedules.deleteHoliday');
 
-
     // ==== Người dùng ====
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::resource('users', UserController::class);
@@ -317,6 +321,7 @@ Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMess
     Route::resource('promotions', PromotionController::class);
     Route::delete('/{id}/soft-delete', [PromotionController::class, 'softDelete'])->name('promotions.softDelete');
     Route::put('/{id}/restore', [PromotionController::class, 'restore'])->name('promotions.restore');
+
     // ==== Sản phẩm ====
     Route::resource('products', ProductController::class)->names('admin.products');
     Route::post('/products/{id}/restore', [ProductController::class, 'restore'])->name('admin.products.restore');
@@ -328,9 +333,11 @@ Route::delete('/chatbot/message/{id}', [AdminChatController::class, 'destroyMess
 });
 
 // ==== profile ====
-Route::get('/profile', [ProfileController::class, 'index'])->name('client.profile');
+Route::get('/ho-so', [ProfileController::class, 'index'])->name('client.profile');
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('client.update');
 Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('client.password');
+Route::get('/branch-revenue/{id}', [DashboardController::class, 'getBranchRevenue'])
+    ->name('branch.revenue');
 
 // Form tạo nghỉ lễ
 Route::get('/barber-schedules/holiday/create', [BarberScheduleController::class, 'createHoliday'])->name('barber_schedules.createHoliday');
