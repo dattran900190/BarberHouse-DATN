@@ -119,7 +119,6 @@ Route::get('/xac-nhan-dat-lich', [ClientAppointmentController::class, 'showBooki
 // ==== Profile ====
 Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
 Route::post('/store-errors', function (Request $request) {
-    session()->flash('errors', $request->input('errors'));
     return response()->json(['success' => true]);
 })->name('store.errors');
 
@@ -259,6 +258,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::post('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow'])->name('appointments.no-show');
     Route::get('/appointments/cancelled/{cancelledAppointment}', [AppointmentController::class, 'showCancelled'])->name('appointments.show_cancelled');
     Route::post('/appointments/createAppointment', [AppointmentController::class, 'createAppointment'])->name('appointments.createAppointment');
+    Route::post('/appointments/validate-voucher', [AppointmentController::class, 'validateVoucher'])->name('appointments.validate-voucher');
 
     // ==== Thống kê lịch thợ ====
     Route::get('/barber-statistics', [BarberStatisticsController::class, 'index'])->name('barber_statistics.index');
