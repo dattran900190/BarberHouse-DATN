@@ -323,6 +323,26 @@ class AppointmentController extends Controller
                 ? Carbon::parse($appointment->appointment_time)->format('Y-m-d H:i:s')
                 : null;
 
+            // Hoàn lại voucher nếu có
+
+            $oldPromotionId = $appointment->promotion_id;
+            if ($oldPromotionId) {
+                $oldPromotion = Promotion::find($oldPromotionId);
+                if ($oldPromotion) {
+                    // Chỉ hoàn lại quantity cho voucher công khai (required_points là null)
+                    if (is_null($oldPromotion->required_points)) {
+                        $oldPromotion->increment('quantity'); // Hoàn lại số lượng voucher
+                    }
+                    // Nếu voucher từ bảng UserRedeemedVoucher thì mở lại (cho voucher cá nhân)
+                    $oldRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
+                        ->where('promotion_id', $oldPromotionId)
+                        ->where('is_used', true)
+                        ->first();
+                    if ($oldRedeemed) {
+                        $oldRedeemed->update(['is_used' => false]);
+                    }
+                }
+            }
             // Tạo bản ghi CancelledAppointment
             $cancelledAppointment = CancelledAppointment::create(array_merge($appointmentData, [
                 'status' => 'cancelled',
@@ -1200,6 +1220,28 @@ class AppointmentController extends Controller
                 ? Carbon::parse($appointment->appointment_time)->format('Y-m-d H:i:s')
                 : null;
 
+            // Hoàn lại voucher nếu có
+
+            $oldPromotionId = $appointment->promotion_id;
+            if ($oldPromotionId) {
+                $oldPromotion = Promotion::find($oldPromotionId);
+                if ($oldPromotion) {
+                    if (is_null($oldPromotion->required_points)) {
+                        // Voucher công khai -> hoàn lại số lượng
+                        $oldPromotion->increment('quantity');
+                    } else {
+                        // Voucher đổi điểm -> chỉ mở lại is_used
+                        $oldRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
+                            ->where('promotion_id', $oldPromotionId)
+                            ->where('is_used', true)
+                            ->first();
+                        if ($oldRedeemed) {
+                            $oldRedeemed->update(['is_used' => false]);
+                        }
+                    }
+                }
+            }
+
             // Tạo bản ghi CancelledAppointment
             $cancelledAppointment = CancelledAppointment::create(array_merge($appointmentData, [
                 'status' => 'cancelled',
@@ -1231,9 +1273,6 @@ class AppointmentController extends Controller
             $appointment->payment_status = 'paid';
             $appointment->save();
         }
-
-
-        
     }
 
 
@@ -1369,22 +1408,46 @@ class AppointmentController extends Controller
             $oldPromotionId = $appointment->promotion_id;
             $newPromotionId = $promotion ? $promotion->id : null;
 
-            // --- Hoàn lại voucher cũ nếu đổi sang voucher khác hoặc bỏ voucher ---
+
+
             if ($oldPromotionId && $oldPromotionId != $newPromotionId) {
                 $oldPromotion = Promotion::find($oldPromotionId);
-                if ($oldPromotion) {
-                    $oldPromotion->increment('quantity'); // Hoàn lại số lượng
+                $newPromotion = Promotion::find($newPromotionId);
 
-                    // Nếu voucher cũ từ bảng UserRedeemedVoucher thì mở lại
-                    $oldRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
-                        ->where('promotion_id', $oldPromotionId)
-                        ->where('is_used', true)
-                        ->first();
-                    if ($oldRedeemed) {
-                        $oldRedeemed->update(['is_used' => false]);
+                if ($oldPromotion && $newPromotion) {
+                    // --- Nếu voucher cũ là công khai ---
+                    if (is_null($oldPromotion->required_points)) {
+                        // Trả lại số lượng công khai cũ
+                        $oldPromotion->increment('quantity');
+                    } else {
+                        // Nếu voucher cũ là đổi điểm -> reset lại trạng thái
+                        $oldRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
+                            ->where('promotion_id', $oldPromotionId)
+                            ->where('is_used', true)
+                            ->first();
+                        if ($oldRedeemed) {
+                            $oldRedeemed->update(['is_used' => false]);
+                        }
                     }
+
+                    // // --- Nếu voucher mới là công khai ---
+                    // if (is_null($newPromotion->required_points)) {
+                    //     // Trừ số lượng công khai mới
+                    //     $newPromotion->decrement('quantity');
+                    // } else {
+                    //     // Nếu voucher mới là đổi điểm -> đánh dấu đã sử dụng
+                    //     $newRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
+                    //         ->where('promotion_id', $newPromotionId)
+                    //         ->where('is_used', false)
+                    //         ->first();
+                    //     if ($newRedeemed) {
+                    //         $newRedeemed->update(['is_used' => true]);
+                    //     }
+
                 }
             }
+
+
 
             // Tạo lịch hẹn
             $appointment->update([
