@@ -24,7 +24,7 @@ class ProfileController extends Controller
         $pointHistories = PointHistory::with('promotion') // nếu có liên kết với promotion
             ->where('user_id', $user->id)
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(8);
 
         return view('client.profile', compact('user', 'pointHistories'));
     }
