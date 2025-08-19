@@ -551,7 +551,6 @@ class AppointmentController extends Controller
                     }
                     $totalAmount -= $discountAmount;
                 } else {
-                    session()->flash('error', 'Mã voucher không tồn tại hoặc đã hết hạn.');
                     return [
                         'error' => true,
                         'message' => 'Mã voucher không tồn tại hoặc đã hết hạn.'
@@ -796,7 +795,8 @@ class AppointmentController extends Controller
                 if ($promotion->type === 'user_voucher') {
                     $redeemedVoucher = UserRedeemedVoucher::where('user_id', $user_id)
                         ->where('promotion_id', $promotion->id)
-                        ->first(); // Bỏ điều kiện is_used để hỗ trợ voucher hiện tại
+                        ->where('is_used', true) // Lấy voucher đã sử dụng cho appointment hiện tại
+                        ->first();
                 }
             } else {
                 // Voucher cá nhân
@@ -886,7 +886,7 @@ class AppointmentController extends Controller
                     } else {
                         return [
                             'error' => true,
-                            'message' => 'Mã voucher không tồn tại hoặc đã hết hạn.'
+                            'message' => 'Mã voucher không tồn tại, đã hết hạn hoặc đã sử dụng vào lịch hẹn khác.'
                         ];
                     }
                 }
@@ -915,7 +915,8 @@ class AppointmentController extends Controller
                 if ($promotion->type === 'user_voucher') {
                     $redeemedVoucher = UserRedeemedVoucher::where('user_id', Auth::id())
                         ->where('promotion_id', $promotion->id)
-                        ->first(); // Bỏ điều kiện is_used
+                        ->where('is_used', true) // Lấy voucher đã sử dụng cho appointment hiện tại
+                        ->first();
                 }
             }
         }
@@ -1181,32 +1182,6 @@ class AppointmentController extends Controller
 
         // Nếu hủy
         if ($newStatus === 'cancelled') {
-            // $appointmentData = $appointment->toArray();
-            // $appointmentData['appointment_time'] = $appointment->appointment_time
-            //     ? Carbon::parse($appointment->appointment_time)->format('Y-m-d H:i:s')
-            //     : null;
-
-            // CancelledAppointment::create(array_merge($appointmentData, [
-            //     'status' => 'cancelled',
-            //     'payment_status' => $appointment->payment_status,
-            //     'cancellation_type' => 'admin_cancel',
-            //     'status_before_cancellation' => $appointment->status,
-            //     'additional_services' => $appointment->additional_services,
-            //     'payment_method' => $appointment->payment_method,
-            //     'note' => $appointment->note,
-            //     'cancellation_reason' => $request->input('cancellation_reason', 'Không có lý do cụ thể'),
-            // ]));
-
-            // DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
-            // DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
-
-            // Mail::to($appointmentData['email'])
-            //     ->queue(new AdminCancelBookingMail((object) $appointmentData));
-
-            // $appointment->delete();
-
-            // event(new AppointmentStatusUpdated($appointment));
-
             $checkCancelledAppointment = CancelledAppointment::where('id', $appointment->id)->first();
             if ($checkCancelledAppointment) {
                 return response()->json([
@@ -1221,7 +1196,6 @@ class AppointmentController extends Controller
                 : null;
 
             // Hoàn lại voucher nếu có
-
             $oldPromotionId = $appointment->promotion_id;
             if ($oldPromotionId) {
                 $oldPromotion = Promotion::find($oldPromotionId);
@@ -1290,6 +1264,7 @@ class AppointmentController extends Controller
 
         // Lấy danh sách mã giảm giá khả dụng của người dùng (voucher đổi điểm)
         $vouchers = Auth::check() ? UserRedeemedVoucher::where('user_id', Auth::id())
+            ->where('is_used', false) // Chỉ lấy voucher chưa sử dụng
             ->with('promotion')
             ->get()
             ->filter(function ($voucher) use ($appointment) {
@@ -1352,7 +1327,7 @@ class AppointmentController extends Controller
                     'discount_value' => floatval($promotion->discount_value), // Chuẩn hóa thành số
                     'end_date' => $promotion->end_date,
                     'id' => 'public_' . $promotion->id,
-                    'min_order_value' => floatval($voucher->promotion->min_order_value ?? 0),
+                    'min_order_value' => floatval($promotion->min_order_value ?? 0),
                     'max_discount_amount' => floatval($promotion->max_discount_amount ?? 0), // Chuẩn hóa thành số
                     'type' => 'public_promotion'
                 ];
@@ -1410,40 +1385,46 @@ class AppointmentController extends Controller
 
 
 
-            if ($oldPromotionId && $oldPromotionId != $newPromotionId) {
-                $oldPromotion = Promotion::find($oldPromotionId);
-                $newPromotion = Promotion::find($newPromotionId);
-
-                if ($oldPromotion && $newPromotion) {
-                    // --- Nếu voucher cũ là công khai ---
-                    if (is_null($oldPromotion->required_points)) {
-                        // Trả lại số lượng công khai cũ
-                        $oldPromotion->increment('quantity');
-                    } else {
-                        // Nếu voucher cũ là đổi điểm -> reset lại trạng thái
-                        $oldRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
-                            ->where('promotion_id', $oldPromotionId)
-                            ->where('is_used', true)
-                            ->first();
-                        if ($oldRedeemed) {
-                            $oldRedeemed->update(['is_used' => false]);
+            // Xử lý thay đổi voucher
+            if ($oldPromotionId != $newPromotionId) {
+                // Hoàn lại voucher cũ nếu có
+                if ($oldPromotionId) {
+                    $oldPromotion = Promotion::find($oldPromotionId);
+                    if ($oldPromotion) {
+                        if (is_null($oldPromotion->required_points)) {
+                            // Voucher công khai -> hoàn lại số lượng
+                            $oldPromotion->increment('quantity');
+                        } else {
+                            // Voucher đổi điểm -> reset lại trạng thái
+                            $oldRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
+                                ->where('promotion_id', $oldPromotionId)
+                                ->where('is_used', true)
+                                ->first();
+                            if ($oldRedeemed) {
+                                $oldRedeemed->update(['is_used' => false]);
+                            }
                         }
                     }
+                }
 
-                    // // --- Nếu voucher mới là công khai ---
-                    // if (is_null($newPromotion->required_points)) {
-                    //     // Trừ số lượng công khai mới
-                    //     $newPromotion->decrement('quantity');
-                    // } else {
-                    //     // Nếu voucher mới là đổi điểm -> đánh dấu đã sử dụng
-                    //     $newRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
-                    //         ->where('promotion_id', $newPromotionId)
-                    //         ->where('is_used', false)
-                    //         ->first();
-                    //     if ($newRedeemed) {
-                    //         $newRedeemed->update(['is_used' => true]);
-                    //     }
-
+                // Xử lý voucher mới nếu có và không phải trạng thái cancelled
+                if ($newPromotionId && $newStatus !== 'cancelled') {
+                    $newPromotion = Promotion::find($newPromotionId);
+                    if ($newPromotion) {
+                        if (is_null($newPromotion->required_points)) {
+                            // Voucher công khai -> trừ số lượng
+                            $newPromotion->decrement('quantity');
+                        } else {
+                            // Voucher đổi điểm -> đánh dấu đã sử dụng
+                            $newRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
+                                ->where('promotion_id', $newPromotionId)
+                                ->where('is_used', false)
+                                ->first();
+                            if ($newRedeemed) {
+                                $newRedeemed->update(['is_used' => true]);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -1464,11 +1445,13 @@ class AppointmentController extends Controller
                 'branch_id' => $request->branch_id, // Thêm branch_id
             ]);
 
-            // Xử lý voucher
-            if ($promotion && $redeemedVoucher) {
-                $this->appointmentService->applyPromotion($appointment, $redeemedVoucher);
-            } elseif ($promotion) {
-                $this->appointmentService->applyPromotion($appointment, null, $promotion);
+            // Xử lý voucher - chỉ áp dụng khi không phải trạng thái cancelled và không thay đổi voucher
+            if ($newStatus !== 'cancelled' && $oldPromotionId == $newPromotionId && $oldPromotionId !== null) {
+                if ($promotion && $redeemedVoucher) {
+                    $this->appointmentService->applyPromotion($appointment, $redeemedVoucher);
+                } elseif ($promotion) {
+                    $this->appointmentService->applyPromotion($appointment, null, $promotion);
+                }
             }
 
             $this->handleAppointmentStatus($appointment, $newStatus, $additionalServices, $request);
