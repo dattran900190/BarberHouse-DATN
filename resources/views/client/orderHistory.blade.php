@@ -4,7 +4,6 @@
     Lịch sử đặt hàng
 @endsection
 
-
 @section('content')
     @php
         $statusLabels = [
@@ -60,7 +59,6 @@
                                     <span class="fw-bold">Đơn hàng: {{ $order->order_code }}</span><br>
                                     <span class="text-dark">
                                         {{ $order->items->pluck('name')->filter()->join(', ') }}
-
                                     </span><br>
                                     <span class="text-muted">Tổng số lượng: {{ $order->items->sum('quantity') }}</span><br>
                                     <span class="text-muted">Tổng tiền:
@@ -84,7 +82,6 @@
                                     @endif
                                 </div>
 
-
                                 <div class="col-md-4 text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a class="btn-outline-show"
@@ -100,7 +97,8 @@
                                         @if (
                                             $order->status != 'cancelled' &&
                                                 $order->payment_status == 'paid' &&
-                                                !$order->refundRequests()->whereIn('refund_status', ['pending', 'processing'])->exists())
+                                                !$order->refundRequests()->whereIn('refund_status', ['pending', 'processing'])->exists() &&
+                                                !$order->refundRequests()->where('refund_status', 'rejected')->exists())
                                             <a href="{{ route('client.wallet', ['refundable_type' => 'order', 'refundable_id' => $order->id]) }}"
                                                 class="btn-outline-show refund-btn" data-order-id="{{ $order->id }}">
                                                 Yêu cầu hoàn tiền
@@ -126,22 +124,15 @@
             background-color: #000;
         }
 
-        /* main {
-            padding: 120px 60px 60px 60px; */
-            /* Desktop mặc định */
-        /* } */
-
         @media (max-width: 768px) {
             main {
                 padding: 80px 10px 10px 10px !important;
             }
         }
 
-        /* Responsive cho mobile */
         @media (max-width: 768px) {
             .custom-swal-popup {
                 width: 95vw !important;
-                /* Gần full chiều ngang mobile */
                 max-width: 95vw !important;
                 padding: 15px;
             }

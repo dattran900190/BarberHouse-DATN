@@ -109,9 +109,9 @@
     </div>
 
     <!-- Doanh thu hôm nay -->
-    <!-- Doanh thu hôm nay - CẢI THIỆN -->
     <div class="row g-3 mb-4">
-        <div class="col-lg-4">
+        <!-- Card: Doanh thu hôm nay -->
+        <div class="col-lg-6">
             <div class="card card-stats card-round h-100">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -124,81 +124,16 @@
                             <div class="numbers">
                                 <p class="card-category">Doanh thu hôm nay</p>
                                 <h4 class="card-title">{{ number_format($todayRevenue) }} VNĐ</h4>
-                                <div class="mt-2">
+                                <small class="text-muted">
                                     <small class="text-success d-block">
                                         <i class="fas fa-cut me-1"></i>
-                                        Dịch vụ: {{ number_format($todayServiceRevenue) }} VNĐ
-                                        @if ($todayServiceCount > 0)
-                                            ({{ $todayServiceCount }} lượt)
-                                        @endif
+                                        Dịch vụ: {{ number_format($todayServiceRevenue) }} VNĐ<br>
                                     </small>
                                     <small class="text-info d-block">
                                         <i class="fas fa-shopping-cart me-1"></i>
                                         Sản phẩm: {{ number_format($todayProductRevenue) }} VNĐ
-                                        @if ($todayProductOrderCount > 0)
-                                            ({{ $todayProductOrderCount }} đơn)
-                                        @endif
                                     </small>
-
-                                    <!-- Hiển thị tỷ lệ -->
-                                    @if ($todayRevenue > 0)
-                                        @php
-                                            $servicePercent = round(($todayServiceRevenue / $todayRevenue) * 100, 1);
-                                            $productPercent = round(($todayProductRevenue / $todayRevenue) * 100, 1);
-                                        @endphp
-                                        <div class="progress mt-2" style="height: 6px;">
-                                            <div class="progress-bar bg-success" role="progressbar"
-                                                style="width: {{ $servicePercent }}%"
-                                                title="Dịch vụ: {{ $servicePercent }}%"></div>
-                                            <div class="progress-bar bg-info" role="progressbar"
-                                                style="width: {{ $productPercent }}%"
-                                                title="Sản phẩm: {{ $productPercent }}%"></div>
-                                        </div>
-                                        <small class="text-muted">
-                                            Dịch vụ {{ $servicePercent }}% • Sản phẩm {{ $productPercent }}%
-                                        </small>
-                                    @endif
-
-                                    <!-- So sánh với hôm qua -->
-                                    @php
-                                        $yesterday = \Carbon\Carbon::yesterday();
-                                        $yesterdayServiceRevenue = \App\Models\Appointment::whereDate(
-                                            'appointment_time',
-                                            $yesterday,
-                                        )
-                                            ->where('status', 'completed')
-                                            ->sum('total_amount');
-                                        $yesterdayProductRevenue = \App\Models\Order::whereDate(
-                                            'created_at',
-                                            $yesterday,
-                                        )
-                                            ->where('status', 'completed')
-                                            ->sum('total_money');
-                                        $yesterdayTotal = $yesterdayServiceRevenue + $yesterdayProductRevenue;
-
-                                        if ($yesterdayTotal > 0) {
-                                            $changePercent =
-                                                (($todayRevenue - $yesterdayTotal) / $yesterdayTotal) * 100;
-                                            $isIncrease = $changePercent > 0;
-                                            $changeClass = $isIncrease ? 'text-success' : 'text-danger';
-                                            $changeIcon = $isIncrease ? 'fa-arrow-up' : 'fa-arrow-down';
-                                        }
-                                    @endphp
-
-                                    @if (isset($changePercent) && $yesterdayTotal > 0)
-                                        <div class="mt-2 pt-2 border-top">
-                                            <small class="{{ $changeClass }}">
-                                                <i class="fas {{ $changeIcon }} me-1"></i>
-                                                {{ $isIncrease ? '+' : '' }}{{ number_format($changePercent, 1) }}% so với
-                                                hôm qua
-                                            </small>
-                                            <br>
-                                            <small class="text-muted">
-                                                Hôm qua: {{ number_format($yesterdayTotal) }} VNĐ
-                                            </small>
-                                        </div>
-                                    @endif
-                                </div>
+                                </small>
                             </div>
                         </div>
                     </div>
@@ -206,121 +141,82 @@
             </div>
         </div>
 
-        <!-- Thêm thống kê bổ sung -->
-        <div class="col-lg-4">
-            <div class="card card-stats card-round h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-icon">
-                            <div class="icon-big text-center icon-success bubble-shadow-small">
-                                <i class="fas fa-calendar-day"></i>
-                            </div>
-                        </div>
-                        <div class="col col-stats ms-3 ms-sm-0">
-                            <div class="numbers">
-                                <p class="card-category">Hoạt động hôm nay</p>
-                                <div class="mt-2">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="text-muted">Lịch đã hoàn thành:</span>
-                                        <strong class="text-success">{{ $todayServiceCount ?? 0 }}</strong>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="text-muted">Đơn hàng hoàn thành:</span>
-                                        <strong class="text-info">{{ $todayProductOrderCount ?? 0 }}</strong>
-                                    </div>
-
-                                    @php
-                                        $todayPendingAppointments = \App\Models\Appointment::whereDate(
-                                            'appointment_time',
-                                            \Carbon\Carbon::today(),
-                                        )
-                                            ->whereIn('status', ['confirmed', 'checked-in', 'progress'])
-                                            ->count();
-                                        $todayPendingOrders = \App\Models\Order::whereDate(
-                                            'created_at',
-                                            \Carbon\Carbon::today(),
-                                        )
-                                            ->whereIn('status', ['pending', 'confirmed'])
-                                            ->count();
-                                    @endphp
-
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="text-muted">Lịch đang xử lý:</span>
-                                        <strong class="text-warning">{{ $todayPendingAppointments }}</strong>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="text-muted">Đơn hàng chờ:</span>
-                                        <strong class="text-warning">{{ $todayPendingOrders }}</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Trung bình doanh thu -->
-        <div class="col-lg-4">
+        <!-- Card: Doanh thu chi nhánh -->
+        <div class="col-lg-6">
             <div class="card card-stats card-round h-100">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-icon">
                             <div class="icon-big text-center icon-primary bubble-shadow-small">
-                                <i class="fas fa-chart-bar"></i>
+                                <i class="fas fa-building"></i>
                             </div>
                         </div>
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
-                                <p class="card-category">Trung bình tháng này</p>
-                                @php
-                                    $currentMonth = date('n');
-                                    $currentYear = date('Y');
-                                    $daysInMonth = \Carbon\Carbon::now()->daysInMonth;
-                                    $currentDay = date('j');
-
-                                    $monthServiceRevenue = \App\Models\Appointment::whereMonth(
-                                        'appointment_time',
-                                        $currentMonth,
-                                    )
-                                        ->whereYear('appointment_time', $currentYear)
-                                        ->where('status', 'completed')
-                                        ->sum('total_amount');
-                                    $monthProductRevenue = \App\Models\Order::whereMonth('created_at', $currentMonth)
-                                        ->whereYear('created_at', $currentYear)
-                                        ->where('status', 'completed')
-                                        ->sum('total_money');
-                                    $monthTotal = $monthServiceRevenue + $monthProductRevenue;
-
-                                    $avgPerDay = $currentDay > 0 ? $monthTotal / $currentDay : 0;
-                                    $projectedMonth = $avgPerDay * $daysInMonth;
-                                @endphp
-                                <h4 class="card-title">{{ number_format($avgPerDay) }} VNĐ/ngày</h4>
-                                <div class="mt-2">
-                                    <small class="text-muted d-block">
-                                        Tổng tháng này: {{ number_format($monthTotal) }} VNĐ
-                                    </small>
-                                    <small class="text-muted d-block">
-                                        Dự kiến cuối tháng: {{ number_format($projectedMonth) }} VNĐ
-                                    </small>
-                                    @if ($projectedMonth > 0 && $monthTotal > 0)
-                                        @php
-                                            $monthProgress = ($monthTotal / $projectedMonth) * 100;
-                                        @endphp
-                                        <div class="progress mt-2" style="height: 4px;">
-                                            <div class="progress-bar bg-primary" role="progressbar"
-                                                style="width: {{ min($monthProgress, 100) }}%"></div>
+                                <div class="dropdown">
+                                    <div class="branch-dropdown d-flex align-items-center justify-content-between"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <div>
+                                            <p class="card-category mb-1">Doanh thu chi nhánh</p>
+                                            <h6 class="text-muted small mb-0" id="selected-branch-name">
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                {{ $selectedBranchName }}
+                                            </h6>
                                         </div>
-                                        <small class="text-primary">{{ number_format($monthProgress, 1) }}% tiến độ
-                                            tháng</small>
-                                    @endif
+                                        <i class="fas fa-chevron-down text-muted"></i>
+                                    </div>
+
+                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                        <li>
+                                            <h6 class="dropdown-header">
+                                                <i class="fas fa-building me-2"></i>Chọn chi nhánh
+                                            </h6>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+
+                                        @if (Auth::user()->role !== 'admin_branch')
+                                            <li>
+                                                <a class="dropdown-item branch-option" href="#" data-branch-id=""
+                                                    data-branch-name="Tất cả chi nhánh">
+                                                    <i class="fas fa-globe me-2 text-info"></i>
+                                                    <span>Tất cả chi nhánh</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                        @endif
+
+                                        @foreach ($branchesForRevenue as $branch)
+                                            <li>
+                                                <a class="dropdown-item branch-option {{ $selectedBranchRevenue == $branch->id ? 'active' : '' }}"
+                                                    href="#" data-branch-id="{{ $branch->id }}"
+                                                    data-branch-name="{{ $branch->name }}">
+                                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                                    <span>{{ $branch->name }}</span>
+                                                    @if ($selectedBranchRevenue == $branch->id)
+                                                        <i class="fas fa-check ms-auto text-success"></i>
+                                                    @endif
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 </div>
+
+                                <h4 class="card-title" id="branch-revenue-amount">
+                                    {{ number_format($branchTodayRevenue) }} VNĐ
+                                </h4>
+                                <small class="text-muted" id="branch-revenue-details"></small>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
     </div>
     <!-- Chart Section -->
     <div class="row g-3 mb-4">
@@ -403,61 +299,72 @@
                             <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" id="pills-top-service-tab" data-bs-toggle="pill"
-                                        href="#pills-top-service" role="tab">Phổ biến</a>
+                                        href="#pills-top-service" role="tab">
+                                        Phổ biến
+                                        <span class="badge bg-primary ms-1"
+                                            id="top-service-count">{{ $topServices->count() }}</span>
+                                    </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="pills-low-service-tab" data-bs-toggle="pill"
-                                        href="#pills-low-service" role="tab">Ít dùng</a>
+                                        href="#pills-low-service" role="tab">
+                                        Ít dùng
+                                        <span class="badge bg-warning ms-1"
+                                            id="low-service-count">{{ $lowUsageServices->count() }}</span>
+                                    </a>
                                 </li>
                             </ul>
+                        </div>
+                        <!-- Bộ lọc dịch vụ -->
+                        <div class="card-body border-bottom">
+                            <div class="row g-3" id="service-filter-controls">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm" id="service-search"
+                                        placeholder="Tìm kiếm dịch vụ...">
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="service-sort-select" class="form-select form-select-sm">
+                                        <option value="usage_count">Theo lượt sử dụng</option>
+                                        <option value="name">Theo tên A-Z</option>
+                                        <option value="price">Theo giá</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="service-per-page" class="form-select form-select-sm">
+                                        <option value="5">5 dịch vụ</option>
+                                        <option value="10" selected>10 dịch vụ</option>
+                                        <option value="20">20 dịch vụ</option>
+                                        <option value="all">Tất cả</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm w-100"
+                                        onclick="resetServiceFilters()">
+                                        <i class="fas fa-undo"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-center loading-spinner-service" style="display: none;">
+                                <div class="spinner-border spinner-border-sm text-primary mt-2" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <small class="text-muted d-block mt-1">Đang tải...</small>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="tab-content">
                                 <!-- Phổ biến -->
                                 <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
-                                    <div class="scroll-rows-5">
-                                        <ul class="list-group list-group-flush">
-                                            @forelse ($topServices as $item)
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <strong>{{ $item->service->name ?? 'Không xác định' }}</strong><br>
-                                                        <small
-                                                            class="text-muted">{{ number_format($item->service->price ?? 0) }}
-                                                            VNĐ</small>
-                                                    </div>
-                                                    <span class="badge bg-primary rounded-pill">
-                                                        {{ $item->usage_count }} lượt
-                                                    </span>
-                                                </li>
-                                            @empty
-                                                <li class="list-group-item text-center text-muted">Không có dịch vụ nào
-                                                </li>
-                                            @endforelse
-                                        </ul>
+                                    <div class="scroll-rows-5" id="top-services-content">
+                                        @include('partials.top-services', ['topServices' => $topServices])
                                     </div>
                                 </div>
-
                                 <!-- Ít dùng -->
                                 <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
-                                    <div class="scroll-rows-5">
-                                        <ul class="list-group list-group-flush">
-                                            @forelse ($lowUsageServices as $item)
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <strong>{{ $item->name ?? 'Không xác định' }}</strong><br>
-                                                        <small class="text-muted">{{ number_format($item->price ?? 0) }}
-                                                            VNĐ</small>
-                                                    </div>
-                                                    <span class="badge bg-secondary rounded-pill">
-                                                        {{ $item->usage_count }} lượt
-                                                    </span>
-                                                </li>
-                                            @empty
-                                                <li class="list-group-item text-center text-muted">Không có dữ liệu</li>
-                                            @endforelse
-                                        </ul>
+                                    <div class="scroll-rows-5" id="low-services-content">
+                                        @include('partials.low-services', [
+                                            'lowUsageServices' => $lowUsageServices,
+                                        ])
                                     </div>
                                 </div>
                             </div>
@@ -547,7 +454,7 @@
                                         href="#pills-top-product" role="tab">
                                         Bán chạy
                                         <span class="badge bg-success ms-1"
-                                            id="top-count">{{ $topProducts->total() ?? count($topProducts) }}</span>
+                                            id="top-product-count">{{ $topProducts->total() ?? count($topProducts) }}</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -555,7 +462,7 @@
                                         href="#pills-low-product" role="tab">
                                         Ít bán
                                         <span class="badge bg-warning ms-1"
-                                            id="low-count">{{ $lowSellingProducts->total() ?? count($lowSellingProducts) }}</span>
+                                            id="low-product-count">{{ $lowSellingProducts->total() ?? count($lowSellingProducts) }}</span>
                                     </a>
                                 </li>
                             </ul>
@@ -563,7 +470,6 @@
 
                         <!-- Bộ lọc và tìm kiếm -->
                         <div class="card-body border-bottom">
-                            <!-- Bỏ form wrapper, chỉ dùng các input riêng lẻ -->
                             <div class="row g-3" id="product-filter-controls">
                                 <!-- Tìm kiếm -->
                                 <div class="col-md-4">
@@ -595,7 +501,7 @@
 
                                 <!-- Sắp xếp -->
                                 <div class="col-md-3">
-                                    <select name="sort_by" class="form-select form-select-sm" id="sort-select">
+                                    <select name="sort_by" class="form-select form-select-sm" id="product-sort-select">
                                         <option value="total_sold"
                                             {{ request('sort_by', 'total_sold') == 'total_sold' ? 'selected' : '' }}>Theo
                                             số lượng bán</option>
@@ -612,7 +518,7 @@
                                 <!-- Action buttons -->
                                 <div class="col-md-2">
                                     <div class="btn-group btn-group-sm w-100">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()"
+                                        <button type="button" class="btn btn-outline-secondary" id="product-reset-btn"
                                             title="Reset lọc">
                                             <i class="fas fa-undo"></i>
                                         </button>
@@ -621,7 +527,7 @@
                             </div>
 
                             <!-- Loading spinner -->
-                            <div class="text-center loading-spinner" style="display: none;">
+                            <div class="text-center loading-spinner-product" style="display: none;">
                                 <div class="spinner-border spinner-border-sm text-primary mt-2" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
@@ -635,78 +541,10 @@
                                 <div class="tab-pane fade show active" id="pills-top-product" role="tabpanel">
                                     <div class="scroll-rows-5">
                                         <div id="top-products-content">
-                                            <ul class="list-group list-group-flush">
-                                                @forelse ($topProducts as $index => $item)
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 product-item"
-                                                        data-name="{{ strtolower($item->productVariant->product->name ?? 'không xác định') }}">
-                                                        <div class="d-flex align-items-center">
-                                                            <!-- Ranking -->
-                                                            <div class="me-3">
-                                                                @if ($index < 3)
-                                                                    <span class="badge bg-warning rounded-circle p-2">
-                                                                        <i class="fas fa-medal"></i>
-                                                                    </span>
-                                                                @else
-                                                                    <span
-                                                                        class="badge bg-light text-dark rounded-circle p-2">
-                                                                        {{ $index + 1 }}
-                                                                    </span>
-                                                                @endif
-                                                            </div>
-
-                                                            <!-- Product info -->
-                                                            <div>
-                                                                <strong
-                                                                    class="d-block">{{ $item->productVariant->product->name ?? 'Không xác định' }}</strong>
-                                                                <small class="text-muted">
-                                                                    {{ number_format($item->productVariant->price ?? 0) }}
-                                                                    VNĐ
-                                                                    @if ($item->productVariant->product->category ?? false)
-                                                                        •
-                                                                        {{ $item->productVariant->product->category->name }}
-                                                                    @endif
-                                                                </small>
-                                                                @php
-                                                                    $totalSales = $topProducts->sum('total_sold');
-                                                                    $percentage =
-                                                                        $totalSales > 0
-                                                                            ? round(
-                                                                                ($item->total_sold / $totalSales) * 100,
-                                                                                1,
-                                                                            )
-                                                                            : 0;
-                                                                @endphp
-                                                                <div class="progress mt-1" style="height: 4px;">
-                                                                    <div class="progress-bar bg-success"
-                                                                        style="width: {{ $percentage }}%"></div>
-                                                                </div>
-                                                                <small class="text-muted">{{ $percentage }}% tổng doanh
-                                                                    số</small>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="text-end">
-                                                            <span class="badge bg-success rounded-pill fs-6 mb-1">
-                                                                {{ $item->total_sold }} sp
-                                                            </span>
-                                                            <br>
-                                                            <small class="text-muted">
-                                                                {{ number_format($item->total_sold * ($item->productVariant->price ?? 0)) }}
-                                                                VNĐ
-                                                            </small>
-
-                                                            <div class="btn-group btn-group-sm mt-1">
-
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                @empty
-                                                    <li class="list-group-item text-center text-muted border-0">
-                                                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                                                        Không có sản phẩm nào được bán
-                                                    </li>
-                                                @endforelse
-                                            </ul>
+                                            <!-- Nội dung sản phẩm bán chạy sẽ được load vào đây -->
+                                            @include('partials.top-products', [
+                                                'topProducts' => $topProducts,
+                                            ])
                                         </div>
                                     </div>
                                 </div>
@@ -714,73 +552,11 @@
                                 <!-- Tab Ít bán -->
                                 <div class="tab-pane fade" id="pills-low-product" role="tabpanel">
                                     <div class="scroll-rows-5">
-                                        <!-- Nội dung cho sản phẩm ít bán -->
                                         <div id="low-products-content">
-                                            <ul class="list-group list-group-flush">
-                                                @forelse ($lowSellingProducts as $index => $item)
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 product-item"
-                                                        data-name="{{ strtolower($item->product->name ?? 'không xác định') }}">
-                                                        <div class="d-flex align-items-center">
-                                                            <!-- Warning icon -->
-                                                            <div class="me-3">
-                                                                @if (($item->total_sold ?? 0) == 0)
-                                                                    <span class="badge bg-danger rounded-circle p-2">
-                                                                        <i class="fas fa-exclamation"></i>
-                                                                    </span>
-                                                                @else
-                                                                    <span class="badge bg-warning rounded-circle p-2">
-                                                                        <i class="fas fa-slow"></i>
-                                                                    </span>
-                                                                @endif
-                                                            </div>
-
-                                                            <!-- Product info -->
-                                                            <div>
-                                                                <strong
-                                                                    class="d-block">{{ $item->product->name ?? 'Không xác định' }}</strong>
-                                                                <small class="text-muted">
-                                                                    {{ number_format($item->price) }} VNĐ
-                                                                    @if ($item->product->category ?? false)
-                                                                        • {{ $item->product->category->name }}
-                                                                    @endif
-                                                                </small>
-
-                                                                <!-- Ngày tạo -->
-                                                                <div class="mt-1">
-                                                                    <small class="text-muted">
-                                                                        <i class="fas fa-calendar-alt me-1"></i>
-                                                                        Tạo:
-                                                                        {{ $item->product->created_at->format('d/m/Y') }}
-                                                                        ({{ $item->product->created_at->diffForHumans() }})
-                                                                    </small>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="text-end">
-                                                            @if (($item->total_sold ?? 0) == 0)
-                                                                <span class="badge bg-danger rounded-pill fs-6 mb-1">
-                                                                    Chưa bán
-                                                                </span>
-                                                            @else
-                                                                <span class="badge bg-warning rounded-pill fs-6 mb-1">
-                                                                    {{ $item->total_sold }} sp
-                                                                </span>
-                                                            @endif
-
-
-                                                            <div class="btn-group btn-group-sm mt-1">
-
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                @empty
-                                                    <li class="list-group-item text-center text-muted border-0">
-                                                        <i class="fas fa-smile fa-2x mb-2 d-block text-success"></i>
-                                                        Tất cả sản phẩm đều bán tốt!
-                                                    </li>
-                                                @endforelse
-                                            </ul>
+                                            <!-- Nội dung sản phẩm ít bán sẽ được load vào đây -->
+                                            @include('partials.low-products', [
+                                                'lowSellingProducts' => $lowSellingProducts,
+                                            ])
                                         </div>
                                     </div>
                                 </div>
@@ -788,7 +564,6 @@
                         </div>
                     </div>
                 </div>
-
 
 
 
@@ -1472,44 +1247,205 @@
                 }
             }, 5000);
         }
+        // Global variables
+        let productSearchTimeout = null;
+        let isProductLoading = false;
 
         // Reset filters
         function resetFilters() {
             document.getElementById('product-search').value = '';
             document.getElementById('per-page-select').value = '10';
-            document.getElementById('sort-select').value = 'total_sold';
+            document.getElementById('product-sort-select').value = 'total_sold';
             filterProductsAjax();
         }
 
-        // Product action functions - Updated to use modals instead of new tabs
+        // Initialize product filter events
+        function initializeProductFilter() {
+            // Search input
+            const searchInput = document.getElementById('product-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(productSearchTimeout);
+                    productSearchTimeout = setTimeout(() => {
+                        filterProductsAjax();
+                    }, 500);
+                });
+            }
+
+            // Sort select
+            const sortSelect = document.getElementById('product-sort-select');
+            if (sortSelect) {
+                sortSelect.addEventListener('change', function() {
+                    filterProductsAjax();
+                });
+            }
+
+            // Per page select
+            const perPageSelect = document.getElementById('per-page-select');
+            if (perPageSelect) {
+                perPageSelect.addEventListener('change', function() {
+                    filterProductsAjax();
+                });
+            }
+
+            // Reset button
+            const resetBtn = document.getElementById('product-reset-btn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function() {
+                    resetFilters();
+                });
+            }
+        }
+
+        // Main filter function
+        function filterProductsAjax() {
+            if (isProductLoading) return;
+
+            isProductLoading = true;
+            showProductLoading();
+
+            // Get form data
+            const searchValue = document.getElementById('product-search')?.value || '';
+            const sortValue = document.getElementById('product-sort-select')?.value || 'total_sold';
+            const perPageValue = document.getElementById('per-page-select')?.value || '10';
+
+            // Create form data
+            const formData = new FormData();
+            formData.append('search', searchValue);
+            formData.append('sort_by', sortValue);
+            formData.append('per_page', perPageValue);
+
+            // Add CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrfToken) {
+                formData.append('_token', csrfToken);
+            }
+
+            // Make AJAX request
+            fetch('/admin/dashboard/filter-products', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Update content
+                        const topContent = document.getElementById('top-products-content');
+                        const lowContent = document.getElementById('low-products-content');
+
+                        if (topContent && data.topProductsHtml) {
+                            topContent.innerHTML = data.topProductsHtml;
+                        }
+
+                        if (lowContent && data.lowProductsHtml) {
+                            lowContent.innerHTML = data.lowProductsHtml;
+                        }
+
+                        // Update counts in badges
+                        const topCount = document.getElementById('top-product-count');
+                        const lowCount = document.getElementById('low-product-count');
+
+                        if (topCount && data.topCount !== undefined) {
+                            topCount.textContent = data.topCount;
+                        }
+
+                        if (lowCount && data.lowCount !== undefined) {
+                            lowCount.textContent = data.lowCount;
+                        }
+                    } else {
+                        console.error('Filter request failed:', data.message);
+                        showErrorMessage('Có lỗi xảy ra khi lọc dữ liệu');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showErrorMessage('Không thể kết nối đến server');
+                })
+                .finally(() => {
+                    isProductLoading = false;
+                    hideProductLoading();
+                });
+        }
+
+        // Loading functions
+        function showProductLoading() {
+            const spinner = document.querySelector('.loading-spinner-product');
+            if (spinner) {
+                spinner.style.display = 'block';
+            }
+        }
+
+        function hideProductLoading() {
+            const spinner = document.querySelector('.loading-spinner-product');
+            if (spinner) {
+                spinner.style.display = 'none';
+            }
+        }
+
+        // Error message function
+        function showErrorMessage(message) {
+            // Create or update error message
+            let errorDiv = document.getElementById('product-error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'product-error-message';
+                errorDiv.className = 'alert alert-danger alert-dismissible fade show mt-2';
+
+                const filterControls = document.getElementById('product-filter-controls');
+                if (filterControls && filterControls.parentNode) {
+                    filterControls.parentNode.insertBefore(errorDiv, filterControls.nextSibling);
+                }
+            }
+
+            errorDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                if (errorDiv && errorDiv.parentNode) {
+                    errorDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Product action functions
         function viewProductModal(productId) {
-            // Tạo modal để hiển thị thông tin sản phẩm thay vì mở tab mới
             showProductDetailModal(productId);
         }
 
         function showProductDetailModal(productId) {
-            // Create and show product detail modal
             const modal = document.createElement('div');
             modal.className = 'modal fade';
             modal.id = 'productDetailModal';
             modal.innerHTML = `
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Chi tiết sản phẩm</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="text-center">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <p class="mt-2">Đang tải thông tin sản phẩm...</p>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
+                        <p class="mt-2">Đang tải thông tin sản phẩm...</p>
                     </div>
                 </div>
             </div>
-        `;
+        </div>
+    `;
 
             document.body.appendChild(modal);
             const bootstrapModal = new bootstrap.Modal(modal);
@@ -1523,11 +1459,11 @@
                 })
                 .catch(error => {
                     modal.querySelector('.modal-body').innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Không thể tải thông tin sản phẩm
-                    </div>
-                `;
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Không thể tải thông tin sản phẩm
+                </div>
+            `;
                 });
 
             // Clean up modal when closed
@@ -1537,44 +1473,43 @@
         }
 
         function createPromotionModal(productId) {
-            // Create promotion modal instead of redirecting
             const modal = document.createElement('div');
             modal.className = 'modal fade';
             modal.innerHTML = `
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Tạo khuyến mãi</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="promotionForm">
-                            <input type="hidden" name="product_id" value="${productId}">
-                            <div class="mb-3">
-                                <label class="form-label">Tên khuyến mãi</label>
-                                <input type="text" class="form-control" name="name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Giảm giá (%)</label>
-                                <input type="number" class="form-control" name="discount" min="1" max="100" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Từ ngày</label>
-                                <input type="date" class="form-control" name="start_date" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Đến ngày</label>
-                                <input type="date" class="form-control" name="end_date" required>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="button" class="btn btn-primary" onclick="savePromotion()">Tạo khuyến mãi</button>
-                    </div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tạo khuyến mãi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="promotionForm">
+                        <input type="hidden" name="product_id" value="${productId}">
+                        <div class="mb-3">
+                            <label class="form-label">Tên khuyến mãi</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Giảm giá (%)</label>
+                            <input type="number" class="form-control" name="discount" min="1" max="100" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Từ ngày</label>
+                            <input type="date" class="form-control" name="start_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Đến ngày</label>
+                            <input type="date" class="form-control" name="end_date" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="savePromotion()">Tạo khuyến mãi</button>
                 </div>
             </div>
-        `;
+        </div>
+    `;
 
             document.body.appendChild(modal);
             new bootstrap.Modal(modal).show();
@@ -1584,39 +1519,60 @@
             });
         }
 
-        function boostProduct(productId) {
-            // Show boost product options
-            alert('Tính năng đẩy mạnh sản phẩm đang phát triển!');
-        }
+        // Branch revenue functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize product filter
+            initializeProductFilter();
 
-        function analyzeProduct(productId) {
-            // Show product analytics
-            alert('Tính năng phân tích sản phẩm đang phát triển!');
-        }
+            // Branch options
+            const branchOptions = document.querySelectorAll('.branch-option');
+            const branchNameElement = document.getElementById('selected-branch-name');
+            const branchRevenueAmount = document.getElementById('branch-revenue-amount');
 
-        function savePromotion() {
-            // Implementation for saving promotion
-            alert('Tính năng tạo khuyến mãi đang phát triển!');
-        }
+            branchOptions.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const branchId = this.dataset.branchId;
+                    const branchName = this.dataset.branchName;
+
+                    fetch(`/branch-revenue/${branchId ? branchId : ''}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (branchNameElement) {
+                                branchNameElement.innerHTML =
+                                    `<i class="fas fa-map-marker-alt me-1"></i> ${data.branchName}`;
+                            }
+                            if (branchRevenueAmount) {
+                                branchRevenueAmount.innerText = data.revenue;
+                            }
+                        })
+                        .catch(err => console.error(err));
+                });
+            });
+        });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             // Ctrl + F to focus search
             if (e.ctrlKey && e.key === 'f') {
                 e.preventDefault();
-                document.getElementById('product-search').focus();
+                const searchInput = document.getElementById('product-search');
+                if (searchInput) searchInput.focus();
             }
 
             // Ctrl + 1 for top products tab
             if (e.ctrlKey && e.key === '1') {
                 e.preventDefault();
-                document.getElementById('pills-top-product-tab').click();
+                const topTab = document.getElementById('pills-top-product-tab');
+                if (topTab) topTab.click();
             }
 
             // Ctrl + 2 for low products tab
             if (e.ctrlKey && e.key === '2') {
                 e.preventDefault();
-                document.getElementById('pills-low-product-tab').click();
+                const lowTab = document.getElementById('pills-low-product-tab');
+                if (lowTab) lowTab.click();
             }
 
             // Ctrl + R to reset filters
@@ -1629,15 +1585,88 @@
         // Export functionality
         function exportProducts() {
             const activeTab = document.querySelector('.nav-link.active');
-            const type = activeTab.getAttribute('href') === '#pills-top-product' ? 'top' : 'low';
+            const type = activeTab?.getAttribute('href') === '#pills-top-product' ? 'top' : 'low';
 
             const searchParams = new URLSearchParams();
             searchParams.set('export', type);
-            searchParams.set('search', document.getElementById('product-search').value);
-            searchParams.set('sort_by', document.getElementById('sort-select').value);
+            searchParams.set('search', document.getElementById('product-search')?.value || '');
+            searchParams.set('sort_by', document.getElementById('product-sort-select')?.value || 'total_sold');
 
-            window.open(`{{ route('dashboard') }}?${searchParams.toString()}`, '_blank');
+            window.open(`/admin/dashboard?${searchParams.toString()}`, '_blank');
         }
+        let serviceSearchTimeout = null;
+        let isServiceLoading = false;
+
+        function initializeServiceFilter() {
+            document.getElementById('service-search').addEventListener('input', function() {
+                clearTimeout(serviceSearchTimeout);
+                serviceSearchTimeout = setTimeout(() => {
+                    filterServicesAjax();
+                }, 600);
+            });
+
+            document.getElementById('service-sort-select').addEventListener('change', function() {
+                filterServicesAjax();
+            });
+
+            document.getElementById('service-per-page').addEventListener('change', function() {
+                filterServicesAjax();
+            });
+        }
+
+        function filterServicesAjax() {
+            if (isServiceLoading) return;
+            isServiceLoading = true;
+            showServiceLoading();
+
+            const formData = new FormData();
+            formData.append('search', document.getElementById('service-search').value);
+            formData.append('sort_by', document.getElementById('service-sort-select').value);
+            formData.append('per_page', document.getElementById('service-per-page').value);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            fetch('{{ route('dashboard.filter-services') }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('top-services-content').innerHTML = data.topServicesHtml;
+                        document.getElementById('low-services-content').innerHTML = data.lowServicesHtml;
+                        // Cập nhật badge số lượng
+                        document.getElementById('top-service-count').textContent = data.topCount;
+                        document.getElementById('low-service-count').textContent = data.lowCount;
+                    }
+                })
+                .finally(() => {
+                    isServiceLoading = false;
+                    hideServiceLoading();
+                });
+        }
+
+        function resetServiceFilters() {
+            document.getElementById('service-search').value = '';
+            document.getElementById('service-sort-select').value = 'usage_count';
+            document.getElementById('service-per-page').value = '10';
+            filterServicesAjax();
+        }
+
+        function showServiceLoading() {
+            const spinner = document.querySelector('.loading-spinner-service');
+            if (spinner) spinner.style.display = 'block';
+        }
+
+        function hideServiceLoading() {
+            const spinner = document.querySelector('.loading-spinner-service');
+            if (spinner) spinner.style.display = 'none';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeServiceFilter();
+        });
     </script>
 
     <style>

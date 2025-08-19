@@ -35,7 +35,7 @@
                         <div class="tab-content">
                             <!-- Tổng quan -->
                             <div class="tab-pane fade active show" id="account-general">
-                              
+
                                 <div class="card-body pb-2">
                                     @if (session('success-info'))
                                         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -55,8 +55,8 @@
                                             <div class="ms-4">
                                                 <label class="btn btn-outline-primary">
                                                     Tải ảnh mới lên
-                                                    <input type="file" name="avatar"
-                                                        class="account-settings-fileinput" accept="image/*">
+                                                    <input type="file" name="avatar" class="account-settings-fileinput"
+                                                        accept="image/*">
                                                 </label>
                                                 <button type="button" class="btn btn-default md-btn-flat"
                                                     onclick="resetAvatar(this)">Reset</button>
@@ -181,46 +181,58 @@
                                         </div>
                                     </form>
                                 </div>
-                            </div>                        
+                            </div>
                             <!-- Lịch sử điểm -->
                             <div class="tab-pane fade" id="account-point-history">
                                 <h4 class="mb-4 fw-bold border-bottom pb-2">Lịch sử điểm</h4>
                                 <div class="table-responsive">
-                                  <table class="table table-hover align-middle">
-                                    <thead class="table-light">
-                                      <tr>
-                                        <th>Loại</th>
-                                        <th>Điểm</th>
-                                        <th>Mã</th>
-                                        <th>Ngày</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      @forelse($pointHistories as $history)
-                                        <tr>
-                                          <td>{{ $history->type==='earned'? 'Tích điểm':'Đổi điểm' }}</td>
-                                          <td class="fw-bold {{ $history->type==='earned'? 'text-success':'text-danger' }}">
-                                            {{ $history->type==='earned'? '+':'-' }}{{ abs($history->points) }}
-                                          </td>
-                                          <td>
-                                            @if($history->type==='earned' && $history->appointment)
-                                              #{{ $history->appointment->appointment_code }}
-                                            @elseif($history->type==='redeemed' && $history->promotion)
-                                              {{ $history->promotion->code }}
-                                            @else - @endif
-                                          </td>
-                                          <td>{{ $history->created_at->format('d/m/Y H:i') }}</td>
-                                        </tr>
-                                      @empty
-                                        <tr><td colspan="4" class="text-center text-muted">Chưa có lịch sử điểm.</td></tr>
-                                      @endforelse
-                                    </tbody>
-                                  </table>
+                                    <table class="table table-hover align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Loại</th>
+                                                <th>Điểm</th>
+                                                <th>Mã</th>
+                                                <th>Ngày</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($pointHistories as $history)
+                                                <tr>
+                                                    <td>{{ $history->type === 'earned' ? 'Tích điểm' : 'Đổi điểm' }}</td>
+                                                    <td
+                                                        class="fw-bold {{ $history->type === 'earned' ? 'text-success' : 'text-danger' }}">
+                                                        {{ $history->type === 'earned' ? '+' : '-' }}{{ abs($history->points) }}
+                                                    </td>
+                                                    <td>
+                                                        @if ($history->type === 'earned' && $history->appointment)
+                                                            #{{ $history->appointment->appointment_code }}
+                                                        @elseif($history->type === 'redeemed' && $history->promotion)
+                                                            {{ $history->promotion->code }}
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $history->created_at->format('d/m/Y H:i') }}</td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="4" class="text-center text-muted">Chưa có lịch sử
+                                                        điểm.</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
                                 </div>
+
+                                {{-- Phân trang --}}
+                                <div class="d-flex justify-content-center mt-3">
+                                    {{ $pointHistories->appends(request()->query())->links() }}
+                                </div>
+
                                 <div class="text-end m-3">
-                                  <a href="{{ route('client.redeem') }}" class="btn-outline-buy">Đổi mã giảm giá</a>
+                                    <a href="{{ route('client.redeem') }}" class="btn-outline-buy">Đổi mã giảm giá</a>
                                 </div>
-                              </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -228,7 +240,7 @@
         </div>
     </main>
     <style>
-          .alert-box {
+        .alert-box {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -264,6 +276,7 @@
         .alert-close:hover {
             color: #111827;
         }
+
         /* Fixed navbar */
         #mainNav {
             background-color: #000;
@@ -293,10 +306,12 @@
                 flex-direction: column;
                 align-items: flex-start !important;
             }
+
             .profile-avatar-row .avatar-preview {
                 width: 100px !important;
                 height: 100px !important;
             }
+
             .profile-avatar-row .ms-4 {
                 margin-left: 0 !important;
             }
@@ -307,11 +322,50 @@
         .table-responsive .table td {
             vertical-align: middle;
         }
+
+        /* Pagination style */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .pagination .page-item .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            background-color: #fff;
+            color: #000;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: #f1f1f1;
+            color: #000;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background-color: #f8f9fa;
+            color: #adb5bd;
+            cursor: not-allowed;
+        }
     </style>
 @endsection
 
 @section('card-footer')
-    
 @endsection
 
 @section('scripts')
@@ -398,6 +452,5 @@
                 }
             });
         });
-
     </script>
 @endsection

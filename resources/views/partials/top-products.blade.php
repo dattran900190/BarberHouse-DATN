@@ -25,8 +25,6 @@
                             • {{ $item->productVariant->product->category->name }}
                         @endif
                     </small>
-
-                    <!-- Progress bar cho tỷ lệ -->
                     @php
                         $totalSales = $topProducts->sum('total_sold');
                         $percentage = $totalSales > 0 ? round(($item->total_sold / $totalSales) * 100, 1) : 0;
@@ -46,10 +44,6 @@
                 <small class="text-muted">
                     {{ number_format($item->total_sold * ($item->productVariant->price ?? 0)) }} VNĐ
                 </small>
-
-                <!-- Quick actions -->
-                <div class="btn-group btn-group-sm mt-1">
-                </div>
             </div>
         </li>
     @empty
@@ -59,13 +53,3 @@
         </li>
     @endforelse
 </ul>
-@if ($topProducts->hasPages())
-    <div class="d-flex justify-content-between align-items-center mt-3">
-        <div class="pagination-info">
-            <small class="text-muted">
-                Hiển thị {{ $topProducts->firstItem() ?? 0 }} - {{ $topProducts->lastItem() ?? 0 }}
-                trong tổng {{ $topProducts->total() }} sản phẩm
-            </small>
-        </div>
-    </div>
-@endif
