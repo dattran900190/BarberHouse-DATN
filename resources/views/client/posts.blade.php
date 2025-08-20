@@ -11,6 +11,9 @@
             <div class="posts-content">
                 <div class="post-left">
                     {{-- Bài viết nổi bật đầu tiên --}}
+
+                    <h5>Bài viết mới nhất</h5>
+
                     @if ($featuredPosts->isNotEmpty())
                     @php $topPost = $featuredPosts->first(); @endphp
 
@@ -30,6 +33,7 @@
                 @endif
 
                     {{-- Các bài viết thường --}}
+                    <h5>Các bài viết khác</h5>
                     <div class="post-mid">
                         @foreach ($normalPosts as $post)
                             <div class="post">
@@ -102,6 +106,16 @@
         .post-left {
             flex: 2;
             max-width: 800px;
+        }
+
+        .post-left h5 {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #000;
+            padding: 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .post-right {
@@ -212,10 +226,6 @@
             font-weight: bold;
             margin-bottom: 1rem;
             color: #000;
-            text-align: center;
-            padding: 0.5rem;
-            background: #f8f9fa;
-            border-radius: 8px;
         }
 
         .post-right .post {
