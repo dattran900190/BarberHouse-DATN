@@ -30,8 +30,8 @@
                     <div class="mt-1">
                         <small class="text-muted">
                             <i class="fas fa-calendar-alt me-1"></i>
-                            Tạo: {{ $item->product->created_at->format('d/m/Y') }}
-                            ({{ $item->product->created_at->diffForHumans() }})
+                            Tạo: {{ $item->product?->created_at?->format('d/m/Y') ?? 'Không xác định' }}
+                            {{ $item->product?->created_at?->format('d/m/Y') ?? 'Không xác định' }}
                         </small>
                     </div>
                 </div>
