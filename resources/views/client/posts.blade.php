@@ -11,7 +11,9 @@
             <div class="posts-content">
                 <div class="post-left">
                     {{-- Bài viết nổi bật đầu tiên --}}
+
                     <h5>Bài viết mới nhất</h5>
+
                     @if ($featuredPosts->isNotEmpty())
                     @php $topPost = $featuredPosts->first(); @endphp
 
@@ -224,9 +226,6 @@
             font-weight: bold;
             margin-bottom: 1rem;
             color: #000;
-            padding: 0.5rem 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .post-right .post {
