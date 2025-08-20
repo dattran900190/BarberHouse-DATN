@@ -201,7 +201,26 @@ class AppointmentController extends Controller
                     ? Carbon::parse($appointment->appointment_time)->format('Y-m-d H:i:s')
                     : null,
             ]));
+            // Hoàn lại voucher nếu có
 
+            $oldPromotionId = $appointment->promotion_id;
+            if ($oldPromotionId) {
+                $oldPromotion = Promotion::find($oldPromotionId);
+                if ($oldPromotion) {
+                    // Chỉ hoàn lại quantity cho voucher công khai (required_points là null)
+                    if (is_null($oldPromotion->required_points)) {
+                        $oldPromotion->increment('quantity'); // Hoàn lại số lượng voucher
+                    }
+                    // Nếu voucher từ bảng UserRedeemedVoucher thì mở lại (cho voucher cá nhân)
+                    $oldRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
+                        ->where('promotion_id', $oldPromotionId)
+                        ->where('is_used', true)
+                        ->first();
+                    if ($oldRedeemed) {
+                        $oldRedeemed->update(['is_used' => false]);
+                    }
+                }
+            }
             DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
             DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
 
@@ -1264,7 +1283,13 @@ class AppointmentController extends Controller
 
         // Lấy danh sách mã giảm giá khả dụng của người dùng (voucher đổi điểm)
         $vouchers = Auth::check() ? UserRedeemedVoucher::where('user_id', Auth::id())
-            ->where('is_used', false) // Chỉ lấy voucher chưa sử dụng
+            ->where(function ($query) use ($appointment) {
+                $query->where('is_used', false)
+                    ->orWhere(function ($subQuery) use ($appointment) {
+                        $subQuery->where('is_used', true)
+                            ->where('promotion_id', $appointment->promotion_id);
+                    });
+            }) // Chỉ lấy voucher chưa sử dụng
             ->with('promotion')
             ->get()
             ->filter(function ($voucher) use ($appointment) {
@@ -1335,7 +1360,8 @@ class AppointmentController extends Controller
 
         // dd($vouchers);
         // Gộp danh sách voucher đổi điểm và voucher công khai
-        $allPromotions = $vouchers->merge($publicPromotions);
+        $allPromotions = collect($vouchers)->merge(collect($publicPromotions));
+
 
         return view('admin.appointments.edit', compact('appointment', 'services', 'barbers', 'branches', 'appointments', 'allPromotions'));
     }
@@ -1418,7 +1444,7 @@ class AppointmentController extends Controller
                             // Voucher đổi điểm -> đánh dấu đã sử dụng
                             $newRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
                                 ->where('promotion_id', $newPromotionId)
-                                ->where('is_used', false)
+
                                 ->first();
                             if ($newRedeemed) {
                                 $newRedeemed->update(['is_used' => true]);

@@ -49,7 +49,7 @@
         // Quy tắc chuyển đổi trạng thái lịch hẹn
         $allowedStatusTransitions = [
             'pending' => ['confirmed', 'cancelled'],
-            'confirmed' => ['checked-in', 'cancelled', 'progress'],
+            'confirmed' => ['checked-in', 'cancelled'],
             'progress' => ['completed'],
             'completed' => [],
             'cancelled' => [],
