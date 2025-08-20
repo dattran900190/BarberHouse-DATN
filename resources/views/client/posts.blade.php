@@ -10,10 +10,10 @@
             <h2>Bài viết</h2>
             <div class="posts-content">
                 <div class="post-left">
-                    {{-- Bài viết nổi bật --}}
+                    {{-- Bài viết nổi bật đầu tiên --}}
                     @if ($featuredPosts->isNotEmpty())
                     @php $topPost = $featuredPosts->first(); @endphp
-                
+
                     <div class="post-top">
                         <div class="image-top">
                             <a href="{{ route('client.detailPost', $topPost->slug) }}">
@@ -28,7 +28,7 @@
                         <p>{{ Str::limit(strip_tags($topPost->short_description), 100) }}</p>
                     </div>
                 @endif
-                
+
                     {{-- Các bài viết thường --}}
                     <div class="post-mid">
                         @foreach ($normalPosts as $post)
@@ -54,14 +54,14 @@
                     </div>
                 </div>
 
-                {{-- Sidebar: 5 bài viết mới nhất --}}
+                {{-- Sidebar: Bài viết nổi bật --}}
                 <div class="post-right">
-                    {{-- <h5>Bài viết mới</h5> --}}
-                    @foreach ($normalPosts->take(5) as $post)
+                    <h5>Bài viết nổi bật</h5>
+                    @foreach ($featuredPosts as $post)
                         <div class="post">
                             <div class="image-right">
                                 <a href="{{ route('client.detailPost', $post->slug) }}">
-<img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" />
+                                    <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" />
                                 </a>
                             </div>
                             <h5>
@@ -207,6 +207,17 @@
         }
 
         /* Sidebar styling */
+        .post-right h5 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #000;
+            text-align: center;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
         .post-right .post {
             margin-bottom: 1.5rem;
             background: #fff;
@@ -239,6 +250,15 @@
             font-weight: 600;
             /* line-height: 1.3; */
             margin: 0;
+        }
+
+        .post-right .post h5 a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .post-right .post h5 a:hover {
+            color: #333;
         }
 
         /* Links styling */

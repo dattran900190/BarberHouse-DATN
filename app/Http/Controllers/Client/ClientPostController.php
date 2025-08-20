@@ -8,7 +8,7 @@ class ClientPostController extends Controller
 {
     public function index()
     {
-        // Bài viết nổi bật
+        // Bài viết nổi bật cho sidebar
         $featuredPosts = Post::where('status', 'published')
             ->where('is_featured', true)
             ->latest('published_at')
