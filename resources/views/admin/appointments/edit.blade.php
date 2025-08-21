@@ -149,17 +149,17 @@
                         <select name="voucher_code" id="voucher_id" class="form-control">
                             <option value="">Không sử dụng mã giảm giá</option>
                             @foreach ($allPromotions as $promotion)
-                                <option value="{{ $promotion->code }}"
-                                    data-discount-type="{{ $promotion->discount_type }}"
-                                    data-discount-value="{{ $promotion->discount_value }}"
-                                    data-expired-at="{{ $promotion->end_date }}"
-                                    data-promotion-id="{{ $promotion->type === 'user_voucher' ? 'voucher_' . $promotion->voucher_id : 'public_' . $promotion->id }}"
-                                    data-max-discount="{{ $promotion->max_discount_amount ?? 0 }}"
-                                    data-min-order-value="{{ $promotion->min_order_value ?? 0 }}"
-                                    {{ old('voucher_code', optional($appointment->promotion)->code ?? '') == $promotion->code ? 'selected' : '' }}>
-                                    {{ $promotion->code }}
-                                    ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }}
-                                    {{ $promotion->required_points !== null ? ' - Voucher cá nhân' : ' - Voucher công khai' }})
+                                <option value="{{ $promotion['code'] }}"
+                                    data-discount-type="{{ $promotion['discount_type'] }}"
+                                    data-discount-value="{{ $promotion['discount_value'] }}"
+                                    data-expired-at="{{ $promotion['end_date'] }}"
+                                    data-promotion-id="{{ $promotion['id'] }}"
+                                    data-max-discount="{{ $promotion['max_discount_amount'] }}"
+                                    data-min-order-value="{{ $promotion['min_order_value'] }}"
+                                    {{ old('voucher_code', $appointment->promotion ? $appointment->promotion->code : '') == $promotion['code'] ? 'selected' : '' }}>
+                                    {{ $promotion['code'] }}
+                                    ({{ $promotion['discount_type'] === 'fixed' ? number_format($promotion['discount_value']) . ' VNĐ' : $promotion['discount_value'] . '%' }}
+                                    {{ $promotion['type'] === 'user_voucher' ? ' - Voucher cá nhân' : ' - Voucher công khai' }})
                                 </option>
                             @endforeach
                         </select>
@@ -832,7 +832,7 @@
                     const formData = new FormData(form);
                     if (!formData.get('voucher_code')) {
                         formData.set('ignore_voucher_error',
-                            '1'); // Đảm bảo bỏ voucher nếu voucher_code rỗng
+                        '1'); // Đảm bảo bỏ voucher nếu voucher_code rỗng
                     }
                     fetch(form.action, {
                             method: 'POST',
