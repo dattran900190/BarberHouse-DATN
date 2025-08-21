@@ -82,7 +82,7 @@
                         </div>
 
 
-                        <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+                        <button type="submit" class="btn btn-dark w-100">Đăng nhập</button>
 
                         <p class="mt-3">Bạn chưa có tài khoản? <a href="{{ asset('dang-ky') }}"
                                 style="text-decoration: none;" onmouseover="this.style.textDecoration='underline'"
@@ -210,7 +210,7 @@
                 transform: translateY(-1px);
             }
 
-            .btn-primary {
+            .btn-dark {
                 background: #000;
                 border: none;
                 border-radius: 12px;
@@ -222,13 +222,13 @@
 
             }
 
-            .btn-primary:hover {
+            .btn-dark:hover {
                 background: #333;
                 transform: translateY(-2px);
                 box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
             }
 
-            .btn-primary:active {
+            .btn-dark:active {
                 transform: translateY(0);
             }
 
@@ -319,11 +319,11 @@
                 box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
             }
 
-            .btn-primary {
+            .btn-dark {
                 background: #000;
             }
 
-            .btn-primary:hover {
+            .btn-dark:hover {
                 background: #333;
             }
         }
@@ -353,7 +353,7 @@
                 font-size: 16px;
             }
 
-            .btn-primary {
+            .btn-dark {
                 padding: 12px;
                 font-size: 16px;
             }
@@ -481,7 +481,7 @@
             text-decoration: underline !important;
         }
 
-        .btn-primary {
+        .btn-dark {
             background: #000;
             border: none;
             border-radius: 8px;
@@ -491,7 +491,7 @@
             transition: all 0.3s ease;
         }
 
-        .btn-primary:hover {
+        .btn-dark:hover {
             background: #333;
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
