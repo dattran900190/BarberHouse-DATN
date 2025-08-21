@@ -208,12 +208,20 @@
     line-height: 28px !important;
 }
 
-/* Branch Cards Styles */
+/* card chọn chi nhánh */
 .branch-cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, 280px);
+    /* mỗi cột 280px cố định */
     gap: 15px;
+    justify-content: center;
+    /* căn giữa nếu không đủ hàng */
     margin-top: 10px;
+    padding-top: 10px;
+    padding-bottom: 25px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
 }
 
 .branch-card {

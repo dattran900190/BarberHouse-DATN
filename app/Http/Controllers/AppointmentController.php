@@ -587,7 +587,7 @@ class AppointmentController extends Controller
     public function create(Request $request)
     {
         $services = Service::select('id', 'name', 'price', 'duration', 'is_combo')->get();
-        $branches = Branch::all();
+        // $branches = Branch::all();
 
         // Lấy ngày và giờ hiện tại làm mặc định
         $currentDate = Carbon::now()->format('Y-m-d');
@@ -637,6 +637,24 @@ class AppointmentController extends Controller
                 ->where('status', 'idle')
                 ->get();
         } else {
+            $barbers = Barber::select('id', 'name', 'avatar', 'rating_avg', 'skill_level')
+                ->where('status', 'idle')
+                ->get();
+        }
+
+        if (Auth::user()->role === 'admin_branch') {
+            // Admin chi nhánh -> chỉ xem được chi nhánh của mình
+            $branches = Branch::where('id', Auth::user()->branch_id)->get();
+            $barbers = Barber::select('id', 'name', 'avatar', 'rating_avg', 'skill_level')
+                ->where('branch_id', Auth::user()->branch_id)
+                ->where('status', 'idle')
+                ->get();
+
+            // thêm branch_id vào request
+            $request->merge(['branch_id' => Auth::user()->branch_id]);
+        } else {
+            // Super admin -> xem tất cả chi nhánh
+            $branches = Branch::all();
             $barbers = Barber::select('id', 'name', 'avatar', 'rating_avg', 'skill_level')
                 ->where('status', 'idle')
                 ->get();
@@ -958,7 +976,7 @@ class AppointmentController extends Controller
 
         $appointment = new Appointment();
         $appointment->promotion_id = null;
-        $appointment->promotion = null;
+        // $appointment->promotion = null;
 
         if ($request->appointment_id) {
             $existingAppointment = Appointment::find($request->appointment_id);
@@ -1267,8 +1285,6 @@ class AppointmentController extends Controller
             $appointment->save();
         }
     }
-
-
     public function edit(Appointment $appointment)
     {
         // Kiểm tra quyền truy cập và chi nhánh
@@ -1365,7 +1381,6 @@ class AppointmentController extends Controller
 
         return view('admin.appointments.edit', compact('appointment', 'services', 'barbers', 'branches', 'appointments', 'allPromotions'));
     }
-
     public function update(BookingAdminRequest $request, Appointment $appointment)
     {
         try {
@@ -1516,7 +1531,6 @@ class AppointmentController extends Controller
             ], 500);
         }
     }
-
     public function destroy(Request $request, Appointment $appointment)
     {
         try {
