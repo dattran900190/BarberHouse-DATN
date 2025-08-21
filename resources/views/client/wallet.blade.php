@@ -170,6 +170,8 @@
                         title: 'Đang xử lý...',
                         text: 'Vui lòng chờ.',
                         allowOutsideClick: false,
+                        icon: 'info',
+                        showConfirmButton: false,
                         customClass: {
                                 popup: 'custom-swal-popup'
                             },

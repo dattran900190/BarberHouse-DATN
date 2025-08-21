@@ -23,8 +23,13 @@
 }
 
 /* Tăng kích thước vòng xoáy loading */
-.swal2-loading {
+/* .swal2-loading {
     font-size: 1.5rem !important;
+}  */
+
+.swal2-loader {
+    width: 5em !important;
+    height: 5em !important;
 }
 
 /* .custom-swal-popup .swal2-title {

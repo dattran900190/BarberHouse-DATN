@@ -69,7 +69,7 @@
                             <div class="date-input">
                                 <input type="text" class="form-control" id="appointment_date" name="appointment_date"
                                     placeholder="Chọn thời điểm"
-                                    value="{{ old('appointment_date', $currentDate) }} style="background-color: #fff
+                                    value="{{ old('appointment_date', $currentDate) }}" style="background-color: #fff
                                     !important;" readonly>
                             </div>
                             @error('appointment_date')
@@ -1000,6 +1000,8 @@
                         Swal.fire({
                             title: 'Đang xử lý...',
                             text: 'Vui lòng chờ trong giây lát.',
+                            icon: 'info',
+                            showConfirmButton: false,
                             allowOutsideClick: false,
                             customClass: {
                                 popup: 'custom-swal-popup'
