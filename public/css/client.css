@@ -16,6 +16,11 @@ body a:hover {
   color: #444;
 }
 
+.swal2-loader {
+    width: 5em !important;
+    height: 5em !important;
+}
+
 .button-group {
   display: flex;
   justify-content: center;
@@ -109,9 +114,9 @@ body a:hover {
   height: 450px !important;
 }
 
-.swal2-loading {
+/* .swal2-loading {
   font-size: 1.5rem !important;
-}
+} */
 
 /* .custom-swal-popup .swal2-title {
   margin-top: 15px !important;

@@ -1512,6 +1512,8 @@
                         Swal.fire({
                             title: 'Đang xử lý...',
                             text: 'Vui lòng chờ trong giây lát.',
+                            icon: 'info',
+                            showConfirmButton: false,
                             allowOutsideClick: false,
                             customClass: {
                                 popup: 'custom-swal-popup'
@@ -1682,7 +1684,7 @@
             };
         }
 
-         function updateTotal() {
+        function updateTotal() {
             const mainOpt = $('#service option:selected');
             const mainInfo = getServiceInfo(mainOpt);
             const addInfo = getAdditionalServicesInfo();
@@ -1700,7 +1702,7 @@
                 if (totalPrice < minOrderValue) {
                     $('#total_after_discount').html(
                         `<span class="text-danger">Giá trị lịch hẹn phải đạt tối thiểu ${minOrderValue.toLocaleString('vi-VN')} VNĐ để áp dụng voucher này.</span>`
-                        )
+                    )
                     $('#totalPrice').text(totalPrice.toLocaleString('vi-VN') + ' VNĐ');
                     $('#totalDuration').text(totalDuration + ' Phút');
                     return;
