@@ -103,9 +103,9 @@
                                 <td>{{ $barber->name }}</td>
                                 @php
                                     $skillLevels = [
-                                        'assistant' => 'Phụ việc',
-                                        'junior' => 'Mới vào nghề',
-                                        'senior' => 'Có kinh nghiệm',
+                                        'assistant' => 'Thử việc',
+                                        'junior' => 'Sơ cấp',
+                                        'senior' => 'Chuyên ghiệp',
                                         'master' => 'Bậc thầy',
                                         'expert' => 'Chuyên gia',
                                     ];

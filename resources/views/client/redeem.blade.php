@@ -32,13 +32,6 @@
                 <div class="card-body">
                     <h3 class="card-title mb-4">Danh sách Voucher</h3>
 
-                    @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            {{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
                     @if ($promotions->count())
                         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                             @foreach ($promotions as $promo)
