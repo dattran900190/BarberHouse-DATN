@@ -86,7 +86,7 @@
                                     <div class="d-flex justify-content-center gap-2">
                                         <a class="btn-outline-show"
                                             href="{{ route('client.detailOrderHistory', $order->id) }}">Xem chi tiết</a>
-                                        @if ($order->status === 'pending')
+                                        @if ($order->status === 'pending' && $order->payment_method !== 'vnpay')
                                             <button type="button" class="btn-outline-show cancel-order-btn"
                                                 data-order-id="{{ $order->id }}"
                                                 data-cancel-url="{{ route('client.orders.cancel', $order->id) }}">
@@ -191,6 +191,9 @@
                             Swal.fire({
                                 title: 'Đang xử lý...',
                                 text: 'Vui lòng chờ trong giây lát.',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
                                 allowOutsideClick: false,
                                 didOpen: () => Swal.showLoading()
                             });
