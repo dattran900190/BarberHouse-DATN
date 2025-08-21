@@ -6,8 +6,8 @@
 
 @section('content')
     <main style="padding: 10%">
-        <div class="modal-body">
-            <div class="card mb-0">
+        <div class="container-fluid">
+             <div class="card order-history mt-4 shadow-sm">
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card-header border-bottom-dashed p-4">
@@ -212,7 +212,7 @@
                                 </div>
                             </div>
                             <div class="hstack gap-2 justify-content-end d-print-none mt-4">
-                                @if ($order->status === 'pending')
+                               @if ($order->status === 'pending' && $order->payment_method !== 'vnpay')
                                     <button type="button" class="btn-outline-show cancel-order-btn"
                                         data-order-id="{{ $order->id }}"
                                         data-cancel-url="{{ route('client.orders.cancel', $order->id) }}">
@@ -230,6 +230,12 @@
     <style>
         #mainNav {
             background-color: #000;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 80px 10px 10px 10px !important;
+            }
         }
 
              @media (max-width: 768px) {
@@ -251,49 +257,6 @@
 
             .swal2-html-container {
                 font-size: 14px !important;
-            }
-        }
-        @media (max-width: 991px) {
-            .order-detail-table {
-                border: 0;
-            }
-
-            .order-detail-table thead {
-                display: none;
-            }
-
-            .order-detail-table tr {
-                display: block;
-                margin-bottom: 1rem;
-                border: 1px solid #dee2e6;
-                border-radius: 8px;
-                padding: 10px;
-                background: #fff;
-            }
-
-            .order-detail-table td,
-            .order-detail-table th {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 6px 10px;
-                border: none;
-                width: 100%;
-            }
-
-            .order-detail-table td::before,
-            .order-detail-table th::before {
-                content: attr(data-label);
-                font-weight: 600;
-                flex-basis: 40%;
-                text-align: left;
-                color: #888;
-            }
-
-            .order-detail-table img {
-                max-width: 60px;
-                height: auto;
-                border-radius: 5px;
             }
         }
     </style>
@@ -337,6 +300,9 @@
                             Swal.fire({
                                 title: 'Đang xử lý...',
                                 text: 'Vui lòng chờ trong giây lát.',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
                                 allowOutsideClick: false,
                                 didOpen: () => Swal.showLoading()
                             });
