@@ -299,6 +299,7 @@
                                 data-discount-value="{{ $voucher->promotion->discount_value }}"
                                 data-expired-at="{{ $voucher->promotion->end_date }}"
                                 data-voucher-id="{{ $voucher->id }}"
+                                data-min-order-value="{{ $voucher->promotion->min_order_value }}"
                                 data-max-discount="{{ $voucher->promotion->max_discount_amount ?? 0 }}">
                                 {{ $voucher->promotion->code }}
                                 ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
@@ -309,6 +310,7 @@
                                 data-discount-value="{{ $promotion->discount_value }}"
                                 data-expired-at="{{ $promotion->end_date }}"
                                 data-promotion-id="public_{{ $promotion->id }}"
+                                data-min-order-value="{{ $promotion['min_order_value'] }}"
                                 data-max-discount="{{ $promotion->max_discount_amount ?? 0 }}">
                                 {{ $promotion->code }}
                                 ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
@@ -1680,37 +1682,39 @@
             };
         }
 
-        function updateTotal() {
-            // Main service
+         function updateTotal() {
             const mainOpt = $('#service option:selected');
             const mainInfo = getServiceInfo(mainOpt);
-
-            // Additional services
             const addInfo = getAdditionalServicesInfo();
-
-            // Total before discount
             const totalPrice = mainInfo.price + addInfo.totalPrice;
             const totalDuration = mainInfo.duration + addInfo.totalDuration;
-
-            // Voucher
             const voucherOpt = $('#voucher_id option:selected');
-            const discountType = voucherOpt.data('discount-type');
+            const discountType = voucherOpt.data('discount-type') || '';
             const discountValue = parseFloat(voucherOpt.data('discount-value')) || 0;
             const maxDiscount = parseFloat(voucherOpt.data('max-discount')) || 0;
+            const minOrderValue = parseFloat(voucherOpt.data('min-order-value')) || 0;
 
             let discount = 0;
             let discountText = '';
             if ($('#voucher_id').val() && totalPrice > 0 && discountType) {
+                if (totalPrice < minOrderValue) {
+                    $('#total_after_discount').html(
+                        `<span class="text-danger">Giá trị lịch hẹn phải đạt tối thiểu ${minOrderValue.toLocaleString('vi-VN')} VNĐ để áp dụng voucher này.</span>`
+                        )
+                    $('#totalPrice').text(totalPrice.toLocaleString('vi-VN') + ' VNĐ');
+                    $('#totalDuration').text(totalDuration + ' Phút');
+                    return;
+                }
                 if (discountType === 'fixed') {
                     discount = discountValue;
-                    discountText = '- ' + discount.toLocaleString('vi-VN') + ' vnđ';
+                    discountText = '- ' + discount.toLocaleString('vi-VN') + ' VNĐ';
                 } else if (discountType === 'percent') {
                     discount = Math.round(totalPrice * discountValue / 100);
                     if (maxDiscount > 0 && discount > maxDiscount) {
                         discount = maxDiscount;
-                        discountText = discount.toLocaleString('vi-VN') + ' vnđ';
+                        discountText = '- ' + maxDiscount.toLocaleString('vi-VN') + ' VNĐ (Tối đa)';
                     } else {
-                        discountText = '- ' + discountValue + '% (' + discount.toLocaleString('vi-VN') + ' vnđ)';
+                        discountText = '- ' + discountValue + '% (' + discount.toLocaleString('vi-VN') + ' VNĐ)';
                     }
                 }
             }
@@ -1718,7 +1722,7 @@
             let total = totalPrice - discount;
             if (total < 0) total = 0;
 
-            $('#totalPrice').text(total.toLocaleString('vi-VN') + ' vnđ');
+            $('#totalPrice').text(total.toLocaleString('vi-VN') + ' VNĐ');
             $('#total_after_discount').html(discount > 0 ?
                 '<span class="text-success">Đã giảm: ' + discountText + '</span>' :
                 '');
