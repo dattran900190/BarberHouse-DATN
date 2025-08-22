@@ -200,6 +200,27 @@
 
     {{-- Custom style và script cho album --}}
     <style>
+        .prev-btn,
+.next-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  /* Đảm bảo nút nổi lên trên ảnh */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: rgb(227, 222, 222)
+}
+
         #mainNav {
             background-color: #000;
         }
@@ -207,6 +228,7 @@
         .image-track {
             transition: transform 0.3s ease;
         }
+
 
         /* Mobile-first responsive styles */
         @media (max-width: 768px) {
@@ -312,9 +334,15 @@
             }
 
             .button-group {
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
+               margin-top: auto;
+    padding: 12px;
+    display: flex
+;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    background: #fff;
+}
             }
 
             .btn-outline-cart,
@@ -393,6 +421,7 @@
                 width: 35px;
                 height: 35px;
                 font-size: 16px;
+                background: #007bff
             }
 
             h3 {
