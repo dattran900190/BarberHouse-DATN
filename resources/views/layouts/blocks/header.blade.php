@@ -132,12 +132,6 @@
                             </li>
 
                             {{-- ADMIN LINKS --}}
-                            @if (Auth::user()->role === 'admin_branch')
-                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">
-                                    <i class="fa-solid fa-cogs me-2"></i>Quản lý chi nhánh</a>
-                                </li>
-                            @endif
-
                             @if (Auth::user()->role != 'user')
                                 <li><a class="dropdown-item" href="{{ route('dashboard') }}">
                                     <i class="fa-solid fa-user-shield me-2"></i>Trang quản trị</a>
@@ -317,7 +311,11 @@
                 <li class="mobile-nav-item">
                     <a class="mobile-nav-link {{ request()->is('gio-hang*') ? 'active' : '' }}" href="{{ url('gio-hang') }}">
                         GIỎ HÀNG
-                        <span class="mobile-cart-badge">{{ session('cart_count', 0) }}</span>
+                        <span id="cartCount"
+                            class="mobile-cart-badge"
+                            style="font-size: 0.7rem;">
+                            {{ session('cart_count', 0) }}
+                        </span>
                     </a>
                 </li>
                 <li class="mobile-nav-item position-relative">
@@ -365,15 +363,11 @@
                         </div>
                     </div>
                     <ul class="mobile-user-menu">
-                        <li><a href="{{ url('/profile') }}"><i class="fa-solid fa-user-cog"></i> Quản lý tài khoản</a></li>
+                        <li><a href="{{ route('cai-dat-tai-khoan') }}"><i class="fa-solid fa-user-cog"></i> Quản lý tài khoản</a></li>
                         <li><a href="{{ route('client.detailWallet') }}"><i class="fa-solid fa-wallet"></i>Lịch sử hoàn tiền</a></li>
                         <li><a href="{{ route('client.redeem') }}"><i class="fa-solid fa-gift"></i> Đổi mã giảm giá</a></li>
                         <li><a href="{{ route('client.orderHistory') }}"><i class="fa-solid fa-shopping-bag"></i> Lịch sử đặt hàng</a></li>
                         <li><a href="{{ route('client.appointmentHistory') }}"><i class="fa-solid fa-calendar"></i> Lịch sử đặt lịch</a></li>
-                        
-                        @if (Auth::user()->role === 'admin_branch')
-                            <li><a href="{{ route('dashboard') }}"><i class="fa-solid fa-cogs"></i>Quản lý chi nhánh</a></li>
-                        @endif
                         
                         @if (Auth::user()->role != 'user')
                             <li><a href="{{ route('dashboard') }}"><i class="fa-solid fa-user-shield"></i>Trang quản trị</a></li>
