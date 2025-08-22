@@ -19,7 +19,7 @@
                 <div class="detailPro-left" style="flex: 1; min-width: 300px;">
                     <div class="image-top mb-3">
                         <img id="mainImage" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
-                            style="width: 100%; max-width: 500px; height: auto; display: block; margin: 0 auto;">
+                            style="width: 100%; max-width: 500px; height:500px; display: block; margin: 0 auto; object-fit: cover;">
                     </div>
 
                     @php

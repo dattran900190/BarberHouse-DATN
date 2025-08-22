@@ -76,7 +76,7 @@
                                         <img src="{{ Storage::url($post->image) }}" alt="{{ $post->title }}">
                                     </a>
                                 </div>
-                                <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
+                                <h4 style="font-weight: bold; text-transform: uppercase;"><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
                                 <p>
                                     <a href="{{ route('client.detailPost', $post->slug) }}">
                                         {{ Str::limit(strip_tags($post->short_description), 50) }}
@@ -98,7 +98,7 @@
                                 <img src="{{ Storage::url($post->image) }}" alt="{{ $post->title }}">
                             </a>
                         </div>
-                        <h4><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
+                        <h4 style="font-weight: bold; text-transform: uppercase;"><a href="{{ route('client.detailPost', $post->slug) }}">{{ $post->title }}</a></h4>
                         <p><a
                                 href="{{ route('client.detailPost', $post->slug) }}">{{ Str::limit(strip_tags($post->short_description), 50) }}</a>
                         </p>

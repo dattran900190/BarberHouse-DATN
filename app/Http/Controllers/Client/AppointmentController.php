@@ -510,11 +510,6 @@ class AppointmentController extends Controller
         ];
     }
 
-    // protected function triggerPusher(Appointment $appointment)
-    // {
-    //     $this->pusherService->triggerAppointmentCreated($appointment);
-    // }
-
     function calculateAppointmentDuration(Request $request, $service_id)
     {
         // Kiểm tra dịch vụ chính

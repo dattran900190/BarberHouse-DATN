@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Carbon\Carbon;
 use App\Models\Banner;
 use App\Models\Setting;
 use App\Models\Appointment;
@@ -33,11 +34,12 @@ class AppServiceProvider extends ServiceProvider
     {
         // Đăng ký broadcasting routes với middleware auth
         Broadcast::routes(['middleware' => ['auth']]);
-        
+
         // Xác thực kênh riêng tư cho từng user
         Broadcast::channel('user.{userId}', function ($user, $userId) {
             return (int) $user->id === (int) $userId;
         });
+        Carbon::setLocale('vi');
 
         // Kích hoạt phân trang dùng Bootstrap
         Paginator::useBootstrap();

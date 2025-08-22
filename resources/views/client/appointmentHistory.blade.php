@@ -216,6 +216,8 @@
                         Swal.fire({
                             title: 'Đang xử lý...',
                             text: 'Vui lòng chờ trong giây lát.',
+                            icon: 'info',
+                            showConfirmButton: false,
                             allowOutsideClick: false,
                             width: '400px',
                             customClass: {
@@ -372,6 +374,8 @@
                         Swal.fire({
                             title: 'Đang xử lý...',
                             text: 'Vui lòng chờ trong giây lát.',
+                            icon: 'info',
+                            showConfirmButton: false,
                             allowOutsideClick: false,
                             width: '400px',
                             customClass: {
