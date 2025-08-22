@@ -65,7 +65,7 @@
                     width: 100%;
                     max-width: 800px;
                     margin: 0 auto;
-                    padding: 2rem 1rem;
+                    padding: 9rem 1rem;
                 }
 
                 .path-post {
@@ -75,6 +75,7 @@
                 .path-post p {
                     margin: 0;
                     color: #666;
+                    text-transform: uppercase;
                 }
 
                 .path-post a {
@@ -91,6 +92,7 @@
                     font-weight: bold;
                     margin-bottom: 1rem;
                     line-height: 1.3;
+                    text-transform: uppercase;
                 }
 
                 .short-description {
@@ -133,6 +135,7 @@
                     font-size: 1.8rem;
                     font-weight: bold;
                     margin-bottom: 1rem;
+                    text-transform: uppercase;
                 }
 
                 .popular-articles {
@@ -149,6 +152,8 @@
                     background: #fff;
                     border-radius: 8px;
                     transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    min-height: 120px;
+                    text-transform: uppercase;
                 }
 
                 .article:hover {
@@ -164,17 +169,23 @@
                 }
 
                 .article img {
-                    width: 100%;
-                    height: 200px;
+                    width: 150px;
+                    height: 100px;
                     object-fit: cover;
                     border-radius: 8px;
+                    flex-shrink: 0;
                 }
 
                 .article a {
                     color: #333;
                     text-decoration: none;
-                    font-weight: 500;
+                    font-weight: bold;
                     line-height: 1.4;
+                    flex: 1;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 3;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
                 }
 
                 .article a:hover {
