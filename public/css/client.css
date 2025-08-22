@@ -1678,7 +1678,7 @@ h2 {
 
 .detailPro-left .image-top img {
   width: 70%;
-  
+
 }
 
 .detailPro-right {
@@ -1978,11 +1978,19 @@ h2 {
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
-.barber-img-wrapper {
+.product-img-wrapper {
   overflow: hidden;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  max-width: 250px;
+  height: 250px;
 }
+.barber-img-wrapper {
+    overflow: hidden;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+
+  }
 
 .barber-img {
   height: 380px;
