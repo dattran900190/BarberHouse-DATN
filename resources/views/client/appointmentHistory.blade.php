@@ -125,7 +125,9 @@
                                             $appointment->status != 'cancelled' &&
                                                 $appointment->status != 'completed' &&
                                                 $appointment->payment_status == 'paid' &&
-                                                !$appointment->refundRequests()->whereIn('refund_status', ['pending', 'processing'])->exists())
+                                                $appointment->status != 'progress' &&
+                                                !$appointment->refundRequests()->whereIn('refund_status', ['pending', 'processing'])->exists() &&
+                                                !$order->refundRequests()->where('refund_status', 'rejected')->exists())
                                             <a href="{{ route('client.wallet', ['refundable_type' => 'appointment', 'refundable_id' => $appointment->id]) }}"
                                                 class="btn-outline-show refund-btn"
                                                 data-appointment-id="{{ $appointment->id }}">Yêu cầu hoàn tiền</a>

@@ -182,7 +182,7 @@
                 </div>
                 <div class="col-md-6">
                     <i class="fas fa-plus-circle text-primary me-2"></i>
-                    <strong>Dịch vụ thêm:</strong>
+                    <strong>Dịch vụ bổ sung:</strong>
                     @if ($additionalServices->isNotEmpty())
                         <ul class="m-2 mt-1 ps-3">
                             @foreach ($additionalServices as $service)
@@ -195,7 +195,7 @@
                             @endforeach
                         </ul>
                     @else
-                        <p class="text-muted fst-italic mt-1">Không có dịch vụ thêm</p>
+                        <p class="text-muted fst-italic mt-1">Không có dịch vụ bổ sung</p>
                     @endif
                 </div>
             </div>

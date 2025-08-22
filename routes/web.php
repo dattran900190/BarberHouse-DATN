@@ -55,14 +55,11 @@ Route::post('register', [AuthController::class, 'postRegister'])->name('postRegi
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('verify.email');
 
-
-
 Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
 Route::post('forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('password.sendOtp');
 
 Route::get('verify-otp', [ForgotPasswordController::class, 'showVerifyForm'])->name('password.verifyForm');
 Route::post('verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('password.verifyOtp');
-
 
 // ==== Trang chủ ====
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -81,12 +78,13 @@ Route::get('/chinh-sach-van-chuyen', [HomeController::class, 'shippingPolicy'])-
 // ==== Chính sách bảo hành - đổi trả ====
 Route::get('/chinh-sach-bao-hanh-doi-tra', [HomeController::class, 'warrantyReturnPolicy'])->name('warranty.return.policy');
 
+// == Liên hệ ==
+Route::get('/lien-he', [HomeController::class, 'contact'])->name('contact');
+
 // ==== Chat AI ====
 Route::post('/chat-ai', [ChatController::class, 'chatAI'])->name('chat.ai');
 Route::get('/chat-history', [ChatController::class, 'getChatHistory'])->name('chat.history');
 Route::delete('/chat-history', [ChatController::class, 'clearChatHistory'])->name('chat.clear');
-// == Liên hệ ==
-Route::get('/lien-he', [HomeController::class, 'contact'])->name('contact');
 
 // == Giỏ hàng ==
 Route::get('/gio-hang', [CartController::class, 'show'])->name('cart.show');
@@ -102,9 +100,6 @@ Route::get('/mua-ngay/checkout', [CartController::class, 'showBuyNowCheckout'])-
 //checkout
 Route::get('/thanh-toan', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::post('/thanh-toan/process', [CartController::class, 'processCheckout'])->name('cart.checkout.process');
-// Route::get('/dat-hang-thanh-cong', function () {
-//     return view('client.order-success');
-// })->name('order.success');
 Route::patch('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('client.orders.cancel');
 
 // ==== Đặt lịch ====
@@ -116,27 +111,15 @@ Route::get('/get-available-barbers-by-date/{branch_id}/{date}/{time}/{service_id
 Route::get('/confirm-booking/{token}', [ClientAppointmentController::class, 'confirmBooking'])->name('confirm.booking');
 Route::get('/xac-nhan-dat-lich', [ClientAppointmentController::class, 'showBookingConfirmed'])->name('booking.confirmed');
 
-// ==== Profile ====
-Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
-Route::post('/store-errors', function (Request $request) {
-    return response()->json(['success' => true]);
-})->name('store.errors');
-
-// == Lịch sử đặt lịch ==
-Route::get('/lich-su-dat-lich', [ClientAppointmentController::class, 'appointmentHistory'])->name('client.appointmentHistory');
-Route::get('/lich-su-dat-lich/{id}', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
-Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
-Route::get('/lich-su-dat-lich/huy/{id}', [ClientAppointmentController::class, 'showCancelledAppointment'])->name('client.cancelledAppointment.show');
-
 // ==== Chi nhánh ====
 Route::get('/chi-nhanh', [ClientBranchController::class, 'index'])->name('client.branch');
 Route::get('/chi-nhanh/{id}', [ClientBranchController::class, 'detail'])->name('client.detailBranch');
 
-// Đặt route danh sách
+// ==== Bài viết ====
 Route::get('/bai-viet', [ClientPostController::class, 'index'])->name('client.posts');
 Route::get('/bai-viet-chi-tiet/{id}', [ClientPostController::class, 'detail'])->name('client.detailPost');
 
-// Đánh giá
+// ==== Đánh giá ====
 Route::post('/appointments/{appointment}/review', [ClientReviewController::class, 'submitReview'])->name('client.submitReview');
 
 // == Sản phẩm ==
@@ -147,21 +130,6 @@ Route::get('/chi-tiet-san-pham/{id}', [ClientProductController::class, 'show'])-
 Route::get('/tho-cat', [ClientBarberController::class, 'index'])->name('client.listBarber');
 Route::get('/tho-cat/{id}', [ClientBarberController::class, 'show'])->name('client.detailBarber');
 
-// == Đổi điểm ==
-Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem')->middleware('auth');
-Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redeem.store')->middleware('auth');
-
-// == Lịch sử đơn hàng ==
-Route::get('/lich-su-don-hang', [ClientOrderController::class, 'index'])->name('client.orderHistory')->middleware('auth');
-Route::get('/chi-tiet-don-hang/{order}', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory')->middleware('auth');
-
-
-// == hoàn tiền ==
-Route::get('hoan-tien', [WalletController::class, 'index'])->name('client.detailWallet')->middleware('auth');
-Route::get('hoan-tien/create', [WalletController::class, 'create'])->name('client.wallet')->middleware('auth');
-Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.wallet.store')->middleware('auth');
-
-
 // == Thanh toán ==
 Route::match(['get', 'post'], '/payment/vnpay', [PaymentController::class, 'vnpayPayment'])->name('client.payment.vnpay');
 Route::get('/payment/vnpay/callback', [PaymentController::class, 'vnpayCallback'])->name('client.payment.vnpay.callback');
@@ -171,6 +139,35 @@ Route::get('/payment/vnpay/order/callback', [PaymentController::class, 'vnpayOrd
 
 // Route cho VNPAY checkout callback
 Route::get('/payment/vnpay/checkout/callback', [CartController::class, 'vnpayCheckoutCallback'])->name('client.payment.vnpay.checkout.callback');
+
+// Client
+Route::middleware('auth')->group(function () {
+    // ==== Profile ====
+    Route::get('/cai-dat-tai-khoan', [ProfileController::class, 'index'])->name('cai-dat-tai-khoan');
+    Route::post('/store-errors', function (Request $request) {
+        return response()->json(['success' => true]);
+    })->name('store.errors');
+
+    // == Lịch sử đặt lịch ==
+    Route::get('/lich-su-dat-lich', [ClientAppointmentController::class, 'appointmentHistory'])->name('client.appointmentHistory');
+    Route::get('/lich-su-dat-lich/{id}', [ClientAppointmentController::class, 'detailAppointmentHistory'])->name('client.detailAppointmentHistory');
+    Route::patch('lich-su-dat-lich/{appointment}/cancel', [ClientAppointmentController::class, 'cancel'])->name('client.appointments.cancel');
+    Route::get('/lich-su-dat-lich/huy/{id}', [ClientAppointmentController::class, 'showCancelledAppointment'])->name('client.cancelledAppointment.show');
+
+    // == Đổi điểm ==
+    Route::get('/doi-diem', [PointController::class, 'redeemForm'])->name('client.redeem')->middleware('auth');
+    Route::post('/doi-diem', [PointController::class, 'redeem'])->name('client.redeem.store')->middleware('auth');
+
+    // == Lịch sử đơn hàng ==
+    Route::get('/lich-su-don-hang', [ClientOrderController::class, 'index'])->name('client.orderHistory')->middleware('auth');
+    Route::get('/chi-tiet-don-hang/{order}', [ClientOrderController::class, 'show'])->name('client.detailOrderHistory')->middleware('auth');
+
+    // == hoàn tiền ==
+    Route::get('hoan-tien', [WalletController::class, 'index'])->name('client.detailWallet')->middleware('auth');
+    Route::get('hoan-tien/create', [WalletController::class, 'create'])->name('client.wallet')->middleware('auth');
+    Route::post('hoan-tien', [WalletController::class, 'store'])->name('client.wallet.store')->middleware('auth');
+});
+
 
 Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('barber-schedules/branch/{branchId}', [BarberScheduleController::class, 'showBranch'])
@@ -196,7 +193,6 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::get('/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
     Route::post('/profile/update', [AdminProfileController::class, 'update'])->name('admin.update');
     Route::post('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('admin.password');
-
 
     // Hiển thị giao diện danh sách Thợ cắt tóc
     Route::resource('barbers', BarberController::class);
@@ -275,7 +271,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
     Route::patch('product_categories/{id}/soft-delete', [ProductCategoryController::class, 'softDelete'])->name('product_categories.softDelete');
     Route::post('product_categories/{id}/restore', [ProductCategoryController::class, 'restore'])->name('product_categories.restore');
     Route::delete('product_categories/{id}/force-delete', [ProductCategoryController::class, 'destroy'])->name('product_categories.destroy');
-    
+
     // ==== Checkins ====
     Route::resource('checkins', CheckinController::class);
     Route::post('/appointments/{appointment}/checkin', [CheckinController::class, 'checkin'])->name('appointments.checkin');
