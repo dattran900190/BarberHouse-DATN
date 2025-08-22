@@ -2,14 +2,17 @@
 
 namespace App\Providers;
 
+use Carbon\Carbon;
 use App\Models\Banner;
 use App\Models\Setting;
 use App\Models\Appointment;
 use App\Models\RefundRequest;
 use App\Models\ProductCategory;
+use App\Models\Review;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use App\Observers\AppointmentObserver;
+use App\Observers\ReviewObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Broadcast;
@@ -31,14 +34,16 @@ class AppServiceProvider extends ServiceProvider
     {
         // Đăng ký broadcasting routes với middleware auth
         Broadcast::routes(['middleware' => ['auth']]);
-        
+
         // Xác thực kênh riêng tư cho từng user
         Broadcast::channel('user.{userId}', function ($user, $userId) {
             return (int) $user->id === (int) $userId;
         });
+        Carbon::setLocale('vi');
 
         // Kích hoạt phân trang dùng Bootstrap
         Paginator::useBootstrap();
+        Review::observe(ReviewObserver::class);
 
         // Đăng ký observer cho Appointment
         Appointment::observe(AppointmentObserver::class);

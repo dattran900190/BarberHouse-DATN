@@ -204,7 +204,7 @@
                                     <div class="service-wrapper mt-2 d-flex align-items-center">
                                         <select class="form-control additional-service-select"
                                             name="additional_services[]">
-                                            <option value="">Chọn dịch vụ thêm</option>
+                                            <option value="">Chọn dịch vụ bổ xung</option>
                                             @foreach ($services as $s)
                                                 @if (!$s->is_combo && $s->id != $appointment->service_id)
                                                     <option value="{{ $s->id }}" data-name="{{ $s->name }}"
@@ -820,6 +820,8 @@
                     Swal.fire({
                         title: 'Đang xử lý...',
                         text: 'Vui lòng chờ trong giây lát.',
+                        icon: 'info',
+                        showConfirmButton: false,
                         allowOutsideClick: false,
                         customClass: {
                             popup: 'custom-swal-popup'
@@ -832,7 +834,7 @@
                     const formData = new FormData(form);
                     if (!formData.get('voucher_code')) {
                         formData.set('ignore_voucher_error',
-                        '1'); // Đảm bảo bỏ voucher nếu voucher_code rỗng
+                            '1'); // Đảm bảo bỏ voucher nếu voucher_code rỗng
                     }
                     fetch(form.action, {
                             method: 'POST',

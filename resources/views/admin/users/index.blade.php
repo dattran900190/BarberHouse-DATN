@@ -427,6 +427,8 @@
                         if (result.isConfirmed) {
                             Swal.fire({
                                 title: 'Vui lòng chờ...',
+                                icon: 'info',
+                                showConfirmButton: false,
                                 allowOutsideClick: false,
                                 didOpen: () => Swal.showLoading(),
                                 customClass: {

@@ -354,6 +354,8 @@
                             Swal.fire({
                                 title: 'Đang xử lý...',
                                 text: 'Vui lòng chờ trong giây lát.',
+                                icon: 'info',
+                                showConfirmButton: false,
                                 allowOutsideClick: false,
                                 customClass: {
                                     popup: 'custom-swal-popup'
@@ -426,7 +428,10 @@
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Đăng nhập',
-                        cancelButtonText: 'Hủy'
+                        cancelButtonText: 'Hủy',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        }
                     }).then((result) => {
                         if (result.isConfirmed) window.location.href = '{{ route('login') }}';
                     });

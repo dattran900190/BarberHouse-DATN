@@ -157,11 +157,11 @@
                                     <div class="branch-dropdown d-flex align-items-center justify-content-between"
                                         data-bs-toggle="dropdown" aria-expanded="false">
                                         <div>
-                                            <p class="card-category mb-1">Doanh thu chi nhánh</p>
-                                            <h6 class="text-muted small mb-0" id="selected-branch-name">
+                                            <p class="card-category mb-1">Doanh thu chi nhánh </p>
+                                            {{-- <h6 class="text-muted small mb-0" id="selected-branch-name">
                                                 <i class="fas fa-map-marker-alt me-1"></i>
                                                 {{ $selectedBranchName }}
-                                            </h6>
+                                            </h6> --}}
                                         </div>
                                         <i class="fas fa-chevron-down text-muted"></i>
                                     </div>
@@ -176,7 +176,7 @@
                                             <hr class="dropdown-divider">
                                         </li>
 
-                                        @if (Auth::user()->role !== 'admin_branch')
+                                        {{-- @if (Auth::user()->role !== 'admin_branch')
                                             <li>
                                                 <a class="dropdown-item branch-option" href="#" data-branch-id=""
                                                     data-branch-name="Tất cả chi nhánh">
@@ -187,7 +187,7 @@
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>
-                                        @endif
+                                        @endif --}}
 
                                         @foreach ($branchesForRevenue as $branch)
                                             <li>
@@ -217,432 +217,447 @@
         </div>
     </div>
 
-    </div>
-    <!-- Chart Section -->
-    <div class="row g-3 mb-4">
-        <!-- Biểu đồ theo tuần/khoảng ngày -->
-        <div class="col-lg-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-header border-bottom">
-                    <h5 class="card-title mb-2 fw-bold">Thống kê doanh thu theo khoảng ngày</h5>
-                    <div class="d-flex align-items-end gap-2 flex-wrap">
-                        <div>
-                            <label for="week_start" class="form-label small mb-1">Từ ngày:</label>
-                            <input type="date" id="week_start" class="form-control form-control-sm"
-                                value="{{ $viewWeekStart ?? '' }}" max="{{ date('Y-m-d') }}">
-                        </div>
-                        <div>
-                            <label for="week_end" class="form-label small mb-1">Đến ngày:</label>
-                            <input type="date" id="week_end" class="form-control form-control-sm"
-                                value="{{ $viewWeekEnd ?? '' }}" max="{{ date('Y-m-d') }}">
-                        </div>
-                        <div>
-                            <button type="button" id="resetWeekFilter" class="btn btn-sm btn-outline-secondary">
-                                <i class="fa fa-refresh me-1"></i>Reset
-                            </button>
+
+        <!-- Chart Section -->
+        <div class="row g-3 mb-4">
+            <!-- Biểu đồ theo tuần/khoảng ngày -->
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header border-bottom">
+                        <h5 class="card-title mb-2 fw-bold">Thống kê doanh thu theo khoảng ngày</h5>
+                        <div class="d-flex align-items-end gap-2 flex-wrap">
+                            <div>
+                                <label for="week_start" class="form-label small mb-1">Từ ngày:</label>
+                                <input type="date" id="week_start" class="form-control form-control-sm"
+                                    value="{{ $viewWeekStart ?? '' }}" max="{{ date('Y-m-d') }}">
+                            </div>
+                            <div>
+                                <label for="week_end" class="form-label small mb-1">Đến ngày:</label>
+                                <input type="date" id="week_end" class="form-control form-control-sm"
+                                    value="{{ $viewWeekEnd ?? '' }}" max="{{ date('Y-m-d') }}">
+                            </div>
+                            <div>
+                                <button type="button" id="resetWeekFilter" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fa fa-refresh me-1"></i>Reset
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container" style="min-height: 300px;">
-                        <canvas id="weekChart"></canvas>
+                    <div class="card-body">
+                        <div class="chart-container" style="min-height: 300px;">
+                            <canvas id="weekChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
 
-        <!-- Biểu đồ theo tháng -->
-        <div class="col-lg-6">
-            <div class="card card-round shadow-sm h-100 d-flex flex-column">
-                <div class="card-header border-bottom">
-                    <h5 class="card-title mb-2 fw-bold">Thống kê doanh thu theo tháng</h5>
-                    <div class="d-flex align-items-end gap-2 flex-wrap">
-                        <div>
-                            <label for="selected_month" class="form-label small mb-1 text-muted">Chọn tháng:</label>
-                            <select id="selected_month" class="form-select form-select-sm">
-                                <option value="">Tất cả tháng {{ $year ?? date('Y') }}</option>
-                                @foreach ($availableMonths as $monthNum)
-                                    <option value="{{ $monthNum }}"
-                                        {{ isset($selectedMonth) && $selectedMonth == $monthNum ? 'selected' : '' }}>
-                                        Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <button type="button" id="resetMonthFilter" class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-refresh me-1"></i>Reset
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container" style="min-height: 300px;">
-                        <canvas id="monthChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Content Section -->
-    <div class="row g-3">
-        <!-- Cột trái -->
-        <div class="col-lg-6">
-            <div class="row g-3">
-                <!-- Dịch vụ phổ biến & ít dùng -->
-                <div class="col-12">
-                    <div class="card card-round h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0 fw-bold">Dịch vụ phổ biến & ít dùng</h5>
-                            <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="pills-top-service-tab" data-bs-toggle="pill"
-                                        href="#pills-top-service" role="tab">
-                                        Phổ biến
-                                        <span class="badge bg-primary ms-1"
-                                            id="top-service-count">{{ $topServices->count() }}</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="pills-low-service-tab" data-bs-toggle="pill"
-                                        href="#pills-low-service" role="tab">
-                                        Ít dùng
-                                        <span class="badge bg-warning ms-1"
-                                            id="low-service-count">{{ $lowUsageServices->count() }}</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- Bộ lọc dịch vụ -->
-                        <div class="card-body border-bottom">
-                            <div class="row g-3" id="service-filter-controls">
-                                <div class="col-md-4">
-                                    <input type="text" class="form-control form-control-sm" id="service-search"
-                                        placeholder="Tìm kiếm dịch vụ...">
-                                </div>
-                                <div class="col-md-3">
-                                    <select id="service-sort-select" class="form-select form-select-sm">
-                                        <option value="usage_count">Theo lượt sử dụng</option>
-                                        <option value="name">Theo tên A-Z</option>
-                                        <option value="price">Theo giá</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <select id="service-per-page" class="form-select form-select-sm">
-                                        <option value="5">5 dịch vụ</option>
-                                        <option value="10" selected>10 dịch vụ</option>
-                                        <option value="20">20 dịch vụ</option>
-                                        <option value="all">Tất cả</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm w-100"
-                                        onclick="resetServiceFilters()">
-                                        <i class="fas fa-undo"></i>
-                                    </button>
-                                </div>
+            <!-- Biểu đồ theo tháng -->
+            <div class="col-lg-6">
+                <div class="card card-round shadow-sm h-100 d-flex flex-column">
+                    <div class="card-header border-bottom">
+                        <h5 class="card-title mb-2 fw-bold">Thống kê doanh thu theo tháng</h5>
+                        <div class="d-flex align-items-end gap-2 flex-wrap">
+                            <div>
+                                <label for="selected_month" class="form-label small mb-1 text-muted">Chọn tháng:</label>
+                                <select id="selected_month" class="form-select form-select-sm">
+                                    <option value="">Tất cả tháng {{ $year ?? date('Y') }}</option>
+                                    @foreach ($availableMonths as $monthNum)
+                                        <option value="{{ $monthNum }}"
+                                            {{ isset($selectedMonth) && $selectedMonth == $monthNum ? 'selected' : '' }}>
+                                            Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <div class="text-center loading-spinner-service" style="display: none;">
-                                <div class="spinner-border spinner-border-sm text-primary mt-2" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <small class="text-muted d-block mt-1">Đang tải...</small>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="tab-content">
-                                <!-- Phổ biến -->
-                                <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
-                                    <div class="scroll-rows-5" id="top-services-content">
-                                        @include('partials.top-services', ['topServices' => $topServices])
-                                    </div>
-                                </div>
-                                <!-- Ít dùng -->
-                                <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
-                                    <div class="scroll-rows-5" id="low-services-content">
-                                        @include('partials.low-services', [
-                                            'lowUsageServices' => $lowUsageServices,
-                                        ])
-                                    </div>
-                                </div>
+                            <div>
+                                <button type="button" id="resetMonthFilter" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-refresh me-1"></i>Reset
+                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Thống kê ngày nghỉ của thợ -->
-                <div class="col-12">
-                    <div class="card card-round h-100">
-                        <div class="card-header d-flex flex-column">
-                            <h5 class="card-title mb-1 fw-bold">Ngày nghỉ của thợ (Top 5)</h5>
-                            <div class="d-flex align-items-end gap-2 flex-wrap mt-2">
-                                <div>
-                                    <label for="leave_month" class="form-label small mb-1 text-muted">Chọn tháng:</label>
-                                    <select id="leave_month" class="form-select form-select-sm">
-                                        <option value="">Tháng hiện tại</option>
-                                        @foreach ($availableMonths as $monthNum)
-                                            <option value="{{ $monthNum }}"
-                                                {{ isset($selectedLeaveMonth) && $selectedLeaveMonth == $monthNum ? 'selected' : '' }}>
-                                                Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="leave_branch" class="form-label small mb-1 text-muted">Chi nhánh:</label>
-                                    <select id="leave_branch" class="form-select form-select-sm">
-                                        <option value="">Tất cả chi nhánh</option>
-                                        @foreach ($branches as $branch)
-                                            <option value="{{ $branch->id }}"
-                                                {{ isset($selectedBranch) && $selectedBranch == $branch->id ? 'selected' : '' }}>
-                                                {{ $branch->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <button type="button" id="resetLeaveFilter"
-                                        class="btn btn-sm btn-outline-secondary">
-                                        <i class="fa fa-refresh me-1"></i>Reset
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="barberLeaveTable" class="table table-hover table-sm align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Nhân viên</th>
-                                            <th class="text-center">Tổng ngày nghỉ</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($barberLeaves as $barber)
-                                            <tr>
-                                                <td>{{ $barber->name }}</td>
-                                                <td class="text-center">{{ $barber->total_off }}</td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="2" class="text-center text-muted">Không có dữ liệu ngày
-                                                    nghỉ</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="min-height: 300px;">
+                            <canvas id="monthChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Cột phải -->
-        <div class="col-lg-6">
-            <div class="row g-3">
-                <!-- Sản phẩm bán chạy & ít bán -->
-                <div class="col-12">
-                    <div class="card card-round h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0 fw-bold">Sản phẩm bán chạy & ít bán</h5>
-                            <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="pills-top-product-tab" data-bs-toggle="pill"
-                                        href="#pills-top-product" role="tab">
-                                        Bán chạy
-                                        <span class="badge bg-success ms-1"
-                                            id="top-product-count">{{ $topProducts->total() ?? count($topProducts) }}</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="pills-low-product-tab" data-bs-toggle="pill"
-                                        href="#pills-low-product" role="tab">
-                                        Ít bán
-                                        <span class="badge bg-warning ms-1"
-                                            id="low-product-count">{{ $lowSellingProducts->total() ?? count($lowSellingProducts) }}</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Bộ lọc và tìm kiếm -->
-                        <div class="card-body border-bottom">
-                            <div class="row g-3" id="product-filter-controls">
-                                <!-- Tìm kiếm -->
-                                <div class="col-md-4">
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text bg-light">
-                                            <i class="fas fa-search text-muted"></i>
-                                        </span>
-                                        <input type="text" class="form-control" name="search"
-                                            placeholder="Tìm kiếm sản phẩm..." value="{{ request('search') }}"
-                                            id="product-search">
+        <!-- Content Section -->
+        <div class="row g-3">
+            <!-- Cột trái -->
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <!-- Dịch vụ phổ biến & ít dùng -->
+                    <div class="col-12">
+                        <div class="card card-round h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0 fw-bold">Dịch vụ phổ biến & ít dùng</h5>
+                                <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="pills-top-service-tab" data-bs-toggle="pill"
+                                            href="#pills-top-service" role="tab">
+                                            Phổ biến
+                                            <span class="badge bg-primary ms-1"
+                                                id="top-service-count">{{ $topServices->count() }}</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="pills-low-service-tab" data-bs-toggle="pill"
+                                            href="#pills-low-service" role="tab">
+                                            Ít dùng
+                                            <span class="badge bg-warning ms-1"
+                                                id="low-service-count">{{ $lowUsageServices->count() }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- Bộ lọc dịch vụ -->
+                            <div class="card-body border-bottom">
+                                <div class="row g-3" id="service-filter-controls">
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control form-control-sm" id="service-search"
+                                            placeholder="Tìm kiếm dịch vụ...">
                                     </div>
-                                </div>
-
-                                <!-- Số lượng hiển thị -->
-                                <div class="col-md-3">
-                                    <select name="per_page" class="form-select form-select-sm" id="per-page-select">
-                                        <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5 sản phẩm
-                                        </option>
-                                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10
-                                            sản phẩm</option>
-                                        <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20 sản
-                                            phẩm</option>
-                                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 sản
-                                            phẩm</option>
-                                        <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>Tất cả
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <!-- Sắp xếp -->
-                                <div class="col-md-3">
-                                    <select name="sort_by" class="form-select form-select-sm" id="product-sort-select">
-                                        <option value="total_sold"
-                                            {{ request('sort_by', 'total_sold') == 'total_sold' ? 'selected' : '' }}>Theo
-                                            số lượng bán</option>
-                                        <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>Theo
-                                            tên A-Z</option>
-                                        <option value="price" {{ request('sort_by') == 'price' ? 'selected' : '' }}>Theo
-                                            giá</option>
-                                        <option value="created_at"
-                                            {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>Theo ngày tạo
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <!-- Action buttons -->
-                                <div class="col-md-2">
-                                    <div class="btn-group btn-group-sm w-100">
-                                        <button type="button" class="btn btn-outline-secondary" id="product-reset-btn"
-                                            title="Reset lọc">
+                                    <div class="col-md-3">
+                                        <select id="service-sort-select" class="form-select form-select-sm">
+                                            <option value="usage_count">Theo lượt sử dụng</option>
+                                            <option value="name">Theo tên A-Z</option>
+                                            <option value="price">Theo giá</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select id="service-per-page" class="form-select form-select-sm">
+                                            <option value="5">5 dịch vụ</option>
+                                            <option value="10" selected>10 dịch vụ</option>
+                                            <option value="20">20 dịch vụ</option>
+                                            <option value="all">Tất cả</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm w-100"
+                                            onclick="resetServiceFilters()">
                                             <i class="fas fa-undo"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="text-center loading-spinner-service" style="display: none;">
+                                    <div class="spinner-border spinner-border-sm text-primary mt-2" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Đang tải...</small>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <!-- Phổ biến -->
+                                    <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
+                                        <div class="scroll-rows-5" id="top-services-content">
+                                            @include('partials.top-services', [
+                                                'topServices' => $topServices,
+                                            ])
+                                        </div>
+                                    </div>
+                                    <!-- Ít dùng -->
+                                    <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
+                                        <div class="scroll-rows-5" id="low-services-content">
+                                            @include('partials.low-services', [
+                                                'lowUsageServices' => $lowUsageServices,
+                                            ])
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thống kê ngày nghỉ của thợ -->
+                    <div class="col-12">
+                        <div class="card card-round h-100">
+                            <div class="card-header d-flex flex-column">
+                                <h5 class="card-title mb-1 fw-bold">Ngày nghỉ của thợ (Top 5)</h5>
+                                <div class="d-flex align-items-end gap-2 flex-wrap mt-2">
+                                    <div>
+                                        <label for="leave_month" class="form-label small mb-1 text-muted">Chọn
+                                            tháng:</label>
+                                        <select id="leave_month" class="form-select form-select-sm">
+                                            <option value="">Tháng hiện tại</option>
+                                            @foreach ($availableMonths as $monthNum)
+                                                <option value="{{ $monthNum }}"
+                                                    {{ isset($selectedLeaveMonth) && $selectedLeaveMonth == $monthNum ? 'selected' : '' }}>
+                                                    Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="leave_branch" class="form-label small mb-1 text-muted">Chi
+                                            nhánh:</label>
+                                        <select id="leave_branch" class="form-select form-select-sm">
+                                            <option value="">Tất cả chi nhánh</option>
+                                            @foreach ($branches as $branch)
+                                                <option value="{{ $branch->id }}"
+                                                    {{ isset($selectedBranch) && $selectedBranch == $branch->id ? 'selected' : '' }}>
+                                                    {{ $branch->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <button type="button" id="resetLeaveFilter"
+                                            class="btn btn-sm btn-outline-secondary">
+                                            <i class="fa fa-refresh me-1"></i>Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="barberLeaveTable" class="table table-hover table-sm align-middle mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Nhân viên</th>
+                                                <th class="text-center">Tổng ngày nghỉ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($barberLeaves as $barber)
+                                                <tr>
+                                                    <td>{{ $barber->name }}</td>
+                                                    <td class="text-center">{{ $barber->total_off }}</td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="2" class="text-center text-muted">Không có dữ liệu
+                                                        ngày
+                                                        nghỉ</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột phải -->
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <!-- Sản phẩm bán chạy & ít bán -->
+                    <div class="col-12">
+                        <div class="card card-round h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0 fw-bold">Sản phẩm bán chạy & ít bán</h5>
+                                <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="pills-top-product-tab" data-bs-toggle="pill"
+                                            href="#pills-top-product" role="tab">
+                                            Bán chạy
+                                            <span class="badge bg-success ms-1"
+                                                id="top-product-count">{{ $topProducts->total() ?? count($topProducts) }}</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="pills-low-product-tab" data-bs-toggle="pill"
+                                            href="#pills-low-product" role="tab">
+                                            Ít bán
+                                            <span class="badge bg-warning ms-1"
+                                                id="low-product-count">{{ $lowSellingProducts->total() ?? count($lowSellingProducts) }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Bộ lọc và tìm kiếm -->
+                            <div class="card-body border-bottom">
+                                <div class="row g-3" id="product-filter-controls">
+                                    <!-- Tìm kiếm -->
+                                    <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light">
+                                                <i class="fas fa-search text-muted"></i>
+                                            </span>
+                                            <input type="text" class="form-control" name="search"
+                                                placeholder="Tìm kiếm sản phẩm..." value="{{ request('search') }}"
+                                                id="product-search">
+                                        </div>
+                                    </div>
+
+                                    <!-- Số lượng hiển thị -->
+                                    <div class="col-md-3">
+                                        <select name="per_page" class="form-select form-select-sm" id="per-page-select">
+                                            <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5 sản
+                                                phẩm
+                                            </option>
+                                            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>
+                                                10
+                                                sản phẩm</option>
+                                            <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20
+                                                sản
+                                                phẩm</option>
+                                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50
+                                                sản
+                                                phẩm</option>
+                                            <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>
+                                                Tất cả
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Sắp xếp -->
+                                    <div class="col-md-3">
+                                        <select name="sort_by" class="form-select form-select-sm"
+                                            id="product-sort-select">
+                                            <option value="total_sold"
+                                                {{ request('sort_by', 'total_sold') == 'total_sold' ? 'selected' : '' }}>
+                                                Theo
+                                                số lượng bán</option>
+                                            <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>
+                                                Theo
+                                                tên A-Z</option>
+                                            <option value="price" {{ request('sort_by') == 'price' ? 'selected' : '' }}>
+                                                Theo
+                                                giá</option>
+                                            <option value="created_at"
+                                                {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>Theo ngày tạo
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Action buttons -->
+                                    <div class="col-md-2">
+                                        <div class="btn-group btn-group-sm w-100">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm w-100"
+                                                id="product-reset-btn" title="Reset lọc">
+                                                <i class="fas fa-undo"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Loading spinner -->
+                                <div class="text-center loading-spinner-product" style="display: none;">
+                                    <div class="spinner-border spinner-border-sm text-primary mt-2" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Đang tải...</small>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <!-- Tab Bán chạy -->
+                                    <div class="tab-pane fade show active" id="pills-top-product" role="tabpanel">
+                                        <div class="scroll-rows-5">
+                                            <div id="top-products-content">
+                                                <!-- Nội dung sản phẩm bán chạy sẽ được load vào đây -->
+                                                @include('partials.top-products', [
+                                                    'topProducts' => $topProducts,
+                                                ])
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tab Ít bán -->
+                                    <div class="tab-pane fade" id="pills-low-product" role="tabpanel">
+                                        <div class="scroll-rows-5">
+                                            <div id="low-products-content">
+                                                <!-- Nội dung sản phẩm ít bán sẽ được load vào đây -->
+                                                @include('partials.low-products', [
+                                                    'lowSellingProducts' => $lowSellingProducts,
+                                                ])
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <!-- Hiệu suất nhân viên -->
+                    <div class="col-12">
+                        <div class="card card-round h-100">
+                            <div class="card-header d-flex flex-column">
+                                <h5 class="card-title mb-1 fw-bold">Hiệu suất nhân viên (Top 5)</h5>
+                                <div class="d-flex align-items-end gap-2 flex-wrap mt-2">
+                                    <div>
+                                        <label for="performance_month" class="form-label small mb-1 text-muted">Chọn
+                                            tháng:</label>
+                                        <select id="performance_month" class="form-select form-select-sm">
+                                            <option value="">Tháng hiện tại</option>
+                                            @foreach ($availableMonths as $monthNum)
+                                                <option value="{{ $monthNum }}"
+                                                    {{ isset($selectedPerformanceMonth) && $selectedPerformanceMonth == $monthNum ? 'selected' : '' }}>
+                                                    Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="performance_branch" class="form-label small mb-1 text-muted">Chi
+                                            nhánh:</label>
+                                        <select id="performance_branch" class="form-select form-select-sm">
+                                            <option value="">Tất cả chi nhánh</option>
+                                            @foreach ($branches as $branch)
+                                                <option value="{{ $branch->id }}"
+                                                    {{ isset($selectedPerformanceBranch) && $selectedPerformanceBranch == $branch->id ? 'selected' : '' }}>
+                                                    {{ $branch->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <button type="button" id="resetPerformanceFilter"
+                                            class="btn btn-sm btn-outline-secondary">
+                                            <i class="fa fa-refresh me-1"></i>Reset
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Loading spinner -->
-                            <div class="text-center loading-spinner-product" style="display: none;">
-                                <div class="spinner-border spinner-border-sm text-primary mt-2" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <small class="text-muted d-block mt-1">Đang tải...</small>
-                            </div>
-                        </div>
-
-                        <div class="card-body">
-                            <div class="tab-content">
-                                <!-- Tab Bán chạy -->
-                                <div class="tab-pane fade show active" id="pills-top-product" role="tabpanel">
-                                    <div class="scroll-rows-5">
-                                        <div id="top-products-content">
-                                            <!-- Nội dung sản phẩm bán chạy sẽ được load vào đây -->
-                                            @include('partials.top-products', [
-                                                'topProducts' => $topProducts,
-                                            ])
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Tab Ít bán -->
-                                <div class="tab-pane fade" id="pills-low-product" role="tabpanel">
-                                    <div class="scroll-rows-5">
-                                        <div id="low-products-content">
-                                            <!-- Nội dung sản phẩm ít bán sẽ được load vào đây -->
-                                            @include('partials.low-products', [
-                                                'lowSellingProducts' => $lowSellingProducts,
-                                            ])
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-
-
-                <!-- Hiệu suất nhân viên -->
-                <div class="col-12">
-                    <div class="card card-round h-100">
-                        <div class="card-header d-flex flex-column">
-                            <h5 class="card-title mb-1 fw-bold">Hiệu suất nhân viên (Top 5)</h5>
-                            <div class="d-flex align-items-end gap-2 flex-wrap mt-2">
-                                <div>
-                                    <label for="performance_month" class="form-label small mb-1 text-muted">Chọn
-                                        tháng:</label>
-                                    <select id="performance_month" class="form-select form-select-sm">
-                                        <option value="">Tháng hiện tại</option>
-                                        @foreach ($availableMonths as $monthNum)
-                                            <option value="{{ $monthNum }}"
-                                                {{ isset($selectedPerformanceMonth) && $selectedPerformanceMonth == $monthNum ? 'selected' : '' }}>
-                                                Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="performance_branch" class="form-label small mb-1 text-muted">Chi
-                                        nhánh:</label>
-                                    <select id="performance_branch" class="form-select form-select-sm">
-                                        <option value="">Tất cả chi nhánh</option>
-                                        @foreach ($branches as $branch)
-                                            <option value="{{ $branch->id }}"
-                                                {{ isset($selectedPerformanceBranch) && $selectedPerformanceBranch == $branch->id ? 'selected' : '' }}>
-                                                {{ $branch->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <button type="button" id="resetPerformanceFilter"
-                                        class="btn btn-sm btn-outline-secondary">
-                                        <i class="fa fa-refresh me-1"></i>Reset
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="barberPerformanceTable" class="table table-hover table-sm align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Nhân viên</th>
-                                            <th class="text-center">Lượt cắt</th>
-                                            <th class="text-center">Đánh giá</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($barberStats as $barber)
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="barberPerformanceTable"
+                                        class="table table-hover table-sm align-middle mb-0">
+                                        <thead>
                                             <tr>
-                                                <td>{{ $barber->name }}</td>
-                                                <td class="text-center">{{ $barber->cut_count }}</td>
-                                                <td class="text-center">
-                                                    {{ number_format($barber->avg_rating, 1) }} ⭐
-                                                </td>
+                                                <th>Nhân viên</th>
+                                                <th class="text-center">Lượt cắt</th>
+                                                <th class="text-center">Đánh giá</th>
                                             </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="3" class="text-center text-muted">Không có dữ liệu
-                                                </td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($barberStats as $barber)
+                                                <tr>
+                                                    <td>{{ $barber->name }}</td>
+                                                    <td class="text-center">{{ $barber->cut_count }}</td>
+                                                    <td class="text-center">
+                                                        {{ number_format($barber->avg_rating, 1) }} ⭐
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="3" class="text-center text-muted">Không có dữ liệu
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Lịch sử giao dịch - Full width -->
     <div class="row g-3 mt-2">
@@ -1684,10 +1699,10 @@
             font-size: 0.65em;
         }
 
-        .btn-group-sm .btn {
-            padding: 0.15rem 0.4rem;
+        /* .btn-group-sm .btn {
+            padding: 0.5rem 0.4rem;
             font-size: 0.7rem;
-        }
+        } */
 
         .nav-pills .nav-link {
             border-radius: 15px;
