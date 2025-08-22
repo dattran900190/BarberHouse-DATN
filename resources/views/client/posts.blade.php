@@ -163,8 +163,9 @@
         .post-top h4 {
             padding: 10px 10px 0;
             font-size: 1.5rem;
-            /* font-weight: bold; */
+            font-weight: bold;
             /* line-height: 1.3; */
+            text-transform: uppercase;
         }
 
         .post-top p {
@@ -217,6 +218,7 @@
             font-size: 1.1rem;
             font-weight: 600;
             /* line-height: 1.4; */
+            text-transform: uppercase;
             margin: 0;
         }
 

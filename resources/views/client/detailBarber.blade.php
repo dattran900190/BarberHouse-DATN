@@ -158,8 +158,9 @@
                                                                     <h6 class="mb-0 fw-bold">
                                                                         {{ $review->user->name ?? 'Khách hàng ẩn danh' }}
                                                                     </h6>
-                                                                    <small
-                                                                        class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
+                                                                    <small class="text-muted">
+                                                                        {{ $review->created_at->format('d/m/Y H:i') }} ({{ $review->created_at->diffForHumans() }})
+                                                                    </small>
                                                                 </div>
                                                                  <div class="text-warning review-stars">
                                                                     @for ($i = 1; $i <= 5; $i++)
