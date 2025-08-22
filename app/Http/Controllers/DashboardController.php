@@ -28,7 +28,7 @@ class DashboardController extends Controller
 
         // Lấy chi nhánh được chọn từ request (nếu không chọn thì mặc định null)
         $selectedBranchRevenue = $request->input('branch_revenue_id');
-        $selectedBranchName = 'Tất cả chi nhánh';
+        $selectedBranchName = 'Chọn chi nhánh'; // Mặc định là 'Chọn chi nhánh'
 
         // Doanh thu theo chi nhánh (chỉ dịch vụ)
         if ($selectedBranchRevenue) {
@@ -48,7 +48,7 @@ class DashboardController extends Controller
             $branchTodayRevenue = Appointment::whereDate('created_at', $today)
                 ->where('status', 'completed')
                 ->sum('total_amount');
-            $selectedBranchName = 'Tất cả chi nhánh';
+            $selectedBranchName = 'Chọn chi nhánh';
         }
 
         // Đếm tổng lượt đặt lịch hoàn thành

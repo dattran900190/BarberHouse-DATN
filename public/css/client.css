@@ -224,6 +224,13 @@ body a:hover {
     background-color: rgba(0, 0, 0, 0.1);
     border-radius: 4px;
   }
+
+  .custom-swal-popup {
+    width: 300px !important;       /* chiếm 90% màn hình */
+    max-width: 300px  !important;
+    height: 300px !important;     /* auto để không bị tràn */
+    max-height: 300px !important; /* tối đa 80% chiều cao màn hình */
+  }
 }
 
 /* Mobile Banner Bé Lại */
@@ -2556,4 +2563,12 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
   /* one column like home */
   #product .col-6 { flex: 0 0 100%; max-width: 100%; }
   #product .barber-img-wrapper { aspect-ratio: 4 / 5; }
+
+  .custom-swal-popup {
+    width: 350px !important;       /* chiếm 90% màn hình */
+    max-width: 350px  !important;
+    height: 350px !important;     /* auto để không bị tràn */
+    max-height: 350px !important; /* tối đa 80% chiều cao màn hình */
+  }
+
 }
