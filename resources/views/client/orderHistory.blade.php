@@ -94,8 +94,7 @@
                                             </button>
                                         @endif
 
-                                        @if (
-                                            $order->status != 'cancelled' &&
+                                        @if (in_array($order->status, ['pending', 'completed']) &&
                                                 $order->payment_status == 'paid' &&
                                                 !$order->refundRequests()->whereIn('refund_status', ['pending', 'processing'])->exists() &&
                                                 !$order->refundRequests()->where('refund_status', 'rejected')->exists())
