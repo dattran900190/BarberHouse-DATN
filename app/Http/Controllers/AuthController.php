@@ -49,7 +49,7 @@ class AuthController extends Controller
             return match ($user->role) {
                 'admin' => redirect()->route('dashboard'),
                 'admin_branch' => redirect()->route('branches.index'),
-                default => redirect()->route('home'),
+                default => redirect()->intended(route('home')),
             };
         }
 

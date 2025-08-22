@@ -31,7 +31,7 @@
 
                         @if ($appointment->additional_service_objects && $appointment->additional_service_objects->isNotEmpty())
                             <div class="mt-2">
-                                <strong class="text-muted">Dịch vụ thêm:</strong>
+                                <strong class="text-muted">Dịch vụ bổ sung:</strong>
                                 <ul class="mb-0 mt-1 ps-3 text-muted">
                                     @foreach ($appointment->additional_service_objects as $service)
                                         <li>{{ $service->name }}</li>
@@ -60,10 +60,10 @@
                         $paymentClass = $paymentMap[$appointment->payment_status]['class'] ?? 'secondary';
                         $paymentText = $paymentMap[$appointment->payment_status]['text'] ?? 'Không rõ';
                     @endphp
-                    <td>
+                    <td class="text-center">
                         <span class="badge bg-{{ $statusClass }}">{{ $statusText }}</span>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <span class="badge bg-{{ $paymentClass }}">{{ $paymentText }}</span>
                     </td>
                     <td class="text-center">

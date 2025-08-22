@@ -701,7 +701,7 @@
 
 
                     // Tạo danh sách tùy chọn dựa trên loại dịch vụ chính
-                    let options = '<option value="">Chọn dịch vụ thêm</option>';
+                    let options = '<option value="">Chọn dịch vụ bổ sung</option>';
 
                     // Nếu dịch vụ chính là combo, không cho thêm dịch vụ thêm
                     if (isMainServiceCombo) {
