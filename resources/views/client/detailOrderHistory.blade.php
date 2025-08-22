@@ -213,13 +213,13 @@
                             </div>
                             <div class="hstack gap-2 justify-content-end d-print-none mt-4">
                                @if ($order->status === 'pending' && $order->payment_method !== 'vnpay')
-                                    <button type="button" class="btn-outline-show cancel-order-btn"
+                                    <button type="button" class="btn-outline-show cancel-order-btn" style="padding: 6px 10px;"
                                         data-order-id="{{ $order->id }}"
                                         data-cancel-url="{{ route('client.orders.cancel', $order->id) }}">
                                         Hủy đơn hàng
                                     </button>
                                 @endif
-                                <a href="{{ route('client.orderHistory') }}" class="btn-outline-show">Quay lại</a>
+                                <a href="{{ route('client.orderHistory') }}" class="btn-outline-show" style="padding: 6px 10px;">Quay lại</a>
                             </div>
                         </div>
                     </div>
