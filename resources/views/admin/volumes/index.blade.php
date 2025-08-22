@@ -81,7 +81,8 @@
                                             </li>
                                             @if ($volume->trashed())
                                                 <li>
-                                                    <button type="button" class="dropdown-item text-success restore-btn" data-id="{{ $volume->id }}">
+                                                    <button type="button" class="dropdown-item text-success restore-btn"
+                                                        data-id="{{ $volume->id }}">
                                                         <i class="fas fa-undo me-2"></i> Khôi phục
                                                     </button>
                                                 </li>
@@ -132,9 +133,9 @@
 @endsection
 
 @section('js')
-   
+
     <script>
-         function handleSwalAction({
+        function handleSwalAction({
             selector,
             title,
             text,
@@ -145,7 +146,7 @@
             document.querySelectorAll(selector).forEach(button => {
                 button.addEventListener('click', function(event) {
                     event.preventDefault();
-                                         const recordId = this.getAttribute('data-id');
+                    const recordId = this.getAttribute('data-id');
 
                     Swal.fire({
                         title,
@@ -166,6 +167,8 @@
                             Swal.fire({
                                 title: 'Đang xử lý...',
                                 text: 'Vui lòng chờ trong giây lát.',
+                                icon: 'info',
+                                showConfirmButton: false,
                                 allowOutsideClick: false,
                                 customClass: {
                                     popup: 'custom-swal-popup'
@@ -173,13 +176,13 @@
                                 didOpen: () => Swal.showLoading()
                             });
 
-                                                         fetch(route.replace(':id', recordId), {
-                                     method,
-                                     headers: {
-                                         'Accept': 'application/json',
-                                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                     }
-                                 })
+                            fetch(route.replace(':id', recordId), {
+                                    method,
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    }
+                                })
                                 .then(response => response.json())
                                 .then(data => {
                                     Swal.close();
@@ -226,7 +229,7 @@
             method: 'DELETE',
             successMessage: 'Đã xóa vĩnh viễn dung tích thành công!'
         });
-        
+
         handleSwalAction({
             selector: '.restore-btn',
             title: 'Khôi phục Dung tích',

@@ -182,6 +182,8 @@
                             Swal.fire({
                                 title: 'Đang xử lý...',
                                 text: 'Vui lòng chờ trong giây lát.',
+                                icon: 'info',
+                                showConfirmButton: false,
                                 allowOutsideClick: false,
                                 customClass: {
                                     popup: 'custom-swal-popup' // CSS

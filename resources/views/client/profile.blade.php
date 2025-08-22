@@ -38,10 +38,13 @@
 
                                 <div class="card-body pb-2">
                                     @if (session('success-info'))
-                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                            {{ session('success-info') }}
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                                aria-label="Close"></button>
+                                        <div class="alert-box" id="customAlert">
+                                            <div class="alert-message">
+                                                <span>
+                                                    {{ session('success-info') }}
+                                                </span>
+                                            </div>
+                                            <button type="button" class="btn-close" onclick="document.getElementById('customAlert').remove()"></span>
                                         </div>
                                     @endif
                                     <form action="{{ route('client.update') }}" method="POST"
@@ -122,10 +125,13 @@
                             <div class="tab-pane fade" id="account-change-password">
                                 <div class="card-body pb-2">
                                     @if (session('success-password'))
-                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                            {{ session('success-password') }}
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                                aria-label="Close"></button>
+                                        <div class="alert-box" id="customAlert">
+                                            <div class="alert-message">
+                                                <span>
+                                                    {{ session('success-password') }}
+                                                </span>
+                                            </div>
+                                            <button type="button" class="btn-close" onclick="document.getElementById('customAlert').remove()"></span>
                                         </div>
                                     @endif
                                     <form action="{{ route('client.password') }}" method="POST">

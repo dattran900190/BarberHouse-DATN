@@ -16,6 +16,11 @@ body a:hover {
   color: #444;
 }
 
+.swal2-loader {
+    width: 5em !important;
+    height: 5em !important;
+}
+
 .button-group {
   display: flex;
   justify-content: center;
@@ -109,9 +114,9 @@ body a:hover {
   height: 450px !important;
 }
 
-.swal2-loading {
+/* .swal2-loading {
   font-size: 1.5rem !important;
-}
+} */
 
 /* .custom-swal-popup .swal2-title {
   margin-top: 15px !important;
@@ -1470,45 +1475,6 @@ h2 {
   padding: 40px 20px;
 }
 
-/* .posts-content {
-  display: flex;
-  justify-content: center;
-} */
-
-/* .main-posts h2 {
-  text-align: center;
-}
-
-.post-left .post-top {
-  padding: 10px;
-} */
-
-/* .post-left .post-top a {
-  color: #000;
-  text-decoration: none;
-} */
-
-/* .post-left .post-top img {
-  width: 720px;
-} */
-
-/* .post-left .post-mid {
-  display: grid;
-  gap: 30px;
-  grid-template-columns: 1fr 1fr;
-} */
-
-/* .post-left .post-mid img {
-  width: 350px;
-  height: 200px;
-
-} */
-
-/* .post-right .post img {
-  width: 250px;
-  height: 250px;
-} */
-
 /* -----chat---------- */
 .chat-wrapper {
   position: fixed;
@@ -1572,7 +1538,7 @@ h2 {
 .login {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  /* gap: 40px; */
 }
 
 .image-login {
@@ -1604,22 +1570,6 @@ h2 {
 
 .form-login .form a {
   color: red;
-}
-
-.form-login .form button {
-  top: 20px;
-  left: 20px;
-  font-size: 18px;
-  text-decoration: none;
-  color: #fff;
-  background-color: #000;
-  padding: 6px 12px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.form-login .form button:hover {
-  background-color: #444;
 }
 
 .back-button {

@@ -49,7 +49,7 @@
         // Quy tắc chuyển đổi trạng thái lịch hẹn
         $allowedStatusTransitions = [
             'pending' => ['confirmed', 'cancelled'],
-            'confirmed' => ['checked-in', 'cancelled', 'progress'],
+            'confirmed' => ['checked-in', 'cancelled'],
             'progress' => ['completed'],
             'completed' => [],
             'cancelled' => [],
@@ -820,6 +820,8 @@
                     Swal.fire({
                         title: 'Đang xử lý...',
                         text: 'Vui lòng chờ trong giây lát.',
+                        icon: 'info',
+                        showConfirmButton: false,
                         allowOutsideClick: false,
                         customClass: {
                             popup: 'custom-swal-popup'
@@ -832,7 +834,7 @@
                     const formData = new FormData(form);
                     if (!formData.get('voucher_code')) {
                         formData.set('ignore_voucher_error',
-                        '1'); // Đảm bảo bỏ voucher nếu voucher_code rỗng
+                            '1'); // Đảm bảo bỏ voucher nếu voucher_code rỗng
                     }
                     fetch(form.action, {
                             method: 'POST',

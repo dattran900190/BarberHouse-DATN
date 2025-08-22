@@ -68,8 +68,8 @@
                             <label class="form-label">Ngày đặt lịch <span class="required">*</span></label>
                             <div class="date-input">
                                 <input type="text" class="form-control" id="appointment_date" name="appointment_date"
-                                    placeholder="Chọn thời điểm"
-                                    value="{{ old('appointment_date', $currentDate) }} style="background-color: #fff
+                                    placeholder="Chọn thời điểm" value="{{ old('appointment_date', $currentDate) }}"
+                                    style="background-color: #fff
                                     !important;" readonly>
                             </div>
                             @error('appointment_date')
@@ -82,13 +82,15 @@
                         <label class="form-label">Chọn chi nhánh <span class="required">*</span></label>
                         <div class="position-relative">
                             <!-- Hidden input for form submission -->
-                            <input type="hidden" id="branch_input" name="branch_id" value="{{ old('branch_id') }}">
+                            <input type="hidden" id="branch_input" name="branch_id"
+                                value="{{ old('branch_id', Auth::user()->role === 'admin_branch' ? Auth::user()->branch_id : '') }}">
 
                             <!-- Branch selection cards -->
                             <div class="branch-cards-container" id="branchCards">
                                 @foreach ($branches as $branch)
                                     <div class="branch-card" data-branch-id="{{ $branch->id }}"
-                                        data-branch-name="{{ $branch->name }}">
+                                        data-branch-name="{{ $branch->name }}"
+                                        @if (Auth::user()->role === 'admin_branch' && $branch->id == Auth::user()->branch_id) class="selected" @endif>
                                         <div class="branch-icon-wrapper">
                                             <i class="fas fa-map-marker-alt branch-icon"
                                                 data-value="{{ $branch->google_map_url }}"></i>
@@ -113,6 +115,7 @@
                             @enderror
                         </div>
                     </div>
+
                     <div class="row g-3 form-group">
                         <div class="col-md-6">
                             <label class="form-label">Chọn khung giờ dịch vụ <span class="required">*</span></label>
@@ -134,6 +137,7 @@
                                         data-discount-value="{{ $voucher->promotion->discount_value }}"
                                         data-expired-at="{{ $voucher->promotion->end_date }}"
                                         data-voucher-id="{{ $voucher->id }}"
+                                        data-min-order-value="{{ $voucher->promotion->min_order_value }}"
                                         data-max-discount="{{ $voucher->promotion->max_discount_amount ?? 0 }}">
                                         {{ $voucher->promotion->code }}
                                         ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
@@ -145,6 +149,7 @@
                                         data-discount-value="{{ $promotion->discount_value }}"
                                         data-expired-at="{{ $promotion->end_date }}"
                                         data-promotion-id="public_{{ $promotion->id }}"
+                                        data-min-order-value="{{ $promotion['min_order_value'] }}"
                                         data-max-discount="{{ $promotion->max_discount_amount ?? 0 }}">
                                         {{ $promotion->code }}
                                         ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
@@ -384,29 +389,34 @@
             }
         }
 
-        // Setup branch card selection
+        // chọn chi nhánh
         function setupBranchCardSelection() {
             const branchCards = document.querySelectorAll('.branch-card');
             const branchInput = document.getElementById('branch_input');
 
+            // nếu là admin_branch thì không cho chọn chi nhánh
+            const isAdminBranch = "{{ Auth::user()->role === 'admin_branch' ? 'true' : 'false' }}";
+
             branchCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    // xóa lựa chọn trước đó
-                    branchCards.forEach(c => c.classList.remove('selected'));
+                if (isAdminBranch === 'false') {
+                    card.addEventListener('click', function() {
+                        // xóa lựa chọn trước đó
+                        branchCards.forEach(c => c.classList.remove('selected'));
 
-                    // chọn card hiện tại
-                    this.classList.add('selected');
+                        // chọn card hiện tại
+                        this.classList.add('selected');
 
-                    // cập nhật hidden input
-                    const branchId = this.dataset.branchId;
-                    branchInput.value = branchId;
+                        // cập nhật hidden input
+                        const branchId = this.dataset.branchId;
+                        branchInput.value = branchId;
 
-                    // trigger change event cho bất kỳ listener nào
-                    branchInput.dispatchEvent(new Event('change'));
-                });
+                        // trigger change event cho bất kỳ listener nào
+                        branchInput.dispatchEvent(new Event('change'));
+                    });
+                }
             });
 
-            // chọn chi nhánh
+            // chọn chi nhánh nếu đã có trong input
             const preSelectedBranchId = branchInput.value;
             if (preSelectedBranchId) {
                 const selectedCard = document.querySelector(`[data-branch-id="${preSelectedBranchId}"]`);
@@ -970,7 +980,6 @@
     </script>
 
     <script>
-
         document.querySelector('.booking-btn').addEventListener('click', function(event) {
             event.preventDefault();
             const form = document.getElementById('bookingForm');
@@ -981,105 +990,107 @@
                 return;
             }
 
-                // Hiển thị SweetAlert2 để xác nhận khi đã đăng nhập
-                Swal.fire({
-                    title: 'Xác nhận đặt lịch',
-                    text: 'Bạn có chắc chắn muốn đặt lịch hẹn này?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Đặt lịch',
-                    cancelButtonText: 'Hủy',
-                    customClass: {
-                        popup: 'custom-swal-popup'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Cửa sổ loading
-                        Swal.fire({
-                            title: 'Đang xử lý...',
-                            text: 'Vui lòng chờ trong giây lát.',
-                            allowOutsideClick: false,
-                            customClass: {
-                                popup: 'custom-swal-popup'
-                            },
-                            didOpen: () => {
-                                Swal.showLoading();
+            // Hiển thị SweetAlert2 để xác nhận khi đã đăng nhập
+            Swal.fire({
+                title: 'Xác nhận đặt lịch',
+                text: 'Bạn có chắc chắn muốn đặt lịch hẹn này?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Đặt lịch',
+                cancelButtonText: 'Hủy',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Cửa sổ loading
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        text: 'Vui lòng chờ trong giây lát.',
+                        icon: 'info',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Thu thập dữ liệu từ form
+                    const formData = new FormData(form);
+
+                    // Gửi yêu cầu AJAX
+                    fetch('{{ route('appointments.createAppointment') }}', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
                             }
-                        });
-
-                        // Thu thập dữ liệu từ form
-                        const formData = new FormData(form);
-
-                        // Gửi yêu cầu AJAX
-                        fetch('{{ route('appointments.createAppointment') }}', {
-                                method: 'POST',
-                                body: formData,
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'Accept': 'application/json'
-                                }
-                            })
-                            .then(response => response.json().then(data => ({
-                                status: response.status,
-                                data
-                            })))
-                            .then(({
-                                status,
-                                data
-                            }) => {
-                                Swal.close();
-                                if (status !== 200) {
-                                    throw data;
-                                }
-                                if (data.success) {
-                                    if (formData.get('payment_method') === 'vnpay') {
-                                        // Chuyển hướng đến thanh toán VNPay
-                                        const vnpayForm = document.createElement('form');
-                                        vnpayForm.method = 'POST';
-                                        vnpayForm.action = '{{ route('client.payment.vnpay') }}';
-                                        vnpayForm.innerHTML = `
+                        })
+                        .then(response => response.json().then(data => ({
+                            status: response.status,
+                            data
+                        })))
+                        .then(({
+                            status,
+                            data
+                        }) => {
+                            Swal.close();
+                            if (status !== 200) {
+                                throw data;
+                            }
+                            if (data.success) {
+                                if (formData.get('payment_method') === 'vnpay') {
+                                    // Chuyển hướng đến thanh toán VNPay
+                                    const vnpayForm = document.createElement('form');
+                                    vnpayForm.method = 'POST';
+                                    vnpayForm.action = '{{ route('client.payment.vnpay') }}';
+                                    vnpayForm.innerHTML = `
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="appointment_id" value="${data.appointment_id}">
                                 `;
-                                        document.body.appendChild(vnpayForm);
-                                        vnpayForm.submit();
-                                    } else {
-                                        Swal.fire({
-                                            title: 'Thành công!',
-                                            text: data.message,
-                                            icon: 'success',
-                                            customClass: {
-                                                popup: 'custom-swal-popup'
-                                            }
-                                        }).then(() => {
-                                            // Chuyển hướng về trang lịch sử đặt lịch
-                                            window.location.href =
-                                                '{{ route('appointments.index') }}';
-                                        });
-                                    }
+                                    document.body.appendChild(vnpayForm);
+                                    vnpayForm.submit();
+                                } else {
+                                    Swal.fire({
+                                        title: 'Thành công!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        customClass: {
+                                            popup: 'custom-swal-popup'
+                                        }
+                                    }).then(() => {
+                                        // Chuyển hướng về trang lịch sử đặt lịch
+                                        window.location.href =
+                                            '{{ route('appointments.index') }}';
+                                    });
                                 }
-                            })
-                            .catch(error => {
-                                Swal.close();
-                                let errorMessage = 'Đã có lỗi xảy ra.';
-                                if (error.errors) {
-                                    errorMessage = Object.values(error.errors).flat().join('<br>');
-                                } else if (error.message) {
-                                    errorMessage = error.message;
-                                }
+                            }
+                        })
+                        .catch(error => {
+                            Swal.close();
+                            let errorMessage = 'Đã có lỗi xảy ra.';
+                            if (error.errors) {
+                                errorMessage = Object.values(error.errors).flat().join('<br>');
+                            } else if (error.message) {
+                                errorMessage = error.message;
+                            }
 
-                                Swal.fire({
-                                    title: 'Lỗi!',
-                                    html: errorMessage,
-                                    icon: 'error',
-                                    customClass: {
-                                        popup: 'custom-swal-popup'
-                                    }
-                                });
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                html: errorMessage,
+                                icon: 'error',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
                             });
-                    }
-                });
-            
+                        });
+                }
+            });
+
         });
     </script>
     <script>
@@ -1155,36 +1166,38 @@
         }
 
         function updateTotal() {
-            // Main service
             const mainOpt = $('#service option:selected');
             const mainInfo = getServiceInfo(mainOpt);
-
-            // Additional services
             const addInfo = getAdditionalServicesInfo();
-
-            // Total before discount
             const totalPrice = mainInfo.price + addInfo.totalPrice;
             const totalDuration = mainInfo.duration + addInfo.totalDuration;
-
-            // Voucher
             const voucherOpt = $('#voucher_id option:selected');
-            const discountType = voucherOpt.data('discount-type');
+            const discountType = voucherOpt.data('discount-type') || '';
             const discountValue = parseFloat(voucherOpt.data('discount-value')) || 0;
             const maxDiscount = parseFloat(voucherOpt.data('max-discount')) || 0;
+            const minOrderValue = parseFloat(voucherOpt.data('min-order-value')) || 0;
 
             let discount = 0;
             let discountText = '';
             if ($('#voucher_id').val() && totalPrice > 0 && discountType) {
+                if (totalPrice < minOrderValue) {
+                    $('#total_after_discount').html(
+                        `<span class="text-danger">Giá trị lịch hẹn phải đạt tối thiểu ${minOrderValue.toLocaleString('vi-VN')} VNĐ để áp dụng voucher này.</span>`
+                    )
+                    $('#totalPrice').text(totalPrice.toLocaleString('vi-VN') + ' VNĐ');
+                    $('#totalDuration').text(totalDuration + ' Phút');
+                    return;
+                }
                 if (discountType === 'fixed') {
                     discount = discountValue;
-                    discountText = '- ' + discount.toLocaleString('vi-VN') + ' vnđ';
+                    discountText = '- ' + discount.toLocaleString('vi-VN') + ' VNĐ';
                 } else if (discountType === 'percent') {
                     discount = Math.round(totalPrice * discountValue / 100);
                     if (maxDiscount > 0 && discount > maxDiscount) {
                         discount = maxDiscount;
-                        discountText = discount.toLocaleString('vi-VN') + ' vnđ';
+                        discountText = '- ' + maxDiscount.toLocaleString('vi-VN') + ' VNĐ (Tối đa)';
                     } else {
-                        discountText = '- ' + discountValue + '% (' + discount.toLocaleString('vi-VN') + ' vnđ)';
+                        discountText = '- ' + discountValue + '% (' + discount.toLocaleString('vi-VN') + ' VNĐ)';
                     }
                 }
             }
@@ -1192,7 +1205,7 @@
             let total = totalPrice - discount;
             if (total < 0) total = 0;
 
-            $('#totalPrice').text(total.toLocaleString('vi-VN') + ' vnđ');
+            $('#totalPrice').text(total.toLocaleString('vi-VN') + ' VNĐ');
             $('#total_after_discount').html(discount > 0 ?
                 '<span class="text-success">Đã giảm: ' + discountText + '</span>' :
                 '');

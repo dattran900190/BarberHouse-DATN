@@ -299,6 +299,7 @@
 
             <div class="appointment-details">
                 <div class="detail-grid">
+                    <div class="detail-item"><span class="detail-label">Mã đặt lịch: </span><span class="detail-value">{{ $appointment->appointment_code ?? 'N/A' }}</span></div>
                     <div class="detail-item"><span class="detail-label">Họ tên: </span><span class="detail-value">{{ $appointment->name ?? 'N/A' }}</span></div>
                     <div class="detail-item"><span class="detail-label">Thời gian: </span><span class="detail-value">
                         @if ($appointment->appointment_time)
