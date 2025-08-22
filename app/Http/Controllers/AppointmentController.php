@@ -22,6 +22,7 @@ use App\Models\CancelledAppointment;
 use App\Services\AppointmentService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\AdminCompletedBookingMail;
 use Illuminate\Database\QueryException;
 use App\Events\AppointmentStatusUpdated;
 use App\Http\Requests\AppointmentRequest;
@@ -302,6 +303,17 @@ class AppointmentController extends Controller
             $appointment->save();
 
             event(new AppointmentStatusUpdated($appointment));
+
+            $additionalServices = [];
+            if (!empty($appointment->additional_services)) {
+                $serviceIds = is_array($appointment->additional_services)
+                    ? $appointment->additional_services
+                    : json_decode($appointment->additional_services, true);
+                $additionalServices = Service::whereIn('id', $serviceIds)->pluck('name')->toArray();
+            }
+
+            // Gửi email với dữ liệu từ Appointment
+            Mail::to($appointment->email)->queue(new AdminCompletedBookingMail($appointment, $additionalServices));
 
             // Lấy tab hiện tại từ request
             $currentTab = $request->input('current_tab', 'pending');
@@ -1283,8 +1295,20 @@ class AppointmentController extends Controller
         if ($newStatus === 'completed') {
             $appointment->payment_status = 'paid';
             $appointment->save();
+
+            $additionalServices = [];
+            if (!empty($appointment->additional_services)) {
+                $serviceIds = is_array($appointment->additional_services)
+                    ? $appointment->additional_services
+                    : json_decode($appointment->additional_services, true);
+                $additionalServices = Service::whereIn('id', $serviceIds)->pluck('name')->toArray();
+            }
+
+            // Gửi email với dữ liệu từ Appointment
+            Mail::to($appointment->email)->queue(new AdminCompletedBookingMail($appointment, $additionalServices));
         }
     }
+
     public function edit(Appointment $appointment)
     {
         // Kiểm tra quyền truy cập và chi nhánh

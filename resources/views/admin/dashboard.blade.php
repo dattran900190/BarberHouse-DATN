@@ -157,11 +157,11 @@
                                     <div class="branch-dropdown d-flex align-items-center justify-content-between"
                                         data-bs-toggle="dropdown" aria-expanded="false">
                                         <div>
-                                            <p class="card-category mb-1">Doanh thu chi nhánh</p>
-                                            <h6 class="text-muted small mb-0" id="selected-branch-name">
+                                            <p class="card-category mb-1">Doanh thu chi nhánh </p>
+                                            {{-- <h6 class="text-muted small mb-0" id="selected-branch-name">
                                                 <i class="fas fa-map-marker-alt me-1"></i>
                                                 {{ $selectedBranchName }}
-                                            </h6>
+                                            </h6> --}}
                                         </div>
                                         <i class="fas fa-chevron-down text-muted"></i>
                                     </div>
@@ -176,7 +176,7 @@
                                             <hr class="dropdown-divider">
                                         </li>
 
-                                        @if (Auth::user()->role !== 'admin_branch')
+                                        {{-- @if (Auth::user()->role !== 'admin_branch')
                                             <li>
                                                 <a class="dropdown-item branch-option" href="#" data-branch-id=""
                                                     data-branch-name="Tất cả chi nhánh">
@@ -187,7 +187,7 @@
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>
-                                        @endif
+                                        @endif --}}
 
                                         @foreach ($branchesForRevenue as $branch)
                                             <li>
@@ -532,7 +532,7 @@
                                     <!-- Action buttons -->
                                     <div class="col-md-2">
                                         <div class="btn-group btn-group-sm w-100">
-                                            <button type="button" class="btn btn-outline-secondary"
+                                            <button type="button" class="btn btn-outline-secondary btn-sm w-100"
                                                 id="product-reset-btn" title="Reset lọc">
                                                 <i class="fas fa-undo"></i>
                                             </button>
@@ -1699,10 +1699,10 @@
             font-size: 0.65em;
         }
 
-        .btn-group-sm .btn {
-            padding: 0.15rem 0.4rem;
+        /* .btn-group-sm .btn {
+            padding: 0.5rem 0.4rem;
             font-size: 0.7rem;
-        }
+        } */
 
         .nav-pills .nav-link {
             border-radius: 15px;

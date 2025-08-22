@@ -204,7 +204,7 @@
                                     <div class="service-wrapper mt-2 d-flex align-items-center">
                                         <select class="form-control additional-service-select"
                                             name="additional_services[]">
-                                            <option value="">Chọn dịch vụ thêm</option>
+                                            <option value="">Chọn dịch vụ bổ xung</option>
                                             @foreach ($services as $s)
                                                 @if (!$s->is_combo && $s->id != $appointment->service_id)
                                                     <option value="{{ $s->id }}" data-name="{{ $s->name }}"

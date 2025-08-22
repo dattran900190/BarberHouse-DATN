@@ -386,7 +386,7 @@
             if (data.additional_services && data.additional_services.length > 0) {
                 additionalServicesHtml = `
                     <div class="mt-2">
-                        <strong class="text-muted">Dịch vụ thêm:</strong>
+                        <strong class="text-muted">Dịch vụ bổ xung:</strong>
                         <ul class="mb-0 mt-1 ps-3 text-muted">
                             ${data.additional_services.map(service => `<li>${service}</li>`).join('')}
                         </ul>
@@ -823,7 +823,7 @@
         handleSwalAction({
             selector: '.complete-btn',
             title: 'Hoàn thành lịch hẹn',
-            text: 'Bạn có chắc chắn muốn đánh dấu lịch hẹn này là HOÀN THÀNH?',
+            text: 'Bạn có chắc chắn muốn đánh dấu lịch hẹn này là hoàn thành?',
             route: '{{ route('appointments.completed', ':id') }}'
         });
 
