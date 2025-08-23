@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckAdmin::class,
             'branch.admin' => \App\Http\Middleware\CheckBranchAdmin::class, // sửa từ 'admin_branch'
+            'customer.access' => \App\Http\Middleware\CheckCustomerAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

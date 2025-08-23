@@ -90,32 +90,51 @@
 
 
                                         @if ($defaultVariant)
-                                            <form action="{{ route('cart.add') }}" method="POST"
-                                                class="add-to-cart-form m-0 p-0">
-                                                @csrf
-                                                <input type="hidden" name="product_variant_id"
-                                                    value="{{ $defaultVariant->id }}">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
-                                                    <i class="fas fa-cart-plus"></i>
-                                                </button>
-                                            </form>
-                                            <form action="{{ route('cart.buyNow') }}" method="POST"
-                                                class="buy-now-form m-0 p-0">
-                                                @csrf
-                                                <input type="hidden" name="product_variant_id"
-                                                    value="{{ $defaultVariant->id }}">
-                                                <input type="hidden" name="quantity" value="1">
-                                                @guest
-                                                    <button type="submit" class="btn-outline-buy" title="Mua ngay">
+                                            @auth
+                                                @if (in_array(auth()->user()->role, ['admin', 'admin_branch']))
+                                                    <button type="button" class="btn-outline-cart" title="Thêm vào giỏ hàng" onclick="showAdminError()">
+                                                        <i class="fas fa-cart-plus"></i>
+                                                    </button>
+                                                    <button type="button" class="btn-outline-buy" title="Mua ngay" onclick="showAdminError()">
                                                         <span>Mua ngay</span>
                                                     </button>
                                                 @else
-                                                    <button type="submit" class="btn-outline-buy" title="Mua ngay">
-                                                        <span>Mua ngay</span>
+                                                    <form action="{{ route('cart.add') }}" method="POST"
+                                                        class="add-to-cart-form m-0 p-0">
+                                                        @csrf
+                                                        <input type="hidden" name="product_variant_id"
+                                                            value="{{ $defaultVariant->id }}">
+                                                        <input type="hidden" name="quantity" value="1">
+                                                        <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                                            <i class="fas fa-cart-plus"></i>
+                                                        </button>
+                                                    </form>
+                                                    <form action="{{ route('cart.buyNow') }}" method="POST"
+                                                        class="buy-now-form m-0 p-0">
+                                                        @csrf
+                                                        <input type="hidden" name="product_variant_id"
+                                                            value="{{ $defaultVariant->id }}">
+                                                        <input type="hidden" name="quantity" value="1">
+                                                        <button type="submit" class="btn-outline-buy" title="Mua ngay">
+                                                            <span>Mua ngay</span>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            @else
+                                                <form action="{{ route('cart.add') }}" method="POST"
+                                                    class="add-to-cart-form m-0 p-0">
+                                                    @csrf
+                                                    <input type="hidden" name="product_variant_id"
+                                                        value="{{ $defaultVariant->id }}">
+                                                    <input type="hidden" name="quantity" value="1">
+                                                    <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                                        <i class="fas fa-cart-plus"></i>
                                                     </button>
-                                                @endguest
-                                            </form>
+                                                </form>
+                                                <button type="button" class="btn-outline-buy" title="Mua ngay" onclick="showLoginRequired()">
+                                                    <span>Mua ngay</span>
+                                                </button>
+                                            @endauth
                                         @else
                                         <span style="color: rgb(232, 184, 12); font-weight: bold;">Hết hàng</span>
 
@@ -206,5 +225,36 @@
                 return false;
             });
         });
+    </script>
+
+    <script>
+        function showAdminError() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Không có quyền truy cập!',
+                text: 'Bạn không có quyền thực hiện hành động này',
+                confirmButtonText: 'Đóng',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            });
+        }
+
+        function showLoginRequired() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bạn chưa đăng nhập!',
+                text: 'Vui lòng đăng nhập để sử dụng chức năng "Mua ngay".',
+                showConfirmButton: true,
+                confirmButtonText: 'Đăng nhập',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('login') }}";
+                }
+            });
+        }
     </script>
 @endsection

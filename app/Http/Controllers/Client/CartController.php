@@ -35,6 +35,15 @@ class CartController extends Controller
         ]);
 
         $user = Auth::user();
+        
+        // Kiểm tra quyền truy cập cho admin và admin_branch
+        if ($user && in_array($user->role, ['admin', 'admin_branch'])) {
+            $message = 'Bạn không có quyền thực hiện hành động này';
+            return $request->ajax()
+                ? response()->json(['success' => false, 'message' => $message], 403)
+                : redirect()->back()->with('error', $message);
+        }
+        
         $productVariant = ProductVariant::find($request->product_variant_id);
 
         if (!$productVariant) {
@@ -340,6 +349,12 @@ class CartController extends Controller
     public function checkout(Request $request)
     {
         $user = Auth::user();
+        
+        // Kiểm tra quyền truy cập cho admin và admin_branch
+        if ($user && in_array($user->role, ['admin', 'admin_branch'])) {
+            return redirect()->back()->with('error', 'Bạn không có quyền thực hiện hành động này');
+        }
+        
         $cart = $this->getOrCreateCart($user);
 
         // Nếu không truyền gì lên thì lấy toàn bộ, còn nếu có thì lọc lại
@@ -454,6 +469,14 @@ class CartController extends Controller
             }
 
             $user = $request->user();
+            
+            // Kiểm tra quyền truy cập cho admin và admin_branch
+            if (in_array($user->role, ['admin', 'admin_branch'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn không có quyền thực hiện hành động này',
+                ], 403);
+            }
 
             // Cập nhật lại thông tin user nếu còn thiếu
             $needUpdate = false;
@@ -793,6 +816,12 @@ class CartController extends Controller
                 'quantity' => $request->quantity ?? 1,
             ]);
             return redirect()->route('login')->with('alert', 'Bạn cần đăng nhập để sử dụng tính năng mua ngay.');
+        }
+
+        // Kiểm tra quyền truy cập cho admin và admin_branch
+        $user = Auth::user();
+        if (in_array($user->role, ['admin', 'admin_branch'])) {
+            return redirect()->back()->with('error', 'Bạn không có quyền thực hiện hành động này');
         }
 
         // Nếu đã đăng nhập, chuyển thẳng đến trang checkout với dữ liệu buy_now

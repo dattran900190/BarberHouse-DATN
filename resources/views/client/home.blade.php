@@ -134,25 +134,41 @@
                             @endphp
                             @if ($variant)
                                 <div class="button-group">
-                                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
-                                        @csrf
-                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
-                                            <i class="fas fa-cart-plus"></i>
-                                        </button>
-                                    </form>
-
-                                    <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
-                                        @csrf
-                                        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        @guest
-                                            <button type="submit" class="btn-outline-buy">Mua ngay</button>
+                                    @auth
+                                        @if (in_array(auth()->user()->role, ['admin', 'admin_branch']))
+                                            <button type="button" class="btn-outline-cart" title="Thêm vào giỏ hàng" onclick="showAdminError()">
+                                                <i class="fas fa-cart-plus"></i>
+                                            </button>
+                                            <button type="button" class="btn-outline-buy" onclick="showAdminError()">Mua ngay</button>
                                         @else
-                                            <button type="submit" class="btn-outline-buy">Mua ngay</button>
-                                        @endguest
-                                    </form>
+                                            <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                                @csrf
+                                                <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                                    <i class="fas fa-cart-plus"></i>
+                                                </button>
+                                            </form>
+
+                                            <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
+                                                @csrf
+                                                <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn-outline-buy">Mua ngay</button>
+                                            </form>
+                                        @endif
+                                    @else
+                                        <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                            @csrf
+                                            <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                                <i class="fas fa-cart-plus"></i>
+                                            </button>
+                                        </form>
+
+                                        <button type="button" class="btn-outline-buy" onclick="showLoginRequired()">Mua ngay</button>
+                                    @endauth
                                 </div>
                             @else
                                 <span style="color: rgb(232, 184, 12); font-weight: bold; text-align: center;">Hết
@@ -737,5 +753,36 @@
             // Khởi tạo đúng slide khi load
             updateImageSlide();
         });
+    </script>
+
+    <script>
+        function showAdminError() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Không có quyền truy cập!',
+                text: 'Bạn không có quyền thực hiện hành động này',
+                confirmButtonText: 'Đóng',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            });
+        }
+
+        function showLoginRequired() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bạn chưa đăng nhập!',
+                text: 'Vui lòng đăng nhập để sử dụng chức năng "Mua ngay".',
+                showConfirmButton: true,
+                confirmButtonText: 'Đăng nhập',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('login') }}";
+                }
+            });
+        }
     </script>
 @endsection

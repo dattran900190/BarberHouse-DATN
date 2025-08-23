@@ -539,6 +539,12 @@ class AppointmentController extends Controller
     public function store(BookingRequest $request)
     {
         try {
+            if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'admin_branch')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Admin không được phép đặt lịch hẹn.'
+                ], 403);
+            }
             // Kiểm tra đăng nhập
             if (!Auth::check()) {
                 if ($request->ajax() || $request->wantsJson()) {
