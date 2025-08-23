@@ -119,12 +119,14 @@
                                         </div>
                                     </form>
                                     <span id="stockDisplay">Tồn kho: {{ $product->variants->first()->stock }}</span>
-                                    <div class="button-group">
+                                    <div class="mt-3">
                                         <form action="{{ route('cart.buyNow') }}" method="POST" id="buyNowForm">
                                             @csrf
                                             <input type="hidden" name="product_variant_id" id="buy_now_variant_id" value="{{ $product->variants->first()->id }}">
                                             <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
-                                            <button type="submit" class="btn btn-dark">Mua ngay</button>
+                                            <button type="submit" class="btn btn-dark d-flex align-items-center justify-content-center gap-2">
+                                                <span>Mua ngay</span>
+                                            </button>
                                         </form>
                                     </div>
                                 @endif
@@ -158,8 +160,10 @@
                                     </div>
                                 </form>
                                 <span id="stockDisplay">Tồn kho: {{ $product->variants->first()->stock }}</span>
-                                <div class="button-group">
-                                    <button type="button" class="btn btn-danger" onclick="showLoginRequired()">Mua ngay</button>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-danger d-flex align-items-center justify-content-center gap-2" onclick="showLoginRequired()">
+                                        <span>Mua ngay</span>
+                                    </button>
                                 </div>
                             @endauth
 
@@ -293,6 +297,77 @@
             white-space: nowrap; /* Ngăn chữ bị ngắt dòng */
         }
 
+        /* Đảm bảo nút Mua ngay luôn full width và nhất quán */
+        .btn.w-100 {
+            width: 100% !important;
+            margin-top: 10px;
+        }
+
+        /* Style nhất quán cho nút Mua ngay trong chi tiết sản phẩm */
+        .detailPro-right .btn.w-100 {
+            padding: 12px 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .detailPro-right .btn.btn-dark.w-100 {
+            background-color: #000;
+            border: 2px solid #000;
+            color: #fff;
+        }
+
+        .detailPro-right .btn.btn-dark.w-100:hover {
+            background-color: #333;
+            border-color: #333;
+        }
+
+        .detailPro-right .btn.btn-danger.w-100 {
+            background-color: #dc3545;
+            border: 2px solid #dc3545;
+            color: #fff;
+        }
+
+        .detailPro-right .btn.btn-danger.w-100:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+        }
+
+        /* Style cho nút Mua ngay không full width (user đã đăng nhập) */
+        .detailPro-right .btn:not(.w-100) {
+            padding: 10px 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .detailPro-right .btn.btn-dark:not(.w-100) {
+            background-color: #000;
+            border: 2px solid #000;
+            color: #fff;
+        }
+
+        .detailPro-right .btn.btn-dark:not(.w-100):hover {
+            background-color: #333;
+            border-color: #333;
+        }
+
+        .detailPro-right .btn.btn-danger:not(.w-100) {
+            background-color: #dc3545;
+            border: 2px solid #dc3545;
+            color: #fff;
+        }
+
+        .detailPro-right .btn.btn-danger:not(.w-100):hover {
+            background-color: #c82333;
+            border-color: #c82333;
+        }
+
         /* Mobile-first responsive styles */
         @media (max-width: 768px) {
             .mainDetailPro {
@@ -349,6 +424,24 @@
                 margin-bottom: 0.5rem;
                 padding: 10px 15px;
                 font-size: 1rem;
+            }
+
+            /* Đảm bảo nút Mua ngay luôn full width trên mobile */
+            .btn.w-100 {
+                width: 100% !important;
+                margin-bottom: 0.5rem;
+            }
+
+            /* Style nhất quán cho nút Mua ngay trên mobile */
+            .detailPro-right .btn.w-100 {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+
+            /* Style cho nút Mua ngay không full width trên mobile */
+            .detailPro-right .btn:not(.w-100) {
+                padding: 8px 16px;
+                font-size: 13px;
             }
 
             /* Gallery navigation for mobile */
@@ -475,6 +568,24 @@
             .btn {
                 padding: 8px 10px;
                 font-size: 0.9rem;
+            }
+
+            /* Đảm bảo nút Mua ngay luôn full width trên màn hình nhỏ */
+            .btn.w-100 {
+                width: 100% !important;
+                margin-bottom: 0.5rem;
+            }
+
+            /* Style nhất quán cho nút Mua ngay trên màn hình nhỏ */
+            .detailPro-right .btn.w-100 {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+
+            /* Style cho nút Mua ngay không full width trên màn hình nhỏ */
+            .detailPro-right .btn:not(.w-100) {
+                padding: 6px 12px;
+                font-size: 12px;
             }
         }
 

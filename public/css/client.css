@@ -2600,8 +2600,8 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 
   #product .btn-outline-cart,
   #product .btn-outline-buy {
-    
-    font-size: 12px;
+
+        font-size: 12px;
     border-width: 2px;
   }
 
