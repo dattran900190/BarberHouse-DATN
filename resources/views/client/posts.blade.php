@@ -15,22 +15,22 @@
                     <h5>Bài viết mới nhất</h5>
 
                     @if ($featuredPosts->isNotEmpty())
-                    @php $topPost = $featuredPosts->first(); @endphp
+                        @php $topPost = $featuredPosts->first(); @endphp
 
-                    <div class="post-top">
-                        <div class="image-top">
-                            <a href="{{ route('client.detailPost', $topPost->slug) }}">
-                                <img src="{{ asset('storage/' . $topPost->image) }}" alt="{{ $topPost->title }}" />
-                            </a>
+                        <div class="post-top">
+                            <div class="image-top">
+                                <a href="{{ route('client.detailPost', $topPost->slug) }}">
+                                    <img src="{{ asset('storage/' . $topPost->image) }}" alt="{{ $topPost->title }}" />
+                                </a>
+                            </div>
+                            <h4>
+                                <a href="{{ route('client.detailPost', $topPost->slug) }}">
+                                    {{ $topPost->title }}
+                                </a>
+                            </h4>
+                            <p>{{ Str::limit(strip_tags($topPost->short_description), 100) }}</p>
                         </div>
-                        <h4>
-                            <a href="{{ route('client.detailPost', $topPost->slug) }}">
-                                {{ $topPost->title }}
-                            </a>
-                        </h4>
-                        <p>{{ Str::limit(strip_tags($topPost->short_description), 100) }}</p>
-                    </div>
-                @endif
+                    @endif
 
                     {{-- Các bài viết thường --}}
                     <h5>Các bài viết khác</h5>
@@ -195,7 +195,8 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
         }
-.post .image-mid {
+
+        .post .image-mid {
             width: 100%;
             height: 250px;
             overflow: hidden;
@@ -228,6 +229,7 @@
             font-weight: bold;
             margin-bottom: 1rem;
             color: #000;
+            text-transform: uppercase;
         }
 
         .post-right .post {
@@ -262,6 +264,7 @@
             font-weight: 600;
             /* line-height: 1.3; */
             margin: 0;
+            text-transform: uppercase;
         }
 
         .post-right .post h5 a {
@@ -299,7 +302,8 @@
                 gap: 2rem;
             }
 
-            .post-left, .post-right {
+            .post-left,
+            .post-right {
                 max-width: 100%;
             }
 

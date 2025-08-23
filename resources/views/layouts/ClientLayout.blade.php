@@ -630,7 +630,7 @@
                 align-items: center;
                 margin-bottom: 20px;
                 padding: 15px;
-                background: #f8f9fa;
+                /* background: #f8f9fa; */
                 border-radius: 10px;
             }
 

@@ -648,8 +648,9 @@
                         <td>${data.total_money ? Number(data.total_money).toLocaleString('vi-VN') + ' đ' : ''}</td>
                         <td>${paymentMethodText}</td>
                         <td>${data.created_at || ''}</td>
-                        <td><span class="badge ${paymentInfo.class}">${paymentInfo.text}</span></td>
-                        <td><span class="badge bg-warning">Chờ xác nhận</span></td>
+                          <td class="text-center"><span class="badge bg-warning">Chờ xác nhận</span></td>
+                        <td class="text-center"><span class="badge ${paymentInfo.class}">${paymentInfo.text}</span></td>
+                      
                         <td class="text-center">
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-outline-secondary" type="button"

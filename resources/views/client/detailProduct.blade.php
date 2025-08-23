@@ -270,6 +270,30 @@
 
     {{-- Custom style và script cho album --}}
     <style>
+        .prev-btn,
+.next-btn {
+  width: 50px;
+  height: 50px;
+
+  background: rgba(232, 230, 225, 0.6);
+  
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  transition: all 0.3s ease;
+  /* Đảm bảo nút nổi lên trên ảnh */
+  position: absolute;
+  top: 50%;
+  
+  z-index: 10;
+  border-radius: 50%
+ 
+}
+
+.prev-btn { left: 10px; color: #000}
+.next-btn { right: 10px; color: #000}
         #mainNav {
             background-color: #000;
         }
@@ -277,6 +301,7 @@
         .image-track {
             transition: transform 0.3s ease;
         }
+
 
         /* Mobile-first responsive styles */
         @media (max-width: 768px) {
@@ -382,16 +407,22 @@
             }
 
             .button-group {
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
+               margin-top: auto;
+    padding: 12px;
+    display: flex
+;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    background: #fff;
+}
             }
 
             .btn-outline-cart,
             .btn-outline-buy {
                 width: 100% !important;
                 text-align: center;
-                padding: 0.5rem;
+                
             }
 
             /* Typography adjustments */
@@ -463,6 +494,7 @@
                 width: 35px;
                 height: 35px;
                 font-size: 16px;
+                background: #007bff
             }
 
             h3 {

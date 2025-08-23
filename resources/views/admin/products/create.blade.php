@@ -114,7 +114,7 @@
                     <label for="additional_images" class="form-label">Ảnh bổ sung</label>
                     <input type="file" name="additional_images[]" id="additional_images" class="form-control w-100"
                         multiple accept="image/jpeg,image/png,image/jpg">
-                    @error('additional_images.*')
+                    @error('additional_images')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>

@@ -158,10 +158,10 @@
                                         data-bs-toggle="dropdown" aria-expanded="false">
                                         <div>
                                             <p class="card-category mb-1">Doanh thu chi nhánh </p>
-                                            {{-- <h6 class="text-muted small mb-0" id="selected-branch-name">
+                                            <h6 class="text-muted small mb-0" id="selected-branch-name">
                                                 <i class="fas fa-map-marker-alt me-1"></i>
                                                 {{ $selectedBranchName }}
-                                            </h6> --}}
+                                            </h6>
                                         </div>
                                         <i class="fas fa-chevron-down text-muted"></i>
                                     </div>

@@ -27,7 +27,7 @@ class ProductRequest extends FormRequest
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             // 'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            // 'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'additional_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'variants.*.volume_id' => 'required|exists:volumes,id',
             'variants.*.price' => 'required|numeric|min:0',

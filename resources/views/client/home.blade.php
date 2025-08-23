@@ -55,7 +55,7 @@
             // ];
         @endphp
         <section id="barbers" class="mt-4" style="padding-bottom: 0 ;">
-            <h2>Đội ngũ thợ cắt tóc</h2>
+            <h2 class="text-uppercase">Đội ngũ thợ cắt tóc</h2>
             <div id="barbers-list"></div>
             <div class="text-center mt-3">
                 <a href="{{ route('client.listBarber') }}" class="btn-outline-cart">Xem thêm</a>
@@ -64,7 +64,7 @@
 
 
         <section id="mainPost">
-            <h2>Bài viết nổi bật</h2>
+            <h2 class="text-uppercase">Bài viết nổi bật</h2>
             <div class="posts-wrapper">
                 <button class="prev-posts">‹</button>
                 <div class="posts-track"> <!-- Thêm lớp track -->
@@ -113,7 +113,7 @@
 
         <section id="product">
             <div class="product-wrapper">
-                <h2>Sản phẩm Baber House</h2>
+                <h2 class="text-uppercase">Sản phẩm Baber House</h2>
                 <div class="products">
                     @foreach ($products as $product)
                         <div class="product">
@@ -183,14 +183,14 @@
             </div>
         </section>
 
-        <section id="price" style="padding-bottom: 0;">
-            <h2 style="font-weight: 600; margin-bottom: 1.5rem;font-size: 2rem;">Bảng giá</h2>
+        <section id="price" style="padding-bottom: 0; padding-top: 90px;">
+            <h2 class="text-uppercase" style="font-weight: bold;">Bảng giá</h2>
             <img src="{{ asset('storage/' . ($imageSettings['bang_gia'] ?? 'default-images/no-banggia.png')) }}"
                 alt="Bảng giá" />
         </section>
 
         <section id="instagram">
-            <h2 style="font-weight: 600; margin-bottom: 1.5rem;font-size: 2rem;">Ảnh khách hàng</h2>
+            <h2 class="text-uppercase" style="font-weight: bold;">Ảnh khách hàng</h2>
             <div class="images">
                 @forelse ($customerImages as $image)
                     <div class="image-item">

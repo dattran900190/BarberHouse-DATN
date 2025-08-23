@@ -72,11 +72,11 @@
                         @endphp
                         <div class="col-6 col-md-3 mb-4">
                             <div class="card barber-card border-0 shadow-sm h-100">
-                                <div class="barber-img-wrapper">
+                                <div class="product-img-wrapper">
                                     <a href="{{ route('client.product.detail', $product->id) }}"
                                         class="text-decoration-none text-dark">
                                         <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}"
-                                            class="card-img-top product-img" style="height: ">
+                                            class="card-img-top product-img">
                                     </a>
                                 </div>
 
