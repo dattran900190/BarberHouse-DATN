@@ -39,10 +39,8 @@
                                                 alt="Gallery">
                                         </a>
                                     @endforeach
-
                                 </div>
                             </div>
-
                             <button class="next-btn">❯</button>
                         </div>
                     @endif
@@ -99,8 +97,7 @@
                                                 <label for="variant_id">Thể tích:</label>
                                             </div>
                                             <div class="col-auto">
-                                                <select name="product_variant_id" id="variant_id"
-                                                    class="form-select form-select-sm">
+                                                <select name="product_variant_id" id="variant_id" class="form-select form-select-sm">
                                                     @foreach ($variants as $variant)
                                                         <option value="{{ $variant->id }}">
                                                             {{ $variant->volume->name ?? 'Không rõ' }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}
@@ -112,8 +109,7 @@
                                                 <label for="quantity">Số lượng:</label>
                                             </div>
                                             <div class="col-2">
-                                                <input type="number" name="quantity" id="quantity"
-                                                    class="form-control form-control-sm" value="1" min="1" />
+                                                <input type="number" name="quantity" id="quantity" class="form-control form-control-sm" value="1" min="1" />
                                             </div>
                                             <div class="col-auto">
                                                 <button type="submit" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng">
@@ -123,15 +119,14 @@
                                         </div>
                                     </form>
                                     <span id="stockDisplay">Tồn kho: {{ $product->variants->first()->stock }}</span>
-                                    <form action="{{ route('cart.buyNow') }}" method="POST" class="mt-3" id="buyNowForm">
-                                        @csrf
-                                        <input type="hidden" name="product_variant_id" id="buy_now_variant_id"
-                                            value="{{ $product->variants->first()->id }}">
-                                        <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
-                                        <button type="submit" class="btn btn-dark d-flex align-items-center justify-content-center gap-2">
-                                            <span>Mua ngay</span>
-                                        </button>
-                                    </form>
+                                    <div class="button-group">
+                                        <form action="{{ route('cart.buyNow') }}" method="POST" id="buyNowForm">
+                                            @csrf
+                                            <input type="hidden" name="product_variant_id" id="buy_now_variant_id" value="{{ $product->variants->first()->id }}">
+                                            <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
+                                            <button type="submit" class="btn btn-dark">Mua ngay</button>
+                                        </form>
+                                    </div>
                                 @endif
                             @else
                                 <form action="{{ route('cart.add') }}" method="POST" class="mt-3" id="addToCartForm">
@@ -141,8 +136,7 @@
                                             <label for="variant_id">Thể tích:</label>
                                         </div>
                                         <div class="col-auto">
-                                            <select name="product_variant_id" id="variant_id"
-                                                class="form-select form-select-sm">
+                                            <select name="product_variant_id" id="variant_id" class="form-select form-select-sm">
                                                 @foreach ($variants as $variant)
                                                     <option value="{{ $variant->id }}">
                                                         {{ $variant->volume->name ?? 'Không rõ' }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}
@@ -154,8 +148,7 @@
                                             <label for="quantity">Số lượng:</label>
                                         </div>
                                         <div class="col-2">
-                                            <input type="number" name="quantity" id="quantity"
-                                                class="form-control form-control-sm" value="1" min="1" />
+                                            <input type="number" name="quantity" id="quantity" class="form-control form-control-sm" value="1" min="1" />
                                         </div>
                                         <div class="col-auto">
                                             <button type="submit" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng">
@@ -165,16 +158,12 @@
                                     </div>
                                 </form>
                                 <span id="stockDisplay">Tồn kho: {{ $product->variants->first()->stock }}</span>
-                                <button type="button" class="btn btn-danger d-flex align-items-center justify-content-center gap-2" onclick="showLoginRequired()">
-                                    <i class="fas fa-bolt"></i> <span>Mua ngay</span>
-                                </button>
+                                <div class="button-group">
+                                    <button type="button" class="btn btn-danger" onclick="showLoginRequired()">Mua ngay</button>
+                                </div>
                             @endauth
 
                             {{-- Hiển thị giá sau khi chọn variant --}}
-                            <div class="mt-2">
-                                <span id="variantPrice" class="fw-bold text-danger"></span>
-                            </div>
-
                             <div class="mt-2">
                                 <span id="variantPrice" class="fw-bold text-danger"></span>
                             </div>
@@ -185,16 +174,13 @@
                         <p class="text-danger">Sản phẩm hiện chưa có phiên bản để bán.</p>
                     @endif
                 </div>
-
             </div>
-
 
             {{-- ✅ Thông tin chi tiết nằm dưới full-width --}}
             <div class="information-product mt-5 w-100">
                 <h4>Thông tin chi tiết</h4>
                 <p>{{ $product->long_description ?? 'Đang cập nhật...' }}</p>
             </div>
-            {{-- Sản phẩm liên quan --}}
             {{-- Sản phẩm liên quan --}}
             <div class="orther-product mt-5">
                 <h2 class="mb-4 text-center">Sản phẩm khác</h2>
@@ -234,8 +220,7 @@
                                                 </form>
                                                 <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
                                                     @csrf
-                                                    <input type="hidden" name="product_variant_id"
-                                                        value="{{ $itemVariant->id }}">
+                                                    <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
                                                     <input type="hidden" name="quantity" value="1">
                                                     <button type="submit" class="btn-outline-buy">Mua ngay</button>
                                                 </form>
@@ -262,38 +247,29 @@
                     </div>
                 </div>
             </div>
-
-
-
         </section>
     </main>
 
     {{-- Custom style và script cho album --}}
     <style>
         .prev-btn,
-.next-btn {
-  width: 50px;
-  height: 50px;
+        .next-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(232, 230, 225, 0.6);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 50%;
+            z-index: 10;
+            border-radius: 50%;
+        }
 
-  background: rgba(232, 230, 225, 0.6);
-  
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  transition: all 0.3s ease;
-  /* Đảm bảo nút nổi lên trên ảnh */
-  position: absolute;
-  top: 50%;
-  
-  z-index: 10;
-  border-radius: 50%
- 
-}
-
-.prev-btn { left: 10px; color: #000}
-.next-btn { right: 10px; color: #000}
+        .prev-btn { left: 10px; color: #000 }
+        .next-btn { right: 10px; color: #000 }
         #mainNav {
             background-color: #000;
         }
@@ -302,6 +278,20 @@
             transition: transform 0.3s ease;
         }
 
+        .button-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+            flex-wrap: nowrap; /* Giữ các nút trên cùng một dòng */
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 15px;
+            white-space: nowrap; /* Ngăn chữ bị ngắt dòng */
+        }
 
         /* Mobile-first responsive styles */
         @media (max-width: 768px) {
@@ -350,10 +340,14 @@
             }
 
             /* Button styling for mobile */
+            .button-group {
+                flex-wrap: wrap; /* Cho phép ngắt dòng khi cần trên mobile */
+            }
+
             .btn {
-                width: 100% !important;
+                width: auto; /* Tự động điều chỉnh chiều rộng */
                 margin-bottom: 0.5rem;
-                padding: 0.75rem 1rem;
+                padding: 10px 15px;
                 font-size: 1rem;
             }
 
@@ -407,53 +401,17 @@
             }
 
             .button-group {
-               margin-top: auto;
-    padding: 12px;
-    display: flex
-;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    background: #fff;
-}
+                margin-top: auto;
+                padding: 12px;
+                justify-content: center;
+                gap: 8px;
+                background: #fff;
             }
 
             .btn-outline-cart,
             .btn-outline-buy {
-                width: 100% !important;
+                width: auto !important;
                 text-align: center;
-                
-            }
-
-            /* Typography adjustments */
-            h3 {
-                font-size: 1.5rem;
-                line-height: 1.3;
-            }
-
-            h5 {
-                font-size: 1.2rem;
-            }
-
-            p {
-                font-size: 0.95rem;
-                line-height: 1.5;
-            }
-
-            /* Container adjustments */
-            .container {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-
-            /* Information section */
-            .information-product h4 {
-                font-size: 1.3rem;
-                margin-bottom: 1rem;
-            }
-
-            .information-product p {
-                text-align: justify;
             }
         }
 
@@ -494,7 +452,7 @@
                 width: 35px;
                 height: 35px;
                 font-size: 16px;
-                background: #007bff
+                background: #007bff;
             }
 
             h3 {
@@ -508,6 +466,16 @@
             .orther-product h2 {
                 font-size: 1.5rem;
             }
+
+            .button-group {
+                flex-direction: row; /* Giữ ngang trên màn hình nhỏ */
+                gap: 5px; /* Giảm khoảng cách trên màn hình nhỏ */
+            }
+
+            .btn {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+            }
         }
 
         /* Landscape mobile */
@@ -520,6 +488,10 @@
             .detailPro-left,
             .detailPro-right {
                 min-width: 48% !important;
+            }
+
+            .button-group {
+                flex-wrap: nowrap;
             }
         }
     </style>
@@ -580,8 +552,6 @@
                     }
                 });
             }
-
-
         });
         $(function() {
             $('.btn-buy-now[type="button"]').on('click', function() {
@@ -630,8 +600,7 @@
                         if (xhr.status === 400 && xhr.responseJSON) {
                             const res = xhr.responseJSON;
                             if (res.reached_max) {
-                                message = res.message ||
-                                    'Bạn đã thêm tối đa số lượng sản phẩm.';
+                                message = res.message || 'Bạn đã thêm tối đa số lượng sản phẩm.';
                             } else if (res.message) {
                                 message = res.message;
                             }
@@ -679,8 +648,7 @@
                         if (xhr.status === 400 && xhr.responseJSON) {
                             const res = xhr.responseJSON;
                             if (res.reached_max) {
-                                message = res.message ||
-                                    'Bạn đã thêm tối đa số lượng sản phẩm.';
+                                message = res.message || 'Bạn đã thêm tối đa số lượng sản phẩm.';
                             } else if (res.message) {
                                 message = res.message;
                             }
@@ -707,8 +675,7 @@
 
                 if (variantSelect && stockDisplay) {
                     const selectedVariantId = variantSelect.value;
-                    const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[
-                        selectedVariantId]) : 0;
+                    const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[selectedVariantId]) : 0;
 
                     // Cập nhật hiển thị tồn kho
                     stockDisplay.textContent = `Tồn kho: ${stock}`;
@@ -739,8 +706,7 @@
             $('#quantity').on('input', function() {
                 const variantSelect = document.getElementById('variant_id');
                 const selectedVariantId = variantSelect.value;
-                const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[
-                    selectedVariantId]) : 0;
+                const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[selectedVariantId]) : 0;
                 const quantity = parseInt(this.value) || 0;
 
                 if (quantity > stock) {
@@ -754,15 +720,9 @@
                 buyNowForm.addEventListener('submit', function(e) {
                     const variantSelect = document.getElementById('variant_id');
                     const quantityInput = document.getElementById('quantity');
-                    // Lấy id biến thể đang chọn
-                    const selectedVariantId = variantSelect ? variantSelect.value : buyNowForm
-                        .querySelector('#buy_now_variant_id').value;
-                    // Lấy tồn kho của biến thể
-                    const variantStocks = @json($variantStocks);
-                    const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[
-                        selectedVariantId]) : 0;
-                    const quantity = quantityInput ? parseInt(quantityInput.value) : parseInt(buyNowForm
-                        .querySelector('#buy_now_quantity').value);
+                    const selectedVariantId = variantSelect ? variantSelect.value : buyNowForm.querySelector('#buy_now_variant_id').value;
+                    const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[selectedVariantId]) : 0;
+                    const quantity = quantityInput ? parseInt(quantityInput.value) : parseInt(buyNowForm.querySelector('#buy_now_quantity').value);
                     if (quantity > stock) {
                         e.preventDefault();
                         Swal.fire({
@@ -784,7 +744,7 @@
         function showAdminError() {
             Swal.fire({
                 icon: 'warning',
-                title: 'Không có quyền truy cập!',
+                title: 'Cảnh báo!',
                 text: 'Bạn không có quyền thực hiện hành động này',
                 confirmButtonText: 'Đóng',
                 customClass: {

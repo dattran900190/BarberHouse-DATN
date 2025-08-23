@@ -217,7 +217,7 @@
                 border-radius: 12px;
                 border: 2px solid #e1e5e9;
                 padding: 15px 18px;
-                font-size: 16px;
+                font-size: 14px;
                 transition: all 0.3s ease;
                 background: #f8f9fa;
             }
