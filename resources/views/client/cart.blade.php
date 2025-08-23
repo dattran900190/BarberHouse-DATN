@@ -743,7 +743,7 @@
         function showAdminError() {
             Swal.fire({
                 icon: 'warning',
-                title: 'Không có quyền truy cập!',
+                title: 'Cảnh báo!',
                 text: 'Bạn không có quyền thực hiện hành động này',
                 confirmButtonText: 'Đóng',
                 customClass: {

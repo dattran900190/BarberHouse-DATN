@@ -452,7 +452,7 @@
             border-radius: 8px;
             border: 2px solid #e1e5e9;
             padding: 12px 15px;
-            font-size: 16px;
+            font-size: 14px;
             transition: all 0.3s ease;
         }
 
