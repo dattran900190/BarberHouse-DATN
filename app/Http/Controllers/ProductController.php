@@ -38,8 +38,8 @@ class ProductController extends Controller
         };
 
         $products = $query->when($search, function ($query, $search) {
-                return $query->where('name', 'like', '%' . $search . '%');
-            })
+            return $query->where('name', 'like', '%' . $search . '%');
+        })
             ->orderBy('created_at', 'DESC')
             ->paginate(perPage: 10);
 
@@ -58,6 +58,18 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request)
     {
+        $request->validate([
+
+            'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'additional_images' => 'required|array|min:1',
+            'additional_images.*' => 'image|mimes:jpg,jpeg,png,gif|max:2048',
+        ], ['image.required' => 'Vui lòng chọn ảnh sản phẩm.',
+            'additional_images.required' => 'Vui lòng chọn ít nhất 1 ảnh bổ sung.',
+            'additional_images.*.image' => 'Ảnh bổ sung phải là định dạng hình ảnh.',
+            'additional_images.*.mimes' => 'Ảnh bổ sung phải có định dạng: jpg, jpeg, png, gif.',
+            'additional_images.*.max' => 'Kích thước ảnh bổ sung không được vượt quá 2MB.',
+        ]);
+
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('admin.products.index')->with('error', 'Bạn không có quyền thêm sản phẩm.');
         }
@@ -73,6 +85,7 @@ class ProductController extends Controller
                     ->withInput();
             }
         }
+
         $imagePath = null;
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $imagePath = $request->file('image')->store('products', 'public');
@@ -462,13 +475,13 @@ class ProductController extends Controller
                 'message' => 'Sản phẩm cần được xóa mềm trước.'
             ]);
         }
-        return redirect()->route('admin.products.index')->with('error', 'Sản phẩm cần được xóa mềm trước.'); 
+        return redirect()->route('admin.products.index')->with('error', 'Sản phẩm cần được xóa mềm trước.');
     }
 
     public function hardDeleteVariant($id)
     {
         $variant = ProductVariant::withTrashed()->findOrFail($id);
-        
+
         // Kiểm tra quyền
         if (Auth::user()->role === 'admin_branch') {
             if (request()->expectsJson()) {
@@ -514,7 +527,7 @@ class ProductController extends Controller
 
             // Xóa vĩnh viễn biến thể
             $variant->forceDelete();
-            
+
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => true,
