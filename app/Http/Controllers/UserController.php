@@ -109,7 +109,7 @@ class UserController extends Controller
     {
         if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('users.index')->with('error', 'Bạn không có quyền truy cập.');
-        }   
+        }
         $role = $request->input('role', 'user');
 
         // 👉 Lấy user bao gồm đã bị xóa mềm
@@ -180,12 +180,17 @@ class UserController extends Controller
 
         // Nếu không phải đang chỉnh sửa chính mình → chỉ cho phép cập nhật role và status
         if (!$isEditingSelf) {
-            $data = array_intersect_key($data, array_flip(['status', 'role']));
-            // Gán lại gender thủ công nếu bị disabled trong form
+            $allowed = ['status', 'role'];
+            if ($user->role === 'admin_branch') {
+                $allowed[] = 'branch_id'; // Cho phép chỉnh chi nhánh
+            }
+            $data = array_intersect_key($data, array_flip($allowed));
+
             if ($request->has('gender_hidden')) {
                 $data['gender'] = $request->input('gender_hidden');
             }
         }
+
 
         // Kiểm tra role hợp lệ theo ngữ cảnh
         if ($role === 'admin' && (!isset($data['role']) || !in_array($data['role'], ['admin', 'admin_branch']))) {

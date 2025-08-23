@@ -39,3 +39,4 @@ class CheckCustomerAccess
         return $next($request);
     }
 }
+
