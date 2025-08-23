@@ -75,17 +75,21 @@
                                             <label for="quantity">Số lượng:</label>
                                         </div>
                                         <div class="col-2">
-                                            <input type="number" id="quantity" class="form-control form-control-sm" value="1" min="1" />
+                                            <input type="number" id="quantity" class="form-control form-control-sm"
+                                                value="1" min="1" />
                                         </div>
                                         <div class="col-auto">
-                                            <button type="button" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng" onclick="showAdminError()">
+                                            <button type="button" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng"
+                                                onclick="showAdminError()">
                                                 <i class="fas fa-cart-plus"></i>
                                             </button>
                                         </div>
                                     </div>
                                     <span id="stockDisplay">Tồn kho: {{ $product->variants->first()->stock }}</span>
                                     <div class="mt-3">
-                                        <button type="button" class="btn btn-dark d-flex align-items-center justify-content-center gap-2" onclick="showAdminError()">
+                                        <button type="button"
+                                            class="btn btn-dark d-flex align-items-center justify-content-center gap-2"
+                                            onclick="showAdminError()">
                                             <span>Mua ngay</span>
                                         </button>
                                     </div>
@@ -97,7 +101,8 @@
                                                 <label for="variant_id">Thể tích:</label>
                                             </div>
                                             <div class="col-auto">
-                                                <select name="product_variant_id" id="variant_id" class="form-select form-select-sm">
+                                                <select name="product_variant_id" id="variant_id"
+                                                    class="form-select form-select-sm">
                                                     @foreach ($variants as $variant)
                                                         <option value="{{ $variant->id }}">
                                                             {{ $variant->volume->name ?? 'Không rõ' }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}
@@ -109,10 +114,12 @@
                                                 <label for="quantity">Số lượng:</label>
                                             </div>
                                             <div class="col-2">
-                                                <input type="number" name="quantity" id="quantity" class="form-control form-control-sm" value="1" min="1" />
+                                                <input type="number" name="quantity" id="quantity"
+                                                    class="form-control form-control-sm" value="1" min="1" />
                                             </div>
                                             <div class="col-auto">
-                                                <button type="submit" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng">
+                                                <button type="submit" class="btn btn-dark icon-button"
+                                                    title="Thêm vào giỏ hàng">
                                                     <i class="fas fa-cart-plus"></i>
                                                 </button>
                                             </div>
@@ -122,9 +129,11 @@
                                     <div class="mt-3">
                                         <form action="{{ route('cart.buyNow') }}" method="POST" id="buyNowForm">
                                             @csrf
-                                            <input type="hidden" name="product_variant_id" id="buy_now_variant_id" value="{{ $product->variants->first()->id }}">
+                                            <input type="hidden" name="product_variant_id" id="buy_now_variant_id"
+                                                value="{{ $product->variants->first()->id }}">
                                             <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
-                                            <button type="submit" class="btn btn-dark d-flex align-items-center justify-content-center gap-2">
+                                            <button type="submit"
+                                                class="btn btn-dark d-flex align-items-center justify-content-center gap-2">
                                                 <span>Mua ngay</span>
                                             </button>
                                         </form>
@@ -138,7 +147,8 @@
                                             <label for="variant_id">Thể tích:</label>
                                         </div>
                                         <div class="col-auto">
-                                            <select name="product_variant_id" id="variant_id" class="form-select form-select-sm">
+                                            <select name="product_variant_id" id="variant_id"
+                                                class="form-select form-select-sm">
                                                 @foreach ($variants as $variant)
                                                     <option value="{{ $variant->id }}">
                                                         {{ $variant->volume->name ?? 'Không rõ' }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}
@@ -150,10 +160,12 @@
                                             <label for="quantity">Số lượng:</label>
                                         </div>
                                         <div class="col-2">
-                                            <input type="number" name="quantity" id="quantity" class="form-control form-control-sm" value="1" min="1" />
+                                            <input type="number" name="quantity" id="quantity"
+                                                class="form-control form-control-sm" value="1" min="1" />
                                         </div>
                                         <div class="col-auto">
-                                            <button type="submit" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng">
+                                            <button type="submit" class="btn btn-dark icon-button"
+                                                title="Thêm vào giỏ hàng">
                                                 <i class="fas fa-cart-plus"></i>
                                             </button>
                                         </div>
@@ -161,7 +173,9 @@
                                 </form>
                                 <span id="stockDisplay">Tồn kho: {{ $product->variants->first()->stock }}</span>
                                 <div class="mt-3">
-                                    <button type="button" class="btn btn-danger d-flex align-items-center justify-content-center gap-2" onclick="showLoginRequired()">
+                                    <button type="button"
+                                        class="btn btn-dark d-flex align-items-center justify-content-center gap-2"
+                                        onclick="showLoginRequired()">
                                         <span>Mua ngay</span>
                                     </button>
                                 </div>
@@ -209,22 +223,29 @@
                                     <div class="button-group">
                                         @auth
                                             @if (in_array(auth()->user()->role, ['admin', 'admin_branch']))
-                                                <button type="button" class="btn-outline-cart" title="Thêm vào giỏ hàng" onclick="showAdminError()">
+                                                <button type="button" class="btn-outline-cart" title="Thêm vào giỏ hàng"
+                                                    onclick="showAdminError()">
                                                     <i class="fas fa-cart-plus"></i>
                                                 </button>
-                                                <button type="button" class="btn-outline-buy" onclick="showAdminError()">Mua ngay</button>
+                                                <button type="button" class="btn-outline-buy" onclick="showAdminError()">Mua
+                                                    ngay</button>
                                             @else
-                                                <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                                <form action="{{ route('cart.add') }}" method="POST"
+                                                    class="add-to-cart-form">
                                                     @csrf
-                                                    <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
+                                                    <input type="hidden" name="product_variant_id"
+                                                        value="{{ $itemVariant->id }}">
                                                     <input type="hidden" name="quantity" value="1">
-                                                    <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                                    <button type="submit" class="btn-outline-cart"
+                                                        title="Thêm vào giỏ hàng">
                                                         <i class="fas fa-cart-plus"></i>
                                                     </button>
                                                 </form>
-                                                <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
+                                                <form action="{{ route('cart.buyNow') }}" method="POST"
+                                                    class="buy-now-form">
                                                     @csrf
-                                                    <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
+                                                    <input type="hidden" name="product_variant_id"
+                                                        value="{{ $itemVariant->id }}">
                                                     <input type="hidden" name="quantity" value="1">
                                                     <button type="submit" class="btn-outline-buy">Mua ngay</button>
                                                 </form>
@@ -232,13 +253,21 @@
                                         @else
                                             <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
                                                 @csrf
-                                                <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
+                                                <input type="hidden" name="product_variant_id"
+                                                    value="{{ $itemVariant->id }}">
                                                 <input type="hidden" name="quantity" value="1">
                                                 <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
                                                     <i class="fas fa-cart-plus"></i>
                                                 </button>
                                             </form>
-                                            <button type="button" class="btn-outline-buy" onclick="showLoginRequired()">Mua ngay</button>
+                                            <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
+                                                @csrf
+                                                <input type="hidden" name="product_variant_id"
+                                                    value="{{ $itemVariant->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="button" class="btn-outline-buy"
+                                                    onclick="showLoginRequired()">Mua ngay</button>
+                                            </form>
                                         @endauth
                                     </div>
                                 @else
@@ -272,8 +301,16 @@
             border-radius: 50%;
         }
 
-        .prev-btn { left: 10px; color: #000 }
-        .next-btn { right: 10px; color: #000 }
+        .prev-btn {
+            left: 10px;
+            color: #000
+        }
+
+        .next-btn {
+            right: 10px;
+            color: #000
+        }
+
         #mainNav {
             background-color: #000;
         }
@@ -287,14 +324,16 @@
             gap: 10px;
             align-items: center;
             margin-top: 10px;
-            flex-wrap: nowrap; /* Giữ các nút trên cùng một dòng */
+            flex-wrap: nowrap;
+            /* Giữ các nút trên cùng một dòng */
         }
 
         .btn {
             flex: 1;
             min-width: 0;
             padding: 8px 15px;
-            white-space: nowrap; /* Ngăn chữ bị ngắt dòng */
+            white-space: nowrap;
+            /* Ngăn chữ bị ngắt dòng */
         }
 
         /* Đảm bảo nút Mua ngay luôn full width và nhất quán */
@@ -416,11 +455,13 @@
 
             /* Button styling for mobile */
             .button-group {
-                flex-wrap: wrap; /* Cho phép ngắt dòng khi cần trên mobile */
+                flex-wrap: wrap;
+                /* Cho phép ngắt dòng khi cần trên mobile */
             }
 
             .btn {
-                width: auto; /* Tự động điều chỉnh chiều rộng */
+                width: auto;
+                /* Tự động điều chỉnh chiều rộng */
                 margin-bottom: 0.5rem;
                 padding: 10px 15px;
                 font-size: 1rem;
@@ -561,8 +602,10 @@
             }
 
             .button-group {
-                flex-direction: row; /* Giữ ngang trên màn hình nhỏ */
-                gap: 5px; /* Giảm khoảng cách trên màn hình nhỏ */
+                flex-direction: row;
+                /* Giữ ngang trên màn hình nhỏ */
+                gap: 5px;
+                /* Giảm khoảng cách trên màn hình nhỏ */
             }
 
             .btn {
@@ -711,7 +754,8 @@
                         if (xhr.status === 400 && xhr.responseJSON) {
                             const res = xhr.responseJSON;
                             if (res.reached_max) {
-                                message = res.message || 'Bạn đã thêm tối đa số lượng sản phẩm.';
+                                message = res.message ||
+                                'Bạn đã thêm tối đa số lượng sản phẩm.';
                             } else if (res.message) {
                                 message = res.message;
                             }
@@ -759,7 +803,8 @@
                         if (xhr.status === 400 && xhr.responseJSON) {
                             const res = xhr.responseJSON;
                             if (res.reached_max) {
-                                message = res.message || 'Bạn đã thêm tối đa số lượng sản phẩm.';
+                                message = res.message ||
+                                'Bạn đã thêm tối đa số lượng sản phẩm.';
                             } else if (res.message) {
                                 message = res.message;
                             }
@@ -786,7 +831,8 @@
 
                 if (variantSelect && stockDisplay) {
                     const selectedVariantId = variantSelect.value;
-                    const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[selectedVariantId]) : 0;
+                    const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[
+                        selectedVariantId]) : 0;
 
                     // Cập nhật hiển thị tồn kho
                     stockDisplay.textContent = `Tồn kho: ${stock}`;
@@ -817,7 +863,8 @@
             $('#quantity').on('input', function() {
                 const variantSelect = document.getElementById('variant_id');
                 const selectedVariantId = variantSelect.value;
-                const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[selectedVariantId]) : 0;
+                const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[
+                    selectedVariantId]) : 0;
                 const quantity = parseInt(this.value) || 0;
 
                 if (quantity > stock) {
@@ -831,9 +878,12 @@
                 buyNowForm.addEventListener('submit', function(e) {
                     const variantSelect = document.getElementById('variant_id');
                     const quantityInput = document.getElementById('quantity');
-                    const selectedVariantId = variantSelect ? variantSelect.value : buyNowForm.querySelector('#buy_now_variant_id').value;
-                    const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[selectedVariantId]) : 0;
-                    const quantity = quantityInput ? parseInt(quantityInput.value) : parseInt(buyNowForm.querySelector('#buy_now_quantity').value);
+                    const selectedVariantId = variantSelect ? variantSelect.value : buyNowForm
+                        .querySelector('#buy_now_variant_id').value;
+                    const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[
+                        selectedVariantId]) : 0;
+                    const quantity = quantityInput ? parseInt(quantityInput.value) : parseInt(buyNowForm
+                        .querySelector('#buy_now_quantity').value);
                     if (quantity > stock) {
                         e.preventDefault();
                         Swal.fire({
