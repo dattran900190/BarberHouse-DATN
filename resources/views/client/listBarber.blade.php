@@ -40,7 +40,7 @@
                             <div class="barber-img-wrapper">
                                 <a href="{{ route('client.detailBarber', $barber->id) }}">
                                     <img src="{{ asset('storage/' . $barber->avatar) }}" class="card-img-top barber-img"
-                                        alt="{{ $barber->name }}">
+                                        alt="{{ $barber->name }}" style="object-position: center 15%;">
                                 </a>
                             </div>
                             <div class="card-body text-center">

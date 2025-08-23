@@ -128,6 +128,7 @@
                                                     href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
                                                     <i class="fas fa-eye me-2"></i> Xem
                                                 </a>
+                                                <hr class="dropdown-divider">
 
                                                 @if ($branch->trashed())
                                                     <button type="button" class="dropdown-item text-success restore-btn"

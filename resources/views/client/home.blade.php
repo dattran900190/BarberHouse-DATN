@@ -523,7 +523,7 @@
             let html = '<div class="barbers">';
             barbers.forEach(barber => {
                 html += `<div class="barber">
-                    <div class="image-barber">
+                    <div class="image-barber" style="object-position: center 15%;">
                         <img src="/storage/${barber.avatar}" alt="${barber.name}">
                     </div>
                     <div class="barber-info">
