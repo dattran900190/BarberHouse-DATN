@@ -202,25 +202,28 @@
     <style>
         .prev-btn,
 .next-btn {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  border: 1px solid #ddd;
-  background: white;
+  width: 50px;
+  height: 50px;
+
+  background: rgba(232, 230, 225, 0.6);
+  
   font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  
   transition: all 0.3s ease;
   /* Đảm bảo nút nổi lên trên ảnh */
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  
   z-index: 10;
-  background: rgb(227, 222, 222)
+  border-radius: 50%
+ 
 }
 
+.prev-btn { left: 10px; color: #000}
+.next-btn { right: 10px; color: #000}
         #mainNav {
             background-color: #000;
         }
@@ -349,7 +352,7 @@
             .btn-outline-buy {
                 width: 100% !important;
                 text-align: center;
-                padding: 0.5rem;
+                
             }
 
             /* Typography adjustments */
