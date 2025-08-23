@@ -58,62 +58,117 @@
                     @endphp
                     @if ($variants->count())
                         @if ($variants->where('stock', '>', 0)->count())
-                            <form action="{{ route('cart.add') }}" method="POST" class="mt-3" id="addToCartForm">
-                                @csrf
-                                <div class="row g-2 align-items-center">
-                                    <div class="col-auto">
-                                        <label for="variant_id">Thể tích:</label>
+                            @auth
+                                @if (in_array(auth()->user()->role, ['admin', 'admin_branch']))
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-auto">
+                                            <label for="variant_id">Thể tích:</label>
+                                        </div>
+                                        <div class="col-auto">
+                                            <select id="variant_id" class="form-select form-select-sm">
+                                                @foreach ($variants as $variant)
+                                                    <option value="{{ $variant->id }}">
+                                                        {{ $variant->volume->name ?? 'Không rõ' }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-auto">
+                                            <label for="quantity">Số lượng:</label>
+                                        </div>
+                                        <div class="col-2">
+                                            <input type="number" id="quantity" class="form-control form-control-sm" value="1" min="1" />
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="button" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng" onclick="showAdminError()">
+                                                <i class="fas fa-cart-plus"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="col-auto">
-                                        <select name="product_variant_id" id="variant_id"
-                                            class="form-select form-select-sm">
-                                            @foreach ($variants as $variant)
-                                                <option value="{{ $variant->id }}">
-                                                    {{ $variant->volume->name ?? 'Không rõ' }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-
-                                    <div class="col-auto">
-                                        <label for="quantity">Số lượng:</label>
-                                    </div>
-                                    <div class="col-2">
-                                        <input type="number" name="quantity" id="quantity"
-                                            class="form-control form-control-sm" value="1" min="1" />
-                                    </div>
-
-                                    {{-- Icon giỏ hàng --}}
-                                    <div class="col-auto">
-                                        <button type="submit" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng">
-                                            <i class="fas fa-cart-plus"></i>
+                                    <span id="stockDisplay">Tồn kho: {{ $product->variants->first()->stock }}</span>
+                                    <div class="mt-3">
+                                        <button type="button" class="btn btn-dark d-flex align-items-center justify-content-center gap-2" onclick="showAdminError()">
+                                            <span>Mua ngay</span>
                                         </button>
                                     </div>
-                                </div>
-
-                            </form>
-                            <span id="stockDisplay">Tồn kho: {{ $product->variants->first()->stock }}</span>
-
-                            {{-- Nút Mua ngay --}}
-                            <form action="{{ route('cart.buyNow') }}" method="POST" class="mt-3" id="buyNowForm">
-                                @csrf
-                                <input type="hidden" name="product_variant_id" id="buy_now_variant_id"
-                                    value="{{ $product->variants->first()->id }}">
-                                <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
-
-                                @guest
-                                    <button type="submit"
-                                        class="btn btn-danger d-flex align-items-center justify-content-center gap-2">
-                                        <i class="fas fa-bolt"></i> <span>Mua ngay</span>
-                                    </button>
                                 @else
-                                    <button type="submit"
-                                        class="btn btn-dark d-flex align-items-center justify-content-center gap-2">
-                                        <span>Mua ngay</span>
-                                    </button>
-                                @endguest
-                            </form>
+                                    <form action="{{ route('cart.add') }}" method="POST" class="mt-3" id="addToCartForm">
+                                        @csrf
+                                        <div class="row g-2 align-items-center">
+                                            <div class="col-auto">
+                                                <label for="variant_id">Thể tích:</label>
+                                            </div>
+                                            <div class="col-auto">
+                                                <select name="product_variant_id" id="variant_id"
+                                                    class="form-select form-select-sm">
+                                                    @foreach ($variants as $variant)
+                                                        <option value="{{ $variant->id }}">
+                                                            {{ $variant->volume->name ?? 'Không rõ' }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-auto">
+                                                <label for="quantity">Số lượng:</label>
+                                            </div>
+                                            <div class="col-2">
+                                                <input type="number" name="quantity" id="quantity"
+                                                    class="form-control form-control-sm" value="1" min="1" />
+                                            </div>
+                                            <div class="col-auto">
+                                                <button type="submit" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng">
+                                                    <i class="fas fa-cart-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <span id="stockDisplay">Tồn kho: {{ $product->variants->first()->stock }}</span>
+                                    <form action="{{ route('cart.buyNow') }}" method="POST" class="mt-3" id="buyNowForm">
+                                        @csrf
+                                        <input type="hidden" name="product_variant_id" id="buy_now_variant_id"
+                                            value="{{ $product->variants->first()->id }}">
+                                        <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
+                                        <button type="submit" class="btn btn-dark d-flex align-items-center justify-content-center gap-2">
+                                            <span>Mua ngay</span>
+                                        </button>
+                                    </form>
+                                @endif
+                            @else
+                                <form action="{{ route('cart.add') }}" method="POST" class="mt-3" id="addToCartForm">
+                                    @csrf
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-auto">
+                                            <label for="variant_id">Thể tích:</label>
+                                        </div>
+                                        <div class="col-auto">
+                                            <select name="product_variant_id" id="variant_id"
+                                                class="form-select form-select-sm">
+                                                @foreach ($variants as $variant)
+                                                    <option value="{{ $variant->id }}">
+                                                        {{ $variant->volume->name ?? 'Không rõ' }}{{ $variant->volume && $variant->volume->unit ? ' ' . $variant->volume->unit : '' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-auto">
+                                            <label for="quantity">Số lượng:</label>
+                                        </div>
+                                        <div class="col-2">
+                                            <input type="number" name="quantity" id="quantity"
+                                                class="form-control form-control-sm" value="1" min="1" />
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="submit" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng">
+                                                <i class="fas fa-cart-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <span id="stockDisplay">Tồn kho: {{ $product->variants->first()->stock }}</span>
+                                <button type="button" class="btn btn-danger d-flex align-items-center justify-content-center gap-2" onclick="showLoginRequired()">
+                                    <i class="fas fa-bolt"></i> <span>Mua ngay</span>
+                                </button>
+                            @endauth
 
                             {{-- Hiển thị giá sau khi chọn variant --}}
                             <div class="mt-2">
@@ -162,25 +217,40 @@
                                 @php $itemVariant = $item->variants->first(); @endphp
                                 @if ($itemVariant)
                                     <div class="button-group">
-                                        <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
-                                            @csrf
-                                            <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
-                                                <i class="fas fa-cart-plus"></i>
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
-                                            @csrf
-                                            <input type="hidden" name="product_variant_id"
-                                                value="{{ $itemVariant->id }}">
-                                            <input type="hidden" name="quantity" value="1">
-                                            @guest
-                                                <button type="submit" class="btn-outline-buy">Mua ngay</button>
+                                        @auth
+                                            @if (in_array(auth()->user()->role, ['admin', 'admin_branch']))
+                                                <button type="button" class="btn-outline-cart" title="Thêm vào giỏ hàng" onclick="showAdminError()">
+                                                    <i class="fas fa-cart-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn-outline-buy" onclick="showAdminError()">Mua ngay</button>
                                             @else
-                                                <button type="submit" class="btn-outline-buy">Mua ngay</button>
-                                            @endguest
-                                        </form>
+                                                <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                                    @csrf
+                                                    <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
+                                                    <input type="hidden" name="quantity" value="1">
+                                                    <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                                        <i class="fas fa-cart-plus"></i>
+                                                    </button>
+                                                </form>
+                                                <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
+                                                    @csrf
+                                                    <input type="hidden" name="product_variant_id"
+                                                        value="{{ $itemVariant->id }}">
+                                                    <input type="hidden" name="quantity" value="1">
+                                                    <button type="submit" class="btn-outline-buy">Mua ngay</button>
+                                                </form>
+                                            @endif
+                                        @else
+                                            <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                                                @csrf
+                                                <input type="hidden" name="product_variant_id" value="{{ $itemVariant->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
+                                                    <i class="fas fa-cart-plus"></i>
+                                                </button>
+                                            </form>
+                                            <button type="button" class="btn-outline-buy" onclick="showLoginRequired()">Mua ngay</button>
+                                        @endauth
                                     </div>
                                 @else
                                     <p class="text-danger">Không có phiên bản để mua</p>
@@ -678,4 +748,34 @@
         });
     </script>
 
+    <script>
+        function showAdminError() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Không có quyền truy cập!',
+                text: 'Bạn không có quyền thực hiện hành động này',
+                confirmButtonText: 'Đóng',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            });
+        }
+
+        function showLoginRequired() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bạn chưa đăng nhập!',
+                text: 'Vui lòng đăng nhập để sử dụng chức năng "Mua ngay".',
+                showConfirmButton: true,
+                confirmButtonText: 'Đăng nhập',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('login') }}";
+                }
+            });
+        }
+    </script>
 @endsection

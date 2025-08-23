@@ -88,19 +88,22 @@ Route::delete('/chat-history', [ChatController::class, 'clearChatHistory'])->nam
 
 // == Giỏ hàng ==
 Route::get('/gio-hang', [CartController::class, 'show'])->name('cart.show');
-Route::post('/gio-hang/add', [CartController::class, 'addToCart'])->name('cart.add');
-Route::put('/gio-hang/update/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
-Route::delete('/gio-hang/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
-Route::put('/gio-hang/update-variant/{cartItem}', [CartController::class, 'updateVariant'])->name('cart.update.variant');
+Route::middleware('customer.access')->group(function () {
 
-// == Mua ngay ==
-Route::match(['get', 'post'], '/mua-ngay', [CartController::class, 'buyNow'])->name('cart.buyNow');
-Route::get('/mua-ngay/checkout', [CartController::class, 'showBuyNowCheckout'])->name('cart.buyNow.checkout');
+    Route::post('/gio-hang/add', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::put('/gio-hang/update/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
+    Route::delete('/gio-hang/remove/{cartItem}', [CartController::class, 'removeFromCart'])->name('cart.remove');
+    Route::put('/gio-hang/update-variant/{cartItem}', [CartController::class, 'updateVariant'])->name('cart.update.variant');
 
-//checkout
-Route::get('/thanh-toan', [CartController::class, 'checkout'])->name('cart.checkout');
-Route::post('/thanh-toan/process', [CartController::class, 'processCheckout'])->name('cart.checkout.process');
-Route::patch('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('client.orders.cancel');
+    // == Mua ngay ==
+    Route::match(['get', 'post'], '/mua-ngay', [CartController::class, 'buyNow'])->name('cart.buyNow');
+    Route::get('/mua-ngay/checkout', [CartController::class, 'showBuyNowCheckout'])->name('cart.buyNow.checkout');
+
+    //checkout
+    Route::get('/thanh-toan', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/thanh-toan/process', [CartController::class, 'processCheckout'])->name('cart.checkout.process');
+    Route::patch('/orders/{order}/cancel', [ClientOrderController::class, 'cancel'])->name('client.orders.cancel');
+});
 
 // ==== Đặt lịch ====
 Route::get('/dat-lich', [ClientAppointmentController::class, 'index'])->name('dat-lich');

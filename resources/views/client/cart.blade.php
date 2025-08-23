@@ -195,15 +195,23 @@
                                                             class="fas fa-long-arrow-alt-left me-2"></i>Quay lại cửa
                                                         hàng</a></h6>
 
-                                                <form id="checkout-form" action="{{ route('cart.checkout') }}"
-                                                    method="GET" class="text-end" style="margin-top: -5px;">
-                                                    @guest
+                                                @auth
+                                                    @if (in_array(auth()->user()->role, ['admin', 'admin_branch']))
+                                                        <button type="button" class="btn-outline-buy"
+                                                            onclick="showAdminError()">Mua hàng</button>
+                                                    @else
+                                                        <form id="checkout-form" action="{{ route('cart.checkout') }}"
+                                                            method="GET" class="text-end" style="margin-top: -5px;">
+                                                            <button type="submit" class="btn-outline-buy">Mua hàng</button>
+                                                        </form>
+                                                    @endif
+                                                @else
+                                                    <form id="checkout-form" action="{{ route('cart.checkout') }}"
+                                                        method="GET" class="text-end" style="margin-top: -5px;">
                                                         <button type="button" class="btn btn-dark btn-block btn-lg"
                                                             id="btn-checkout-guest">Mua hàng</button>
-                                                    @else
-                                                        <button type="submit" class="btn-outline-buy">Mua hàng</button>
-                                                    @endguest
-                                                </form>
+                                                    </form>
+                                                @endauth
                                             </div>
                                         </div>
                                     </div>
@@ -215,10 +223,10 @@
         </section>
     </main>
     <style>
-    #mainNav {
+        #mainNav {
             background-color: #000;
         }
-        
+
         .alert-box {
             display: flex;
             justify-content: space-between;
@@ -423,6 +431,9 @@
                             icon: 'error',
                             title: 'Lỗi!',
                             text: `Không thể ${m === 'PUT' ? 'cập nhật' : 'xóa'} sản phẩm. Vui lòng thử lại!`,
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
                         });
                         if (b) b.disabled = false;
                     });
@@ -520,6 +531,9 @@
                                 icon: 'error',
                                 title: 'Lỗi',
                                 text: data.message || 'Không thể cập nhật dung tích.',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
                             });
                         }
                     });
@@ -723,5 +737,19 @@
                 },
             });
         @endif
+    </script>
+
+    <script>
+        function showAdminError() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Không có quyền truy cập!',
+                text: 'Bạn không có quyền thực hiện hành động này',
+                confirmButtonText: 'Đóng',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            });
+        }
     </script>
 @endsection

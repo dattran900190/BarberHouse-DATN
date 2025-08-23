@@ -217,9 +217,21 @@
 
                                     {{-- Nút đặt hàng --}}
                                     <div class="d-grid gap-2">
-                                        <button class="btn btn-primary btn-lg checkout-btn" type="submit">
-                                            <i class="fa-solid fa-check me-2"></i>Đặt hàng ngay
-                                        </button>
+                                        @auth
+                                            @if (in_array(auth()->user()->role, ['admin', 'admin_branch']))
+                                                <button class="btn btn-primary btn-lg checkout-btn" type="button" onclick="showAdminError()">
+                                                    <i class="fa-solid fa-check me-2"></i>Đặt hàng ngay
+                                                </button>
+                                            @else
+                                                <button class="btn btn-primary btn-lg checkout-btn" type="submit">
+                                                    <i class="fa-solid fa-check me-2"></i>Đặt hàng ngay
+                                                </button>
+                                            @endif
+                                        @else
+                                            <button class="btn btn-primary btn-lg checkout-btn" type="submit">
+                                                <i class="fa-solid fa-check me-2"></i>Đặt hàng ngay
+                                            </button>
+                                        @endauth
                                         <a href="{{ route('cart.show') }}" class="btn btn-outline-secondary">
                                             <i class="fa-solid fa-angle-left me-2"></i>Quay về giỏ hàng
                                         </a>
@@ -438,5 +450,19 @@
                 }
             });
         });
+    </script>
+
+    <script>
+        function showAdminError() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Không có quyền truy cập!',
+                text: 'Bạn không có quyền thực hiện hành động này',
+                confirmButtonText: 'Đóng',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            });
+        }
     </script>
 @endsection
