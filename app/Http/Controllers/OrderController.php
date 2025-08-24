@@ -19,7 +19,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-         if (Auth::user()->role === 'admin_branch') {
+        if (Auth::user()->role === 'admin_branch') {
             return redirect()->route('appointments.index')->with('error', 'Bạn không có quyền truy cập.');
         }
         $search = $request->input('search');
@@ -90,10 +90,10 @@ class OrderController extends Controller
             } catch (\Exception $e) {
                 Log::error('Lỗi gửi email xác nhận đơn hàng (admin): ' . $e->getMessage());
             }
-            
+
             // Dispatch event để gửi thông báo realtime
             event(new OrderStatusUpdated($order));
-            
+
             return response()->json(['success' => true, 'message' => 'Đã xác nhận đơn hàng.', 'activeTab' => 'pending']);
         }
         return response()->json(['success' => false, 'message' => 'Đơn hàng không thể xác nhận.']);
@@ -229,12 +229,12 @@ class OrderController extends Controller
         }
 
         $order->status = $newStatus;
-        
+
         // Nếu chuyển sang trạng thái hoàn thành, cập nhật trạng thái thanh toán thành đã thanh toán
         if ($newStatus === 'completed') {
             $order->payment_status = 'paid';
         }
-        
+
         $order->save();
 
         // Gửi email thông báo thay đổi trạng thái
@@ -274,12 +274,13 @@ class OrderController extends Controller
         // Cộng lại số lượng tồn kho
         $order->load('items');
         foreach ($order->items as $item) {
-            $variant = ProductVariant::find($item->product_variant_id);
+            $variant = ProductVariant::with('product')->find($item->product_variant_id);
             if ($variant) {
-                $variant->stock += $item->quantity;
-                $variant->save();
+                $variant->increment('stock', $item->quantity);
+                $variant->product->increment('stock', $item->quantity);
             }
         }
+
 
         // Cập nhật trạng thái đơn hàng thành 'cancelled'
         $order->status = 'cancelled';

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -61,7 +63,7 @@ class OrderController extends Controller
 
     public function cancel(Request $request, $id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('items')->findOrFail($id);
 
         if ($order->status !== 'pending') {
             return response()->json([
@@ -74,14 +76,32 @@ class OrderController extends Controller
             'cancellation_reason' => 'required|string|min:5|max:500',
         ]);
 
-        $order->status = 'cancelled';
-        $order->cancellation_reason = $validated['cancellation_reason'];
-        $order->cancellation_type = 'user'; // Hoặc gì đó bạn dùng
-        $order->save();
+        DB::transaction(function () use ($order, $validated) {
+            // Hoàn lại số lượng cho từng biến thể
+            foreach ($order->items as $item) {
+                $variant = ProductVariant::find($item->product_variant_id);
+                if ($variant) {
+                    $variant->increment('stock', $item->quantity);
+
+                    // Cập nhật stock tổng của product cha
+                    $product = Product::find($variant->product_id);
+                    if ($product) {
+                        $totalStock = ProductVariant::where('product_id', $product->id)->sum('stock');
+                        $product->update(['stock' => $totalStock]);
+                    }
+                }
+            }
+
+            // Cập nhật trạng thái đơn hàng
+            $order->status = 'cancelled';
+            $order->cancellation_reason = $validated['cancellation_reason'];
+            $order->cancellation_type = 'user';
+            $order->save();
+        });
 
         return response()->json([
             'success' => true,
-            'message' => 'Đơn hàng đã được hủy thành công.'
+            'message' => 'Đơn hàng đã được hủy và tồn kho đã được hoàn lại.'
         ]);
     }
 }
