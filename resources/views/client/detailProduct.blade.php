@@ -49,7 +49,7 @@
                 {{-- Thông tin sản phẩm --}}
                 <div class="detailPro-right" style="flex: 1; min-width: 300px;">
                     <h3>{{ $product->name }}</h3>
-                    <h5 class="text-danger fw-bold">Giá: {{ number_format($product->price) }} VNĐ</h5>
+                    <h5 class="text-danger fw-bold" id="productPrice">Giá: {{ number_format($product->variants->first()->price ?? $product->price) }} VNĐ</h5>
                     <p>{{ $product->description }}</p>
                     @php
                         $variants = $product->variants;
@@ -183,7 +183,7 @@
 
                             {{-- Hiển thị giá sau khi chọn variant --}}
                             <div class="mt-2">
-                                <span id="variantPrice" class="fw-bold text-danger"></span>
+                                {{-- <span id="variantPrice" class="fw-bold text-danger"></span> --}}
                             </div>
                         @else
                             <span style="color: rgb(232, 184, 12); font-weight: bold;">Hết hàng</span>
@@ -675,14 +675,19 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Dữ liệu giá của các biến thể
+            const variantPrices = @json($product->variants->pluck('price', 'id'));
+            
             // Khi chọn variant, cập nhật cho "Mua ngay"
             const variantSelect = document.getElementById('variant_id');
             const buyNowVariantId = document.getElementById('buy_now_variant_id');
             if (variantSelect && buyNowVariantId) {
                 variantSelect.addEventListener('change', function() {
                     buyNowVariantId.value = this.value;
+                    updatePrice();
                 });
             }
+            
             // Khi chọn số lượng, cập nhật cho "Mua ngay"
             const quantityInput = document.getElementById('quantity');
             const buyNowQuantity = document.getElementById('buy_now_quantity');
@@ -706,6 +711,31 @@
                     }
                 });
             }
+            
+            // Hàm cập nhật giá theo biến thể được chọn
+            function updatePrice() {
+                const variantSelect = document.getElementById('variant_id');
+                const priceElement = document.getElementById('productPrice');
+                const variantPriceElement = document.getElementById('variantPrice');
+                
+                if (variantSelect && priceElement) {
+                    const selectedVariantId = variantSelect.value;
+                    const price = variantPrices[selectedVariantId];
+                    
+                    if (price !== undefined) {
+                        const formattedPrice = new Intl.NumberFormat('vi-VN').format(price);
+                        priceElement.textContent = `Giá: ${formattedPrice} VNĐ`;
+                        
+                        // Cập nhật cả phần hiển thị giá variant ở cuối form
+                        if (variantPriceElement) {
+                            variantPriceElement.textContent = `Giá: ${formattedPrice} VNĐ`;
+                        }
+                    }
+                }
+            }
+            
+            // Cập nhật giá lần đầu khi trang load
+            updatePrice();
         });
         $(function() {
             $('.btn-buy-now[type="button"]').on('click', function() {
