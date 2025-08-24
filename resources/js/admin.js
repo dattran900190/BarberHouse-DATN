@@ -133,15 +133,21 @@ function showToast(event) {
 
 function initOrderEchoListener() {
     if (typeof Echo !== 'undefined' && Echo !== null) {
-        const orderChannel = Echo.channel('orders');
-        orderChannel
-            .listen('NewOrderCreated', (event) => {
-                showOrderToast(event);
-                updatePendingOrderCount(1); // Tăng badge khi có đơn hàng mới
-            })
-            .error((error) => {
-                console.error('Echo order channel error:', error);
-            });
+        // Lấy thông tin user từ meta tag
+        const userRole = document.querySelector('meta[name="user-role"]')?.getAttribute('content');
+        
+        // Chỉ admin chính mới nhận thông báo đặt hàng, admin chi nhánh không nhận
+        if (userRole === 'admin') {
+            const orderChannel = Echo.channel('orders');
+            orderChannel
+                .listen('NewOrderCreated', (event) => {
+                    showOrderToast(event);
+                    updatePendingOrderCount(1); // Tăng badge khi có đơn hàng mới
+                })
+                .error((error) => {
+                    console.error('Echo order channel error:', error);
+                });
+        }
     } else {
         setTimeout(initOrderEchoListener, 200);
     }
