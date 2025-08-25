@@ -61,7 +61,7 @@
     </div>
 
 
-    @include('layouts.blocksAdmin.includes.link-foot')
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -77,6 +77,9 @@
     <!-- Flatpickr -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+
+    @include('layouts.blocksAdmin.includes.link-foot')
+    
     @yield('js')
 
 </body>
