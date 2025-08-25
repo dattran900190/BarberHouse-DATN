@@ -72,10 +72,12 @@
                         <i class="icon-docs"></i> {{-- Biểu tượng phù hợp với hoàn tiền --}}
                         <p>Danh sách hoàn tiền</p>
 
+                        @if(auth()->check() && auth()->user()->role === 'admin')
                         <span class="badge badge-count-refunds bg-danger" id="sidebar-pending-refund-count"
                             style="{{ $pendingRefundCount > 0 ? '' : 'display: none;' }}">
                             {{ $pendingRefundCount }}
                         </span>
+                        @endif
                     </a>
                 </li>
 

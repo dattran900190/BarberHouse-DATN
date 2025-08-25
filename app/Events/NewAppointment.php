@@ -30,6 +30,7 @@ class NewAppointment implements ShouldBroadcast
         return [
             'message' => 'Có lịch hẹn mới từ ' . ($this->appointment->name ?? 'Khách hàng không xác định'),
             'appointment_id' => $this->appointment->id,
+            'branch_id' => $this->appointment->branch_id, // Thêm branch_id để admin chi nhánh có thể lọc
         ];
     }
 

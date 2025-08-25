@@ -16,6 +16,7 @@ use App\Observers\ReviewObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -53,7 +54,21 @@ class AppServiceProvider extends ServiceProvider
         }
 
         View::composer('admin.*', function ($view) {
-            $pendingCount = Appointment::where('status', 'pending')->count();
+            // Kiểm tra role của user hiện tại
+            if (Auth::check()) {
+                $user = Auth::user();
+                if ($user->role === 'admin_branch' && $user->branch_id) {
+                    // Admin chi nhánh chỉ thấy lịch hẹn của chi nhánh mình
+                    $pendingCount = Appointment::where('status', 'pending')
+                        ->where('branch_id', $user->branch_id)
+                        ->count();
+                } else {
+                    // Admin chính thấy tất cả lịch hẹn
+                    $pendingCount = Appointment::where('status', 'pending')->count();
+                }
+            } else {
+                $pendingCount = 0;
+            }
             $view->with('pendingCount', $pendingCount);
         });
 
