@@ -218,17 +218,16 @@
                                         @endif
                                     </div>
                                 </div>
+                            @empty
+                                <div class="text-center text-muted p-4">
+                                    <i class="fa fa-inbox fa-3x mb-3"></i>
+                                    <p>Không có yêu cầu hoàn tiền nào.</p>
+                                </div>
+                            @endforelse
                         </div>
-                    @empty
-                        <div class="text-center text-muted p-4">
-                            <i class="fa fa-inbox fa-3x mb-3"></i>
-                            <p>Không có yêu cầu hoàn tiền nào.</p>
-                        </div>
-                        @endforelse
                     </div>
                 </div>
             </div>
-        </div>
         </div>
         <div class="d-flex justify-content-center mt-4" style="color: #000;">
             {{ $refunds->withQueryString()->links() }}

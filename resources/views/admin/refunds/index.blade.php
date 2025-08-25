@@ -108,7 +108,7 @@
                                     <tr>
                                         <th>STT</th>
                                         <th>Người dùng</th>
-                                        <th>Mã đơn hàng</th>
+                                        <th>Mã giao dịch</th>
                                         <th>Số tiền hoàn</th>
                                         <th>Trạng thái</th>
                                         @if ($key === 'rejected')
