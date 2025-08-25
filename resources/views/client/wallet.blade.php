@@ -6,7 +6,7 @@
 
 @section('content')
     <main class="py-5">
-        <div class="container">
+        <div class="container" style="margin-top: 100px">
             <div class="card wallet-page mt-4 shadow-sm">
                 <div class="card-header border-0">
                     <h3 class="mb-0 fw-bold text-center">Yêu cầu hoàn tiền</h3>
@@ -157,6 +157,10 @@
     </script>
 
     <style>
+         #mainNav {
+            background-color: #000;
+        }
+        
         /* Ensure main content has proper spacing */
         main {
             min-height: calc(100vh - 100px);

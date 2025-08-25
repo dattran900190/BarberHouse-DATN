@@ -22,7 +22,7 @@ class BarberController extends Controller
             $query->where('rating_avg', '>=', (float) $request->rating);
         }
 
-        $barbers = $query->paginate(9);
+        $barbers = $query->paginate(8);
         $branches = Branch::all();
 
         return view('client.listBarber', compact('barbers', 'branches'));

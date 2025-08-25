@@ -234,7 +234,7 @@
                                                 </h6>
                                                 <p class="card-text">
                                                     <strong>Thời gian:</strong> {{ $holiday['start_date'] }} - {{ $holiday['end_date'] }}<br>
-                                                    <strong>Số ngày:</strong> {{ $holiday['days_count'] }} ngày<br>
+                                                    {{-- <strong>Số ngày:</strong> {{ $holiday['days_count'] }} ngày<br> --}}
                                                     @if ($holiday['note'])
                                                         <strong>Ghi chú:</strong> {{ $holiday['note'] }}
                                                     @endif

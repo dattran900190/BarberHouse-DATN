@@ -26,7 +26,7 @@
 @section('content')
     <main class="container">
         <div class="main-branchs">
-            <h2>Các chi nhánh của Barber House</h2>
+            <h2 class="mb-4 text-uppercase fw-bold">Các chi nhánh của Barber House</h2>
 
             <div class="branchs">
                 @foreach ($branches as $branch)
