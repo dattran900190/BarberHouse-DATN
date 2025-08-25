@@ -57,10 +57,12 @@
                         <i class="fas fa-shopping-cart"></i>
                         <p>Danh sách đơn hàng</p>
 
+                        @if(auth()->check() && auth()->user()->role === 'admin')
                         <span id="pending-order-count" class="badge badge-danger"
                               style="{{ $pendingOrderCount > 0 ? '' : 'display: none;' }}">
                             {{ $pendingOrderCount }}
                         </span>
+                        @endif
 
                     </a>
                 </li>
