@@ -607,6 +607,9 @@
             cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
             encrypted: true
         });
+        
+        // Chỉ admin chính mới nhận thông báo đặt hàng, admin chi nhánh không nhận
+        @if(Auth::user()->role === 'admin')
         const orderChannel = pusher.subscribe('orders');
         orderChannel.bind('App\\Events\\NewOrderCreated', function(data) {
             const tableBody = document.querySelector('#pending tbody');
@@ -698,6 +701,7 @@
                 }
             });
         });
+        @endif
     </script>
     <script>
         // Sử dụng event delegation để xử lý các button được thêm động

@@ -49,7 +49,7 @@
                 {{-- Thông tin sản phẩm --}}
                 <div class="detailPro-right" style="flex: 1; min-width: 300px;">
                     <h3>{{ $product->name }}</h3>
-                    <h5 class="text-danger fw-bold">Giá: {{ number_format($product->price) }} VNĐ</h5>
+                    <h5 class="text-danger fw-bold" id="productPrice">Giá: {{ number_format($product->variants->first()->price ?? $product->price) }} VNĐ</h5>
                     <p>{{ $product->description }}</p>
                     @php
                         $variants = $product->variants;
@@ -76,7 +76,10 @@
                                         </div>
                                         <div class="col-2">
                                             <input type="number" id="quantity" class="form-control form-control-sm"
-                                                value="1" min="1" />
+                                                value="1" min="1" 
+                                                title="Số lượng phải lớn hơn hoặc bằng 1"
+                                                oninvalid="this.setCustomValidity('Số lượng phải lớn hơn hoặc bằng 1')"
+                                                oninput="this.setCustomValidity('')" />
                                         </div>
                                         <div class="col-auto">
                                             <button type="button" class="btn btn-dark icon-button" title="Thêm vào giỏ hàng"
@@ -115,7 +118,10 @@
                                             </div>
                                             <div class="col-2">
                                                 <input type="number" name="quantity" id="quantity"
-                                                    class="form-control form-control-sm" value="1" min="1" />
+                                                    class="form-control form-control-sm" value="1" min="1" 
+                                                    title="Số lượng phải lớn hơn hoặc bằng 1"
+                                                    oninvalid="this.setCustomValidity('Số lượng phải lớn hơn hoặc bằng 1')"
+                                                    oninput="this.setCustomValidity('')" />
                                             </div>
                                             <div class="col-auto">
                                                 <button type="submit" class="btn btn-dark icon-button"
@@ -161,7 +167,10 @@
                                         </div>
                                         <div class="col-2">
                                             <input type="number" name="quantity" id="quantity"
-                                                class="form-control form-control-sm" value="1" min="1" />
+                                                class="form-control form-control-sm" value="1" min="1" 
+                                                title="Số lượng phải lớn hơn hoặc bằng 1"
+                                                oninvalid="this.setCustomValidity('Số lượng phải lớn hơn hoặc bằng 1')"
+                                                oninput="this.setCustomValidity('')" />
                                         </div>
                                         <div class="col-auto">
                                             <button type="submit" class="btn btn-dark icon-button"
@@ -183,7 +192,7 @@
 
                             {{-- Hiển thị giá sau khi chọn variant --}}
                             <div class="mt-2">
-                                <span id="variantPrice" class="fw-bold text-danger"></span>
+                                {{-- <span id="variantPrice" class="fw-bold text-danger"></span> --}}
                             </div>
                         @else
                             <span style="color: rgb(232, 184, 12); font-weight: bold;">Hết hàng</span>
@@ -220,6 +229,7 @@
                                 <p>{{ number_format($item->price) }} VNĐ</p>
                                 @php $itemVariant = $item->variants->first(); @endphp
                                 @if ($itemVariant)
+                                    <div class="stock-info" data-stock="{{ $itemVariant->stock }}" style="display: none;"></div>
                                     <div class="button-group">
                                         @auth
                                             @if (in_array(auth()->user()->role, ['admin', 'admin_branch']))
@@ -237,8 +247,9 @@
                                                         value="{{ $itemVariant->id }}">
                                                     <input type="hidden" name="quantity" value="1">
                                                     <button type="submit" class="btn-outline-cart"
-                                                        title="Thêm vào giỏ hàng">
-                                                        <i class="fas fa-cart-plus"></i>
+                                                        title="Thêm vào giỏ hàng" 
+                                                        @if($itemVariant->stock <= 0) disabled @endif>
+                                                        <i class="fas fa-{{ $itemVariant->stock <= 0 ? 'ban' : 'cart-plus' }}"></i>
                                                     </button>
                                                 </form>
                                                 <form action="{{ route('cart.buyNow') }}" method="POST"
@@ -247,7 +258,10 @@
                                                     <input type="hidden" name="product_variant_id"
                                                         value="{{ $itemVariant->id }}">
                                                     <input type="hidden" name="quantity" value="1">
-                                                    <button type="submit" class="btn-outline-buy">Mua ngay</button>
+                                                    <button type="submit" class="btn-outline-buy" 
+                                                        @if($itemVariant->stock <= 0) disabled @endif>
+                                                        {{ $itemVariant->stock <= 0 ? 'Hết hàng' : 'Mua ngay' }}
+                                                    </button>
                                                 </form>
                                             @endif
                                         @else
@@ -256,8 +270,9 @@
                                                 <input type="hidden" name="product_variant_id"
                                                     value="{{ $itemVariant->id }}">
                                                 <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng">
-                                                    <i class="fas fa-cart-plus"></i>
+                                                <button type="submit" class="btn-outline-cart" title="Thêm vào giỏ hàng"
+                                                    @if($itemVariant->stock <= 0) disabled @endif>
+                                                    <i class="fas fa-{{ $itemVariant->stock <= 0 ? 'ban' : 'cart-plus' }}"></i>
                                                 </button>
                                             </form>
                                             <form action="{{ route('cart.buyNow') }}" method="POST" class="buy-now-form">
@@ -266,7 +281,10 @@
                                                     value="{{ $itemVariant->id }}">
                                                 <input type="hidden" name="quantity" value="1">
                                                 <button type="button" class="btn-outline-buy"
-                                                    onclick="showLoginRequired()">Mua ngay</button>
+                                                    onclick="showLoginRequired()"
+                                                    @if($itemVariant->stock <= 0) disabled @endif>
+                                                    {{ $itemVariant->stock <= 0 ? 'Hết hàng' : 'Mua ngay' }}
+                                                </button>
                                             </form>
                                         @endauth
                                     </div>
@@ -648,6 +666,38 @@
                 flex-wrap: nowrap;
             }
         }
+
+        /* Style cho nút bị disabled */
+        .btn-outline-cart:disabled,
+        .btn-outline-buy:disabled,
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: #fff !important;
+        }
+
+        .btn-outline-cart:disabled:hover,
+        .btn-outline-buy:disabled:hover,
+        .btn:disabled:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: #fff !important;
+        }
+
+        /* Style cho nút hết hàng */
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+            color: #fff;
+        }
     </style>
     <script>
         const track = document.querySelector('.image-track');
@@ -675,20 +725,39 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Dữ liệu giá của các biến thể
+            const variantPrices = @json($product->variants->pluck('price', 'id'));
+            // Dữ liệu tồn kho của các biến thể
+            const variantStocks = @json($variantStocks);
+            
             // Khi chọn variant, cập nhật cho "Mua ngay"
             const variantSelect = document.getElementById('variant_id');
             const buyNowVariantId = document.getElementById('buy_now_variant_id');
             if (variantSelect && buyNowVariantId) {
                 variantSelect.addEventListener('change', function() {
                     buyNowVariantId.value = this.value;
+                    updatePrice();
                 });
             }
+            
             // Khi chọn số lượng, cập nhật cho "Mua ngay"
             const quantityInput = document.getElementById('quantity');
             const buyNowQuantity = document.getElementById('buy_now_quantity');
             if (quantityInput && buyNowQuantity) {
                 quantityInput.addEventListener('input', function() {
-                    buyNowQuantity.value = this.value;
+                    const quantity = parseInt(this.value) || 0;
+                    const variantSelect = document.getElementById('variant_id');
+                    const selectedVariantId = variantSelect ? variantSelect.value : null;
+                    const stock = selectedVariantId && variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[selectedVariantId]) : 0;
+                    
+                    // Chỉ cập nhật nếu số lượng hợp lệ
+                    if (quantity > 0 && quantity <= stock) {
+                        buyNowQuantity.value = quantity;
+                    } else if (quantity <= 0) {
+                        buyNowQuantity.value = 1;
+                    } else if (quantity > stock) {
+                        buyNowQuantity.value = stock;
+                    }
                 });
             }
 
@@ -706,6 +775,31 @@
                     }
                 });
             }
+            
+            // Hàm cập nhật giá theo biến thể được chọn
+            function updatePrice() {
+                const variantSelect = document.getElementById('variant_id');
+                const priceElement = document.getElementById('productPrice');
+                const variantPriceElement = document.getElementById('variantPrice');
+                
+                if (variantSelect && priceElement) {
+                    const selectedVariantId = variantSelect.value;
+                    const price = variantPrices[selectedVariantId];
+                    
+                    if (price !== undefined) {
+                        const formattedPrice = new Intl.NumberFormat('vi-VN').format(price);
+                        priceElement.textContent = `Giá: ${formattedPrice} VNĐ`;
+                        
+                        // Cập nhật cả phần hiển thị giá variant ở cuối form
+                        if (variantPriceElement) {
+                            variantPriceElement.textContent = `Giá: ${formattedPrice} VNĐ`;
+                        }
+                    }
+                }
+            }
+            
+            // Cập nhật giá lần đầu khi trang load
+            updatePrice();
         });
         $(function() {
             $('.btn-buy-now[type="button"]').on('click', function() {
@@ -777,6 +871,48 @@
             $('.add-to-cart-form').on('submit', function(e) {
                 e.preventDefault();
                 var form = $(this);
+                
+                // Kiểm tra tồn kho trước khi submit
+                const variantId = form.find('input[name="product_variant_id"]').val();
+                const quantity = parseInt(form.find('input[name="quantity"]').val()) || 1;
+                
+                // Lấy thông tin tồn kho từ data attribute hoặc từ server
+                const stockElement = form.closest('.product').find('.stock-info');
+                let stock = 0;
+                
+                if (stockElement.length > 0) {
+                    stock = parseInt(stockElement.data('stock')) || 0;
+                } else {
+                    // Nếu không có data stock, lấy từ variantStocks global
+                    if (typeof variantStocks !== 'undefined' && variantStocks[variantId] !== undefined) {
+                        stock = parseInt(variantStocks[variantId]) || 0;
+                    }
+                }
+                
+                if (stock <= 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Hết hàng',
+                        text: 'Sản phẩm này hiện đã hết hàng.',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+                    });
+                    return false;
+                }
+                
+                if (quantity > stock) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Vượt quá tồn kho',
+                        text: `Chỉ còn ${stock} sản phẩm trong kho.`,
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+                    });
+                    return false;
+                }
+                
                 $.ajax({
                     url: form.attr('action'),
                     method: 'POST',
@@ -867,9 +1003,36 @@
                     selectedVariantId]) : 0;
                 const quantity = parseInt(this.value) || 0;
 
-                if (quantity > stock) {
+                // Kiểm tra số lượng <= 0
+                if (quantity <= 0) {
+                    this.value = 1; // Đặt lại về 1 nếu nhập 0 hoặc số âm
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Số lượng không hợp lệ',
+                        text: 'Số lượng phải lớn hơn 0.',
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else if (quantity > stock) {
                     this.value = stock;
+                    // Hiển thị thông báo khi vượt quá tồn kho
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Vượt quá tồn kho',
+                        text: `Chỉ còn ${stock} sản phẩm trong kho.`,
+                        customClass: {
+                            popup: 'custom-swal-popup'
+                        },
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 }
+                
+                // Cập nhật trạng thái nút khi thay đổi số lượng
+                updateButtonStates();
             });
 
             // Validate tồn kho khi ấn nút Mua ngay
@@ -884,6 +1047,33 @@
                         selectedVariantId]) : 0;
                     const quantity = quantityInput ? parseInt(quantityInput.value) : parseInt(buyNowForm
                         .querySelector('#buy_now_quantity').value);
+                    
+                    if (stock <= 0) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Hết hàng',
+                            text: 'Sản phẩm này hiện đã hết hàng.',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                        });
+                        return false;
+                    }
+                    
+                    if (quantity <= 0) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Số lượng không hợp lệ',
+                            text: 'Vui lòng nhập số lượng lớn hơn 0.',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                        });
+                        return false;
+                    }
+                    
                     if (quantity > stock) {
                         e.preventDefault();
                         Swal.fire({
@@ -898,6 +1088,130 @@
                     }
                 });
             }
+
+            // Validate tồn kho khi ấn nút Thêm vào giỏ hàng
+            const addToCartForm = document.getElementById('addToCartForm');
+            if (addToCartForm) {
+                addToCartForm.addEventListener('submit', function(e) {
+                    const variantSelect = document.getElementById('variant_id');
+                    const quantityInput = document.getElementById('quantity');
+                    const selectedVariantId = variantSelect.value;
+                    const stock = variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[selectedVariantId]) : 0;
+                    const quantity = parseInt(quantityInput.value) || 0;
+                    
+                    if (stock <= 0) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Hết hàng',
+                            text: 'Sản phẩm này hiện đã hết hàng.',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                        });
+                        return false;
+                    }
+                    
+                    if (quantity <= 0) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Số lượng không hợp lệ',
+                            text: 'Vui lòng nhập số lượng lớn hơn 0.',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                        });
+                        return false;
+                    }
+                    
+                    if (quantity > stock) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Vượt quá tồn kho',
+                            text: `Chỉ còn ${stock} sản phẩm trong kho.`,
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            },
+                        });
+                        return false;
+                    }
+                });
+            }
+
+            // Cập nhật trạng thái nút khi hết hàng
+            function updateButtonStates() {
+                const variantSelect = document.getElementById('variant_id');
+                const selectedVariantId = variantSelect ? variantSelect.value : null;
+                const stock = selectedVariantId && variantStocks[selectedVariantId] !== undefined ? parseInt(variantStocks[selectedVariantId]) : 0;
+                
+                // Cập nhật nút Thêm vào giỏ hàng
+                const addToCartBtn = document.querySelector('#addToCartForm button[type="submit"]');
+                if (addToCartBtn) {
+                    if (stock <= 0) {
+                        addToCartBtn.disabled = true;
+                        addToCartBtn.innerHTML = '<i class="fas fa-ban"></i>';
+                        addToCartBtn.title = 'Hết hàng';
+                        addToCartBtn.classList.remove('btn-dark');
+                        addToCartBtn.classList.add('btn-secondary');
+                    } else {
+                        addToCartBtn.disabled = false;
+                        addToCartBtn.innerHTML = '<i class="fas fa-cart-plus"></i>';
+                        addToCartBtn.title = 'Thêm vào giỏ hàng';
+                        addToCartBtn.classList.remove('btn-secondary');
+                        addToCartBtn.classList.add('btn-dark');
+                    }
+                }
+                
+                // Cập nhật nút Mua ngay
+                const buyNowBtn = document.querySelector('#buyNowForm button[type="submit"]');
+                if (buyNowBtn) {
+                    if (stock <= 0) {
+                        buyNowBtn.disabled = true;
+                        buyNowBtn.innerHTML = '<span>Dung tích hiện tại đã hết vui lòng chọn biến thể khác</span>';
+                        buyNowBtn.classList.remove('btn-dark');
+                        buyNowBtn.classList.add('btn-secondary');
+                    } else {
+                        buyNowBtn.disabled = false;
+                        buyNowBtn.innerHTML = '<span>Mua ngay</span>';
+                        buyNowBtn.classList.remove('btn-secondary');
+                        buyNowBtn.classList.add('btn-dark');
+                    }
+                }
+            }
+
+            // Gọi hàm cập nhật trạng thái nút khi thay đổi variant
+            $('#variant_id').on('change', function() {
+                updateStockDisplay();
+                updateButtonStates();
+            });
+
+            // Gọi hàm cập nhật trạng thái nút lần đầu
+            updateButtonStates();
+            
+            // Cập nhật trạng thái nút cho sản phẩm liên quan
+            $('.product').each(function() {
+                const stockInfo = $(this).find('.stock-info');
+                if (stockInfo.length > 0) {
+                    const stock = parseInt(stockInfo.data('stock')) || 0;
+                    const addToCartBtn = $(this).find('.add-to-cart-form button[type="submit"]');
+                    const buyNowBtn = $(this).find('.buy-now-form button[type="submit"], .buy-now-form button[type="button"]');
+                    
+                    if (stock <= 0) {
+                        if (addToCartBtn.length > 0) {
+                            addToCartBtn.prop('disabled', true);
+                            addToCartBtn.find('i').removeClass('fa-cart-plus').addClass('fa-ban');
+                            addToCartBtn.attr('title', 'Hết hàng');
+                        }
+                        
+                        if (buyNowBtn.length > 0) {
+                            buyNowBtn.prop('disabled', true);
+                            buyNowBtn.text('Hết hàng');
+                        }
+                    }
+                }
+            });
         });
     </script>
 
