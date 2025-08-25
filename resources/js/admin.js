@@ -1,11 +1,11 @@
 function initEchoListener() {
     if (typeof Echo !== "undefined" && Echo !== null) {
         // console.log('Echo is defined:', Echo);
-        
+
         // Lấy thông tin user từ meta tag hoặc biến global
         const userRole = document.querySelector('meta[name="user-role"]')?.getAttribute('content');
         const userBranchId = document.querySelector('meta[name="user-branch-id"]')?.getAttribute('content');
-        
+
         // Admin chính subscribe vào channel chung
         if (userRole === 'admin') {
             const channel = Echo.channel("appointments");
@@ -38,9 +38,10 @@ function initEchoListener() {
                     console.error("Echo channel error:", error);
                 });
         }
-        
+
         // Admin chi nhánh subscribe vào channel riêng của chi nhánh
         if (userRole === 'admin_branch' && userBranchId) {
+            // Subscribe vào channel riêng của chi nhánh
             const branchChannel = Echo.channel(`branch.${userBranchId}`);
             branchChannel
                 .subscribed(() => {
@@ -56,6 +57,61 @@ function initEchoListener() {
                 .error((error) => {
                     console.error("Echo branch channel error:", error);
                 });
+
+            // Subscribe vào channel chung để nhận event NewAppointment
+            const generalChannel = Echo.channel("appointments");
+            generalChannel
+                .subscribed(() => {
+                    console.log('Admin branch subscribed to appointments channel');
+                })
+                .listen("NewAppointment", (event) => {
+                    // Lắng nghe event NewAppointment từ Laravel Broadcasting
+                    // Chỉ hiển thị thông báo nếu lịch hẹn thuộc chi nhánh của admin
+                    if (event.branch_id == userBranchId) {
+                        showToast(event);
+                        updatePendingCount(1); // Tăng badge khi có lịch mới
+                    }
+                })
+                .listen(".NewAppointment", (event) => {
+                    // Lắng nghe event NewAppointment với namespace
+                    // Chỉ hiển thị thông báo nếu lịch hẹn thuộc chi nhánh của admin
+                    if (event.branch_id == userBranchId) {
+                        showToast(event);
+                        updatePendingCount(1); // Tăng badge khi có lịch mới
+                    }
+                })
+                .listen("App\\Events\\NewAppointment", (event) => {
+                    // Lắng nghe event NewAppointment với full namespace
+                    // Chỉ hiển thị thông báo nếu lịch hẹn thuộc chi nhánh của admin
+                    if (event.branch_id == userBranchId) {
+                        showToast(event);
+                        updatePendingCount(1); // Tăng badge khi có lịch mới
+                    }
+                })
+                .listen("AppointmentConfirmed", (event) => {
+                    // Lắng nghe event AppointmentConfirmed
+                    // Chỉ giảm badge nếu lịch hẹn thuộc chi nhánh của admin
+                    if (event.branch_id == userBranchId) {
+                        updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
+                    }
+                })
+                .listen(".AppointmentConfirmed", (event) => {
+                    // Lắng nghe event AppointmentConfirmed với namespace
+                    // Chỉ giảm badge nếu lịch hẹn thuộc chi nhánh của admin
+                    if (event.branch_id == userBranchId) {
+                        updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
+                    }
+                })
+                .listen("App\\Events\\AppointmentConfirmed", (event) => {
+                    // Lắng nghe event AppointmentConfirmed với full namespace
+                    // Chỉ giảm badge nếu lịch hẹn thuộc chi nhánh của admin
+                    if (event.branch_id == userBranchId) {
+                        updatePendingCount(-1); // Giảm badge khi lịch được xác nhận
+                    }
+                })
+                .error((error) => {
+                    console.error("Echo general channel error:", error);
+                });
         }
     } else {
         console.error("Echo is not defined or null, retrying...");
@@ -64,32 +120,26 @@ function initEchoListener() {
 }
 
 function updatePendingCount(change) {
-    // Cập nhật badge trên dashboard
-    const dashboardBadge = document.getElementById("pending-appointment-count");
-    if (dashboardBadge) {
-        let currentCount = parseInt(dashboardBadge.textContent) || 0;
+    // Cập nhật badge trên dashboard và sidebar (cùng ID)
+    const pendingBadge = document.getElementById("pending-appointment-count");
+    if (pendingBadge) {
+        let currentCount = parseInt(pendingBadge.textContent) || 0;
         currentCount = Math.max(0, currentCount + change);
-        dashboardBadge.textContent = currentCount;
-        dashboardBadge.style.display = currentCount > 0 ? "inline" : "none";
-        // console.log('Updated dashboard badge to:', currentCount);
+        pendingBadge.textContent = currentCount;
+        pendingBadge.style.display = currentCount > 0 ? "inline" : "none";
+        console.log('Updated pending appointment badge to:', currentCount);
     } else {
-        console.error("Dashboard badge element not found");
+        console.error("Pending appointment badge element not found");
     }
 
-    // Cập nhật badge trong sidebar menu
-    const sidebarBadges = document.getElementsByClassName(
-        "pending-appointment-count"
-    );
-    if (sidebarBadges.length === 0) {
-        console.error(
-            'Sidebar badge element not found. Check HTML for class "pending-appointment-count"'
-        );
-    } else {
+    // Cập nhật tất cả các badge có class "pending-appointment-count" (nếu có)
+    const sidebarBadges = document.getElementsByClassName("pending-appointment-count");
+    if (sidebarBadges.length > 0) {
         Array.from(sidebarBadges).forEach((badge) => {
             let currentCount = parseInt(badge.textContent) || 0;
             currentCount = Math.max(0, currentCount + change);
             badge.textContent = currentCount;
-            badge.classList.toggle("hidden", currentCount === 0);
+            badge.style.display = currentCount > 0 ? "inline" : "none";
             console.log("Updated sidebar badge to:", currentCount);
         });
     }
@@ -135,7 +185,7 @@ function initOrderEchoListener() {
     if (typeof Echo !== 'undefined' && Echo !== null) {
         // Lấy thông tin user từ meta tag
         const userRole = document.querySelector('meta[name="user-role"]')?.getAttribute('content');
-        
+
         // Chỉ admin chính mới nhận thông báo đặt hàng, admin chi nhánh không nhận
         if (userRole === 'admin') {
             const orderChannel = Echo.channel('orders');
@@ -191,11 +241,17 @@ function showOrderToast(event) {
 
 function initRefundListener() {
     if (typeof Echo !== "undefined" && Echo) {
-        Echo.channel("admin.refunds").listen(".refund.created", (data) => {
-            console.log("Yêu cầu hoàn tiền mới:", data);
-            showRefundToast(data);
-            updateRefundBadge();
-        });
+        // Lấy thông tin user từ meta tag
+        const userRole = document.querySelector('meta[name="user-role"]')?.getAttribute('content');
+
+        // Chỉ admin chính mới nhận thông báo refund, admin chi nhánh không nhận
+        if (userRole === 'admin') {
+            Echo.channel("admin.refunds").listen(".refund.created", (data) => {
+                console.log("Yêu cầu hoàn tiền mới:", data);
+                showRefundToast(data);
+                updateRefundBadge();
+            });
+        }
     } else {
         console.error("Echo chưa được khởi tạo (refund)!");
     }

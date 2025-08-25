@@ -30,6 +30,7 @@ class AppointmentConfirmed implements ShouldBroadcast
         return [
             'message' => 'Lịch hẹn #' . $this->appointment->id . ' đã được xác nhận',
             'appointment_id' => $this->appointment->id,
+            'branch_id' => $this->appointment->branch_id, // Thêm branch_id để admin chi nhánh có thể lọc
         ];
     }
 

@@ -139,6 +139,7 @@
 
     function createAppointmentRow(data) {
         const row = document.createElement('tr');
+        row.setAttribute('data-appointment-id', data.id); // Thêm attribute để dễ dàng tìm kiếm
 
         // Xác định payment method text
         const paymentMethodText = data.payment_method === 'vnpay' ? 'Thanh toán VNPAY' : 'Thanh toán tại tiệm';
@@ -235,12 +236,7 @@
                 cancelBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     const appointmentId = this.getAttribute('data-id');
-                    // Có thể thêm logic hủy lịch hẹn ở đây
-                    Swal.fire({
-                        title: 'Thông báo',
-                        text: 'Chức năng hủy lịch hẹn sẽ được thêm sau',
-                        icon: 'info'
-                    });
+                    cancelAppointment(appointmentId);
                 });
             }
 
@@ -357,6 +353,23 @@
                     .then(data => {
                         Swal.close();
                         if (data.success) {
+                            // Cập nhật badge realtime
+                            const sidebarBadge = document.getElementById('pending-appointment-count');
+                            if (sidebarBadge) {
+                                let currentCount = parseInt(sidebarBadge.textContent) || 0;
+                                currentCount = Math.max(0, currentCount - 1);
+                                sidebarBadge.textContent = currentCount;
+                                sidebarBadge.style.display = currentCount > 0 ? 'inline' : 'none';
+                                console.log('Updated pending count after confirmation:', currentCount);
+                            }
+
+                            // Xóa row khỏi bảng pending
+                            const row = document.querySelector(`tr[data-appointment-id="${appointmentId}"]`);
+                            if (row) {
+                                row.remove();
+                                updateRowNumbers('#pending tbody');
+                            }
+
                             Swal.fire({
                                 title: 'Thành công!',
                                 text: data.message,
@@ -364,9 +377,6 @@
                                 customClass: {
                                     popup: 'custom-swal-popup'
                                 }
-                            }).then(() => {
-                                // Reload trang để cập nhật dữ liệu
-                                location.reload();
                             });
                         } else {
                             Swal.fire({
@@ -395,11 +405,119 @@
         });
     }
 
+    // Hàm hủy lịch hẹn
+    function cancelAppointment(appointmentId) {
+        Swal.fire({
+            title: 'Hủy lịch hẹn?',
+            text: 'Bạn có chắc chắn muốn hủy lịch hẹn này?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Hủy lịch',
+            cancelButtonText: 'Đóng',
+            input: 'text',
+            inputPlaceholder: 'Nhập lý do hủy (tùy chọn)...',
+            customClass: {
+                popup: 'custom-swal-popup'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Hiển thị loading
+                Swal.fire({
+                    title: 'Đang xử lý...',
+                    text: 'Vui lòng chờ trong giây lát.',
+                    icon: 'info',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    customClass: {
+                        popup: 'custom-swal-popup'
+                    },
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Gửi request hủy lịch
+                fetch(`/admin/appointments/${appointmentId}/cancel`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            cancellation_reason: result.value || 'Không có lý do cụ thể'
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        Swal.close();
+                        if (data.success) {
+                            // Cập nhật badge realtime
+                            const sidebarBadge = document.getElementById('pending-appointment-count');
+                            if (sidebarBadge) {
+                                let currentCount = parseInt(sidebarBadge.textContent) || 0;
+                                currentCount = Math.max(0, currentCount - 1);
+                                sidebarBadge.textContent = currentCount;
+                                sidebarBadge.style.display = currentCount > 0 ? 'inline' : 'none';
+                                console.log('Updated pending count after cancellation:', currentCount);
+                            }
+
+                            // Xóa row khỏi bảng pending
+                            const row = document.querySelector(`tr[data-appointment-id="${appointmentId}"]`);
+                            if (row) {
+                                row.remove();
+                                updateRowNumbers('#pending tbody');
+                            }
+
+                            Swal.fire({
+                                title: 'Thành công!',
+                                text: data.message,
+                                icon: 'success',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Thất bại!',
+                                text: data.message || 'Có lỗi xảy ra khi hủy lịch hẹn.',
+                                icon: 'error',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                }
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        Swal.close();
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Không thể hủy lịch hẹn. Vui lòng thử lại.',
+                            icon: 'error',
+                            customClass: {
+                                popup: 'custom-swal-popup'
+                            }
+                        });
+                        console.error(err);
+                    });
+            }
+        });
+    }
+
     // Hàm cập nhật badge pending count
     function updatePendingBadge() {
         const pendingTableBody = document.querySelector('#pending tbody');
         if (pendingTableBody) {
             const rowCount = pendingTableBody.querySelectorAll('tr').length;
+
+            // Cập nhật badge trong sidebar
+            const sidebarBadge = document.getElementById('pending-appointment-count');
+            if (sidebarBadge) {
+                sidebarBadge.textContent = rowCount;
+                sidebarBadge.style.display = rowCount > 0 ? 'inline' : 'none';
+                console.log('Updated sidebar badge to:', rowCount);
+            }
 
             // Cập nhật badge trong tab
             const pendingTab = document.querySelector('#pending-tab');
