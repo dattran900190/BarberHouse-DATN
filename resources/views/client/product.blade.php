@@ -22,7 +22,7 @@
     <main class="container">
         <section style="margin-top: 5%;" id="product">
             <div class="product-wrapper w-100">
-                <h2 class="mb-4">Sản phẩm</h2>
+                <h2 class="mb-4 text-uppercase">Sản phẩm</h2>
 
                 {{-- FORM LỌC --}}
                 <form method="GET" action="{{ route('client.product') }}" class="row g-3 mb-5">

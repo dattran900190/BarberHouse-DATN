@@ -7,7 +7,7 @@
 @section('content')
     <main class="container">
         <div class="main-posts">
-            <h2>Bài viết</h2>
+            <h2 class="mb-4 text-uppercase">Bài viết</h2>
             <div class="posts-content">
                 <div class="post-left">
                     {{-- Bài viết nổi bật đầu tiên --}}
@@ -90,7 +90,6 @@
         }
 
         .main-posts h2 {
-            font-size: 2.5rem;
             font-weight: bold;
             margin-bottom: 2rem;
             text-align: center;

@@ -8,14 +8,14 @@
 @section('content')
     @if (session('success'))
         <div class="alert border-start border-success border-4 alert-dismissible fade show shadow-sm" role="alert">
-            <span class="fw-bold text-dark">{{ session('success') }}</span>
+            <span class="text-dark">{{ session('success') }}</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     @endif
 
     @if (session('error'))
         <div class="alert border-start border-danger border-4 alert-dismissible fade show shadow-sm" role="alert">
-            <span class="fw-bold text-dark">{{ session('error') }}</span>
+            <span class="text-dark">{{ session('error') }}</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     @endif

@@ -128,9 +128,10 @@
                                                     href="{{ route('branches.show', ['branch' => $branch->id, 'page' => request('page', 1)]) }}">
                                                     <i class="fas fa-eye me-2"></i> Xem
                                                 </a>
-                                                <hr class="dropdown-divider">
+                                                
 
                                                 @if ($branch->trashed())
+                                                <hr class="dropdown-divider">
                                                     <button type="button" class="dropdown-item text-success restore-btn"
                                                         data-id="{{ $branch->id }}">
                                                         <i class="fas fa-undo me-2"></i> Khôi phục
