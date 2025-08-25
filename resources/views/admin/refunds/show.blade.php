@@ -57,8 +57,18 @@
                 </div>
                 <div class="col-md-6">
                     <i class="fa fa-receipt me-2 text-primary"></i>
-                    <strong>Mã đơn hàng:</strong>
-                    {{ $refund->order->order_code ?? ($refund->appointment->appointment_code ?? 'Không có') }}
+                    <strong>Mã giao dịch:</strong>
+                    @if ($refund->order_id)
+                        <a href="{{ route('admin.orders.show', $refund->order_id) }}">
+                            {{ $refund->order->order_code ?? 'N/A' }}
+                        </a>
+                    @elseif ($refund->appointment_id)
+                        <a href="{{ route('appointments.show', $refund->appointment_id) }}">
+                            {{ $refund->appointment->appointment_code ?? 'N/A' }}
+                        </a>
+                    @else
+                        Không có
+                    @endif
                 </div>
                 <div class="col-md-6">
                     <i class="fa fa-dollar-sign me-2 text-success"></i>

@@ -219,6 +219,15 @@
                                         Hủy đơn hàng
                                     </button>
                                 @endif
+                                @if ((in_array($order->status, ['pending', 'completed']))
+                                        && $order->payment_status == 'paid'
+                                        && !$order->refundRequests()->whereIn('refund_status', ['pending', 'processing'])->exists()
+                                        && !$order->refundRequests()->where('refund_status', 'rejected')->exists())
+                                    <a href="{{ route('client.wallet', ['refundable_type' => 'order', 'refundable_id' => $order->id]) }}"
+                                        class="btn-outline-show refund-btn" style="padding: 6px 10px;" data-order-id="{{ $order->id }}">
+                                        Yêu cầu hoàn tiền
+                                    </a>
+                                @endif
                                 <a href="{{ route('client.orderHistory') }}" class="btn-outline-show" style="padding: 6px 10px;">Quay lại</a>
                             </div>
                         </div>

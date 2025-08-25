@@ -6,7 +6,9 @@ use App\Http\Requests\ProcessRefundRequest;
 use App\Models\RefundRequest;
 use App\Models\Order;
 use App\Models\Appointment;
+use App\Models\CancelledAppointment;
 use App\Mail\RefundStatusMail;
+use App\Mail\AdminCancelBookingMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -125,7 +127,33 @@ class RefundRequestController extends Controller
                         return back()->withErrors(['error' => 'Không thể hoàn tiền. Trạng thái thanh toán hiện tại: ' . $appointment->payment_status]);
                     }
 
-                    $appointment->update(['status' => 'cancelled', 'payment_status' => 'refunded']);
+                    // Di chuyển lịch hẹn sang bảng cancelled_appointments
+                    $appointmentData = $appointment->toArray();
+                    $appointmentData['appointment_time'] = $appointment->appointment_time
+                        ? \Carbon\Carbon::parse($appointment->appointment_time)->format('Y-m-d H:i:s')
+                        : null;
+
+                    $cancelledAppointment = CancelledAppointment::create(array_merge($appointmentData, [
+                        'status' => 'cancelled',
+                        'payment_status' => 'refunded',
+                        'cancellation_type' => 'refund_cancel',
+                        'status_before_cancellation' => $appointment->status,
+                        'additional_services' => $appointment->additional_services,
+                        'payment_method' => $appointment->payment_method,
+                        'note' => $appointment->note,
+                        'cancellation_reason' => $request->input('cancellation_reason', 'Hoàn tiền và hủy lịch'),
+                    ]));
+
+                    // Xóa các bản ghi liên quan (GIỮ lại yêu cầu hoàn tiền để lưu lịch sử)
+                    DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
+
+                    // KHÔNG xóa lịch hẹn gốc để tránh mất lịch sử yêu cầu hoàn tiền (FK)
+                    // Cập nhật trạng thái lịch hẹn về cancelled + refunded và giải phóng slot thời gian
+                    $appointment->update([
+                        'status' => 'cancelled',
+                        'payment_status' => 'refunded',
+                        'appointment_time' => null,
+                    ]);
                 }
 
                 // Xử lý upload hình ảnh minh chứng

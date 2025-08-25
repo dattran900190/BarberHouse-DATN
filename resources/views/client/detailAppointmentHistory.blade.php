@@ -147,6 +147,18 @@
                                                 Đánh giá
                                             </button>
                                         @endif
+                                @if (
+                                    $appointment->status != 'cancelled' &&
+                                    $appointment->status != 'completed' &&
+                                    $appointment->payment_status == 'paid' &&
+                                    $appointment->status != 'progress' &&
+                                    !$appointment->refundRequests()->whereIn('refund_status', ['pending', 'processing'])->exists() &&
+                                    !$appointment->refundRequests()->where('refund_status', 'rejected')->exists()
+                                )
+                                    <a href="{{ route('client.wallet', ['refundable_type' => 'appointment', 'refundable_id' => $appointment->id]) }}"
+                                        class="btn-outline-show refund-btn" style="padding: 6px 10px;"
+                                        data-appointment-id="{{ $appointment->id }}">Yêu cầu hoàn tiền</a>
+                                @endif
                                 <a href="{{ route('client.appointmentHistory') }}"
                                     class="btn-outline-show" style="padding: 6px 10px;">Quay
                                     lại</a>
