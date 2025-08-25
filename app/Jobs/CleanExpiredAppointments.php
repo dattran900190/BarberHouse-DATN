@@ -28,9 +28,9 @@ class CleanExpiredAppointments implements ShouldQueue
      */
     public function handle(): void
     {
-        // Xóa các lịch hẹn unconfirmed cũ hơn 30 phút
+        // Xóa các lịch hẹn unconfirmed cũ hơn 10 phút
         $expiredAppointments = Appointment::where('status', 'unconfirmed')
-            ->where('created_at', '<', Carbon::now()->subMinutes(30))
+            ->where('created_at', '<', Carbon::now()->subMinutes(10))
             ->get();
 
         foreach ($expiredAppointments as $appointment) {
