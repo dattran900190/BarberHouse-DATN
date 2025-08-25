@@ -297,26 +297,48 @@ class AppointmentController extends Controller
             $appointmentData = $appointment->toArray();
             $appointmentEmail = $appointment->email;
             $appointmentCode = $appointment->appointment_code;
+            $appointmentData['appointment_time'] = $appointment->appointment_time
+                ? Carbon::parse($appointment->appointment_time)->format('Y-m-d H:i:s')
+                : null;
 
-            // Tạo bản ghi trong cancelled_appointments
-            $appointmentData = array_merge($appointmentData, [
+            // Hoàn lại voucher nếu có
+
+            $oldPromotionId = $appointment->promotion_id;
+            if ($oldPromotionId) {
+                $oldPromotion = Promotion::find($oldPromotionId);
+                if ($oldPromotion) {
+                    // Chỉ hoàn lại quantity cho voucher công khai (required_points là null)
+                    if (is_null($oldPromotion->required_points)) {
+                        $oldPromotion->increment('quantity'); // Hoàn lại số lượng voucher
+                    }
+                    // Nếu voucher từ bảng UserRedeemedVoucher thì mở lại (cho voucher cá nhân)
+                    $oldRedeemed = UserRedeemedVoucher::where('user_id', $appointment->user_id)
+                        ->where('promotion_id', $oldPromotionId)
+                        ->where('is_used', true)
+                        ->first();
+                    if ($oldRedeemed) {
+                        $oldRedeemed->update(['is_used' => false]);
+                    }
+                }
+            }
+            // Tạo bản ghi CancelledAppointment
+            CancelledAppointment::create(array_merge($appointmentData, [
                 'status' => 'cancelled',
                 'payment_status' => $appointment->payment_status,
-                'cancellation_type' => 'canceled',
+                'cancellation_type' => 'admin_cancel',
                 'status_before_cancellation' => $appointment->status,
                 'additional_services' => $appointment->additional_services,
                 'payment_method' => $appointment->payment_method,
-                'note' => $appointment->note ?? null,
-                'cancellation_reason' => $request->input('cancellation_reason'),
-                'appointment_time' => $appointment->appointment_time ? $appointment->appointment_time->format('Y-m-d H:i:s') : null,
-            ]);
-            CancelledAppointment::create($appointmentData);
+                'note' => $appointment->note,
+                'cancellation_reason' => $request->input('cancellation_reason', 'Không có lý do cụ thể'),
+            ]));
 
-            // Xóa bản ghi liên quan
+            // Xóa các bản ghi liên quan
             DB::table('checkins')->where('appointment_id', $appointment->id)->delete();
             DB::table('refund_requests')->where('appointment_id', $appointment->id)->delete();
 
-            // Xóa bản ghi khỏi bảng appointments
+            // Gắn trạng thái để payload broadcast hiển thị đúng
+            $appointment->status = 'cancelled';
             $appointment->delete();
 
             // Gửi email
