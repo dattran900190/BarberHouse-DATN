@@ -832,12 +832,13 @@
                     success: function(response) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Đã thêm vào giỏ hàng!',
-                            showConfirmButton: false,
+                            title: 'Thành công!',
+                            text: 'Đã thêm vào giỏ hàng!',
+                            timer: 1500,
                             customClass: {
-                                popup: 'custom-swal-popup'
+                                popup: 'custom-swal-popup' // CSS
                             },
-                            timer: 1500
+                            showConfirmButton: false
                         });
                         if (response.cart_count !== undefined) {
                             $('#cartCount').text(response.cart_count);
@@ -923,12 +924,13 @@
                     success: function(response) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Đã thêm vào giỏ hàng!',
-                            showConfirmButton: false,
+                            title: 'Thành công!',
+                            text: 'Đã thêm vào giỏ hàng!',
+                            timer: 1500,
                             customClass: {
-                                popup: 'custom-swal-popup'
+                                popup: 'custom-swal-popup' // CSS
                             },
-                            timer: 1500
+                            showConfirmButton: false
                         });
                         if (response.cart_count !== undefined) {
                             $('#cartCount').text(response.cart_count);

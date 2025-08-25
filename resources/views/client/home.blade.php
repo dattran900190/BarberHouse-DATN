@@ -566,13 +566,13 @@
                     },
                     success: function(res) {
                         Swal.fire({
-                            icon: 'success',
+                           icon: 'success',
                             title: 'Thành công!',
                             text: 'Đã thêm vào giỏ hàng!',
-                            customClass: {
-                                popup: 'custom-swal-popup'
-                            },
                             timer: 1500,
+                            customClass: {
+                                popup: 'custom-swal-popup' // CSS
+                            },
                             showConfirmButton: false
                         });
                         if (res.cart_count !== undefined) {
