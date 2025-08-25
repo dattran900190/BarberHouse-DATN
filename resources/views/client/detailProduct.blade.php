@@ -1169,7 +1169,7 @@
                 if (buyNowBtn) {
                     if (stock <= 0) {
                         buyNowBtn.disabled = true;
-                        buyNowBtn.innerHTML = '<span>Hết hàng</span>';
+                        buyNowBtn.innerHTML = '<span>Dung tích hiện tại đã hết vui lòng chọn biến thể khác</span>';
                         buyNowBtn.classList.remove('btn-dark');
                         buyNowBtn.classList.add('btn-secondary');
                     } else {
