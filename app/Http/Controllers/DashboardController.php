@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\CancelledAppointment;
 
 class DashboardController extends Controller
 {
@@ -75,7 +76,84 @@ class DashboardController extends Controller
         // Tổng doanh thu hôm nay (sản phẩm + dịch vụ)
         $todayRevenue = $todayServiceRevenue + $todayProductRevenue;
 
+                // Thống kê hủy và no-show cho biểu đồ tròn
+        $selectedStatusMonth = $request->input('appointment_status_month');
 
+        $completedQuery = Appointment::where('status', 'completed');
+        $cancelledQuery = CancelledAppointment::where('cancellation_type', 'admin_cancel');
+        $noShowQuery = CancelledAppointment::where('cancellation_type', 'no-show');
+
+        // Lọc theo tháng nếu có (chỉ khi chọn tháng cụ thể)
+        if ($selectedStatusMonth && $selectedStatusMonth !== '' && $selectedStatusMonth !== null) {
+            $completedQuery->whereMonth('created_at', $selectedStatusMonth)->whereYear('created_at', date('Y'));
+            $cancelledQuery->whereMonth('created_at', $selectedStatusMonth)->whereYear('created_at', date('Y'));
+            $noShowQuery->whereMonth('created_at', $selectedStatusMonth)->whereYear('created_at', date('Y'));
+        }
+        // Nếu không chọn tháng hoặc chọn "Tất cả" thì lấy toàn bộ dữ liệu
+
+        $completedAppointments = $completedQuery->count();
+        $cancelledAppointments = $cancelledQuery->count();
+        $noShowAppointments = $noShowQuery->count();
+
+        // Dữ liệu cho biểu đồ tròn
+        $appointmentStatusData = [
+            'completed' => $completedAppointments,
+            'cancelled' => $cancelledAppointments,
+            'no_show' => $noShowAppointments
+        ];
+
+        $appointmentStatusLabels = [
+            'completed' => 'Hoàn thành',
+            'cancelled' => 'Đã hủy',
+            'no_show' => 'Không đến'
+        ];
+
+        $appointmentStatusColors = [
+            'completed' => '#28a745',
+            'cancelled' => '#dc3545',
+            'no_show' => '#ffc107'
+        ];
+
+        $totalAppointments = $completedAppointments + $cancelledAppointments + $noShowAppointments;
+
+        // Thống kê trạng thái đặt hàng cho biểu đồ tròn
+        $selectedOrderStatusMonth = $request->input('order_status_month');
+
+        $completedOrdersQuery = Order::where('status', 'completed');
+        $pendingOrdersQuery = Order::where('status', 'pending');
+        $cancelledOrdersQuery = Order::where('status', 'cancelled');
+
+        // Lọc theo tháng nếu có (chỉ khi chọn tháng cụ thể)
+        if ($selectedOrderStatusMonth && $selectedOrderStatusMonth !== '' && $selectedOrderStatusMonth !== null) {
+            $completedOrdersQuery->whereMonth('created_at', $selectedOrderStatusMonth)->whereYear('created_at', date('Y'));
+            $pendingOrdersQuery->whereMonth('created_at', $selectedOrderStatusMonth)->whereYear('created_at', date('Y'));
+            $cancelledOrdersQuery->whereMonth('created_at', $selectedOrderStatusMonth)->whereYear('created_at', date('Y'));
+        }
+
+        $completedOrders = $completedOrdersQuery->count();
+        $pendingOrders = $pendingOrdersQuery->count();
+        $cancelledOrders = $cancelledOrdersQuery->count();
+
+        // Dữ liệu cho biểu đồ tròn đặt hàng
+        $orderStatusData = [
+            'completed' => $completedOrders,
+            'pending' => $pendingOrders,
+            'cancelled' => $cancelledOrders
+        ];
+
+        $orderStatusLabels = [
+            'completed' => 'Hoàn thành',
+            'pending' => 'Chờ xử lý',
+            'cancelled' => 'Đã hủy'
+        ];
+
+        $orderStatusColors = [
+            'completed' => '#28a745',
+            'pending' => '#ffc107',
+            'cancelled' => '#dc3545'
+        ];
+
+        $totalOrders = $completedOrders + $pendingOrders + $cancelledOrders;
 
         // Lấy thống kê bổ sung cho doanh thu hôm nay
         $todayServiceCount = Appointment::whereDate('appointment_time', $today)
@@ -230,7 +308,7 @@ class DashboardController extends Controller
             ->with('product')
             ->groupBy('product_variants.id', 'product_variants.product_id', 'product_variants.price');
 
-        // Thêm search filter cho low selling products  
+        // Thêm search filter cho low selling products
         if ($search) {
             $lowSellingQuery->whereHas('product', function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")
@@ -340,6 +418,14 @@ class DashboardController extends Controller
                 'monthLabels' => $monthLabels,
                 'monthServiceRevenue' => $monthServiceRevenue,
                 'monthProductRevenue' => $monthProductRevenue,
+                'statusLabels' => array_values($appointmentStatusLabels),
+                'statusData' => array_values($appointmentStatusData),
+                'statusColors' => array_values($appointmentStatusColors),
+                'totalAppointments' => $totalAppointments,
+                'orderStatusLabels' => array_values($orderStatusLabels),
+                'orderStatusData' => array_values($orderStatusData),
+                'orderStatusColors' => array_values($orderStatusColors),
+                'totalOrders' => $totalOrders,
                 'barberLeaves' => $barberLeaves->map(function ($barber) {
                     return [
                         'name' => $barber->name,
@@ -396,8 +482,15 @@ class DashboardController extends Controller
             'branchesForRevenue',
             'selectedBranchRevenue',
             'selectedBranchName',
-            'branchTodayRevenue'
-
+            'branchTodayRevenue',
+            'appointmentStatusData',
+            'appointmentStatusLabels',
+            'appointmentStatusColors',
+            'totalAppointments',
+            'orderStatusData',
+            'orderStatusLabels',
+            'orderStatusColors',
+            'totalOrders'
         ));
     }
 

@@ -17,6 +17,26 @@
         .scroll-rows-5 ul {
             margin-bottom: 0;
         }
+
+        .status-indicator {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #total-appointments-display,
+        #total-orders-display {
+            color: #000;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            position: relative;
+        }
+
+        .card-body .row.text-center {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f8f9fa;
+        }
     </style>
     <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
         <div>
@@ -218,446 +238,443 @@
     </div>
 
 
-        <!-- Chart Section -->
-        <div class="row g-3 mb-4">
-            <!-- Biểu đồ theo tuần/khoảng ngày -->
-            <div class="col-lg-6">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-header border-bottom">
-                        <h5 class="card-title mb-2 fw-bold">Thống kê doanh thu theo khoảng ngày</h5>
-                        <div class="d-flex align-items-end gap-2 flex-wrap">
-                            <div>
-                                <label for="week_start" class="form-label small mb-1">Từ ngày:</label>
-                                <input type="date" id="week_start" class="form-control form-control-sm"
-                                    value="{{ $viewWeekStart ?? '' }}" max="{{ date('Y-m-d') }}">
-                            </div>
-                            <div>
-                                <label for="week_end" class="form-label small mb-1">Đến ngày:</label>
-                                <input type="date" id="week_end" class="form-control form-control-sm"
-                                    value="{{ $viewWeekEnd ?? '' }}" max="{{ date('Y-m-d') }}">
-                            </div>
-                            <div>
-                                <button type="button" id="resetWeekFilter" class="btn btn-sm btn-outline-secondary">
-                                    <i class="fa fa-refresh me-1"></i>Reset
-                                </button>
-                            </div>
+    <!-- Chart Section -->
+    <div class="row g-3 mb-4">
+        <!-- Biểu đồ theo tuần/khoảng ngày -->
+        <div class="col-lg-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-2 fw-bold">Thống kê doanh thu theo khoảng ngày</h5>
+                    <div class="d-flex align-items-end gap-2 flex-wrap">
+                        <div>
+                            <label for="week_start" class="form-label small mb-1">Từ ngày:</label>
+                            <input type="date" id="week_start" class="form-control form-control-sm"
+                                value="{{ $viewWeekStart ?? '' }}" max="{{ date('Y-m-d') }}">
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container" style="min-height: 300px;">
-                            <canvas id="weekChart"></canvas>
+                        <div>
+                            <label for="week_end" class="form-label small mb-1">Đến ngày:</label>
+                            <input type="date" id="week_end" class="form-control form-control-sm"
+                                value="{{ $viewWeekEnd ?? '' }}" max="{{ date('Y-m-d') }}">
+                        </div>
+                        <div>
+                            <button type="button" id="resetWeekFilter" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa fa-refresh me-1"></i>Reset
+                            </button>
                         </div>
                     </div>
                 </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 300px;">
+                        <canvas id="weekChart"></canvas>
+                    </div>
+                </div>
             </div>
+        </div>
 
+        <!-- Biểu đồ theo tháng -->
+        <div class="col-lg-6">
+            <div class="card card-round shadow-sm h-100 d-flex flex-column">
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-2 fw-bold">Thống kê doanh thu theo tháng</h5>
+                    <div class="d-flex align-items-end gap-2 flex-wrap">
+                        <div>
+                            <label for="selected_month" class="form-label small mb-1 text-muted">Chọn tháng:</label>
+                            <select id="selected_month" class="form-select form-select-sm">
+                                <option value="">Tất cả tháng {{ $year ?? date('Y') }}</option>
+                                @foreach ($availableMonths as $monthNum)
+                                    <option value="{{ $monthNum }}"
+                                        {{ isset($selectedMonth) && $selectedMonth == $monthNum ? 'selected' : '' }}>
+                                        Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <button type="button" id="resetMonthFilter" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-refresh me-1"></i>Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 300px;">
+                        <canvas id="monthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <!-- Biểu đồ theo tháng -->
-            <div class="col-lg-6">
-                <div class="card card-round shadow-sm h-100 d-flex flex-column">
-                    <div class="card-header border-bottom">
-                        <h5 class="card-title mb-2 fw-bold">Thống kê doanh thu theo tháng</h5>
-                        <div class="d-flex align-items-end gap-2 flex-wrap">
-                            <div>
-                                <label for="selected_month" class="form-label small mb-1 text-muted">Chọn tháng:</label>
-                                <select id="selected_month" class="form-select form-select-sm">
-                                    <option value="">Tất cả tháng {{ $year ?? date('Y') }}</option>
-                                    @foreach ($availableMonths as $monthNum)
-                                        <option value="{{ $monthNum }}"
-                                            {{ isset($selectedMonth) && $selectedMonth == $monthNum ? 'selected' : '' }}>
-                                            Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
-                                        </option>
-                                    @endforeach
-                                </select>
+    <!-- Content Section -->
+    <div class="row g-3">
+        <!-- Cột trái -->
+        <div class="col-lg-6">
+            <div class="row g-3">
+                <!-- Dịch vụ phổ biến & ít dùng -->
+                <div class="col-12">
+                    <div class="card card-round h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0 fw-bold">Dịch vụ phổ biến & ít dùng</h5>
+                            <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-top-service-tab" data-bs-toggle="pill"
+                                        href="#pills-top-service" role="tab">
+                                        Phổ biến
+                                        <span class="badge bg-primary ms-1"
+                                            id="top-service-count">{{ $topServices->count() }}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-low-service-tab" data-bs-toggle="pill"
+                                        href="#pills-low-service" role="tab">
+                                        Ít dùng
+                                        <span class="badge bg-warning ms-1"
+                                            id="low-service-count">{{ $lowUsageServices->count() }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Bộ lọc dịch vụ -->
+                        <div class="card-body border-bottom">
+                            <div class="row g-3" id="service-filter-controls">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm" id="service-search"
+                                        placeholder="Tìm kiếm dịch vụ...">
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="service-sort-select" class="form-select form-select-sm">
+                                        <option value="usage_count">Theo lượt sử dụng</option>
+                                        <option value="name">Theo tên A-Z</option>
+                                        <option value="price">Theo giá</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="service-per-page" class="form-select form-select-sm">
+                                        <option value="5">5 dịch vụ</option>
+                                        <option value="10" selected>10 dịch vụ</option>
+                                        <option value="20">20 dịch vụ</option>
+                                        <option value="all">Tất cả</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm w-100"
+                                        onclick="resetServiceFilters()">
+                                        <i class="fas fa-undo"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div>
-                                <button type="button" id="resetMonthFilter" class="btn btn-sm btn-outline-secondary">
-                                    <i class="fas fa-refresh me-1"></i>Reset
-                                </button>
+                            <div class="text-center loading-spinner-service" style="display: none;">
+                                <div class="spinner-border spinner-border-sm text-primary mt-2" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <small class="text-muted d-block mt-1">Đang tải...</small>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <!-- Phổ biến -->
+                                <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
+                                    <div class="scroll-rows-5" id="top-services-content">
+                                        @include('partials.top-services', [
+                                            'topServices' => $topServices,
+                                        ])
+                                    </div>
+                                </div>
+                                <!-- Ít dùng -->
+                                <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
+                                    <div class="scroll-rows-5" id="low-services-content">
+                                        @include('partials.low-services', [
+                                            'lowUsageServices' => $lowUsageServices,
+                                        ])
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="chart-container" style="min-height: 300px;">
-                            <canvas id="monthChart"></canvas>
+                </div>
+
+                <!-- Thống kê ngày nghỉ của thợ -->
+                <div class="col-12">
+                    <div class="card card-round h-100">
+                        <div class="card-header d-flex flex-column">
+                            <h5 class="card-title mb-1 fw-bold">Ngày nghỉ của thợ (Top 5)</h5>
+                            <div class="d-flex align-items-end gap-2 flex-wrap mt-2">
+                                <div>
+                                    <label for="leave_month" class="form-label small mb-1 text-muted">Chọn
+                                        tháng:</label>
+                                    <select id="leave_month" class="form-select form-select-sm">
+                                        <option value="">Tháng hiện tại</option>
+                                        @foreach ($availableMonths as $monthNum)
+                                            <option value="{{ $monthNum }}"
+                                                {{ isset($selectedLeaveMonth) && $selectedLeaveMonth == $monthNum ? 'selected' : '' }}>
+                                                Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="leave_branch" class="form-label small mb-1 text-muted">Chi
+                                        nhánh:</label>
+                                    <select id="leave_branch" class="form-select form-select-sm">
+                                        <option value="">Tất cả chi nhánh</option>
+                                        @foreach ($branches as $branch)
+                                            <option value="{{ $branch->id }}"
+                                                {{ isset($selectedBranch) && $selectedBranch == $branch->id ? 'selected' : '' }}>
+                                                {{ $branch->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <button type="button" id="resetLeaveFilter"
+                                        class="btn btn-sm btn-outline-secondary">
+                                        <i class="fa fa-refresh me-1"></i>Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="barberLeaveTable" class="table table-hover table-sm align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Nhân viên</th>
+                                            <th class="text-center">Tổng ngày nghỉ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($barberLeaves as $barber)
+                                            <tr>
+                                                <td>{{ $barber->name }}</td>
+                                                <td class="text-center">{{ $barber->total_off }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="2" class="text-center text-muted">Không có dữ liệu
+                                                    ngày
+                                                    nghỉ</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Content Section -->
-        <div class="row g-3">
-            <!-- Cột trái -->
-            <div class="col-lg-6">
-                <div class="row g-3">
-                    <!-- Dịch vụ phổ biến & ít dùng -->
-                    <div class="col-12">
-                        <div class="card card-round h-100">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0 fw-bold">Dịch vụ phổ biến & ít dùng</h5>
-                                <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" id="pills-top-service-tab" data-bs-toggle="pill"
-                                            href="#pills-top-service" role="tab">
-                                            Phổ biến
-                                            <span class="badge bg-primary ms-1"
-                                                id="top-service-count">{{ $topServices->count() }}</span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="pills-low-service-tab" data-bs-toggle="pill"
-                                            href="#pills-low-service" role="tab">
-                                            Ít dùng
-                                            <span class="badge bg-warning ms-1"
-                                                id="low-service-count">{{ $lowUsageServices->count() }}</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- Bộ lọc dịch vụ -->
-                            <div class="card-body border-bottom">
-                                <div class="row g-3" id="service-filter-controls">
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control form-control-sm" id="service-search"
-                                            placeholder="Tìm kiếm dịch vụ...">
+        <!-- Cột phải -->
+        <div class="col-lg-6">
+            <div class="row g-3">
+                <!-- Sản phẩm bán chạy & ít bán -->
+                <div class="col-12">
+                    <div class="card card-round h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0 fw-bold">Sản phẩm bán chạy & ít bán</h5>
+                            <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-top-product-tab" data-bs-toggle="pill"
+                                        href="#pills-top-product" role="tab">
+                                        Bán chạy
+                                        <span class="badge bg-success ms-1"
+                                            id="top-product-count">{{ $topProducts->total() ?? count($topProducts) }}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-low-product-tab" data-bs-toggle="pill"
+                                        href="#pills-low-product" role="tab">
+                                        Ít bán
+                                        <span class="badge bg-warning ms-1"
+                                            id="low-product-count">{{ $lowSellingProducts->total() ?? count($lowSellingProducts) }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Bộ lọc và tìm kiếm -->
+                        <div class="card-body border-bottom">
+                            <div class="row g-3" id="product-filter-controls">
+                                <!-- Tìm kiếm -->
+                                <div class="col-md-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fas fa-search text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control" name="search"
+                                            placeholder="Tìm kiếm sản phẩm..." value="{{ request('search') }}"
+                                            id="product-search">
                                     </div>
-                                    <div class="col-md-3">
-                                        <select id="service-sort-select" class="form-select form-select-sm">
-                                            <option value="usage_count">Theo lượt sử dụng</option>
-                                            <option value="name">Theo tên A-Z</option>
-                                            <option value="price">Theo giá</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select id="service-per-page" class="form-select form-select-sm">
-                                            <option value="5">5 dịch vụ</option>
-                                            <option value="10" selected>10 dịch vụ</option>
-                                            <option value="20">20 dịch vụ</option>
-                                            <option value="all">Tất cả</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
+                                </div>
+
+                                <!-- Số lượng hiển thị -->
+                                <div class="col-md-3">
+                                    <select name="per_page" class="form-select form-select-sm" id="per-page-select">
+                                        <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5 sản
+                                            phẩm
+                                        </option>
+                                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>
+                                            10
+                                            sản phẩm</option>
+                                        <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20
+                                            sản
+                                            phẩm</option>
+                                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50
+                                            sản
+                                            phẩm</option>
+                                        <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>
+                                            Tất cả
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Sắp xếp -->
+                                <div class="col-md-3">
+                                    <select name="sort_by" class="form-select form-select-sm" id="product-sort-select">
+                                        <option value="total_sold"
+                                            {{ request('sort_by', 'total_sold') == 'total_sold' ? 'selected' : '' }}>
+                                            Theo
+                                            số lượng bán</option>
+                                        <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>
+                                            Theo
+                                            tên A-Z</option>
+                                        <option value="price" {{ request('sort_by') == 'price' ? 'selected' : '' }}>
+                                            Theo
+                                            giá</option>
+                                        <option value="created_at"
+                                            {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>Theo ngày tạo
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Action buttons -->
+                                <div class="col-md-2">
+                                    <div class="btn-group btn-group-sm w-100">
                                         <button type="button" class="btn btn-outline-secondary btn-sm w-100"
-                                            onclick="resetServiceFilters()">
+                                            id="product-reset-btn" title="Reset lọc">
                                             <i class="fas fa-undo"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <div class="text-center loading-spinner-service" style="display: none;">
-                                    <div class="spinner-border spinner-border-sm text-primary mt-2" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                    <small class="text-muted d-block mt-1">Đang tải...</small>
-                                </div>
                             </div>
-                            <div class="card-body">
-                                <div class="tab-content">
-                                    <!-- Phổ biến -->
-                                    <div class="tab-pane fade show active" id="pills-top-service" role="tabpanel">
-                                        <div class="scroll-rows-5" id="top-services-content">
-                                            @include('partials.top-services', [
-                                                'topServices' => $topServices,
-                                            ])
-                                        </div>
-                                    </div>
-                                    <!-- Ít dùng -->
-                                    <div class="tab-pane fade" id="pills-low-service" role="tabpanel">
-                                        <div class="scroll-rows-5" id="low-services-content">
-                                            @include('partials.low-services', [
-                                                'lowUsageServices' => $lowUsageServices,
-                                            ])
-                                        </div>
-                                    </div>
+
+                            <!-- Loading spinner -->
+                            <div class="text-center loading-spinner-product" style="display: none;">
+                                <div class="spinner-border spinner-border-sm text-primary mt-2" role="status">
+                                    <span class="visually-hidden">Loading...</span>
                                 </div>
+                                <small class="text-muted d-block mt-1">Đang tải...</small>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Thống kê ngày nghỉ của thợ -->
-                    <div class="col-12">
-                        <div class="card card-round h-100">
-                            <div class="card-header d-flex flex-column">
-                                <h5 class="card-title mb-1 fw-bold">Ngày nghỉ của thợ (Top 5)</h5>
-                                <div class="d-flex align-items-end gap-2 flex-wrap mt-2">
-                                    <div>
-                                        <label for="leave_month" class="form-label small mb-1 text-muted">Chọn
-                                            tháng:</label>
-                                        <select id="leave_month" class="form-select form-select-sm">
-                                            <option value="">Tháng hiện tại</option>
-                                            @foreach ($availableMonths as $monthNum)
-                                                <option value="{{ $monthNum }}"
-                                                    {{ isset($selectedLeaveMonth) && $selectedLeaveMonth == $monthNum ? 'selected' : '' }}>
-                                                    Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="leave_branch" class="form-label small mb-1 text-muted">Chi
-                                            nhánh:</label>
-                                        <select id="leave_branch" class="form-select form-select-sm">
-                                            <option value="">Tất cả chi nhánh</option>
-                                            @foreach ($branches as $branch)
-                                                <option value="{{ $branch->id }}"
-                                                    {{ isset($selectedBranch) && $selectedBranch == $branch->id ? 'selected' : '' }}>
-                                                    {{ $branch->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <button type="button" id="resetLeaveFilter"
-                                            class="btn btn-sm btn-outline-secondary">
-                                            <i class="fa fa-refresh me-1"></i>Reset
-                                        </button>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <!-- Tab Bán chạy -->
+                                <div class="tab-pane fade show active" id="pills-top-product" role="tabpanel">
+                                    <div class="scroll-rows-5">
+                                        <div id="top-products-content">
+                                            <!-- Nội dung sản phẩm bán chạy sẽ được load vào đây -->
+                                            @include('partials.top-products', [
+                                                'topProducts' => $topProducts,
+                                            ])
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table id="barberLeaveTable" class="table table-hover table-sm align-middle mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th>Nhân viên</th>
-                                                <th class="text-center">Tổng ngày nghỉ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse ($barberLeaves as $barber)
-                                                <tr>
-                                                    <td>{{ $barber->name }}</td>
-                                                    <td class="text-center">{{ $barber->total_off }}</td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="2" class="text-center text-muted">Không có dữ liệu
-                                                        ngày
-                                                        nghỉ</td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+
+                                <!-- Tab Ít bán -->
+                                <div class="tab-pane fade" id="pills-low-product" role="tabpanel">
+                                    <div class="scroll-rows-5">
+                                        <div id="low-products-content">
+                                            <!-- Nội dung sản phẩm ít bán sẽ được load vào đây -->
+                                            @include('partials.low-products', [
+                                                'lowSellingProducts' => $lowSellingProducts,
+                                            ])
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Cột phải -->
-            <div class="col-lg-6">
-                <div class="row g-3">
-                    <!-- Sản phẩm bán chạy & ít bán -->
-                    <div class="col-12">
-                        <div class="card card-round h-100">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0 fw-bold">Sản phẩm bán chạy & ít bán</h5>
-                                <ul class="nav nav-pills nav-secondary nav-pills-no-bd" role="tablist">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" id="pills-top-product-tab" data-bs-toggle="pill"
-                                            href="#pills-top-product" role="tab">
-                                            Bán chạy
-                                            <span class="badge bg-success ms-1"
-                                                id="top-product-count">{{ $topProducts->total() ?? count($topProducts) }}</span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="pills-low-product-tab" data-bs-toggle="pill"
-                                            href="#pills-low-product" role="tab">
-                                            Ít bán
-                                            <span class="badge bg-warning ms-1"
-                                                id="low-product-count">{{ $lowSellingProducts->total() ?? count($lowSellingProducts) }}</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
 
-                            <!-- Bộ lọc và tìm kiếm -->
-                            <div class="card-body border-bottom">
-                                <div class="row g-3" id="product-filter-controls">
-                                    <!-- Tìm kiếm -->
-                                    <div class="col-md-4">
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text bg-light">
-                                                <i class="fas fa-search text-muted"></i>
-                                            </span>
-                                            <input type="text" class="form-control" name="search"
-                                                placeholder="Tìm kiếm sản phẩm..." value="{{ request('search') }}"
-                                                id="product-search">
-                                        </div>
-                                    </div>
 
-                                    <!-- Số lượng hiển thị -->
-                                    <div class="col-md-3">
-                                        <select name="per_page" class="form-select form-select-sm" id="per-page-select">
-                                            <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5 sản
-                                                phẩm
+
+                <!-- Hiệu suất nhân viên -->
+                <div class="col-12">
+                    <div class="card card-round h-100">
+                        <div class="card-header d-flex flex-column">
+                            <h5 class="card-title mb-1 fw-bold">Hiệu suất nhân viên (Top 5)</h5>
+                            <div class="d-flex align-items-end gap-2 flex-wrap mt-2">
+                                <div>
+                                    <label for="performance_month" class="form-label small mb-1 text-muted">Chọn
+                                        tháng:</label>
+                                    <select id="performance_month" class="form-select form-select-sm">
+                                        <option value="">Tháng hiện tại</option>
+                                        @foreach ($availableMonths as $monthNum)
+                                            <option value="{{ $monthNum }}"
+                                                {{ isset($selectedPerformanceMonth) && $selectedPerformanceMonth == $monthNum ? 'selected' : '' }}>
+                                                Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
                                             </option>
-                                            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>
-                                                10
-                                                sản phẩm</option>
-                                            <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20
-                                                sản
-                                                phẩm</option>
-                                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50
-                                                sản
-                                                phẩm</option>
-                                            <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>
-                                                Tất cả
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Sắp xếp -->
-                                    <div class="col-md-3">
-                                        <select name="sort_by" class="form-select form-select-sm"
-                                            id="product-sort-select">
-                                            <option value="total_sold"
-                                                {{ request('sort_by', 'total_sold') == 'total_sold' ? 'selected' : '' }}>
-                                                Theo
-                                                số lượng bán</option>
-                                            <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>
-                                                Theo
-                                                tên A-Z</option>
-                                            <option value="price" {{ request('sort_by') == 'price' ? 'selected' : '' }}>
-                                                Theo
-                                                giá</option>
-                                            <option value="created_at"
-                                                {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>Theo ngày tạo
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Action buttons -->
-                                    <div class="col-md-2">
-                                        <div class="btn-group btn-group-sm w-100">
-                                            <button type="button" class="btn btn-outline-secondary btn-sm w-100"
-                                                id="product-reset-btn" title="Reset lọc">
-                                                <i class="fas fa-undo"></i>
-                                            </button>
-                                        </div>
-                                    </div>
+                                        @endforeach
+                                    </select>
                                 </div>
-
-                                <!-- Loading spinner -->
-                                <div class="text-center loading-spinner-product" style="display: none;">
-                                    <div class="spinner-border spinner-border-sm text-primary mt-2" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                    <small class="text-muted d-block mt-1">Đang tải...</small>
+                                <div>
+                                    <label for="performance_branch" class="form-label small mb-1 text-muted">Chi
+                                        nhánh:</label>
+                                    <select id="performance_branch" class="form-select form-select-sm">
+                                        <option value="">Tất cả chi nhánh</option>
+                                        @foreach ($branches as $branch)
+                                            <option value="{{ $branch->id }}"
+                                                {{ isset($selectedPerformanceBranch) && $selectedPerformanceBranch == $branch->id ? 'selected' : '' }}>
+                                                {{ $branch->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                            </div>
-
-                            <div class="card-body">
-                                <div class="tab-content">
-                                    <!-- Tab Bán chạy -->
-                                    <div class="tab-pane fade show active" id="pills-top-product" role="tabpanel">
-                                        <div class="scroll-rows-5">
-                                            <div id="top-products-content">
-                                                <!-- Nội dung sản phẩm bán chạy sẽ được load vào đây -->
-                                                @include('partials.top-products', [
-                                                    'topProducts' => $topProducts,
-                                                ])
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Tab Ít bán -->
-                                    <div class="tab-pane fade" id="pills-low-product" role="tabpanel">
-                                        <div class="scroll-rows-5">
-                                            <div id="low-products-content">
-                                                <!-- Nội dung sản phẩm ít bán sẽ được load vào đây -->
-                                                @include('partials.low-products', [
-                                                    'lowSellingProducts' => $lowSellingProducts,
-                                                ])
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div>
+                                    <button type="button" id="resetPerformanceFilter"
+                                        class="btn btn-sm btn-outline-secondary">
+                                        <i class="fa fa-refresh me-1"></i>Reset
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-
-
-
-                    <!-- Hiệu suất nhân viên -->
-                    <div class="col-12">
-                        <div class="card card-round h-100">
-                            <div class="card-header d-flex flex-column">
-                                <h5 class="card-title mb-1 fw-bold">Hiệu suất nhân viên (Top 5)</h5>
-                                <div class="d-flex align-items-end gap-2 flex-wrap mt-2">
-                                    <div>
-                                        <label for="performance_month" class="form-label small mb-1 text-muted">Chọn
-                                            tháng:</label>
-                                        <select id="performance_month" class="form-select form-select-sm">
-                                            <option value="">Tháng hiện tại</option>
-                                            @foreach ($availableMonths as $monthNum)
-                                                <option value="{{ $monthNum }}"
-                                                    {{ isset($selectedPerformanceMonth) && $selectedPerformanceMonth == $monthNum ? 'selected' : '' }}>
-                                                    Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="performance_branch" class="form-label small mb-1 text-muted">Chi
-                                            nhánh:</label>
-                                        <select id="performance_branch" class="form-select form-select-sm">
-                                            <option value="">Tất cả chi nhánh</option>
-                                            @foreach ($branches as $branch)
-                                                <option value="{{ $branch->id }}"
-                                                    {{ isset($selectedPerformanceBranch) && $selectedPerformanceBranch == $branch->id ? 'selected' : '' }}>
-                                                    {{ $branch->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <button type="button" id="resetPerformanceFilter"
-                                            class="btn btn-sm btn-outline-secondary">
-                                            <i class="fa fa-refresh me-1"></i>Reset
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table id="barberPerformanceTable"
-                                        class="table table-hover table-sm align-middle mb-0">
-                                        <thead>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="barberPerformanceTable" class="table table-hover table-sm align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Nhân viên</th>
+                                            <th class="text-center">Lượt cắt</th>
+                                            <th class="text-center">Đánh giá</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($barberStats as $barber)
                                             <tr>
-                                                <th>Nhân viên</th>
-                                                <th class="text-center">Lượt cắt</th>
-                                                <th class="text-center">Đánh giá</th>
+                                                <td>{{ $barber->name }}</td>
+                                                <td class="text-center">{{ $barber->cut_count }}</td>
+                                                <td class="text-center">
+                                                    {{ number_format($barber->avg_rating, 1) }} ⭐
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse ($barberStats as $barber)
-                                                <tr>
-                                                    <td>{{ $barber->name }}</td>
-                                                    <td class="text-center">{{ $barber->cut_count }}</td>
-                                                    <td class="text-center">
-                                                        {{ number_format($barber->avg_rating, 1) }} ⭐
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="3" class="text-center text-muted">Không có dữ liệu
-                                                    </td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        @empty
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted">Không có dữ liệu
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
     <!-- Lịch sử giao dịch - Full width -->
     <div class="row g-3 mt-2">
@@ -725,13 +742,126 @@
             </div>
         </div>
     </div>
+
+    <div class="row g-3">
+        <!-- Biểu đồ tròn thống kê trạng thái lịch hẹn -->
+        <div class="col-lg-6">
+            <div class="card card-round shadow-sm h-100 d-flex flex-column">
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-2 fw-bold">Thống kê trạng thái lịch hẹn - Tổng số lịch hẹn: <span
+                            id="total-appointments-display">{{ $totalAppointments }}</span></h5>
+                    <div class="d-flex align-items-end gap-2 flex-wrap">
+                        <div>
+                            <label for="appointment_status_month" class="form-label small mb-1 text-muted">Chọn
+                                tháng:</label>
+                            <select id="appointment_status_month" class="form-select form-select-sm">
+                                <option value="">Tất cả tháng {{ $year ?? date('Y') }}</option>
+                                @foreach ($availableMonths as $monthNum)
+                                    <option value="{{ $monthNum }}">
+                                        Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <button type="button" id="resetStatusFilter" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-refresh me-1"></i>Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 300px;">
+                        <canvas id="appointmentStatusChart"></canvas>
+                    </div>
+                    <!-- Legend -->
+                    <div class="mt-3">
+                        <div class="row text-center">
+                            @foreach ($appointmentStatusLabels as $key => $label)
+                                <div class="col-4">
+                                    <div class="d-flex align-items-center justify-content-center mb-2">
+                                        <div class="status-indicator me-2"
+                                            style="background-color: {{ $appointmentStatusColors[$key] }}; width: 12px; height: 12px; border-radius: 50%;">
+                                        </div>
+                                        <small class="text-muted">{{ $label }}</small>
+                                    </div>
+                                    <div class="fw-bold">{{ number_format($appointmentStatusData[$key]) }}</div>
+                                </div>
+                            @endforeach
+                        </div>
+                        @if (array_sum($appointmentStatusData) == 0)
+                            <div class="text-center text-muted mt-3">
+                                <i class="fas fa-chart-pie fa-2x mb-2"></i>
+                                <p class="mb-0">Không có dữ liệu thống kê</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biểu đồ tròn thống kê trạng thái đặt hàng -->
+        <div class="col-lg-6">
+            <div class="card card-round shadow-sm h-100 d-flex flex-column">
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-2 fw-bold">Thống kê trạng thái đặt hàng - Tổng số đơn hàng: <span
+                            id="total-orders-display">{{ $totalOrders }}</span></h5>
+                    <div class="d-flex align-items-end gap-2 flex-wrap">
+                        <div>
+                            <label for="order_status_month" class="form-label small mb-1 text-muted">Chọn tháng:</label>
+                            <select id="order_status_month" class="form-select form-select-sm">
+                                <option value="">Tất cả tháng {{ $year ?? date('Y') }}</option>
+                                @foreach ($availableMonths as $monthNum)
+                                    <option value="{{ $monthNum }}">
+                                        Tháng {{ $monthNum }}/{{ $year ?? date('Y') }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <button type="button" id="resetOrderStatusFilter" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-refresh me-1"></i>Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 300px;">
+                        <canvas id="orderStatusChart"></canvas>
+                    </div>
+                    <!-- Legend -->
+                    <div class="mt-3">
+                        <div class="row text-center">
+                            @foreach ($orderStatusLabels as $key => $label)
+                                <div class="col-4">
+                                    <div class="d-flex align-items-center justify-content-center mb-2">
+                                        <div class="status-indicator me-2"
+                                            style="background-color: {{ $orderStatusColors[$key] }}; width: 12px; height: 12px; border-radius: 50%;">
+                                        </div>
+                                        <small class="text-muted">{{ $label }}</small>
+                                    </div>
+                                    <div class="fw-bold">{{ number_format($orderStatusData[$key]) }}</div>
+                                </div>
+                            @endforeach
+                        </div>
+                        @if (array_sum($orderStatusData) == 0)
+                            <div class="text-center text-muted mt-3">
+                                <i class="fas fa-chart-pie fa-2x mb-2"></i>
+                                <p class="mb-0">Không có dữ liệu thống kê</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Biến global để lưu trữ chart instances
-        let weekChart, monthChart;
+        let weekChart, monthChart, appointmentStatusChart, orderStatusChart;
 
         // Data gốc từ server
         const originalWeekData = {
@@ -744,6 +874,20 @@
             labels: @json($monthLabels),
             serviceRevenue: @json($monthServiceRevenue),
             productRevenue: @json($monthProductRevenue)
+        };
+
+        // Data cho biểu đồ tròn trạng thái lịch hẹn
+        const originalStatusData = {
+            labels: @json(array_values($appointmentStatusLabels)),
+            data: @json(array_values($appointmentStatusData)),
+            colors: @json(array_values($appointmentStatusColors))
+        };
+
+        // Data cho biểu đồ tròn trạng thái đặt hàng
+        const originalOrderStatusData = {
+            labels: @json(array_values($orderStatusLabels)),
+            data: @json(array_values($orderStatusData)),
+            colors: @json(array_values($orderStatusColors))
         };
 
         // Khởi tạo biểu đồ tuần
@@ -880,12 +1024,127 @@
             });
         }
 
+        // Khởi tạo biểu đồ tròn trạng thái lịch hẹn
+        function initAppointmentStatusChart(labels, data, colors) {
+            const statusCtx = document.getElementById('appointmentStatusChart').getContext('2d');
+
+            if (appointmentStatusChart) {
+                appointmentStatusChart.destroy();
+            }
+
+            const total = data.reduce((a, b) => a + b, 0);
+
+            if (total === 0) {
+                // Hiển thị thông báo không có dữ liệu
+                statusCtx.clearRect(0, 0, statusCtx.canvas.width, statusCtx.canvas.height);
+                statusCtx.font = '16px Arial';
+                statusCtx.fillStyle = '#6c757d';
+                statusCtx.textAlign = 'center';
+                statusCtx.fillText('Không có dữ liệu', statusCtx.canvas.width / 2, statusCtx.canvas.height / 2);
+                return;
+            }
+
+            appointmentStatusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
+        // Khởi tạo biểu đồ tròn trạng thái đặt hàng
+        function initOrderStatusChart(labels, data, colors) {
+            const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+
+            if (orderStatusChart) {
+                orderStatusChart.destroy();
+            }
+
+            const total = data.reduce((a, b) => a + b, 0);
+
+            if (total === 0) {
+                // Hiển thị thông báo không có dữ liệu
+                orderStatusCtx.clearRect(0, 0, orderStatusCtx.canvas.width, orderStatusCtx.canvas.height);
+                orderStatusCtx.font = '16px Arial';
+                orderStatusCtx.fillStyle = '#6c757d';
+                orderStatusCtx.textAlign = 'center';
+                orderStatusCtx.fillText('Không có dữ liệu', orderStatusCtx.canvas.width / 2, orderStatusCtx.canvas.height /
+                    2);
+                return;
+            }
+
+            orderStatusChart = new Chart(orderStatusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
         // Khởi tạo biểu đồ với dữ liệu ban đầu
         document.addEventListener('DOMContentLoaded', function() {
             initWeekChart(originalWeekData.labels, originalWeekData.serviceRevenue, originalWeekData
                 .productRevenue);
             initMonthChart(originalMonthData.labels, originalMonthData.serviceRevenue, originalMonthData
                 .productRevenue);
+            initAppointmentStatusChart(originalStatusData.labels, originalStatusData.data, originalStatusData
+                .colors);
+            initOrderStatusChart(originalOrderStatusData.labels, originalOrderStatusData.data,
+                originalOrderStatusData.colors);
         });
 
         // Xử lý lọc biểu đồ tuần
@@ -1060,6 +1319,241 @@
         // Event listeners cho bộ lọc hiệu suất nhân viên
         document.getElementById('performance_month').addEventListener('change', handlePerformanceFilter);
         document.getElementById('performance_branch').addEventListener('change', handlePerformanceFilter);
+
+        // Xử lý lọc biểu đồ tròn trạng thái lịch hẹn
+        function handleStatusFilter() {
+            const month = document.getElementById('appointment_status_month').value;
+
+            // Hiển thị loading
+            const chartContainer = document.querySelector('#appointmentStatusChart').parentElement;
+            chartContainer.style.opacity = '0.6';
+
+            // Hiển thị loading cho tiêu đề
+            const totalDisplay = document.getElementById('total-appointments-display');
+            // if (totalDisplay) {
+            //     totalDisplay.textContent = 'Đang tải...';
+            // }
+
+            // Gửi AJAX request để lấy dữ liệu mới
+            fetch('{{ route('admin.dashboard') }}?' + new URLSearchParams({
+                    appointment_status_month: month,
+                    ajax: '1'
+                }))
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        initAppointmentStatusChart(data.statusLabels, data.statusData, data.statusColors);
+
+                        // Cập nhật legend
+                        updateStatusLegend(data.statusLabels, data.statusData);
+
+                        // Cập nhật tổng số lịch hẹn trong tiêu đề
+                        const totalDisplay = document.getElementById('total-appointments-display');
+                        if (totalDisplay && data.totalAppointments !== undefined) {
+                            totalDisplay.textContent = data.totalAppointments.toLocaleString();
+                        }
+                    } else {
+                        throw new Error(data.message || 'Có lỗi xảy ra khi tải dữ liệu');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Hiển thị thông báo lỗi
+                    const chartContainer = document.querySelector('#appointmentStatusChart').parentElement;
+                    chartContainer.innerHTML = `
+                        <div class="text-center text-danger">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                            <p class="mb-0">Không thể tải dữ liệu</p>
+                        </div>
+                    `;
+                })
+                .finally(() => {
+                    // Ẩn loading
+                    const chartContainer = document.querySelector('#appointmentStatusChart').parentElement;
+                    chartContainer.style.opacity = '1';
+                });
+        }
+
+        // Cập nhật legend
+        function updateStatusLegend(labels, data) {
+            const legendContainer = document.querySelector('.card-body .row.text-center');
+            if (legendContainer) {
+                legendContainer.innerHTML = '';
+
+                const total = data.reduce((a, b) => a + b, 0);
+
+                if (total === 0) {
+                    legendContainer.innerHTML = `
+                        <div class="col-12">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-chart-pie fa-2x mb-2"></i>
+                                <p class="mb-0">Không có dữ liệu thống kê</p>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                labels.forEach((label, index) => {
+                    const col = document.createElement('div');
+                    col.className = 'col-4';
+                    col.innerHTML = `
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <div class="status-indicator me-2" style="background-color: ${originalStatusData.colors[index]}; width: 12px; height: 12px; border-radius: 50%;"></div>
+                            <small class="text-muted">${label}</small>
+                        </div>
+                        <div class="fw-bold">${data[index].toLocaleString()}</div>
+                    `;
+                    legendContainer.appendChild(col);
+                });
+            }
+        }
+
+        // Reset bộ lọc trạng thái lịch hẹn
+        document.getElementById('resetStatusFilter').addEventListener('click', function() {
+            document.getElementById('appointment_status_month').value = '';
+
+            // Khôi phục lại canvas
+            const chartContainer = document.querySelector('#appointmentStatusChart').parentElement;
+            chartContainer.innerHTML = '<canvas id="appointmentStatusChart"></canvas>';
+
+            initAppointmentStatusChart(originalStatusData.labels, originalStatusData.data, originalStatusData
+                .colors);
+            updateStatusLegend(originalStatusData.labels, originalStatusData.data);
+
+            // Cập nhật tổng số lịch hẹn trong tiêu đề về giá trị ban đầu
+            const totalDisplay = document.getElementById('total-appointments-display');
+            if (totalDisplay) {
+                const total = originalStatusData.data.reduce((a, b) => a + b, 0);
+                totalDisplay.textContent = total.toLocaleString();
+            }
+        });
+
+        // Event listeners cho bộ lọc trạng thái lịch hẹn
+        document.getElementById('appointment_status_month').addEventListener('change', handleStatusFilter);
+
+        // Xử lý lọc biểu đồ tròn trạng thái đặt hàng
+        function handleOrderStatusFilter() {
+            const month = document.getElementById('order_status_month').value;
+
+            // Hiển thị loading
+            const chartContainer = document.querySelector('#orderStatusChart').parentElement;
+            chartContainer.style.opacity = '0.6';
+
+            // Hiển thị loading cho tiêu đề
+            const totalDisplay = document.getElementById('total-orders-display');
+            // if (totalDisplay) {
+            //     totalDisplay.textContent = 'Đang tải...';
+            // }
+
+            // Gửi AJAX request để lấy dữ liệu mới
+            fetch('{{ route('admin.dashboard') }}?' + new URLSearchParams({
+                    order_status_month: month,
+                    ajax: '1'
+                }))
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        initOrderStatusChart(data.orderStatusLabels, data.orderStatusData, data.orderStatusColors);
+
+                        // Cập nhật legend
+                        updateOrderStatusLegend(data.orderStatusLabels, data.orderStatusData);
+
+                        // Cập nhật tổng số đơn hàng trong tiêu đề
+                        const totalDisplay = document.getElementById('total-orders-display');
+                        if (totalDisplay && data.totalOrders !== undefined) {
+                            totalDisplay.textContent = data.totalOrders.toLocaleString();
+                        }
+                    } else {
+                        throw new Error(data.message || 'Có lỗi xảy ra khi tải dữ liệu');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Hiển thị thông báo lỗi
+                    const chartContainer = document.querySelector('#orderStatusChart').parentElement;
+                    chartContainer.innerHTML = `
+                        <div class="text-center text-danger">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                            <p class="mb-0">Không thể tải dữ liệu</p>
+                        </div>
+                    `;
+                })
+                .finally(() => {
+                    // Ẩn loading
+                    const chartContainer = document.querySelector('#orderStatusChart').parentElement;
+                    chartContainer.style.opacity = '1';
+                });
+        }
+
+        // Cập nhật legend cho đặt hàng
+        function updateOrderStatusLegend(labels, data) {
+            const legendContainer = document.querySelector('#orderStatusChart').closest('.card').querySelector(
+                '.row.text-center');
+            if (legendContainer) {
+                legendContainer.innerHTML = '';
+
+                const total = data.reduce((a, b) => a + b, 0);
+
+                if (total === 0) {
+                    legendContainer.innerHTML = `
+                        <div class="col-12">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-chart-pie fa-2x mb-2"></i>
+                                <p class="mb-0">Không có dữ liệu thống kê</p>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                labels.forEach((label, index) => {
+                    const col = document.createElement('div');
+                    col.className = 'col-4';
+                    col.innerHTML = `
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <div class="status-indicator me-2" style="background-color: ${originalOrderStatusData.colors[index]}; width: 12px; height: 12px; border-radius: 50%;"></div>
+                            <small class="text-muted">${label}</small>
+                        </div>
+                        <div class="fw-bold">${data[index].toLocaleString()}</div>
+                    `;
+                    legendContainer.appendChild(col);
+                });
+            }
+        }
+
+        // Reset bộ lọc trạng thái đặt hàng
+        document.getElementById('resetOrderStatusFilter').addEventListener('click', function() {
+            document.getElementById('order_status_month').value = '';
+
+            // Khôi phục lại canvas
+            const chartContainer = document.querySelector('#orderStatusChart').parentElement;
+            chartContainer.innerHTML = '<canvas id="orderStatusChart"></canvas>';
+
+            initOrderStatusChart(originalOrderStatusData.labels, originalOrderStatusData.data,
+                originalOrderStatusData.colors);
+            updateOrderStatusLegend(originalOrderStatusData.labels, originalOrderStatusData.data);
+
+            // Cập nhật tổng số đơn hàng trong tiêu đề về giá trị ban đầu
+            const totalDisplay = document.getElementById('total-orders-display');
+            if (totalDisplay) {
+                const total = originalOrderStatusData.data.reduce((a, b) => a + b, 0);
+                totalDisplay.textContent = total.toLocaleString();
+            }
+        });
+
+        // Event listeners cho bộ lọc trạng thái đặt hàng
+        document.getElementById('order_status_month').addEventListener('change', handleOrderStatusFilter);
     </script>
     <script>
         // Global variables
@@ -1183,7 +1677,7 @@
                 topProductsContent.innerHTML = data.topProductsHtml;
             }
 
-            // Update low products  
+            // Update low products
             const lowProductsContent = document.getElementById('low-products-content');
             if (lowProductsContent && data.lowProductsHtml) {
                 lowProductsContent.innerHTML = data.lowProductsHtml;
@@ -1700,9 +2194,9 @@
         }
 
         /* .btn-group-sm .btn {
-            padding: 0.5rem 0.4rem;
-            font-size: 0.7rem;
-        } */
+                padding: 0.5rem 0.4rem;
+                font-size: 0.7rem;
+            } */
 
         .nav-pills .nav-link {
             border-radius: 15px;
@@ -1737,6 +2231,14 @@
 
             .badge {
                 font-size: 0.6em;
+            }
+
+            .chart-container {
+                min-height: 250px !important;
+            }
+
+            .card-body .row.text-center .col-4 {
+                margin-bottom: 1rem;
             }
         }
     </style>
