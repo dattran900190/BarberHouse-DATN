@@ -54,8 +54,12 @@ class BarberScheduleController extends Controller
         $barbers = $branch->barbers;
         $barbers = $branch->barbers()->paginate(10); // 10 thợ mỗi trang
         //phân trang lịch trình thợ 
+
         foreach ($barbers as $barber) {
-            $barber->schedules = $barber->schedules()->paginate(3);
+            $barber->schedules = $barber->schedules()
+                ->where('status', '!=', 'holiday')
+                ->orderBy('schedule_date')
+                ->paginate(3, ['*'], "page_barber_{$barber->id}");
         }
         return view('admin.barber_schedules.show', compact('branch', 'barbers'));
     }
