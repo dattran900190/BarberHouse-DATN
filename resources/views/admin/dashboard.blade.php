@@ -177,7 +177,7 @@
                                     <div class="branch-dropdown d-flex align-items-center justify-content-between"
                                         data-bs-toggle="dropdown" aria-expanded="false">
                                         <div>
-                                            <p class="card-category mb-1">Doanh thu chi nhánh </p>
+                                            <p class="card-category mb-1">Tổng doanh thu chi nhánh</p>
                                             <h6 class="text-muted small mb-0" id="selected-branch-name">
                                                 <i class="fas fa-map-marker-alt me-1"></i>
                                                 {{ $selectedBranchName }}
@@ -195,26 +195,22 @@
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
-
-                                        {{-- @if (Auth::user()->role !== 'admin_branch')
-                                            <li>
-                                                <a class="dropdown-item branch-option" href="#" data-branch-id=""
-                                                    data-branch-name="Tất cả chi nhánh">
-                                                    <i class="fas fa-globe me-2 text-info"></i>
-                                                    <span>Tất cả chi nhánh</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                        @endif --}}
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
 
                                         @foreach ($branchesForRevenue as $branch)
                                             <li>
                                                 <a class="dropdown-item branch-option {{ $selectedBranchRevenue == $branch->id ? 'active' : '' }}"
                                                     href="#" data-branch-id="{{ $branch->id }}"
                                                     data-branch-name="{{ $branch->name }}">
-                                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                                    <!-- Đánh dấu chi nhánh của admin hiện tại -->
+                                                    @if (Auth::user()->role === 'admin_branch' && Auth::user()->branch_id == $branch->id)
+                                                        <i class="fas fa-star me-2 text-warning"
+                                                            title="Chi nhánh của bạn"></i>
+                                                    @else
+                                                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                                    @endif
                                                     <span>{{ $branch->name }}</span>
                                                     @if ($selectedBranchRevenue == $branch->id)
                                                         <i class="fas fa-check ms-auto text-success"></i>
@@ -226,15 +222,21 @@
                                 </div>
 
                                 <h4 class="card-title" id="branch-revenue-amount">
-                                    {{ number_format($branchTodayRevenue) }} VNĐ
+                                    {{ number_format($branchTotalRevenue) }} VNĐ
                                 </h4>
-                                <small class="text-muted" id="branch-revenue-details"></small>
+                                <small class="text-muted" id="branch-revenue-details">
+                                    <small class="text-info d-block">
+                                        <i class="fas fa-chart-line me-1"></i>
+                                        Hôm nay: {{ number_format($branchTodayRevenue) }} VNĐ
+                                    </small>
+                                </small>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
 
@@ -2176,6 +2178,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeServiceFilter();
         });
+        // chi nhánh 
     </script>
 
     <style>
@@ -2194,9 +2197,9 @@
         }
 
         /* .btn-group-sm .btn {
-                padding: 0.5rem 0.4rem;
-                font-size: 0.7rem;
-            } */
+                                            padding: 0.5rem 0.4rem;
+                                            font-size: 0.7rem;
+                                        } */
 
         .nav-pills .nav-link {
             border-radius: 15px;
