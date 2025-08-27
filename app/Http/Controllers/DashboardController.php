@@ -23,33 +23,50 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
         $today = Carbon::today();
+
         // Lấy danh sách chi nhánh cho thống kê doanh thu
         $branchesForRevenue = Branch::all();
 
-        // Lấy chi nhánh được chọn từ request (nếu không chọn thì mặc định null)
+        // Lấy chi nhánh được chọn từ request
         $selectedBranchRevenue = $request->input('branch_revenue_id');
-        $selectedBranchName = 'Chọn chi nhánh'; // Mặc định là 'Chọn chi nhánh'
 
-        // Doanh thu theo chi nhánh (chỉ dịch vụ)
+        // Xử lý mặc định cho admin chi nhánh
+        if ($user->role === 'admin_branch' && !$selectedBranchRevenue) {
+            $selectedBranchRevenue = $user->branch_id;
+        }
+
+        $selectedBranchName = 'Chọn chi nhánh'; // Mặc định
+
+        // Tính tổng doanh thu theo chi nhánh (TẤT CẢ THỜI GIAN)
         if ($selectedBranchRevenue) {
             $selectedBranch = Branch::find($selectedBranchRevenue);
             if ($selectedBranch) {
                 $selectedBranchName = $selectedBranch->name;
 
+                // Tổng doanh thu tất cả thời gian của chi nhánh
+                $branchTotalRevenue = Appointment::where('status', 'completed')
+                    ->where('branch_id', $selectedBranchRevenue)
+                    ->sum('total_amount');
+
+                // Doanh thu hôm nay của chi nhánh
                 $branchTodayRevenue = Appointment::whereDate('created_at', $today)
                     ->where('status', 'completed')
                     ->where('branch_id', $selectedBranchRevenue)
                     ->sum('total_amount');
             } else {
+                $branchTotalRevenue = 0;
                 $branchTodayRevenue = 0;
             }
         } else {
-            // Mặc định: tất cả chi nhánh
+            // Tổng doanh thu tất cả chi nhánh
+            $branchTotalRevenue = Appointment::where('status', 'completed')
+                ->sum('total_amount');
             $branchTodayRevenue = Appointment::whereDate('created_at', $today)
                 ->where('status', 'completed')
                 ->sum('total_amount');
-            $selectedBranchName = 'Chọn chi nhánh';
+            $selectedBranchName = 'Tất cả chi nhánh';
         }
 
         // Đếm tổng lượt đặt lịch hoàn thành
@@ -76,7 +93,8 @@ class DashboardController extends Controller
         // Tổng doanh thu hôm nay (sản phẩm + dịch vụ)
         $todayRevenue = $todayServiceRevenue + $todayProductRevenue;
 
-                // Thống kê hủy và no-show cho biểu đồ tròn
+        // ... (phần code còn lại giữ nguyên) ...
+        // Thống kê hủy và no-show cho biểu đồ tròn
         $selectedStatusMonth = $request->input('appointment_status_month');
 
         $completedQuery = Appointment::where('status', 'completed');
@@ -172,7 +190,6 @@ class DashboardController extends Controller
         $weekRange = $startOfWeek->format('d/m') . ' đến ' . $endOfWeek->format('d/m');
 
         // Xử lý filter cho hiệu suất nhân viên
-        $user = Auth::user();
         $selectedPerformanceMonth = $request->input('performance_month', date('n'));
         $selectedPerformanceBranch = $request->input('performance_branch');
 
@@ -482,7 +499,8 @@ class DashboardController extends Controller
             'branchesForRevenue',
             'selectedBranchRevenue',
             'selectedBranchName',
-            'branchTodayRevenue',
+            'branchTotalRevenue', // Thay đổi từ branchTodayRevenue
+            'branchTodayRevenue', // Giữ lại để hiển thị chi tiết
             'appointmentStatusData',
             'appointmentStatusLabels',
             'appointmentStatusColors',
@@ -493,6 +511,55 @@ class DashboardController extends Controller
             'totalOrders'
         ));
     }
+
+    // Thêm method mới để xử lý API lấy doanh thu chi nhánh
+    public function getBranchRevenue($id)
+    {
+        $user = Auth::user();
+
+
+
+        if ($id) {
+            $branch = Branch::find($id);
+            if (!$branch) {
+                return response()->json(['error' => 'Chi nhánh không tồn tại'], 404);
+            }
+
+            // Tổng doanh thu tất cả thời gian
+            $totalRevenue = Appointment::where('status', 'completed')
+                ->where('branch_id', $id)
+                ->sum('total_amount');
+
+            // Doanh thu hôm nay
+            $todayRevenue = Appointment::whereDate('created_at', Carbon::today())
+                ->where('status', 'completed')
+                ->where('branch_id', $id)
+                ->sum('total_amount');
+
+            return response()->json([
+                'branchName' => $branch->name,
+                'totalRevenue' => number_format($totalRevenue) . ' VNĐ',
+                'todayRevenue' => number_format($todayRevenue) . ' VNĐ',
+                'revenue' => number_format($totalRevenue) . ' VNĐ' // Để tương thích với code cũ
+            ]);
+        } else {
+            // Tất cả chi nhánh
+            $totalRevenue = Appointment::where('status', 'completed')
+                ->sum('total_amount');
+
+            $todayRevenue = Appointment::whereDate('created_at', Carbon::today())
+                ->where('status', 'completed')
+                ->sum('total_amount');
+
+            return response()->json([
+                'branchName' => 'Tất cả chi nhánh',
+                'totalRevenue' => number_format($totalRevenue) . ' VNĐ',
+                'todayRevenue' => number_format($todayRevenue) . ' VNĐ',
+                'revenue' => number_format($totalRevenue) . ' VNĐ'
+            ]);
+        }
+    }
+
 
 
     public function filterServices(Request $request)
@@ -576,37 +643,6 @@ class DashboardController extends Controller
             'lowCount' => $lowUsageServices->count()
         ]);
     }
-    public function getBranchRevenue($id)
-    {
-        $today = Carbon::today();
-
-        if ($id) {
-            $branch = Branch::find($id);
-            if (!$branch) {
-                return response()->json(['error' => 'Chi nhánh không tồn tại'], 404);
-            }
-
-            $revenue = Appointment::whereDate('created_at', $today)
-                ->where('status', 'completed')
-                ->where('branch_id', $id)
-                ->sum('total_amount');
-
-            return response()->json([
-                'branchName' => $branch->name,
-                'revenue' => number_format($revenue) . ' VNĐ'
-            ]);
-        } else {
-            $revenue = Appointment::whereDate('created_at', $today)
-                ->where('status', 'completed')
-                ->sum('total_amount');
-
-            return response()->json([
-                'branchName' => 'Tất cả chi nhánh',
-                'revenue' => number_format($revenue) . ' VNĐ'
-            ]);
-        }
-    }
-
 
     private function generateWeekChart($weekStart, $weekEnd, &$labels, &$serviceRevenue, &$productRevenue)
     {
