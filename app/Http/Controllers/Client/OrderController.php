@@ -101,7 +101,7 @@ class OrderController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Đơn hàng đã được hủy và tồn kho đã được hoàn lại.'
+            'message' => 'Đơn hàng đã được hủy'
         ]);
     }
 }

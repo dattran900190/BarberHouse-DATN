@@ -66,135 +66,148 @@
                 </div>
             </form>
 
-            <table class="table table-bordered table-hover">
-                <thead class="thead-light text-center align-middle">
-                    <tr>
-                        <th>STT</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Giá</th>
-                        <th>Tồn kho</th>
-                        <th>Danh mục</th>
-                        <th>Ảnh chính</th>
-                        <th>Ảnh bổ sung</th>
-                        <th>Biến thể</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($products as $index => $product)
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-light text-center align-middle">
                         <tr>
-                            <td>{{ $products->firstItem() + $index }}</td>
-                            <td>{{ $product->name }}</td>
-                            <td>{{ number_format($product->price) }} VNĐ</td>
-                            <td>{{ $product->stock }}</td>
-                            <td>{{ $product->category->name ?? 'Không có' }}</td>
-                            <td class="text-center">
-                                @if ($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;"
-                                        alt="Ảnh chính" />
-                                @else
-                                    Không có
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if ($product->images->isNotEmpty())
-                                    @foreach ($product->images as $image)
-                                        <img src="{{ asset('storage/' . $image->image_url) }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px;" alt="Ảnh bổ sung" class="me-2" />
-                                    @endforeach
-                                @else
-                                    Không có
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if ($product->variants->isNotEmpty())
-                                    @foreach ($product->variants as $variant)
-                                        <div>
-                                            {{ $variant->volume->name ?? 'N/A' }}:
-                                            @if ($variant->image)
-                                                <img src="{{ asset('storage/' . $variant->image) }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px;" alt="Ảnh biến thể" />
+                            <th>STT</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Tồn kho</th>
+                            <th>Danh mục</th>
+                            <th>Ảnh chính</th>
+                            <th>Ảnh bổ sung</th>
+                            <th>Biến thể</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($products as $index => $product)
+                            <tr>
+                                <td>{{ $products->firstItem() + $index }}</td>
+                                <td>{{ $product->name }}</td>
+                                <td>{{ number_format($product->price) }} VNĐ</td>
+                                <td>{{ $product->stock }}</td>
+                                <td>{{ $product->category->name ?? 'Không có' }}</td>
+                                <td class="text-center">
+                                    @if ($product->image)
+                                        <img src="{{ asset('storage/' . $product->image) }}"
+                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;"
+                                            alt="Ảnh chính" />
+                                    @else
+                                        Không có
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if ($product->images->isNotEmpty())
+                                        @foreach ($product->images as $image)
+                                            <img src="{{ asset('storage/' . $image->image_url) }}"
+                                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px;"
+                                                alt="Ảnh bổ sung" class="me-2" />
+                                        @endforeach
+                                    @else
+                                        Không có
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if ($product->variants->isNotEmpty())
+                                        @foreach ($product->variants as $variant)
+                                            <div>
+                                                {{ $variant->volume->name ?? 'N/A' }}:
+                                                @if ($variant->image)
+                                                    <img src="{{ asset('storage/' . $variant->image) }}"
+                                                        style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px;"
+                                                        alt="Ảnh biến thể" />
+                                                @else
+                                                    Không có
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        Không có biến thể
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($product->trashed())
+                                        <span class="badge bg-danger">Đã xóa</span>
+                                    @else
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary" type="button"
+                                            id="actionMenu{{ $product->id }}" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end"
+                                            aria-labelledby="actionMenu{{ $product->id }}">
+                                            @if ($product->trashed())
+                                                <li>
+                                                    <a href="{{ route('admin.products.show', $product->id) }}"
+                                                        class="dropdown-item">
+                                                        <i class="fas fa-eye me-2"></i>Xem
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <button type="button" class="dropdown-item text-success restore-btn"
+                                                        data-id="{{ $product->id }}">
+                                                        <i class="fas fa-undo me-2"></i> Khôi phục
+                                                    </button>
+                                                </li>
+
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <button type="button"
+                                                        class="dropdown-item text-danger force-delete-btn"
+                                                        data-id="{{ $product->id }}">
+                                                        <i class="fas fa-trash-alt me-2"></i> Xóa vĩnh viễn
+                                                    </button>
+                                                </li>
                                             @else
-                                                Không có
+                                                <li>
+                                                    <a href="{{ route('admin.products.show', $product->id) }}"
+                                                        class="dropdown-item">
+                                                        <i class="fas fa-eye me-2"></i> Xem
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('admin.products.edit', $product->id) }}"
+                                                        class="dropdown-item">
+                                                        <i class="fas fa-edit me-2"></i> Sửa
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <button type="button"
+                                                        class="dropdown-item text-danger soft-delete-btn"
+                                                        data-id="{{ $product->id }}">
+                                                        <i class="fas fa-trash me-2"></i> Xóa mềm
+                                                    </button>
+                                                </li>
                                             @endif
-                                        </div>
-                                    @endforeach
-                                @else
-                                    Không có biến thể
-                                @endif
-                            </td>
-                            <td>
-                                @if ($product->trashed())
-                                    <span class="badge bg-danger">Đã xóa</span>
-                                @else
-                                    <span class="badge bg-success">Hoạt động</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary" type="button"
-                                        id="actionMenu{{ $product->id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end"
-                                        aria-labelledby="actionMenu{{ $product->id }}">
-                                        @if ($product->trashed())
-                                        <li>
-                                            <a href="{{route('admin.products.show', $product->id)}}"    class="dropdown-item">
-                                                <i class="fas fa-eye me-2"></i>Xem
-                                            </a>
-                                        </li>
-                                            <li>
-                                                <button type="button" class="dropdown-item text-success restore-btn"
-                                                    data-id="{{ $product->id }}">
-                                                    <i class="fas fa-undo me-2"></i> Khôi phục
-                                                </button>
-                                            </li>
-                                        
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                            <li>
-                                                <button type="button" class="dropdown-item text-danger force-delete-btn"
-                                                    data-id="{{ $product->id }}">
-                                                    <i class="fas fa-trash-alt me-2"></i> Xóa vĩnh viễn
-                                                </button>
-                                            </li>
-                                        @else
-                                            <li>
-                                                <a href="{{ route('admin.products.show', $product->id) }}"
-                                                    class="dropdown-item">
-                                                    <i class="fas fa-eye me-2"></i> Xem
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="{{ route('admin.products.edit', $product->id) }}"
-                                                    class="dropdown-item">
-                                                    <i class="fas fa-edit me-2"></i> Sửa
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                            <li>
-                                                <button type="button" class="dropdown-item text-danger soft-delete-btn"
-                                                    data-id="{{ $product->id }}">
-                                                    <i class="fas fa-trash me-2"></i> Xóa mềm
-                                                </button>
-                                            </li>
-                                        @endif
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="10" class="text-center">Không có dữ liệu</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            <div class="d-flex justify-content-center mt-3">
-                {{ $products->withQueryString()->links() }}
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="10" class="text-center">Không có dữ liệu</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $products->withQueryString()->links() }}
+                </div>
+
             </div>
         </div>
     </div>
@@ -223,7 +236,7 @@
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-         function handleSwalAction({
+        function handleSwalAction({
             selector,
             title,
             text,

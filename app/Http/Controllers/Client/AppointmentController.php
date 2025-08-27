@@ -745,7 +745,7 @@ class AppointmentController extends Controller
 
             // Kiểm tra chi nhánh
             if ($branch_id !== 'null' && (!is_numeric($branch_id) || !Branch::find($branch_id))) {
-                return response()->json(['error' => 'Invalid branch ID'], 400);
+                return response()->json(['error' => 'Không tồn tại branch ID'], 400);
             }
 
             // Kiểm tra và xử lý ngày
@@ -754,7 +754,7 @@ class AppointmentController extends Controller
                 try {
                     $parsedDate = Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
                 } catch (\Exception $e) {
-                    return response()->json(['error' => 'Invalid date format'], 400);
+                    return response()->json(['error' => 'Ngày không đúng format'], 400);
                 }
             }
 
@@ -767,7 +767,7 @@ class AppointmentController extends Controller
                     $parsedTime = Carbon::createFromFormat('H:i', $decodedTime)->format('H:i');
                     $datetime = $parsedDate ? Carbon::parse("{$parsedDate} {$parsedTime}:00") : null;
                 } catch (\Exception $e) {
-                    return response()->json(['error' => 'Invalid time format'], 400);
+                    return response()->json(['error' => 'Thời gian không đúng format'], 400);
                 }
             }
 
@@ -776,7 +776,7 @@ class AppointmentController extends Controller
             if ($service_id !== 'null') {
                 $srv = Service::find($service_id);
                 if (!$srv) {
-                    return response()->json(['error' => 'Invalid service ID'], 400);
+                    return response()->json(['error' => 'Không tồn tại service ID'], 400);
                 }
                 $mainDuration = $srv->duration ?? 0;
             }
@@ -787,10 +787,10 @@ class AppointmentController extends Controller
                 try {
                     $additionalIds = json_decode($additionalIds, true) ?? [];
                     if (!is_array($additionalIds)) {
-                        return response()->json(['error' => 'Invalid additional services format'], 400);
+                        return response()->json(['error' => 'Dịch vụ thêm không đúng format'], 400);
                     }
                 } catch (\Exception $e) {
-                    return response()->json(['error' => 'Invalid additional services format'], 400);
+                    return response()->json(['error' => 'Dịch vụ thêm không đúng format'], 400);
                 }
             }
 
@@ -912,16 +912,5 @@ class AppointmentController extends Controller
         return response()->json($barbers);
     }
 
-    // public function completeAppointment($appointmentId)
-    // {
-    //     try {
-    //         $appointment = Appointment::findOrFail($appointmentId);
-    //         $appointment->status = 'completed';
-    //         $appointment->save();
 
-    //         return response()->json(['message' => 'Lịch hẹn đã hoàn thành']);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => 'Server error'], 500);
-    //     }
-    // }
 }

@@ -682,6 +682,11 @@
         // });
         $('#service').on('change', function() {
             document.getElementById('additionalServicesContainer').innerHTML = '';
+            // updateAdditionalServicesInput();
+            // updateTotal();
+            // setupServiceManagement();
+            checkVoucherValidity();
+            updateAdditionalServicesDropdowns();
             updateAdditionalServicesInput();
             updateTotal();
             setupServiceManagement();

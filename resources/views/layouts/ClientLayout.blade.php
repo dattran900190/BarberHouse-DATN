@@ -32,6 +32,11 @@
             text-decoration: none;
         }
 
+        h4 a {
+            text-decoration: none;
+            color: #000 !important;
+        }
+
         .page-link:hover {
             background-color: #000;
             color: #fff

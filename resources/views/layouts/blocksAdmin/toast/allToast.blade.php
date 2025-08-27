@@ -3,7 +3,7 @@
      <!-- Toast mẫu (sẽ được clone động) -->
      <div id="appointmentToastTemplate" class="toast" role="alert" data-bs-delay="30000" style="display: none;">
          <div class="toast-header bg-success text-white">
-             <strong class="me-auto">Thông báo lịch hẹn</strong>
+             <strong class="me-auto">Thông báo mới</strong>
              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
          </div>
          <div class="toast-body">
