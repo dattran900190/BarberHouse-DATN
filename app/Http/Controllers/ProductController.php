@@ -197,8 +197,10 @@ class ProductController extends Controller
             if ($request->has('delete_images')) {
                 $imagesToDelete = ProductImage::whereIn('id', $request->delete_images)->get();
                 foreach ($imagesToDelete as $image) {
-                    Storage::disk('public')->delete($image->image_url);
-                    $image->delete();
+                    if ($image->image_url && Storage::disk('public')->exists($image->image_url)) {
+                        Storage::disk('public')->delete($image->image_url);
+                    }
+                    $image->forceDelete();
                 }
             }
 
@@ -323,6 +325,9 @@ class ProductController extends Controller
             $product->variants()->onlyTrashed()->get()->each(function ($variant) {
                 $variant->restore();
             });
+            $product->images()->onlyTrashed()->get()->each(function ($image) {
+                $image->restore();
+            });
             event(new ProductUpdated());
 
             if (request()->expectsJson()) {
@@ -345,7 +350,7 @@ class ProductController extends Controller
 
     public function restoreVariant($id)
     {
-        $variant = \App\Models\ProductVariant::withTrashed()->findOrFail($id);
+        $variant = ProductVariant::withTrashed()->findOrFail($id);
         if ($variant->trashed()) {
             $variant->restore();
             if (request()->expectsJson()) {
@@ -367,20 +372,20 @@ class ProductController extends Controller
 
     public function softDeleteVariant($id)
     {
-        $variant = \App\Models\ProductVariant::findOrFail($id);
+        $variant = ProductVariant::findOrFail($id);
         $product = $variant->product;
         $activeVariantsCount = $product->variants()->whereNull('deleted_at')->count();
 
-        if ($activeVariantsCount <= 1) {
-            if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Sản phẩm phải có ít nhất 1 biến thể. Không thể xóa biến thể cuối cùng!'
-                ]);
-            }
-            return redirect()->route('admin.products.edit', $variant->product_id)
-                ->with('error', 'Sản phẩm phải có ít nhất 1 biến thể. Không thể xóa biến thể cuối cùng!');
-        }
+        // if ($activeVariantsCount <= 1) {
+        //     if (request()->expectsJson()) {
+        //         return response()->json([
+        //             'success' => false,
+        //             'message' => 'Sản phẩm phải có ít nhất 1 biến thể. Không thể xóa biến thể cuối cùng!'
+        //         ]);
+        //     }
+        //     return redirect()->route('admin.products.edit', $variant->product_id)
+        //         ->with('error', 'Sản phẩm phải có ít nhất 1 biến thể. Không thể xóa biến thể cuối cùng!');
+        // }
 
         if (!$variant->trashed()) {
             $variant->delete();
@@ -440,11 +445,13 @@ class ProductController extends Controller
                 }
                 foreach ($product->images as $image) {
                     Storage::disk('public')->delete($image->image_url);
+                    $image->forceDelete();
                 }
                 foreach ($product->variants()->withTrashed()->get() as $variant) {
                     if ($variant->image) {
                         Storage::disk('public')->delete($variant->image);
                     }
+                    $image->forceDelete();
                 }
 
                 // Xóa vĩnh viễn
