@@ -105,6 +105,86 @@
         });
     }
 
+    // ===== REALTIME PRODUCT UPDATES =====
+    // Lắng nghe Event ProductUpdated để cập nhật realtime
+    const productChannel = pusher.subscribe('products');
+    productChannel.bind('ProductUpdated', function(data) {
+        console.log('🎯 ProductUpdated event received:', data);
+        
+        // Hiển thị thông báo realtime
+        showProductRealtimeNotification();
+        
+        // Cập nhật UI nếu đang ở trang products
+        updateProductUI();
+    });
+
+    // Function hiển thị thông báo realtime cho sản phẩm
+    function showProductRealtimeNotification() {
+        // Kiểm tra xem có SweetAlert2 không
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: '🔄 Cập nhật Realtime!',
+                text: 'Sản phẩm đã được cập nhật!',
+                icon: 'info',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        } else {
+            // Fallback: Sử dụng alert thông thường
+            alert('🔄 Sản phẩm đã được cập nhật realtime!');
+        }
+    }
+
+    // Function cập nhật UI sản phẩm
+    function updateProductUI() {
+        // Kiểm tra xem có đang ở trang products không
+        const currentPath = window.location.pathname;
+        
+        if (currentPath.includes('/admin/products')) {
+            // Nếu đang ở trang danh sách sản phẩm
+            if (currentPath.endsWith('/admin/products') || currentPath.includes('/admin/products?')) {
+                console.log('🔄 Đang ở trang danh sách sản phẩm, cập nhật UI...');
+                
+                // Hiển thị loading
+                const tableBody = document.querySelector('#products-table tbody');
+                if (tableBody) {
+                    tableBody.style.opacity = '0.6';
+                }
+                
+                // Reload trang sau 1 giây để cập nhật dữ liệu
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            }
+            // Nếu đang ở trang chi tiết sản phẩm
+            else if (currentPath.includes('/admin/products/') && !currentPath.includes('/edit')) {
+                console.log('🔄 Đang ở trang chi tiết sản phẩm, hỏi user có muốn refresh...');
+                
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: '🔄 Cập nhật Realtime!',
+                        text: 'Sản phẩm đã được cập nhật! Bạn có muốn refresh trang không?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Có, Refresh!',
+                        cancelButtonText: 'Không, để nguyên'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
+                        }
+                    });
+                } else {
+                    if (confirm('🔄 Sản phẩm đã được cập nhật! Bạn có muốn refresh trang không?')) {
+                        location.reload();
+                    }
+                }
+            }
+        }
+    }
+
     function showAppointmentNotification(data) {
         // Tạo row mới cho bảng appointments
         const newRow = createAppointmentRow(data);
