@@ -47,7 +47,7 @@
 
     <!-- Stats Cards -->
     <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-xl-3">
+        {{-- <div class="col-sm-6 col-xl-3">
             <div class="card card-stats card-round h-100">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -65,9 +65,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
-        <div class="col-sm-6 col-xl-3">
+        <div class="col-sm-6 col-xl-4">
             <div class="card card-stats card-round h-100">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -87,7 +87,7 @@
             </div>
         </div>
 
-        <div class="col-sm-6 col-xl-3">
+        <div class="col-sm-6 col-xl-4">
             <div class="card card-stats card-round h-100">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -107,7 +107,7 @@
             </div>
         </div>
 
-        <div class="col-sm-6 col-xl-3">
+        <div class="col-sm-6 col-xl-4">
             <div class="card card-stats card-round h-100">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -179,11 +179,11 @@
                                         <div>
                                             <p class="card-category mb-1">Tổng doanh thu chi nhánh</p>
                                             <h6 class="text-muted small mb-0" id="selected-branch-name">
-                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                {{-- <i class="fas fa-map-marker-alt me-1"></i> --}}
                                                 {{ $selectedBranchName }}
+                                                <i class="fas fa-chevron-down text-muted"></i>
                                             </h6>
                                         </div>
-                                        <i class="fas fa-chevron-down text-muted"></i>
                                     </div>
 
                                     <ul class="dropdown-menu dropdown-menu-end shadow border-0">
