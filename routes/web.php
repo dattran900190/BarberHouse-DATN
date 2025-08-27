@@ -181,6 +181,7 @@ Route::middleware(['auth', 'role'])->prefix('admin')->group(function () {
             ->except(['index', 'show']);
     });
 
+
     // Nếu bạn vẫn muốn index và show có thể xem được bình thường cho tất cả user đăng nhập
     Route::resource('barber_schedules', BarberScheduleController::class)
         ->only(['index', 'show']);
