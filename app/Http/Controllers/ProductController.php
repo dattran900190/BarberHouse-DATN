@@ -197,7 +197,7 @@ class ProductController extends Controller
             if ($request->has('delete_images')) {
                 $imagesToDelete = ProductImage::whereIn('id', $request->delete_images)->get();
                 foreach ($imagesToDelete as $image) {
-                    Storage::disk('public')->delete($image->image_url);
+                    // Storage::disk('public')->delete($image->image_url);
                     $image->delete();
                 }
             }
@@ -322,6 +322,9 @@ class ProductController extends Controller
             // Khôi phục các biến thể
             $product->variants()->onlyTrashed()->get()->each(function ($variant) {
                 $variant->restore();
+            });
+            $product->images()->onlyTrashed()->get()->each(function ($image) {
+                $image->restore();
             });
             event(new ProductUpdated());
 
