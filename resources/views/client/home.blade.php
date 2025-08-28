@@ -123,7 +123,7 @@
                                 </a>
                             </div>
                             <h4>
-                                <a href="{{ route('client.product.detail', $product->id) }}" class="product-link">
+                                <a href="{{ route('client.product.detail', $product->id) }}" class="product-link text-dark">
                                     {{ $product->name }}
                                 </a>
                             </h4>

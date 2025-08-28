@@ -140,7 +140,8 @@
                                         data-min-order-value="{{ $voucher->promotion->min_order_value }}"
                                         data-max-discount="{{ $voucher->promotion->max_discount_amount ?? 0 }}">
                                         {{ $voucher->promotion->code }}
-                                        ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }})
+                                        ({{ $voucher->promotion->discount_type === 'fixed' ? number_format($voucher->promotion->discount_value) . ' VNĐ' : $voucher->promotion->discount_value . '%' }}
+                                        {{ $voucher->required_points != null ? ' - Voucher cá nhân' : ' - Voucher công khai' }})
                                     </option>
                                 @endforeach
                                 @foreach ($publicPromotions as $promotion)
@@ -152,7 +153,8 @@
                                         data-min-order-value="{{ $promotion['min_order_value'] }}"
                                         data-max-discount="{{ $promotion->max_discount_amount ?? 0 }}">
                                         {{ $promotion->code }}
-                                        ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }})
+                                        ({{ $promotion->discount_type === 'fixed' ? number_format($promotion->discount_value) . ' VNĐ' : $promotion->discount_value . '%' }}
+                                        {{ $promotion->required_points != null ? ' - Voucher cá nhân' : ' - Voucher công khai' }})
                                     </option>
                                 @endforeach
                             </select>

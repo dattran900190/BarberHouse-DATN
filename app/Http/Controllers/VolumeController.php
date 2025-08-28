@@ -91,8 +91,8 @@ class VolumeController extends Controller
         }
         
         // Chỉ cho phép xóa mềm nếu chưa liên kết với biến thể sản phẩm
-        if ($volume->productVariants()->count() > 0) {
-            return response()->json(['success' => false, 'message' => 'Không thể xóa dung tích vì đang liên kết với biến thể sản phẩm.']);
+        if ($volume->productVariants()->withTrashed()->count() > 0) {
+            return response()->json(['success' => false, 'message' => 'Không thể xóa dung tích vì đang liên kết với biến thể sản phẩm (kể cả đã xóa)']);
         }
         
         $volume->delete();
