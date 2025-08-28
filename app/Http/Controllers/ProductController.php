@@ -63,7 +63,8 @@ class ProductController extends Controller
             'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
             'additional_images' => 'required|array|min:1',
             'additional_images.*' => 'image|mimes:jpg,jpeg,png,gif|max:2048',
-        ], ['image.required' => 'Vui lòng chọn ảnh sản phẩm.',
+        ], [
+            'image.required' => 'Vui lòng chọn ảnh sản phẩm.',
             'additional_images.required' => 'Vui lòng chọn ít nhất 1 ảnh bổ sung.',
             'additional_images.*.image' => 'Ảnh bổ sung phải là định dạng hình ảnh.',
             'additional_images.*.mimes' => 'Ảnh bổ sung phải có định dạng: jpg, jpeg, png, gif.',
@@ -439,6 +440,7 @@ class ProductController extends Controller
 
             // Nếu không có trong đơn hàng, tiến hành xóa
             try {
+                $product->forceDelete();
                 // Xóa ảnh vật lý
                 if ($product->image) {
                     Storage::disk('public')->delete($product->image);
@@ -451,11 +453,11 @@ class ProductController extends Controller
                     if ($variant->image) {
                         Storage::disk('public')->delete($variant->image);
                     }
-                    $image->forceDelete();
+                    $variant->forceDelete();
                 }
 
                 // Xóa vĩnh viễn
-                $product->forceDelete();
+                // $product->forceDelete();
 
                 if (request()->expectsJson()) {
                     return response()->json([

@@ -1014,7 +1014,7 @@ class AppointmentController extends Controller
     function calculateAppointmentDuration(Request $request, $service_id)
     {
         // Kiểm tra dịch vụ chính
-        $service = Service::findOrFail($service_id);
+        $service = Service::withTrashed()->findOrFail($service_id);
         $mainDuration = $service->duration ?? 0;
 
         // Kiểm tra dịch vụ bổ sung
@@ -1317,7 +1317,7 @@ class AppointmentController extends Controller
         }
 
         $appointments = Appointment::all();
-        $services = Service::all();
+        $services = Service::withTrashed()->get();
         $barbers = Barber::all();
         $branches = Branch::all();
 
@@ -1547,6 +1547,8 @@ class AppointmentController extends Controller
                 ], 422);
             }
             throw $e;
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Dịch vụ không tồn tại hoặc đã bị xóa.');
         } catch (\Exception $e) {
 
             return response()->json([

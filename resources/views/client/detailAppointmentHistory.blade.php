@@ -137,7 +137,8 @@
                                 @if (
                                     !($appointment instanceof \App\Models\CancelledAppointment) &&
                                         $appointment->status != 'completed' &&
-                                        $appointment->status != 'cancelled')
+                                        $appointment->status != 'cancelled' &&
+                                        !$appointment->whereIn('status', ['pending', 'processing'])->exists()) 
                                     <button type="button" class="btn-outline-show cancel-btn"
                                     data-swal-toggle="modal" data-id="{{ $appointment->id }}" style="padding: 6px 10px;">Hủy đặt
                                     lịch</button>

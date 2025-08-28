@@ -34,7 +34,7 @@
 
         h4 a {
             text-decoration: none;
-            color: #000 !important;
+            /* color: #000 !important; */
         }
 
         .page-link:hover {

@@ -116,7 +116,8 @@
                                                 Đánh giá
                                             </button>
                                         @endif
-                                        @if (in_array($appointment->status, ['pending', 'confirmed']))
+                                        @if (in_array($appointment->status, ['pending', 'confirmed']) 
+                                        && !$appointment->whereIn('status', ['pending', 'processing'])->exists())
                                             <button type="button" class="btn-outline-show cancel-btn"
                                                 data-swal-toggle="modal" data-id="{{ $appointment->id }}">Hủy đặt
                                                 lịch</button>
